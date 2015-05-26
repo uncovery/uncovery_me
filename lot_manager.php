@@ -816,7 +816,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     $world = umc_get_lot_world($new_lot);
     $userlevel = umc_get_userlevel($username);
     if (!$world) {
-        XMPP_ERROR_trigger("Guest $username tried to get lot $new_lot, but world could not be found! (umc_assign_new_lot)");
+        XMPP_ERROR_send_msg("Guest $username tried to get lot $new_lot, but world could not be found! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "The lot you chose is invalid!", 'cost' => false);
         return $result;
     }
@@ -826,7 +826,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // guests need to get either an empire or flatlands lot
     $guest_worlds = array('empire', 'flatlands');
     if (($userlevel == 'Guest') && !in_array($world, $guest_worlds)) {
-        XMPP_ERROR_trigger("Guest $username tried to get lot $new_lot in $world (umc_assign_new_lot)");
+        XMPP_ERROR_send_msg("Guest $username tried to get lot $new_lot in $world (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "You can only get lots in Empire & Flatlands as Guest!", 'cost' => $cost);
         return $result;
     }
@@ -838,7 +838,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     if ($cost) { // see if the user has enough money
         $balance = umc_money_check($username);
         if ($balance < $cost) {
-            XMPP_ERROR_trigger("User $username did not have enough money to get $new_lot (umc_assign_new_lot)");
+            XMPP_ERROR_send_msg("User $username did not have enough money to get $new_lot (umc_assign_new_lot)");
             $result = array('result' => false, 'text' => "You do not have enough money to get this lot!", 'cost' => $cost);
             return $result;
         }
@@ -867,16 +867,17 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
 
     // check if user has lots free
     if (isset($userlots['lot_list'][$new_lot])) {
-        XMPP_ERROR_trigger("User $username tried to get $new_lot but is an owner already! (umc_assign_new_lot)");
+        XMPP_ERROR_send_msg("User $username tried to get $new_lot but is an owner already! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "You own this lot already!", 'cost' => $cost);
         return $result;
     } else if ($userlots['avail_lots'] > 0) {
         // user can get the lot!
         umc_log("lot_manager", "assign_new_lot", "$username was added as owner to lot $new_lot");
         $result = array('result' => true, 'text' => "You are now proud owner of lot $new_lot in $world!", 'cost' => $cost);
+        XMPP_ERROR_send_msg("User $username tried to get $new_lot and is approved! (umc_assign_new_lot)");
         return $result;
     } else {
-        XMPP_ERROR_trigger("User $username did not have avialable lots free to get $new_lot (umc_assign_new_lot) " . var_export($userlots, true));
+        XMPP_ERROR_send_msg("User $username did not have avialable lots free to get $new_lot (umc_assign_new_lot) " . var_export($userlots, true));
         $result = array('result' => false, 'text' => "You do not have enough available lots in this world!", 'cost' => $cost);
         return $result;
     }
@@ -936,6 +937,7 @@ function umc_lot_add_player($player, $lot, $owner = 1, $cost = false) {
     $sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner) " .
             "VALUES ('$lot', $world_id, $user_id, $owner)";
     umc_mysql_query($sql, true);
+    XMPP_ERROR_send_msg("$player was added to lot $lot; Owner: $owner");
     umc_log('lot_manager', 'add_player_to_lot', "$player was added to lot $lot; Owner: $owner");
     if ($owner == 1) {
         XMPP_ERROR_send_msg("User $player registered lot $lot");
