@@ -1,5 +1,18 @@
 <?php
 
+function umc_sanity_check_users() {
+    $sql = "SELECT username, userlevel, user.uuid, count(region_id) as counter 
+        FROM minecraft_worldguard.`region_players` 
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id 
+        LEFT JOIN minecraft_worldguard.world ON world_id = world.id 
+        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID 
+        WHERE Owner=1 AND (userlevel LIKE 'Settler%' OR userlevel LIKE 'Citizen%') AND (world.name IN ('flatlands', 'empire')) 
+        GROUP BY uuid 
+        HAVING counter > 1 ";
+    $D = umc_mysql_fetch_all($sql);
+}
+
+
 /**
  * Find all users in a specific world
  *
@@ -366,14 +379,14 @@ function umc_get_userlevel($username) {
     }
     $username_str = implode("','", $user_arr_ok);
 
-    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions "
-        . "LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child "
-        . "WHERE `value` IN ('$username_str') AND permissions.permission='name'";
-    $rst = mysql_query($sql);
+    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions 
+        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child 
+        WHERE `value` IN ('$username_str') AND permissions.permission='name';";
+    $D = umc_mysql_fetch_all($sql);
 
     $user_levels = array();
     // user not found, so he's guest
-    if (mysql_num_rows($rst) == 0)  {
+    if (count($D) == 0)  {
         return "Guest";
     }
     //parent 	value 	name
@@ -381,14 +394,13 @@ function umc_get_userlevel($username) {
 
     // otherwise get results
     // umc_error_notify($username_str);
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-        $user = $row['username'];
-        $level = $row['userlevel'];
-        if ($level == NULL) {
-            $level = 'Guest';
-        }
-        $user_levels[strtolower($user)] = $level;
+    $row = $D[0];
+    $user = $row['username'];
+    $level = $row['userlevel'];
+    if ($level == NULL) {
+        $level = 'Guest';
     }
+    $user_levels[strtolower($user)] = $level;
     // check if all users were found, if not, set them as guest
     if (count($user_arr_ok) > 1) {
         foreach ($user_arr_ok as $user) {
@@ -477,17 +489,17 @@ function umc_user_email($username) {
 }
 
 // get all user lots and the image link
-function umc_user_getlots($username, $world = false) {
+function umc_user_getlots($uuid, $world = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // worldguard stores everything in lower case.
-    $user = strtolower($username);
     $filter = '';
     if ($world) {
         $filter = "AND world.name = '$world'";
     }
-    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players` "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id = user.id LEFT JOIN minecraft_worldguard.world ON world_id = world.id "
-        . "WHERE Owner=1 AND user.name='$user' $filter ORDER BY region_id;";
+    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players` 
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id LEFT JOIN minecraft_worldguard.world ON world_id = world.id 
+        WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
+    XMPP_ERROR_send_msg($sql);
     $rst = umc_mysql_query($sql);
     $out = array();
     //echo $sql;
@@ -666,7 +678,7 @@ function umc_user_directory() {
         echo "<strong>Money:</strong> $money Uncs<br>";
 
         // get lots
-        $lots = umc_user_getlots($username);
+        $lots = umc_user_getlots($uuid);
         echo "<strong>Lots:</strong><br>    ";
         foreach ($lots as $lot => $data) {
             echo $data['lot'] . "<br>" . $data['image'] . "<br>";
@@ -1059,7 +1071,7 @@ function umc_promote_citizen($username, $userlevel = false) {
     $karma = umc_getkarma($user['uuid'], true);
     $user['Karma'] = $karma;
 
-    $lots = umc_user_getlots($username);
+    $lots = umc_user_getlots($uuid);
     $display_lots = array();
     foreach ($lots as $lot => $data) {
         $display_lots[$data['world']][] = $lot;
