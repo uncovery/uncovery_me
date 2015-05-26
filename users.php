@@ -499,7 +499,6 @@ function umc_user_getlots($uuid, $world = false) {
     $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players` 
         LEFT JOIN minecraft_worldguard.user ON user_id = user.id LEFT JOIN minecraft_worldguard.world ON world_id = world.id 
         WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
-    XMPP_ERROR_send_msg($sql);
     $rst = umc_mysql_query($sql);
     $out = array();
     //echo $sql;
