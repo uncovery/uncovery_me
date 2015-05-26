@@ -877,7 +877,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
         return $result;
     } else {
         XMPP_ERROR_trigger("User $username did not have avialable lots free to get $new_lot (umc_assign_new_lot) " . var_export($userlots, true));
-        $result = array('result' => true, 'text' => "You do not have enough available lots in this world!", 'cost' => $cost);
+        $result = array('result' => false, 'text' => "You do not have enough available lots in this world!", 'cost' => $cost);
         return $result;
     }
 }
