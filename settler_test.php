@@ -407,6 +407,7 @@ function umc_settler_new() {
             $check = umc_lot_manager_check_before_assign($uuid, $lot);
             $out .= "Trying to assign this lot to you: <strong>{$check['text']}</strong><br>";
             if ($check['result'] == false) {
+                XMPP_ERROR_send_msg("Settler Test lot assignment failed!");
                 $out .= "There was an error giving the lot you reserved to you. You can get any other through your <a hreaf=\"$UMC_DOMAIN/server-access/lot-manager/\">lot manager</a>!<br>";
             } else {
                 umc_lot_add_player($uuid, $lot, 1, $check['cost']);
