@@ -1,0 +1,16 @@
+- make more version of lots in flatlands
+- develop skyblock options
+- copy those versions over to the mint world backup
+
+- fix the usage of playername/username/player/user etc
+- fix the usage of item_id/id/type/damage
+
+- add more punctuation for vanity titles
+
+// - remove the playerheads plugin and use "/give @p skull 1 3 {SkullOwner:PlayerName}" instead
+
+- when you refund a kingdom lot, you should also refund the draftlands lot
+
+- finish the chat log daily import and make a page to display it
+
+- make a wrapper for hats to check if the user has a helmet on
