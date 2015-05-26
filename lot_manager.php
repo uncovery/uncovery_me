@@ -940,7 +940,6 @@ function umc_lot_add_player($player, $lot, $owner = 1, $cost = false) {
     XMPP_ERROR_send_msg("$player was added to lot $lot; Owner: $owner");
     umc_log('lot_manager', 'add_player_to_lot', "$player was added to lot $lot; Owner: $owner");
     if ($owner == 1) {
-        XMPP_ERROR_send_msg("User $player registered lot $lot");
         //umc_exec_command("ch qm u Congratz for user $player to get lot $lot!");
     }
     // reload regions file
