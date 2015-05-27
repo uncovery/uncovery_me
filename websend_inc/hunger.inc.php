@@ -230,7 +230,7 @@ function umc_hunger_announce() {
     } else {
         umc_hunger_remove_perms('all');
         umc_ws_cmd("pex reload", 'asConsole');
-        XMPP_ERROR_trigger("$player announced new Hunger game");
+        XMPP_ERROR_send_msg("$player announced new Hunger game");
         if ($HUNGER['announce']) {
             umc_announce("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!", $HUNGER['channel']);
             umc_announce("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!", $HUNGER['channel']);
@@ -325,7 +325,7 @@ function umc_hunger_start() {
     foreach ($finalplayers as $uuid => $player) {
         // we start the game, so let them edit the world
         $cmd = "pex user $uuid add modifyworld.* hunger";
-        XMPP_ERROR_trigger("Giving build rights: $cmd");
+        XMPP_ERROR_send_msg("Giving build rights: $cmd");
         umc_ws_cmd($cmd, 'asConsole');
         umc_ws_cmd("ci $player", 'asConsole');
         $sql = "UPDATE minecraft_iconomy.hunger_players set status='playing' WHERE status='preparing' and game_id=$id AND uuid='$uuid';";
@@ -340,7 +340,7 @@ function umc_hunger_start() {
         umc_echo("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size");
         umc_echo("Participants: {gold}" . implode(", ", $finalplayers));
     }
-    XMPP_ERROR_trigger("hunger game started with $world_size and players: ". implode(", ", $finalplayers));
+    XMPP_ERROR_send_msg("hunger game started with size $world_size and players: ". implode(", ", $finalplayers));
 }
 
 // Stop (abort) the current game before its natural conclusion
@@ -379,7 +379,7 @@ function umc_hunger_stop() {
     umc_hunger_kill_all_in_world();
 
     // do this anyhow for security
-    XMPP_ERROR_trigger("hunger game stopped");
+    XMPP_ERROR_send_msg("hunger game stopped");
     umc_hunger_remove_perms('all');
     umc_log('hunger', 'stop', "game was stopped by $player");
 
@@ -405,7 +405,7 @@ function umc_hunger_abort() {
     // do this anyhow for security
     umc_hunger_remove_perms('all');
     umc_log('hunger', 'abort', "game was cancelled");
-    XMPP_ERROR_trigger("hunger game aborted");
+    XMPP_ERROR_send_msg("hunger game aborted");
 }
 
 /**
@@ -437,7 +437,7 @@ function umc_hunger_remove_perms($mode = 'all') {
         $uuid = $row['name'];
         $cmd = "pex user $uuid remove {$var['permission']}";
         umc_ws_cmd($cmd, 'asConsole');
-        XMPP_ERROR_trigger("removed {$var['permission']} permissions from $uuid");
+        XMPP_ERROR_send_msg("removed {$var['permission']} permissions from $uuid");
     }
 
     if ($mode == 'all') {
@@ -740,7 +740,7 @@ function umc_hunger_addplayer() {
     $sql = "INSERT INTO minecraft_iconomy.`hunger_players` (`uuid`, `game_id`, `status`) VALUES ('$player_uuid', $game_id, 'preparing');";
     umc_mysql_query($sql, true);
     umc_echo("[Hunger] {green}You ({gold}$player{green}) were added to Hunger Game {white}#$game_id.");
-    XMPP_ERROR_trigger("Added user $player to the hunger game");
+    XMPP_ERROR_send_msg("Added user $player to the hunger game");
 }
 
 // Remove a player from the hunger game
@@ -775,7 +775,7 @@ function umc_hunger_removeplayer($died = true) {
     umc_hunger_find_players();
     umc_ws_cmd("pex user $uuid remove essentials.warps.hunger", 'asConsole');
     umc_ws_cmd("pex user $uuid remove modifyworld.* hunger", 'asConsole');
-    XMPP_ERROR_trigger("$username was removed from the hunger game");
+    XMPP_ERROR_send_msg("$username was removed from the hunger game");
 
     $winner = false;
     // Check for a win if the game is still on
@@ -818,7 +818,7 @@ function umc_hunger_check_winner() {
     // if there is only one player. it's the winner
     if (sizeof($player_list) == 1) {
         $winner_uuid = key($player_list);
-        XMPP_ERROR_trigger("Found winner! $winner_uuid");
+        XMPP_ERROR_send_msg("Found winner! $winner_uuid");
         $winner = current($player_list);
         if (!in_array($winner, $UMC_PLAYER['online_players']['alive'])) {
             $sql_game = "UPDATE minecraft_iconomy.`hunger_games` "
@@ -924,7 +924,7 @@ function umc_hunger_find_random_location() {
         XMPP_ERROR_trigger("hunger rejected location X: $center_x Z: $center_z, trying again");
         return umc_hunger_find_random_location();
     } else {
-        XMPP_ERROR_trigger("hunger Found location X: $center_x Z: $center_z");
+        XMPP_ERROR_send_msg("hunger Found location X: $center_x Z: $center_z");
         // update warp point
         $text = "yaw: 0.0\nname: hunger\npitch: 0.0\nz: $center_z\ny: 250\nworld: hunger\nx: $center_x";
         $filename = '/home/minecraft/server/bukkit/plugins/Essentials/warps/hunger.yml';
