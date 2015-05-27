@@ -291,6 +291,43 @@ function umc_heatmap($world) {
     }
 }
 
+function umc_map_menu($worlds, $current_world, $freeswitch) {
+    global $UMC_DOMAIN;
+    $freevalue = 'false';
+    if ($freeswitch) {
+        $freevalue = 'true';
+    }
+    $this_uc_map = ucwords($current_world);
+    $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
+        . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
+        . " Choose world:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
+        . "        <input type='hidden' name='freeonly' value='$freevalue'>\n"
+        . "        <input type='hidden' name='function' value='create_map'>\n"
+        . "        <select name=\"world\" style=\"display:inline;\" onchange='this.form.submit()'>\n";
+    foreach ($worlds as $worldname) {
+        $uc_worldname = ucwords($worldname);
+        $selected = '';
+        if ($worldname == $current_world) {
+            $selected = ' selected';
+        }
+        $menu .= "            <option value=\"$worldname\"$selected>$uc_worldname</option>\n";
+    }
+    $menu .= "        </select>\n    </div></form>\n "
+          . "<a id='link_3d_maps' href=\"$UMC_DOMAIN/dynmap/#\">3D Maps</a>\n ";
+
+    /* heatmap is disabled
+    if ($lag) {
+        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world\">Normal Map</a>\n | ";
+    } else {
+        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;lag=true\">Heatmap</a>\n | ";
+    }
+    */
+    
+    $menu .= umc_read_markers_file('scrollto', $current_world);
+    
+    return $menu;
+}
+
 // loads lot information, displays current map and overlays it with lot information
 function umc_create_map() {
     global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_ENV;
@@ -365,18 +402,13 @@ function umc_create_map() {
     }
 
     $freeonly = false;
-    if (isset($s_get['freeonly']) || isset($s_post['freeonly'])) {
+    if (
+        (isset($s_get['freeonly']) && $s_get['freeonly'] == 'true') 
+        || 
+        (isset($s_post['freeonly']) && $s_post['freeonly'] == 'true')) 
+        {
         $freeonly = true;
     }
-
-    $this_uc_map = ucwords($world);
-    $freeswitch = '';
-    if ($freeonly) {
-        $freeswitch = "&amp;freeonly=true";
-    }
-
-    $spawn_button = '<button type="button" onclick="setTimeout(find_spawn(), 2000)">Find Spawn</button>';
-
 
     $menu = '';
     if ($settler_test) {
@@ -391,34 +423,11 @@ function umc_create_map() {
             . "<input type=\"hidden\" name=\"step\" value=\"9\">\n<input type=\"hidden\" name=\"world\" value=\"$world\"><input type=\"hidden\" name=\"lot\" value=\"$player_lot\">\n";
     }
 
-    $menu .= "<div style=\"position:fixed; z-index:999; background-color:#ffffff; padding:2px; font-family:sans-serif; \">\n"
-            . "<strong>Uncovery $this_uc_map map</strong> $spawn_button<span style=\"padding-left:5px; font-size:80%;\">";
+    $menu .= "<div id=\"menu_2d_map\">\n";
 
     if (!$settler_test && !$track_player && !$find_lot) {
-        $menu .= "Choose a different map:\n ";
         // create the top menu
-        foreach ($worlds as $worldname) {
-            $uc_worldname = ucwords($worldname);
-            if ($worldname != $world) {
-                $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$worldname$freeswitch\">$uc_worldname</a>\n | ";
-            } else {
-                $menu .= "$uc_worldname | ";
-            }
-        }
-
-        if ($freeonly) {
-            $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world\">Show all lots</a>\n | ";
-        } else {
-            $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;freeonly=true\">Show free lots</a>\n | ";
-        }
-
-        if ($lag) {
-            $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world\">Normal Map</a>\n | ";
-        } else {
-            // $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;lag=true\">Heatmap</a>\n | ";
-        }
-
-        $menu .= "<a href=\"$UMC_DOMAIN/dynmap/#\">3D Maps</a>";
+        $menu .= umc_map_menu($worlds, $world, $freeonly);
     } else if ($settler_test){
         $menu .= "Pick a lot that looks nice to you. Closer to spawn is more convenient. Then click here: "
             . "<input id=\"settler_test_next\" type=\"submit\" name=\"Next\" value=\"Next\">\n";
@@ -428,7 +437,7 @@ function umc_create_map() {
     } else {
         $menu .= "Find your user head on the map and click on the button next to it!";
     }
-    $menu .= "</span></div>\n";
+    $menu .= "</div>\n";
 
     $new_choices = array();
     if ($world == 'empire_new') {
@@ -470,8 +479,6 @@ function umc_create_map() {
     } else {
         $html .= umc_read_markers_file('html', $world);
     }
-        // side menu
-    $html .= umc_read_markers_file('scrollto', $world);
 
     //$repl_arr = array(',','-');
     $kingdom = '';
@@ -560,7 +567,7 @@ function umc_create_map() {
 
         $user_string = '';
         $owner_string = '';
-        $box_color = '';
+        // $box_color = '';
         $coord_str = "            <span class=\"coords\">$coord_1/$coord_2, $chunk</span>\n";
             //. '<span class="coords bottomleft">'.$x1.'/'.$z2.'</span>'
             //. '<span class="coords topright">'.$x2.'/'.$z1.'</span>'
@@ -598,7 +605,7 @@ function umc_create_map() {
             $border = '';
             if (!$freeonly) {
                 $border = 'border';
-                $box_color = ' background: rgba(0, 255, 255, 0.2);';
+                // $box_color = ' background: rgba(0, 255, 255, 0.2);';
             }
 
             if ($retain_lot && ($owner_lastlogin < $two_months_ago) && $donation_level < 2) { // too late
@@ -681,36 +688,43 @@ function umc_create_map() {
         <title>Uncovery Minecraft 2D Map: '. $world . '</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script type="text/javascript" src="/admin/js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="/admin/js/jquery-ui.min.js"></script>
         <script type="text/javascript">
-            var markers_url = "' . $UMC_DOMAIN. '/admin/index.php?function=display_markers&world=' . $world . $track_player_icon . '";
-            var blink_handle;
             function find_spawn() {
                 window.scrollTo(($(document).width()-$(window).width())/2 + 60,($(document).height()-$(window).height())/2 - 60);
-                initBlink();
-                setTimeout(clearBlink, 2000);
+                doBlink("'. $spawn_lot . '");
+            }
+            function doBlink(element_id) {
+                toggleBlink(element_id);
+                setTimeout(function() {toggleBlink(element_id);}, 2000);
+            }
+            function toggleBlink(element_id) {
+                $("#" + element_id).toggleClass("blink_me");
+            }
+            function toggleLotDisplay() {
+                $(".blackborder").toggleClass("black");
+                $(".redborder").toggleClass("red");
+                $(".yellowborder").toggleClass("yellow");
+            }
+            function find_user(left, top, element_id) {
+                window.scrollTo(left - ($(window).width() / 2), top - ($(window).height() / 2))
+                $("#" + element_id).effect("shake");
             }
             function select_lot(lot_radio, lot_name) {
                 $("#" + lot_radio).prop("checked", true);
                 $("#settler_test_next").prop("value", "Chose Lot " + lot_name);
-                
             }
-            function initBlink() {
-                var state = false;
-                document.getElementById(\''. $spawn_lot . '\').style.opacity = .5; //For real browsers;
-                document.getElementById(\''. $spawn_lot . '\').style.filter = "alpha(opacity=50)"; //For IE;
-                blink_handle = setInterval(function() {
-                    state = !state;
-                    var color = (state?\'red\':\'green\');
-                    document.getElementById(\''. $spawn_lot . '\').style.backgroundColor = color;
-                }, 500);
-            }
-            function clearBlink() {
-                clearInterval(blink_handle);
-                // Set background to fully transparent to remove blinking residue
-                document.getElementById(\''. $spawn_lot . '\').style.opacity = 0; //For real browsers;
-                document.getElementById(\''. $spawn_lot . '\').style.filter = "alpha(opacity=0)"; //For IE;
-            }
+            var markers_url = "' . $UMC_DOMAIN. '/admin/index.php?function=display_markers&world=' . $world . $track_player_icon . '";
+            var markers_menu_url = "' . $UMC_DOMAIN. '/admin/index.php?function=display_markers&format=scrollto&world=' . $world . '";
             function update_positions() {
+                $.ajax({
+                    url: markers_menu_url,
+                    success: function(data) {
+                        $("#scroll_to_icons").remove();
+                        $(data).insertAfter( "#link_3d_maps" );
+                        // $("#link_3d_maps").html($("#link_3d_maps").html() + data);
+                    }
+                });
                 $.ajax({
                     url: markers_url,
                     success: function(data) {
@@ -719,23 +733,23 @@ function umc_create_map() {
                         setTimeout("update_positions()", 4000);'. "\n";
 if ($find_lot) {
     $header .= '                draw_line();
-                        }
-                    });
+                    }
+                });
 
-                }
-                function draw_line() {
-                    var player_left = parseInt($("#'.$player.'_marker").css("left"), 10) + 10;
-                    var player_top = parseInt($("#'.$player.'_marker").css("top"), 10) + 10;
-                    var c = document.getElementById("lot_pointer");
-                    var ctx = c.getContext("2d");
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                    ctx.beginPath();
-                    ctx.clearRect(0, 0, '.$map_width.', '.$map_height.');
-                    ctx.strokeStyle="red";
-                    ctx.moveTo(player_left, player_top);
-                    ctx.lineTo('. $lot_x . ','. $lot_z . ');
-                    ctx.stroke();
-                }
+            }
+            function draw_line() {
+                var player_left = parseInt($("#'.$player.'_marker").css("left"), 10) + 10;
+                var player_top = parseInt($("#'.$player.'_marker").css("top"), 10) + 10;
+                var c = document.getElementById("lot_pointer");
+                var ctx = c.getContext("2d");
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.beginPath();
+                ctx.clearRect(0, 0, '.$map_width.', '.$map_height.');
+                ctx.strokeStyle="red";
+                ctx.moveTo(player_left, player_top);
+                ctx.lineTo('. $lot_x . ','. $lot_z . ');
+                ctx.stroke();
+            }
 ';
 } else {
     $header .= '                        }
@@ -788,7 +802,7 @@ function umc_display_markers() {
     return $out;
 }
 
-function umc_read_data_files($world = 'city', $map) {
+function umc_read_data_files($world = 'city', $map = '') {
     global $UMC_PATH_MC;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $path = "$UMC_PATH_MC/server/bukkit/$world/region";
@@ -853,7 +867,7 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         return '';
     }
     if ($format == 'scrollto') {
-        $out = "<div style=\"position:fixed; z-index:999; background-color:#ffffff; padding:2px; top:30px; left:1px; font-family:sans-serif; width:21px; \">\n";
+        $out = "<div id=\"scroll_to_icons\">\n";
     } else {
         $out = "<div id=\"marker_list\">\n";
     }
@@ -885,7 +899,7 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
                 . "\n";
             $foundplayer = true;
         } else if ($format == 'scrollto' && ($marker->world == $world)) {
-            $out .= "<img src=\"$icon_url\" title=\"$username\" alt=\"$username\" onclick=\"window.scrollTo($left - ($(window).width() / 2), $top - ($(window).height() / 2))\">\n";
+            $out .= "<img src=\"$icon_url\" title=\"$username\" alt=\"$username\" onclick=\"find_user($left, $top, '{$username}_marker')\">\n";
         } else if ($format == 'html' && ($marker->world == $world)) {
             if ($world == 'hunger'){
                 $out .= '<div class="marker" style="position:relative">'
@@ -894,7 +908,7 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
                 . '</div>'
                 . "\n";
             } else {
-                $out .= '   <img class="marker" style="z-index:100; top:'.$top.'px; left:'.$left
+                $out .= '   <img id="'.$username.'_marker" class="marker" style="z-index:100; top:'.$top.'px; left:'.$left
                     . "px;\" src=\"$icon_url\" title=\"$username (x:$x_text z:$z_text)\" alt=\"$username (x:$x_text z:$z_text)\">\n";
             }
         } else if ($format == 'json') {
