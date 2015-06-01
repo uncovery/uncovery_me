@@ -229,16 +229,18 @@ function umc_process_donation() {
                 list($key,$val) = explode("=", $lines[$i]);
                 $keyarray[urldecode($key)] = urldecode($val);
             }
+            // the below values are currently not used, so this will be disabled.
+            // the line XMPP_ERROR_trigger($res); should be used to identify set values and process the donation accordingly.
+            
             // check the payment_status is Completed
-            $payment_status = $keyarray['payment_status'];
-
+            // $payment_status = $keyarray['payment_status'];
             // check that txn_id has not been previously processed
-            $txn_id = $keyarray['txn_id'];
+            // $txn_id = $keyarray['txn_id'];
             // check that receiver_email is your Primary PayPal email
-            $receiver_email = $keyarray['receiver_email'];
+            // $receiver_email = $keyarray['receiver_email'];
             // check that payment_amount/payment_currency are correct
-            $payment_amount = $keyarray['payment_amount'];
-            $payment_currency = 'USD';
+            // $payment_amount = $keyarray['payment_amount'];
+            // = 'USD';
             XMPP_ERROR_trigger($res);
             // process payment
             $firstname = $keyarray['first_name'];
