@@ -609,7 +609,7 @@ function umc_donation_level($user, $debug = false) {
     }
     $new_lvl = $base_lvl + $future;
     if ($new_lvl == $cur_lvl) {
-        XMPP_ERROR_trigger("Donations upgrade: Nothing to do, CHECK this should have bailed earlier!");
+        XMPP_ERROR_send_msg("Donations upgrade: Nothing to do, CHECK this should have bailed earlier!");
         return false;
     }
     $new_rank = $UMC_SETTING['ranks'][$new_lvl];
