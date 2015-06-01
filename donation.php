@@ -218,6 +218,50 @@ function umc_process_donation() {
     $res = curl_exec($ch);
     curl_close($ch);
 
+    /* Res sample content:
+     * "SUCCESS
+        mc_gross=13.00
+        protection_eligibility=Ineligible
+        payer_id=JGxxxxxxxxxxW
+        tax=0.00
+        payment_date=19%3A43%3A55+May+31%2C+2015+PDT
+        payment_status=Completed
+        charset=Big5
+        first_name=Michael
+        option_selection1=1+Year
+        option_selection2=4bb4ff2c-a75e-4ad0-9ff1-caed3cf1c5aa
+        mc_fee=0.87
+        custom=
+        payer_status=verified
+        business=minecraft%40uncovery.me
+        quantity=1
+        payer_email=xxxxxxxxxx%40yahoo.com
+        option_name1=DonatorPlus+Status
+        option_name2=Your+Username
+        memo=Please+apply+this+donation+to+xxxxxxxxx
+        txn_id=4TT776949B495984P
+        payment_type=instant
+        btn_id=52930807
+        last_name=xxxxxxxxxxxxx
+        receiver_email=xxxxxxxxxx%40uncovery.net
+        payment_fee=0.87
+        shipping_discount=0.00
+        insurance_amount=0.00
+        receiver_id=xxxxxxxxxxx
+        txn_type=web_accept
+        item_name=DonatorPlus+Status
+        discount=0.00
+        mc_currency=USD
+        item_number=
+        residence_country=US
+        shipping_method=Default
+        handling_amount=0.00
+        transaction_subject=
+        payment_gross=13.00
+        shipping=0.00
+        "
+     */
+    
     if(!$res){
         //HTTP ERROR
     } else {
@@ -229,25 +273,13 @@ function umc_process_donation() {
                 list($key,$val) = explode("=", $lines[$i]);
                 $keyarray[urldecode($key)] = urldecode($val);
             }
-            // the below values are currently not used, so this will be disabled.
-            // the line XMPP_ERROR_trigger($res); should be used to identify set values and process the donation accordingly.
-            
-            // check the payment_status is Completed
-            // $payment_status = $keyarray['payment_status'];
-            // check that txn_id has not been previously processed
-            // $txn_id = $keyarray['txn_id'];
-            // check that receiver_email is your Primary PayPal email
-            // $receiver_email = $keyarray['receiver_email'];
-            // check that payment_amount/payment_currency are correct
-            // $payment_amount = $keyarray['payment_amount'];
-            // = 'USD';
+          
             XMPP_ERROR_trigger($res);
             // process payment
             $firstname = $keyarray['first_name'];
             $lastname = $keyarray['last_name'];
             $itemname = $keyarray['item_name'];
             $amount = $keyarray['payment_gross'];
-
             echo ("<p><h3>Thank you for your purchase!</h3></p>");
 
             echo ("<b>Payment Details</b><br>\n");
