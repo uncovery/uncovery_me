@@ -227,7 +227,6 @@ function umc_getkarma($target = false, $return = false) {
         $neg_karma = 0;
     }
 
-
     $karma = $pos_karma + $neg_karma;
 
     if ($pos_karma == NULL && $neg_karma == NULL) {
@@ -290,18 +289,18 @@ function umc_webkarma() {
 }
 
 function umc_topkarma() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT SUM(karma) AS sum_karma, receiver FROM minecraft_srvr.karma "
-        . "WHERE sender IN (SELECT name FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=id "
-        . "WHERE owner=1 GROUP BY uuid) "
-        . "GROUP BY receiver ORDER BY SUM(karma) DESC, receiver ASC LIMIT 0,10";
+    $sql = "SELECT SUM(karma), receivers.username as receiver_name FROM `karma` 
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
+        WHERE senders.lot_count > 0 AND receivers.lot_count > 0
+        GROUP BY receivers.username
+        ORDER BY sum(karma) DESC LIMIT 0,10";
     $rst = mysql_query($sql);
     umc_echo("Top ten Karma users:");
     umc_echo(" ∞     =>    Uncovery");
     while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
         $sum_karma = $row['sum_karma'];
-        $receiver = $row['receiver'];
+        $receiver = $row['username'];
         if (!umc_user_is_banned($receiver) && $receiver != 'uncovery') {
             umc_echo("$sum_karma    =>    $receiver");
         }
@@ -310,17 +309,19 @@ function umc_topkarma() {
 
 function umc_bottomkarma() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT SUM(karma) AS sum_karma, receiver FROM minecraft_srvr.karma "
-        . "WHERE sender IN (SELECT name FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=id "
-        . " WHERE owner=1 GROUP BY name) "
-        . "GROUP BY receiver ORDER BY SUM(karma) ASC, receiver ASC LIMIT 0,10;";
+    $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM `karma` 
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
+        WHERE senders.lot_count > 0 AND receivers.lot_count > 0
+        GROUP BY receivers.username
+        HAVING sum(karma) < 0
+        ORDER BY sum(karma) ASC LIMIT 0,10";
     $rst = mysql_query($sql);
     umc_echo("Bottom ten Karma users:");
     umc_echo("-∞     =>    Uncovery");
     while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
         $sum_karma = $row['sum_karma'];
-        $receiver = $row['receiver'];
+        $receiver = $row['receiver_name'];
         if (!umc_user_is_banned($receiver)) {
             umc_echo("$sum_karma    =>    $receiver");
         }
