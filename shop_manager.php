@@ -173,7 +173,7 @@ function umc_shopmgr_item_stats($item, $type) {
         . "FROM minecraft_iconomy.transactions "
         . "WHERE item_name='$item' AND damage='$type' AND cost > 0 AND seller_uuid NOT LIKE 'cancel%' AND buyer_uuid NOT LIKE 'cancel%' AND date > '0000-00-00 00:00:00'  "
         . "GROUP BY week ";
-    $rst = umc_mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $out = "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
         . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
@@ -183,15 +183,18 @@ function umc_shopmgr_item_stats($item, $type) {
         . "var chartData = [\n";
     //
     $sum = 0;
-    $count = 0;
-    while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $count = count($D);
+    if ($count == 0) {
+        return "[This item has not been traded recently]";
+    }
+    
+    foreach ($D as $d) {
         //$maxval_amount = max($maxval_amount, $row['amount']);
         //$maxval_value = max($maxval_value, $row['value']);
-        $date = $row['week'];
-        $price = $row['price'];
+        $date = $d['week'];
+        $price = $d['price'];
         // {"date": "2013-15","Amount": 121304,"Value": 72679,},
         $out .= "{\"date\": \"$date\",\"price\": \"$price\"},\n";
-        $count++;
         $sum += $price;
     }
     $out .= "];\n";
