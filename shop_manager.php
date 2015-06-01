@@ -185,7 +185,7 @@ function umc_shopmgr_item_stats($item, $type) {
     $sum = 0;
     $count = count($D);
     if ($count == 0) {
-        return "[This item has not been traded recently]";
+        return "No data found";
     }
     
     foreach ($D as $d) {
