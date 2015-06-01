@@ -196,7 +196,7 @@ function umc_shopmgr_item_stats($item, $type) {
     }
     $out .= "];\n";
 
-    $average = $sum / $count;
+    // $average = $sum / $count;
     
     $out .= 'AmCharts.ready(function () {
     // SERIAL CHART
