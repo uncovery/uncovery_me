@@ -56,7 +56,7 @@ function umc_wsplg_dispatch($module) {
     // we call this here since $WSEND was changes in the line above
     $args = $WSEND['args'];
     if (!in_array($player, $admins) && isset($WS_INIT[$args[0]]['disabled']) && $WS_INIT[$args[0]]['disabled'] == true) {
-        umc_error("{yellow}Sorry, {red}{$args[0]}{yellow} is currently down for maintenance.");
+        umc_error("{yellow}Sorry $player, {red}{$args[0]}{yellow} is currently down for maintenance.");
     }
 
     if (isset($command['function']) && function_exists($command['function'])) {
