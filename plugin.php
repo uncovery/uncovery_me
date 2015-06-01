@@ -60,7 +60,7 @@ function umc_wsplg_dispatch($module) {
     }
 
     if (isset($command['function']) && function_exists($command['function'])) {
-        if(isset($command['security']) && $player != 'uncovery') { // Are there security restrictions?
+        if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
             // This command is restricted to the named worlds
             if(isset($command['security']['worlds'])) {
                 if(!in_array($WSEND['world'], $command['security']['worlds'])) {
