@@ -117,7 +117,6 @@ function umc_hunger_find_current_game() {
             umc_hunger_find_players();
         }
     } else {
-        // umc_error_longmsg("umc_hunger_find_current_game: game is set, check players only");
         umc_hunger_find_players();
     }
     XMPP_ERROR_trace('HUNGER', $HUNGER);
@@ -705,9 +704,9 @@ function umc_hunger_addplayer() {
     umc_hunger_find_current_game();
     $player_uuid = $UMC_USER['uuid'];
     $player = $UMC_USER['username'];
-    $game = $HUNGER['current_game'];
-
-    if ($game) {
+    
+    if (isset($HUNGER['current_game'])) {
+        $game = $HUNGER['current_game'];
         if ($game['status'] == 'preparing') {
             $game_id = $game['id'];
         } else {
