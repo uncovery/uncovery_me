@@ -200,6 +200,10 @@ function umc_process_donation() {
     // read the post from PayPal system and add 'cmd'
     $req = 'cmd=_notify-synch';
     $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+    // if someone searches for "donating" or similar on the website, this function is called without arguments, so bail
+    if (!isset($s_get['tx'])) {
+        return;
+    }
     $tx_token = $s_get['tx'];
     // $auth_token = "GX_sTf5bW3wxRfFEbgofs88nQxvMQ7nsI8m21rzNESnl_79ccFTWj2aPgQ0"; // default
     $auth_token = "vu9gQ8x6WzmwUTS1NwZM6ulo1paOeY64v9532nFKlyQ_PwC4vrKwzFf2CmS"; // mine
