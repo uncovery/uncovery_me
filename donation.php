@@ -618,7 +618,7 @@ function umc_donation_level($user, $debug = false) {
         XMPP_ERROR_send_msg("User $username upgraded from $level to $new_rank");
     }
     umc_exec_command("pex user $uuid group set $new_rank");
-    umc_log('Donations', 'User Level promotion', "User $username upgraded from $level to $new_rank");
+    umc_log('Donations', 'User Level de/promotion', "User $username upgraded from $level to $new_rank");
 
     return ceil($donation_level); // . "($donation_level $current - $future - $change)";
 }
