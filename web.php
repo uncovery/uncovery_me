@@ -1,5 +1,8 @@
 <?php
 
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['get_todays_users'] = 'umc_get_todays_users';
+
 /**
  * returns the current URL, filtered
  * @return string
