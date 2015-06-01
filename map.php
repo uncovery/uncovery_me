@@ -1,334 +1,10 @@
 <?php
-// create maps for singe lots
-
-function umc_assemble_maps() {
-    global $UMC_SETTING, $UMC_PATH_MC;
-    // create lots
-    $worlds = $UMC_SETTING['world_data'];
-    // $worlds = array('empire'    => array('lot_size' => 128, 'lot_number' => 32));
-    // $worlds = array('kingdom'   => array('lot_size' => 272, 'lot_number' => 24));
-    // $worlds = array('draftlands' => array('lot_size' => 272, 'lot_number' => 16));
-    // $worlds = array('skyblock'  => array('lot_size' => 128, 'lot_number' => 20));
-    // $worlds = array('aether2' => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet'));
-    $maxmin = array(
-        'empire' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
-        'flatlands' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
-        'aether' => array('min_1' => -4, 'min_2' => -4, 'max_1' => 3, 'max_2' => 3),
-        'kingdom' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
-        'draftlands' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
-        'skyblock' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
-        'empire_new' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
-        'city' => array('min_1' => -2, 'min_2' => -4, 'max_1' => 3, 'max_2' => 1),
-        'darklands' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 5, 'max_2' => 5),
-    );
-
-    foreach ($worlds as $world => $dim) {
-        mysql_connect('localhost', 'minecraft', '9sd6ncC9vEcTD55Z');
-        // make chunk files
-        // clean up data files
-        $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
-        $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
-        $destination = $UMC_SETTING['path']['server'] .  "/maps";
-        echo "$world: ";
-        // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
-        $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
-        exec($command);
-        echo "chunk maps rendered";
-
-        // compress map to new map
-        $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
-        exec($command1);
-        echo ", map compressed";
-
-        $file_1 = "$destination/{$world}_large.jpg";
-        $file_2 = "$destination/{$world}.jpg";
-        $size = $UMC_SETTING['world_img_dim'][$world]['max_coord'] * 2;
-        $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
-        $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
-        exec($command2);
-        echo ", cropped map to border size {$size}x{$size}+{$border}+{$border}";
-        //umc_assemble_tmc_map($world);
-        //echo ", Single file map assembled";
-        // create lot maps
-        umc_disassemble_map($world);
-        echo ", Lot maps cut";
-
-        umc_heatmap($world);
-        echo ", heat map rendered\n";
-    }
-
-    /*
-    $large_worlds = array('darklands');
-    foreach ($large_worlds as $world) {
-        // clean up data files
-        $folder = "$UMC_PATH_MC/server/bukkit/$world/region";
-        if ($world == 'nether') {
-            $folder = "$UMC_PATH_MC/server/bukkit/nether/DIM-1/region";
-        }
-        echo "$world: ";
-        // create chunk maps
-        $command = "java -jar $UMC_PATH_MC/server/togos_map/TMCMR.jar  -region-limit-rect -3 -3 3 3 $folder -o $UMC_PATH_MC/server/maps/$world/png";
-        exec($command);
-    }
-    */
-
-}
-
-function umc_disassemble_map($world = 'empire') {
-    global $UMC_SETTING, $UMC_PATH_MC;
-    $dim = $UMC_SETTING['world_data'][$world];
-    $source = "$UMC_PATH_MC/server/maps";
-
-    // get lot list with coordinates
-    if ($world == 'city') {
-        return;
-    }
-
-
-    $sql = "SELECT region_id as lot, min_x, min_z, max_x, max_z FROM minecraft_worldguard.region_cuboid "
-        . "LEFT JOIN minecraft_worldguard.world ON world_id = id WHERE name='$world';";
-    $rst = mysql_query($sql);
-    if (!$rst) {
-        $error = mysql_errno($rst) . ": " . mysql_error($rst). "\n";
-        XMPP_ERROR_trigger("disassemble_map failed: $error $sql");
-    }
-    if (mysql_num_rows($rst) == 0) {
-        return;
-    }
-
-    if ($world == 'kingdom' || $world == 'draftlands') {
-        $map = $UMC_SETTING['world_img_dim'][$world];
-        $source = "$UMC_PATH_MC/server/maps";
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $lot = $row['lot'];
-            if ($lot == "__global__") {
-                continue;
-            }
-            $x1 = conv_x($row['min_x'], $map);
-            $x2 = conv_x($row['max_x'], $map);
-            $z1 = conv_z($row['min_z'], $map);
-            $z2 = conv_z($row['max_z'], $map);
-
-            $base_x = min($x1, $x2);
-            $base_z = min($z1, $z2);
-            $size_x = max($x1, $x2) - $base_x;
-            $size_z = max($z1, $z2) - $base_z;
-
-            $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/$lot.png\"";
-            // echo $command . "\n";
-            exec($command);
-        }
-    } else {
-        $lot_size = $dim['lot_size'];
-        $world_lots = $dim['lot_number'];
-        if (!isset($dim['lot_number'])) {
-            XMPP_ERROR_trigger("Error disassembling world $world map");
-        }
-        $command = "convert \"$source/$world.jpg\" +repage -crop $lot_size". "x". "$lot_size +repage \"$source/lots/$world/$world.png\" ";
-        // echo $command . "\n";
-        exec($command);
-
-        // rename the files
-        $lot_array = array();
-        // this creates an array of the line number a letter would have (A=1, B=2 etc)
-        for ($i=1; $i<=$world_lots; $i++) {
-            if ($i <= 26) {
-                $letter = chr(96 + $i);
-            } else {
-                $letter = 'a'. chr(70 + $i);
-            }
-            $lot_array[$letter] = $i;
-        }
-        // var_dump($lot_array);
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $lot = $row['lot'];
-            if ($lot == "__global__") {
-                continue;
-            }
-            $lot_str = explode("_", $lot);
-            // this is needed because of the "city_spawn" lot
-            if ($lot_str[1] == 'spawn') {
-                continue;
-            }
-            $lot_coords = array();
-            preg_match('#^([a-zA-Z]*)(\d*)#', $lot_str[1], $lot_coords);
-            if (!isset($lot_coords[1]) || !isset($lot_coords[2])) {
-                XMPP_ERROR_send_msg("Disassemble $world failed: " . var_export($lot_coords, true));
-            }
-            $lot_letter = $lot_coords[1];
-            $lot_number = $lot_coords[2];
-            // this is the final line number
-            if (!isset($lot_array[$lot_letter])) { // some lots do not fit the pattern (arena etc)
-                continue;
-            }
-            $row_no = $world_lots - $lot_array[$lot_letter];
-            $index = ($row_no * $world_lots)+ $lot_number - 1;
-            // echo "$lot: $lot_letter -> {$lot_array[$lot_letter]} of $world_lots => $row_no + $lot_number = $index <br>";
-            // rename files
-            // echo "renaming {$world}-$index.png -> $lot.png\n";
-            if (file_exists("$source/lots/$world/{$world}-$index.png")) {
-                rename("$source/lots/$world/{$world}-$index.png", "$source/lots/$world/$lot.png");
-            } else {
-                echo "File $source/lots/$world/{$world}-$index.png not found \n";
-            }
-        }
-    }
-}
-
-#-- Return associative array of region data for a world
-#-- Note that regions with no Owners or members -will- still be listed.
-#-- Format:
-#--  Array(
-#--     [region_name] => Array (
-#--           [Owners]   => Array (
-#--                ... Owners here ...
-#--            )
-#--           [members]  => Array (
-#--                ... members here ...
-#--            )
-#--     )
-#-- )
-function umc_region_data($world_name) {
-    $world_id = umc_get_worldguard_id('world', $world_name);
-    if ($world_id === null) {
-        XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
-        return false;
-    }
-    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version 
-        FROM minecraft_worldguard.region 
-        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id 
-        LEFT JOIN minecraft_srvr.lot_version ON id=lot 
-        WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
-    //echo $reg_sql;
-    $reg_rst = mysql_query($reg_sql);
-    $region_list = array();
-    while ($reg_row = mysql_fetch_array($reg_rst, MYSQL_ASSOC)) {
-        $region_id = $reg_row['id'];
-        $region_list[$region_id]['min'] = array('x' => $reg_row['min_x'], 'y' => $reg_row['min_y'], 'z' => $reg_row['min_z']);
-        $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
-        $region_list[$region_id]['version'] = $reg_row['version'];
-        $region_list[$region_id]['mint_version'] = $reg_row['mint_version'];
-
-        $sql = "SELECT region.id AS region_id, UUID.username AS user_name, user.uuid as uuid,
-            region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
-            FROM minecraft_worldguard.region
-            LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
-            LEFT JOIN minecraft_worldguard.region_groups ON region.id = region_groups.region_id AND region.world_id = region_groups.world_id
-            LEFT JOIN minecraft_worldguard.`group` ON `group`.id = region_groups.group_id
-            LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
-            LEFT JOIN minecraft_srvr.UUID ON user.uuid = UUID.UUID
-            WHERE region.world_id = $world_id
-            AND region.id= '$region_id';";
-        // echo $sql;
-        $rst = mysql_query($sql);
-        $region_list[$region_id]['owners'] = false;
-        $region_list[$region_id]['members'] = false;
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $player = $row['user_name'];
-            $uuid = $row['uuid'];
-            $group = $row['group_name'];
-            $player_OwnerFlag = $row['player_Owner'];
-            $group_OwnerFlag = $row['group_Owner'];
-
-            /*if(!isset($region_list[$region_id])) {
-                $region_list[$region_id] = array(
-                    'owners' => array('players' => array(), 'groups' => array()),
-                    'members' => array('players' => array(), 'groups' => array()),
-                    'min' => array('x' => $row['min_x'], 'y' => $row['min_y'], 'z' => $row['min_z']),
-                    'max' => array('x' => $row['max_x'], 'y' => $row['max_y'], 'z' => $row['max_z']),
-                );
-            }*/
-            if (strlen($group) > 0) {
-                if ($group_OwnerFlag == 1) {
-                    $region_list[$region_id]['owners'][] = "group:$group";
-                } else {
-                    $region_list[$region_id]['members'][] = "group:$group";
-                }
-            }
-            if (strlen($player) > 0) {
-                if ($player_OwnerFlag == 1) {
-                    $region_list[$region_id]['owners'][$uuid] = $player;
-                } else {
-                    $region_list[$region_id]['members'][$uuid] = $player;
-                }
-            }
-        }
-    }
-    return $region_list;
-}
-
-function umc_heatmap($world) {
-    return;
-    include_once('/home/minecraft/server/bin/includes/tempest/Tempest.php');
-    global $UMC_SETTING, $UMC_PATH_MC;
-    if ($world == 'empire_new') {
-        return;
-    }
-    // echo "Heatmap $world: ";
-    $file = "$UMC_PATH_MC/server/maps/$world.jpg";
-    $sql = "SELECT * FROM minecraft_srvr.lag_location WHERE world='$world';";
-    $rst = mysql_query($sql);
-    if (!$rst) {
-        $error = mysql_errno() . ": " . mysql_error(). "\n";
-        XMPP_ERROR_trigger("umc_heatmap failed: $error $sql");
-    }
-    $data = array();
-    $map = $UMC_SETTING['world_img_dim'][$world];
-    if (mysql_num_rows($rst) > 0) {
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $x = conv_x($row['x_coord'], $map);
-            $z = conv_z($row['z_coord'], $map);
-            $data[] = array($x, $z);
-            // get max coordinates
-        }
-        $heatmap = new Tempest(array(
-            'input_file' => "$UMC_PATH_MC/server/maps/$world.jpg",
-            'output_file' => "$UMC_PATH_MC/server/maps/$world" . '_heatmap.jpg',
-            'coordinates' => $data //array( array(0,10), array(2,14), array(2,14) ),
-        ));
-        $heatmap->set_image_lib('imagick');
-        $heatmap->render();
-    }
-}
-
-function umc_map_menu($worlds, $current_world, $freeswitch) {
-    global $UMC_DOMAIN;
-    $freevalue = 'false';
-    if ($freeswitch) {
-        $freevalue = 'true';
-    }
-    $this_uc_map = ucwords($current_world);
-    $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
-        . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
-        . " Choose world:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
-        . "        <input type='hidden' name='freeonly' value='$freevalue'>\n"
-        . "        <input type='hidden' name='function' value='create_map'>\n"
-        . "        <select name=\"world\" style=\"display:inline;\" onchange='this.form.submit()'>\n";
-    foreach ($worlds as $worldname) {
-        $uc_worldname = ucwords($worldname);
-        $selected = '';
-        if ($worldname == $current_world) {
-            $selected = ' selected';
-        }
-        $menu .= "            <option value=\"$worldname\"$selected>$uc_worldname</option>\n";
-    }
-    $menu .= "        </select>\n    </div></form>\n "
-          . "<a id='link_3d_maps' href=\"$UMC_DOMAIN/dynmap/#\">3D Maps</a>\n ";
-
-    /* heatmap is disabled
-    if ($lag) {
-        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world\">Normal Map</a>\n | ";
-    } else {
-        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;lag=true\">Heatmap</a>\n | ";
-    }
-    */
-    
-    $menu .= umc_read_markers_file('scrollto', $current_world);
-    
-    return $menu;
-}
-
 // loads lot information, displays current map and overlays it with lot information
+
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['create_map'] = 'umc_create_map';
+$UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
+
 function umc_create_map() {
     global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_ENV;
     $timer = array();
@@ -768,6 +444,334 @@ if ($find_lot) {
     $timer['final'] = XMPP_ERROR_ptime();
     // var_dump($timer);
 }
+
+function umc_assemble_maps() {
+    global $UMC_SETTING, $UMC_PATH_MC;
+    // create lots
+    $worlds = $UMC_SETTING['world_data'];
+    // $worlds = array('empire'    => array('lot_size' => 128, 'lot_number' => 32));
+    // $worlds = array('kingdom'   => array('lot_size' => 272, 'lot_number' => 24));
+    // $worlds = array('draftlands' => array('lot_size' => 272, 'lot_number' => 16));
+    // $worlds = array('skyblock'  => array('lot_size' => 128, 'lot_number' => 20));
+    // $worlds = array('aether2' => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet'));
+    $maxmin = array(
+        'empire' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
+        'flatlands' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
+        'aether' => array('min_1' => -4, 'min_2' => -4, 'max_1' => 3, 'max_2' => 3),
+        'kingdom' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
+        'draftlands' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
+        'skyblock' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
+        'empire_new' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
+        'city' => array('min_1' => -2, 'min_2' => -4, 'max_1' => 3, 'max_2' => 1),
+        'darklands' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 5, 'max_2' => 5),
+    );
+
+    foreach ($worlds as $world => $dim) {
+        mysql_connect('localhost', 'minecraft', '9sd6ncC9vEcTD55Z');
+        // make chunk files
+        // clean up data files
+        $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
+        $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
+        $destination = $UMC_SETTING['path']['server'] .  "/maps";
+        echo "$world: ";
+        // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
+        $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
+        exec($command);
+        echo "chunk maps rendered";
+
+        // compress map to new map
+        $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
+        exec($command1);
+        echo ", map compressed";
+
+        $file_1 = "$destination/{$world}_large.jpg";
+        $file_2 = "$destination/{$world}.jpg";
+        $size = $UMC_SETTING['world_img_dim'][$world]['max_coord'] * 2;
+        $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
+        $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
+        exec($command2);
+        echo ", cropped map to border size {$size}x{$size}+{$border}+{$border}";
+        //umc_assemble_tmc_map($world);
+        //echo ", Single file map assembled";
+        // create lot maps
+        umc_disassemble_map($world);
+        echo ", Lot maps cut";
+
+        umc_heatmap($world);
+        echo ", heat map rendered\n";
+    }
+
+    /*
+    $large_worlds = array('darklands');
+    foreach ($large_worlds as $world) {
+        // clean up data files
+        $folder = "$UMC_PATH_MC/server/bukkit/$world/region";
+        if ($world == 'nether') {
+            $folder = "$UMC_PATH_MC/server/bukkit/nether/DIM-1/region";
+        }
+        echo "$world: ";
+        // create chunk maps
+        $command = "java -jar $UMC_PATH_MC/server/togos_map/TMCMR.jar  -region-limit-rect -3 -3 3 3 $folder -o $UMC_PATH_MC/server/maps/$world/png";
+        exec($command);
+    }
+    */
+
+}
+
+function umc_disassemble_map($world = 'empire') {
+    global $UMC_SETTING, $UMC_PATH_MC;
+    $dim = $UMC_SETTING['world_data'][$world];
+    $source = "$UMC_PATH_MC/server/maps";
+
+    // get lot list with coordinates
+    if ($world == 'city') {
+        return;
+    }
+
+
+    $sql = "SELECT region_id as lot, min_x, min_z, max_x, max_z FROM minecraft_worldguard.region_cuboid "
+        . "LEFT JOIN minecraft_worldguard.world ON world_id = id WHERE name='$world';";
+    $rst = mysql_query($sql);
+    if (!$rst) {
+        $error = mysql_errno($rst) . ": " . mysql_error($rst). "\n";
+        XMPP_ERROR_trigger("disassemble_map failed: $error $sql");
+    }
+    if (mysql_num_rows($rst) == 0) {
+        return;
+    }
+
+    if ($world == 'kingdom' || $world == 'draftlands') {
+        $map = $UMC_SETTING['world_img_dim'][$world];
+        $source = "$UMC_PATH_MC/server/maps";
+        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+            $lot = $row['lot'];
+            if ($lot == "__global__") {
+                continue;
+            }
+            $x1 = conv_x($row['min_x'], $map);
+            $x2 = conv_x($row['max_x'], $map);
+            $z1 = conv_z($row['min_z'], $map);
+            $z2 = conv_z($row['max_z'], $map);
+
+            $base_x = min($x1, $x2);
+            $base_z = min($z1, $z2);
+            $size_x = max($x1, $x2) - $base_x;
+            $size_z = max($z1, $z2) - $base_z;
+
+            $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/$lot.png\"";
+            // echo $command . "\n";
+            exec($command);
+        }
+    } else {
+        $lot_size = $dim['lot_size'];
+        $world_lots = $dim['lot_number'];
+        if (!isset($dim['lot_number'])) {
+            XMPP_ERROR_trigger("Error disassembling world $world map");
+        }
+        $command = "convert \"$source/$world.jpg\" +repage -crop $lot_size". "x". "$lot_size +repage \"$source/lots/$world/$world.png\" ";
+        // echo $command . "\n";
+        exec($command);
+
+        // rename the files
+        $lot_array = array();
+        // this creates an array of the line number a letter would have (A=1, B=2 etc)
+        for ($i=1; $i<=$world_lots; $i++) {
+            if ($i <= 26) {
+                $letter = chr(96 + $i);
+            } else {
+                $letter = 'a'. chr(70 + $i);
+            }
+            $lot_array[$letter] = $i;
+        }
+        // var_dump($lot_array);
+        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+            $lot = $row['lot'];
+            if ($lot == "__global__") {
+                continue;
+            }
+            $lot_str = explode("_", $lot);
+            // this is needed because of the "city_spawn" lot
+            if ($lot_str[1] == 'spawn') {
+                continue;
+            }
+            $lot_coords = array();
+            preg_match('#^([a-zA-Z]*)(\d*)#', $lot_str[1], $lot_coords);
+            if (!isset($lot_coords[1]) || !isset($lot_coords[2])) {
+                XMPP_ERROR_send_msg("Disassemble $world failed: " . var_export($lot_coords, true));
+            }
+            $lot_letter = $lot_coords[1];
+            $lot_number = $lot_coords[2];
+            // this is the final line number
+            if (!isset($lot_array[$lot_letter])) { // some lots do not fit the pattern (arena etc)
+                continue;
+            }
+            $row_no = $world_lots - $lot_array[$lot_letter];
+            $index = ($row_no * $world_lots)+ $lot_number - 1;
+            // echo "$lot: $lot_letter -> {$lot_array[$lot_letter]} of $world_lots => $row_no + $lot_number = $index <br>";
+            // rename files
+            // echo "renaming {$world}-$index.png -> $lot.png\n";
+            if (file_exists("$source/lots/$world/{$world}-$index.png")) {
+                rename("$source/lots/$world/{$world}-$index.png", "$source/lots/$world/$lot.png");
+            } else {
+                echo "File $source/lots/$world/{$world}-$index.png not found \n";
+            }
+        }
+    }
+}
+
+#-- Return associative array of region data for a world
+#-- Note that regions with no Owners or members -will- still be listed.
+#-- Format:
+#--  Array(
+#--     [region_name] => Array (
+#--           [Owners]   => Array (
+#--                ... Owners here ...
+#--            )
+#--           [members]  => Array (
+#--                ... members here ...
+#--            )
+#--     )
+#-- )
+function umc_region_data($world_name) {
+    $world_id = umc_get_worldguard_id('world', $world_name);
+    if ($world_id === null) {
+        XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
+        return false;
+    }
+    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version 
+        FROM minecraft_worldguard.region 
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id 
+        LEFT JOIN minecraft_srvr.lot_version ON id=lot 
+        WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
+    //echo $reg_sql;
+    $reg_rst = mysql_query($reg_sql);
+    $region_list = array();
+    while ($reg_row = mysql_fetch_array($reg_rst, MYSQL_ASSOC)) {
+        $region_id = $reg_row['id'];
+        $region_list[$region_id]['min'] = array('x' => $reg_row['min_x'], 'y' => $reg_row['min_y'], 'z' => $reg_row['min_z']);
+        $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
+        $region_list[$region_id]['version'] = $reg_row['version'];
+        $region_list[$region_id]['mint_version'] = $reg_row['mint_version'];
+
+        $sql = "SELECT region.id AS region_id, UUID.username AS user_name, user.uuid as uuid,
+            region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
+            FROM minecraft_worldguard.region
+            LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
+            LEFT JOIN minecraft_worldguard.region_groups ON region.id = region_groups.region_id AND region.world_id = region_groups.world_id
+            LEFT JOIN minecraft_worldguard.`group` ON `group`.id = region_groups.group_id
+            LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
+            LEFT JOIN minecraft_srvr.UUID ON user.uuid = UUID.UUID
+            WHERE region.world_id = $world_id
+            AND region.id= '$region_id';";
+        // echo $sql;
+        $rst = mysql_query($sql);
+        $region_list[$region_id]['owners'] = false;
+        $region_list[$region_id]['members'] = false;
+        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+            $player = $row['user_name'];
+            $uuid = $row['uuid'];
+            $group = $row['group_name'];
+            $player_OwnerFlag = $row['player_Owner'];
+            $group_OwnerFlag = $row['group_Owner'];
+
+            /*if(!isset($region_list[$region_id])) {
+                $region_list[$region_id] = array(
+                    'owners' => array('players' => array(), 'groups' => array()),
+                    'members' => array('players' => array(), 'groups' => array()),
+                    'min' => array('x' => $row['min_x'], 'y' => $row['min_y'], 'z' => $row['min_z']),
+                    'max' => array('x' => $row['max_x'], 'y' => $row['max_y'], 'z' => $row['max_z']),
+                );
+            }*/
+            if (strlen($group) > 0) {
+                if ($group_OwnerFlag == 1) {
+                    $region_list[$region_id]['owners'][] = "group:$group";
+                } else {
+                    $region_list[$region_id]['members'][] = "group:$group";
+                }
+            }
+            if (strlen($player) > 0) {
+                if ($player_OwnerFlag == 1) {
+                    $region_list[$region_id]['owners'][$uuid] = $player;
+                } else {
+                    $region_list[$region_id]['members'][$uuid] = $player;
+                }
+            }
+        }
+    }
+    return $region_list;
+}
+
+function umc_heatmap($world) {
+    return;
+    include_once('/home/minecraft/server/bin/includes/tempest/Tempest.php');
+    global $UMC_SETTING, $UMC_PATH_MC;
+    if ($world == 'empire_new') {
+        return;
+    }
+    // echo "Heatmap $world: ";
+    $file = "$UMC_PATH_MC/server/maps/$world.jpg";
+    $sql = "SELECT * FROM minecraft_srvr.lag_location WHERE world='$world';";
+    $rst = mysql_query($sql);
+    if (!$rst) {
+        $error = mysql_errno() . ": " . mysql_error(). "\n";
+        XMPP_ERROR_trigger("umc_heatmap failed: $error $sql");
+    }
+    $data = array();
+    $map = $UMC_SETTING['world_img_dim'][$world];
+    if (mysql_num_rows($rst) > 0) {
+        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+            $x = conv_x($row['x_coord'], $map);
+            $z = conv_z($row['z_coord'], $map);
+            $data[] = array($x, $z);
+            // get max coordinates
+        }
+        $heatmap = new Tempest(array(
+            'input_file' => "$UMC_PATH_MC/server/maps/$world.jpg",
+            'output_file' => "$UMC_PATH_MC/server/maps/$world" . '_heatmap.jpg',
+            'coordinates' => $data //array( array(0,10), array(2,14), array(2,14) ),
+        ));
+        $heatmap->set_image_lib('imagick');
+        $heatmap->render();
+    }
+}
+
+function umc_map_menu($worlds, $current_world, $freeswitch) {
+    global $UMC_DOMAIN;
+    $freevalue = 'false';
+    if ($freeswitch) {
+        $freevalue = 'true';
+    }
+    $this_uc_map = ucwords($current_world);
+    $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
+        . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
+        . " Choose world:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
+        . "        <input type='hidden' name='freeonly' value='$freevalue'>\n"
+        . "        <input type='hidden' name='function' value='create_map'>\n"
+        . "        <select name=\"world\" style=\"display:inline;\" onchange='this.form.submit()'>\n";
+    foreach ($worlds as $worldname) {
+        $uc_worldname = ucwords($worldname);
+        $selected = '';
+        if ($worldname == $current_world) {
+            $selected = ' selected';
+        }
+        $menu .= "            <option value=\"$worldname\"$selected>$uc_worldname</option>\n";
+    }
+    $menu .= "        </select>\n    </div></form>\n "
+          . "<a id='link_3d_maps' href=\"$UMC_DOMAIN/dynmap/#\">3D Maps</a>\n ";
+
+    /* heatmap is disabled
+    if ($lag) {
+        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world\">Normal Map</a>\n | ";
+    } else {
+        $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;lag=true\">Heatmap</a>\n | ";
+    }
+    */
+    
+    $menu .= umc_read_markers_file('scrollto', $current_world);
+    
+    return $menu;
+}
+
 
 // this is called with URL
 // http://uncovery.me/admin/index.php?function=display_markers&world=world
