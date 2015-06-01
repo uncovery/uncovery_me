@@ -865,7 +865,7 @@ function umc_hunger_adjust_world_size() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     XMPP_ERROR_trace('HUNGER', $HUNGER);
 
-    // umc_hunger_find_current_game();
+    umc_hunger_find_current_game();
 
     $duration = $HUNGER['current_game']['duration'];
     $player_count = count($HUNGER['current_game']['players']['alive']);
