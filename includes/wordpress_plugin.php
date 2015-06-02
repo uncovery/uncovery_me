@@ -311,30 +311,4 @@ class Minecraft_Icons {
         }
         return $avatar;
     }
-
-    // Static Functions
-
-    // This is executed when the plugin is activated
-    static function activation() {
-        update_option( 'avatar_default_before_uncovery', get_option( 'avatar_default' ) );
-        update_option( 'avatar_default', 'uncovery' );
-    }
-    // This is executed when the plugin is deactivated
-    static function deactivation() {
-        if(get_option( 'avatar_default_before_uncovery') and get_option('avatar_default') == 'uncovery') {
-            update_option( 'avatar_default', get_option('avatar_default_before_uncovery' ));
-        } // end if
-        delete_option( 'avatar_default_before_uncovery' );
-    }
-	
-    // This is executed when the user clicks on the uninstall
-    // link that calls for the plugin to uninstall itself
-    static function uninstall() {
-        if( get_option( 'avatar_default_before_uncovery' ) and get_option( 'avatar_default' ) == 'uncovery' ) {
-            update_option( 'avatar_default', get_option( 'avatar_default_before_uncovery' ) );
-        } // end if
-        else if ( get_option( 'avatar_default_before_uncovery' ) ) {
-            delete_option( 'avatar_default_before_uncovery' );
-        } // end elseif
-    }
 } // end class
