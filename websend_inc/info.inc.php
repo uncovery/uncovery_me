@@ -180,14 +180,14 @@ function umc_info_who() {
             foreach ($user_info as $desc => $data) {
                 if ($desc == 'Last Seen'){
                     if (in_array($user, $players)) {
-                        $data = "$user is currently online";
+                        $data_text = "$user is currently online";
                     } else {
                         $datetime = umc_datetime($data);
                         $diff = umc_timer_format_diff($datetime);
-                        $data = $diff . " ago";
+                        $data_text = $diff . " ago";
                     }
                 }
-                umc_echo("{green}$desc: {white}$data");
+                umc_echo("{green}$desc: {white}$data_text");
             }
             umc_footer();
             return;
