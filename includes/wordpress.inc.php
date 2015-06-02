@@ -195,6 +195,6 @@ function umc_wp_set_meta($uuid, $meta_key, $meta_value) {
 function umc_wp_get_uuid_from_userlogin($user_login) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $user = get_user_by('login', $user_login);
-    $uuid = get_user_meta($user->ID, 'UUID', true);
+    $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
     return $uuid;
 }
