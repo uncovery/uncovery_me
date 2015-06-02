@@ -34,5 +34,5 @@ function umc_function_call($function) {
         $function_name = $UMC_FUNCTIONS[$function];
     }
     // execute code
-    echo $function_name;
+    echo $function_name();
 }
