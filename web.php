@@ -93,7 +93,6 @@ function umc_display_guestinfo(){
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
     } else {
-        $title = "Welcome, $userlevel $username!";
         $votables =  umc_vote_get_votable($username, true);
         $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
         if (strstr($userlevel, 'Elder') || $userlevel == 'Owner') { // elders only content
@@ -104,6 +103,21 @@ function umc_display_guestinfo(){
                 $reason = trim($reason);
                 $content .= "$ban ($reason), ";
             }
+        if ($userlevel == 'Settler' || 'SettlerDonator' || 'SettlerDonatorPlus') {
+		$title = 'Welcome, <font color="#ff0">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Citizen' || 'CitizenDonator' || 'CitizenDonatorPlus') {
+		$title = 'Welcome, <font color="#0ff">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Architect' || 'ArchitectDonator' || 'ArchitectDonatorPlus') {
+		$title = 'Welcome, <font color="#090">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Designer' || 'DesignerDonator' || 'DesignerDonatorPlus') {
+		$title = 'Welcome, <font color="#00f">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Master' || 'MasterDonator' || 'MasterDonatorPlus') {
+		$title = 'Welcome, <font color="#f44">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Elder' || 'ElderDonator' || 'ElderDonatorPlus') {
+		$title = 'Welcome, <font color="#f80">$userlevel $username</font>!';
+	} elseif ($userlevel == 'Owner') {
+		$title = 'Welcome, Owner Uncovery!';
+	}
             $content = rtrim($content, ", ");
         $content .= "</li>\n";
         }
