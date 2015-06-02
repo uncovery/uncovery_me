@@ -219,8 +219,8 @@ input[type="radio"]:checked+label{
 }
 
 #scroll_to_icons img{
-    top: 8px;
-    position: absolute;
+    top: 4px;
+    position: relative;
     border: 1px solid black;
     padding:1px;
     box-shadow: 1px 1px 2px #888888;
