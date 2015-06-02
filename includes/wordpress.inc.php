@@ -185,3 +185,16 @@ function umc_wp_set_meta($uuid, $meta_key, $meta_value) {
         XMPP_ERROR_trigger("Unable to set User Meta $meta_key to $meta_value for user $uuid and ID" . $user->ID);
     }
 }
+
+/**
+ * takes the wordpress userlogin and returns the UUID as stored in the meta data
+ * 
+ * @param type $user_login
+ * @return type
+ */
+function umc_wp_get_uuid_from_userlogin($user_login) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $user = get_user_by('login', $user_login);
+    $uuid = get_user_meta($user->ID, 'UUID', true);
+    return $uuid;
+}
