@@ -103,27 +103,21 @@ function umc_display_guestinfo(){
                 $reason = trim($reason);
                 $content .= "$ban ($reason), ";
             }
-            if ($userlevel == 'Settler' || 'SettlerDonator' || 'SettlerDonatorPlus') {
+        if ($userlevel == 'Settler' || 'SettlerDonator' || 'SettlerDonatorPlus') {
 		$title = 'Welcome, <font color="#ff0">$userlevel $username</font>!';
-		} 
-		elseif ($userlevel == 'Citizen' || 'CitizenDonator' || 'CitizenDonatorPlus') {
+	} elseif ($userlevel == 'Citizen' || 'CitizenDonator' || 'CitizenDonatorPlus') {
 		$title = 'Welcome, <font color="#0ff">$userlevel $username</font>!';
-		}
-		elseif ($userlevel == 'Architect' || 'ArchitectDonator' || 'ArchitectDonatorPlus') {
+	} elseif ($userlevel == 'Architect' || 'ArchitectDonator' || 'ArchitectDonatorPlus') {
 		$title = 'Welcome, <font color="#090">$userlevel $username</font>!';
-		}
-		elseif ($userlevel == 'Designer' || 'DesignerDonator' || 'DesignerDonatorPlus') {
+	} elseif ($userlevel == 'Designer' || 'DesignerDonator' || 'DesignerDonatorPlus') {
 		$title = 'Welcome, <font color="#00f">$userlevel $username</font>!';
-		}
-		elseif ($userlevel == 'Master' || 'MasterDonator' || 'MasterDonatorPlus') {
+	} elseif ($userlevel == 'Master' || 'MasterDonator' || 'MasterDonatorPlus') {
 		$title = 'Welcome, <font color="#f44">$userlevel $username</font>!';
-		}
-		elseif ($userlevel == 'Elder' || 'ElderDonator' || 'ElderDonatorPlus') {
+	} elseif ($userlevel == 'Elder' || 'ElderDonator' || 'ElderDonatorPlus') {
 		$title = 'Welcome, <font color="#f80">$userlevel $username</font>!';
-		}
-		elseif ($userlevel == 'Owner') {
+	} elseif ($userlevel == 'Owner') {
 		$title = 'Welcome, Owner Uncovery!';
-		}
+	}
             $content = rtrim($content, ", ");
         $content .= "</li>\n";
         }
