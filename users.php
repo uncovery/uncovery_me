@@ -1,5 +1,8 @@
 <?php
 
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['update_usericons'] = 'umc_update_usericons';
+
 function umc_sanity_check_users() {
     $sql = "SELECT username, userlevel, user.uuid, count(region_id) as counter 
         FROM minecraft_worldguard.`region_players` 
