@@ -1,15 +1,30 @@
 <?php
 
+/* UMC_FUNCTIONS: This is a list of functions that are called directly from the website, outside of Wordpress
+ * The list needs to be maintained so that the function can actually be called. See index_wp for the mechanism.
+ * 
+ */
+
+
 global $WSEND, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
-global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DB, $UMC_DOMAIN, $UMC_PATH_MC;
+global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS;
 
 $UMC_PATH_MC = "/home/minecraft";
 
 // include error handling
-require_once($UMC_PATH_MC . '/server/includes/xmpp_error/xmpp_error.php');
+global $XMPP_ERROR;
+$XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
+require_once('/home/includes/xmpp_error/xmpp_error.php');
 
+// include database abstraction
+global $UNC_DB;
+$UNC_DB = array('database' => 'minecraft', 'username' => 'minecraft', 'server' => 'localhost', 'password' => '9sd6ncC9vEcTD55Z');
+// legacy since we did not merge completely
+mysql_connect($UNC_DB['server'], $UNC_DB['username'], $UNC_DB['password']);
+require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
+
+// include everything else
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/mysql.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/users.php');
 require_once($UMC_PATH_MC . '/server/bin/map.php');
@@ -30,6 +45,7 @@ require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_search.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
 
 // include all websend plugins
 umc_plg_include();
