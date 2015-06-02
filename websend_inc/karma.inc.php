@@ -295,10 +295,10 @@ function umc_topkarma() {
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
         GROUP BY receivers.username
         ORDER BY sum(karma) DESC LIMIT 0,10";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     umc_echo("Top ten Karma users:");
     umc_echo(" ∞     =>    Uncovery");
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $sum_karma = $row['sum_karma'];
         $receiver = $row['username'];
         if (!umc_user_is_banned($receiver) && $receiver != 'uncovery') {
@@ -316,10 +316,10 @@ function umc_bottomkarma() {
         GROUP BY receivers.username
         HAVING sum(karma) < 0
         ORDER BY sum(karma) ASC LIMIT 0,10";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     umc_echo("Bottom ten Karma users:");
     umc_echo("-∞     =>    Uncovery");
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $sum_karma = $row['sum_karma'];
         $receiver = $row['receiver_name'];
         if (!umc_user_is_banned($receiver)) {
@@ -327,5 +327,3 @@ function umc_bottomkarma() {
         }
     }
 }
-
-?>
