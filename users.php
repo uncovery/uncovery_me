@@ -293,18 +293,24 @@ function umc_update_usericons($users = false, $retry = false, $size = 20) {
         $oneuser = true;
     }
 
-    foreach ($users as $uuid => $user) {
-        $lower_user = strtolower($user);
-        if ($lower_user == '_abandoned_') {
+    foreach ($users as $uuid) {
+        if ($uuid == '_abandoned_') {
             continue;
         }
-        $url = "https://crafatar.com/avatars/$lower_user?size=$size";
-        $file = $path . $lower_user . ".$size.png";
+        $url = "https://crafatar.com/avatars/$uuid?size=$size";
+        XMPP_ERROR_trace('url', $url);
+        $file = $path . $uuid . ".$size.png";
         // check if we need to update
 
         // umc_error_msg("Downloading user icon $lower_user from Minotar");
 
         $img = file_get_contents($url);
+        if ($http_response_header[0] != 'HTTP/1.1 200 OK') {
+            XMPP_ERROR_trace("HTTP Response codes:", $http_response_header);
+            XMPP_ERROR_trigger("Error downloading icon!");
+            $img = false;
+        }
+
         if (!$img) {
             if ($retry) {
                 XMPP_ERROR_trace("Icon download failed on retry, using std. steve-face", $url);
@@ -322,7 +328,7 @@ function umc_update_usericons($users = false, $retry = false, $size = 20) {
                     }
                 }
             } else {
-                $failed_users[] = $user;
+                $failed_users[] = $uuid;
             }
         } else {
             $written = file_put_contents($file, $img);
@@ -338,20 +344,22 @@ function umc_update_usericons($users = false, $retry = false, $size = 20) {
     }
 }
 
-function umc_user_get_icon_url($user, $size = 20) {
+function umc_user_get_icon_url($uuid_requested, $size = 20) {
     global $UMC_DOMAIN, $UMC_PATH_MC;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (strstr($user, ' ')) {
+    if (strstr($uuid_requested, ' ')) {
         return '';
     }
+    // make sure it's a uuid
+    $uuid = umc_uuid_getone($uuid_requested, 'uuid');
+    
     $path = "$UMC_PATH_MC/server/bin/data/user_icons/";
-    $lower_user = strtolower($user);
-    if (!file_exists($path . $lower_user . ".$size.png")) {
+    if (!file_exists($path . $uuid . ".$size.png")) {
         // this tries to download the latest version, otherwise falls back to steve icon
-        umc_update_usericons(array($user));
+        umc_update_usericons(array($uuid));
         // $url = "http://minotar.net/avatar/$lower_user/$size.png";
     }
-    $url = "$UMC_DOMAIN/websend/user_icons/$lower_user.$size.png";
+    $url = "$UMC_DOMAIN/websend/user_icons/$uuid.$size.png";
     return $url;
 }
 
