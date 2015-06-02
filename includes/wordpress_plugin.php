@@ -1,13 +1,16 @@
 <?php
+/**
+ * This file is called by wordpress to run all the plugins. It does not go through
+ * core_include.inc.php so you need to include whatever you need on-demand.
+ */
 global $umc_wp_register_questions;
 
 global $XMPP_ERROR;
 $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
 require_once('/home/includes/xmpp_error/xmpp_error.php');
+
 /**
  * Initialize plugins so that the hooks in Wordpress are correct
- *
- *
  */
 function umc_wp_init_plugins() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
