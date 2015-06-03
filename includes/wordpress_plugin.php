@@ -277,6 +277,7 @@ class Minecraft_Icons {
     * Minotar functionality
     */
     public function get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
+        XMPP_ERROR_trace(__FUNCTION__, func_get_args());
         if($default == 'uncovery') {
             //Alternative text
             if (false === $alt) {
@@ -285,7 +286,7 @@ class Minecraft_Icons {
                 $safe_alt = esc_attr($alt);
             }
 
-            //Get username
+            //Get username            
             if (is_numeric($id_or_email)) {
                 $id = (int) $id_or_email;
                 $user = get_userdata($id);
@@ -293,14 +294,17 @@ class Minecraft_Icons {
                     $username = $user->user_login;
                 }
             } else if (is_object($id_or_email)) {
+                
                 if (!empty($id_or_email->user_id)) {
                     $id = (int) $id_or_email->user_id;
                     $user = get_userdata($id);
                     if ($user) {
                         $username = $user->user_login;
+                    } else {
+                        return '';
                     }
-                } elseif ( !empty($id_or_email->comment_author) ) {
-                        $username = $id_or_email->comment_author;
+                } else if (!empty($id_or_email->comment_author)) {
+                    $username = $id_or_email->comment_author;
                 }
             } else {
                 require_once(ABSPATH . WPINC . '/ms-functions.php');
