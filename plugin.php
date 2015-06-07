@@ -138,13 +138,6 @@ function umc_show_help($args = false) {
             if (!isset($command['top']) || !$command['top']) {
                 $plugin_name = $args[1] . " ";
             }
-            if ($plugin_name == $command_name && $plugin_name != '') {
-                $command_name = '';
-            } else if (isset($args[2])) {
-                $command_name = $args[2];
-            } else {
-                $command_name = $args[1];
-            }
             $args_str = '';
             if (isset ($command['help']['args'])) {
                 $args_str = "{yellow}" . $command['help']['args'];
