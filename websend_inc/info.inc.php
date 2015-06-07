@@ -188,6 +188,8 @@ function umc_info_who() {
                         $diff = umc_timer_format_diff($datetime);
                         $data_text = $diff . " ago";
                     }
+                } else {
+                    $data_text = $data;
                 }
                 umc_echo("{green}$desc: {white}$data_text");
             }
