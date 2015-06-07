@@ -152,6 +152,7 @@ function umc_info_who() {
     $players = $UMC_USER['online_players'];
     $args = $UMC_USER['args'];
 
+    XMPP_ERROR_trigger($players);
     $count = count($players);
     $data = umc_get_userlevel($players);
     if (!is_array($data)) { // we have only one user
@@ -177,6 +178,7 @@ function umc_info_who() {
         if ($user) {
             $user_info = umc_get_userinfo($user);
             umc_header("User info for $user");
+            $data_text = '';
             foreach ($user_info as $desc => $data) {
                 if ($desc == 'Last Seen'){
                     if (in_array($user, $players)) {
