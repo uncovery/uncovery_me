@@ -149,15 +149,9 @@ function umc_info_whereami() {
  */
 function umc_info_who() {
     global $UMC_USER;
-    $players = $UMC_USER['online_players'];
+
     $args = $UMC_USER['args'];
 
-    XMPP_ERROR_trigger($players);
-    $count = count($players);
-    $data = umc_get_userlevel($players);
-    if (!is_array($data)) { // we have only one user
-        $data = array($players[0] => $data);
-    }
     // we predefine the array to make sure proper sorting
     $out_arr = array(
         'Guest' => array(),
@@ -181,7 +175,7 @@ function umc_info_who() {
             $data_text = '';
             foreach ($user_info as $desc => $data) {
                 if ($desc == 'Last Seen'){
-                    if (in_array($user, $players)) {
+                    if (isset($user_info['uuid'], $UMC_USER['player_data'])) {
                         $data_text = "$user is currently online";
                     } else {
                         $datetime = umc_datetime($data);
@@ -200,7 +194,13 @@ function umc_info_who() {
         }
     }
 
-    foreach ($data as $player => $level) {
+    $players_data = $UMC_USER['player_data'];
+    $count = count($players_data);
+    
+    foreach ($players_data as  $uuid => $players_details) {
+        $level = umc_get_uuid_level($uuid);
+        $player = $players_details['Name'];
+        
         if (strstr($level, "DonatorPlus")) {
             $new_lvl = substr($level, 0, -11);
             $new_player = "$player{yellow}++{white}";
@@ -222,7 +222,6 @@ function umc_info_who() {
         if (count($players) > 0) {
             umc_echo("{green}$level: {white}" . implode(", ", $players));
         }
-
     }
     umc_footer();
     if ($user_worlds) {
@@ -230,6 +229,7 @@ function umc_info_who() {
     } else {
         umc_echo("{blue}Try {grey}/where{blue} or {grey}/who <player>{blue} for more info");
     }
+    XMPP_ERROR_trigger("Who was called");
 }
 
 function umc_info_website() {
