@@ -229,7 +229,6 @@ function umc_info_who() {
     } else {
         umc_echo("{blue}Try {grey}/where{blue} or {grey}/who <player>{blue} for more info");
     }
-    XMPP_ERROR_trigger("Who was called");
 }
 
 function umc_info_website() {
