@@ -32,7 +32,7 @@ $WS_INIT['depositbox'] = array(
         'top' => true,
         'security' => array(
             'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
-         ),
+        ),
     ),
     'deposit' => array(
         'function' => 'umc_do_deposit',
@@ -46,7 +46,7 @@ $WS_INIT['depositbox'] = array(
         'top' => true,
         'security' => array(
             'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
-         ),
+        ),
     ),
     'withdraw' => array(
         'function' => 'umc_do_withdraw',
@@ -62,7 +62,7 @@ $WS_INIT['depositbox'] = array(
         ),
         'top' => true,
         'security' => array(
-            'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether' ),
+            'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether'),
          ),
     ),
     'consolidate' => array(
@@ -288,7 +288,7 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     if (!isset($UMC_DATA[$item_name])) {
         XMPP_ERROR_trigger("Could not deposit item $item_name for user $recipient!");
     }
-    
+
     if (is_array($meta) > 0) {
         $meta = serialize($meta);
     } else {
