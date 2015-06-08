@@ -1443,12 +1443,16 @@ function umc_lot_manager_reset_lot($lot, $a) {
     // this can only be done AFTER current owners have been removed
     // since the check_before_assign fails if the lot is owned by someone
     if ($a['dibs']) {
-        return;
+        if (count($a['dibs']) > 1) {
+            return;
+        }
         $debug .= "Lot $lot has dibs! ";
         // return;
         // we iterate the people who asked for the lot, and
         // once we found a valid one, execute the actions
+        
         foreach ($a['dibs'] as $dibs_info) {
+            
             $dibs_uuid = $dibs_info['uuid'];
             $debug .= " user $dibs_uuid: ";
             $dibs_check = umc_lot_manager_check_before_assign($dibs_uuid, $lot);
@@ -1467,8 +1471,9 @@ function umc_lot_manager_reset_lot($lot, $a) {
                 $debug .= " NOT OK, going for next!";
                 // umc_lot_manager_dib_delete($dibs_uuid, $lot);
             }
+            XMPP_ERROR_send_msg("$debug");
         }
-        echo $debug . "<br>";
+        //echo $debug . "<br>";
     } else {
         // reset no-dibs lot
         $debug .= "Lot ready for reset!";
