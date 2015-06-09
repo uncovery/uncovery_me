@@ -294,7 +294,6 @@ class Minecraft_Icons {
                     $username = $user->user_login;
                 }
             } else if (is_object($id_or_email)) {
-                
                 if (!empty($id_or_email->user_id)) {
                     $id = (int) $id_or_email->user_id;
                     $user = get_userdata($id);
@@ -306,10 +305,12 @@ class Minecraft_Icons {
                 } else if (!empty($id_or_email->comment_author)) {
                     $username = $id_or_email->comment_author;
                 }
-            } else {
+            } else if (strstr($username, '@')) { // email
                 require_once(ABSPATH . WPINC . '/ms-functions.php');
                 $user = get_user_by('email', $id_or_email);
                 $username = $user->user_login;
+            } else { // by displayname
+                $username = $id_or_email;
             }
             require_once('/home/minecraft/server/bin/includes/wordpress.inc.php');
             $uuid = umc_wp_get_uuid_from_userlogin($username);
