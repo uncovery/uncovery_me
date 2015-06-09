@@ -305,7 +305,7 @@ class Minecraft_Icons {
                 } else if (!empty($id_or_email->comment_author)) {
                     $username = $id_or_email->comment_author;
                 }
-            } else if (strstr($username, '@')) { // email
+            } else if (strstr($id_or_email, '@')) { // email
                 require_once(ABSPATH . WPINC . '/ms-functions.php');
                 $user = get_user_by('email', $id_or_email);
                 $username = $user->user_login;
