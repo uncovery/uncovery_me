@@ -861,6 +861,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // check if the lot is owned already by someone
     $occupied_check = umc_check_lot_owner($new_lot, false);
     if ($occupied_check) {
+        XMPP_ERROR_send_msg("User $username tried to get $new_lot but someone else owns it! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "This lot is owned by someone else already!", 'cost' => $cost);
         return $result;
     }
@@ -1444,15 +1445,18 @@ function umc_lot_manager_reset_lot($lot, $a) {
     // since the check_before_assign fails if the lot is owned by someone
     if ($a['dibs']) {
         if (count($a['dibs']) > 1) {
+            $debug .= "Lot $lot has more than 1 dibs applicant, aborting! ";
             return;
         }
         $debug .= "Lot $lot has dibs! ";
         // return;
         // we iterate the people who asked for the lot, and
         // once we found a valid one, execute the actions
-        
+
+        // first, remove current users from the lot
+        umc_lot_remove_all($lot);
+
         foreach ($a['dibs'] as $dibs_info) {
-            
             $dibs_uuid = $dibs_info['uuid'];
             $debug .= " user $dibs_uuid: ";
             $dibs_check = umc_lot_manager_check_before_assign($dibs_uuid, $lot);
@@ -1469,7 +1473,7 @@ function umc_lot_manager_reset_lot($lot, $a) {
                 break;
             } else {
                 $debug .= " NOT OK, going for next!";
-                // umc_lot_manager_dib_delete($dibs_uuid, $lot);
+                umc_lot_manager_dib_delete($dibs_uuid, $lot);
             }
             XMPP_ERROR_send_msg("$debug");
         }
