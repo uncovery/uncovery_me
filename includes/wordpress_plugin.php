@@ -292,6 +292,8 @@ class Minecraft_Icons {
                 $user = get_userdata($id);
                 if ($user) {
                     $username = $user->user_login;
+                } else {
+                    return false; // user cannot be found, probably deleted
                 }
             } else if (is_object($id_or_email)) {
                 if (!empty($id_or_email->user_id)) {
