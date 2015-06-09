@@ -147,7 +147,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
         $meta_spacer = ' ';
     }
 
-    $full_clean = "$nice_name $meta_text $damage_text";
+    $full_clean = trim("$nice_name$meta_text$damage_text");
     if ($UMC_ENV == 'wordpress' && file_exists($icon_path . $icon_file)) {
         $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
         $full = "$img $full_clean";
