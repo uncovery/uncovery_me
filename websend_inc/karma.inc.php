@@ -269,17 +269,14 @@ function umc_webkarma() {
         if (!isset($members[$receiver_uuid]) || ($receiver == 'uncovery')) {
             continue;
         }
-        $sql = "SELECT karma, sender_uuid, username FROM minecraft_srvr.karma 
-            LEFT JOIN minecraft_srvr.UUID on sender_uuid=UUID
-            WHERE receiver_uuid = '$receiver_uuid'";
+        $sql = "SELECT karma FROM minecraft_srvr.karma
+            LEFT JOIN minecraft_srvr.UUID AS sender ON sender_uuid=sender.uuid
+            WHERE receiver_uuid = '$receiver_uuid'
+	      AND sender.lot_count > 0";
         $sender_data = umc_mysql_fetch_all($sql);
         $pos_karma = 0;
         $neg_karma = 0;
         foreach ($sender_data as $send_row) {
-            $sender_uuid = $send_row['sender_uuid'];
-            if (!isset($members[$sender_uuid])) {
-                continue;
-            }
             if ($send_row['karma'] > 0) {
                 $pos_karma = $pos_karma + $send_row['karma'];
             } else if ($send_row['karma'] < 0) {
