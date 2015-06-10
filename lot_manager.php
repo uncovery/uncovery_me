@@ -1441,24 +1441,25 @@ function umc_lot_manager_reset_lot($lot, $a) {
     $a['new_owner'] = false;
 
     // check dibs
-    // this can only be done AFTER current owners have been removed
-    // since the check_before_assign fails if the lot is owned by someone
+
     if ($a['dibs']) {
         if (count($a['dibs']) > 1) {
             $debug .= "Lot $lot has more than 1 dibs applicant, aborting! ";
             return;
         }
         $debug .= "Lot $lot has dibs! ";
-        // return;
         // we iterate the people who asked for the lot, and
         // once we found a valid one, execute the actions
-
-        // first, remove current users from the lot
+        // 
+        // this can only be done AFTER current owners have been removed
+        // since the check_before_assign fails if the lot is owned by someone
         umc_lot_remove_all($lot);
-
+        $a['remove_users'] = false;
+        
         foreach ($a['dibs'] as $dibs_info) {
             $dibs_uuid = $dibs_info['uuid'];
             $debug .= " user $dibs_uuid: ";
+            
             $dibs_check = umc_lot_manager_check_before_assign($dibs_uuid, $lot);
             XMPP_ERROR_trace('umc_lot_manager_check_before_assign result', $dibs_check);
             if ($dibs_check['result']) {
@@ -1478,38 +1479,37 @@ function umc_lot_manager_reset_lot($lot, $a) {
             XMPP_ERROR_send_msg("$debug");
         }
         //echo $debug . "<br>";
-    } else {
-        // reset no-dibs lot
-        $debug .= "Lot ready for reset!";
-        $source_lot = $lot;
-        if ($a['user_shop_clean']) {
-            $debug .= " Shop cleanout user " . $a['user_shop_clean']. ", ";
-            umc_shop_cleanout_olduser($a['user_shop_clean']);
-        }
-        if ($a['remove_users']) {
-            $debug .= " Removing all users ";
-            umc_lot_remove_all($lot);
-        }
-        if ($a['reset_to']) {
-            $source_lot = $a['reset_to'];
-        }
-        if ($a['del_skyblock_inv']) { // value is false or the uuid
-            umc_lot_skyblock_inv_reset($a['del_skyblock_inv']);
-        }
-        if ($a['reset_chunks']) {
-            umc_move_chunks($source_lot, $a['source_world'], $lot, $a['dest_world'], false);
-        }
-        umc_log('lot_manager', 'reset', $reason);
-        if ($a['version_sql']) {
-            umc_mysql_query($a['version_sql'], true);
-        }
-        if ($a['new_owner']) { // give lot to dibs owner and charge money
-            umc_lot_add_player($a['new_owner'], $lot, 1, $a['new_owner_costs']);
-            // remove dibs from database
-            // umc_lot_manager_dib_delete($a['new_owner'], $lot);
-        }
-        $debug .= "$source_lot, {$a['source_world']}, $lot, {$a['dest_world']}";
     }
+    // reset all lots
+    $debug .= "Lot ready for reset!";
+    $source_lot = $lot;
+    if ($a['user_shop_clean']) {
+        $debug .= " Shop cleanout user " . $a['user_shop_clean']. ", ";
+        umc_shop_cleanout_olduser($a['user_shop_clean']);
+    }
+    if ($a['remove_users']) {
+        $debug .= " Removing all users ";
+        umc_lot_remove_all($lot);
+    }
+    if ($a['reset_to']) {
+        $source_lot = $a['reset_to'];
+    }
+    if ($a['del_skyblock_inv']) { // value is false or the uuid
+        umc_lot_skyblock_inv_reset($a['del_skyblock_inv']);
+    }
+    if ($a['reset_chunks']) {
+        umc_move_chunks($source_lot, $a['source_world'], $lot, $a['dest_world'], false);
+    }
+    umc_log('lot_manager', 'reset', $reason);
+    if ($a['version_sql']) {
+        umc_mysql_query($a['version_sql'], true);
+    }
+    if ($a['new_owner']) { // give lot to dibs owner and charge money
+        umc_lot_add_player($a['new_owner'], $lot, 1, $a['new_owner_costs']);
+        // remove dibs from database
+        // umc_lot_manager_dib_delete($a['new_owner'], $lot);
+    }
+    $debug .= "$source_lot, {$a['source_world']}, $lot, {$a['dest_world']}";
 
     XMPP_ERROR_trace(__FUNCTION__, $debug);
 }
