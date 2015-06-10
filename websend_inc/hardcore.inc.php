@@ -22,12 +22,25 @@ $WS_INIT['hardcore'] = array(  // the name of the plugin
         ),
         'function' => 'umc_hardcore_start',
     ),
+    'exit' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Allows you to leave the hardcore world',
+            'long' => "This will teleport you out of the hardcore world.",
+        ),
+        'function' => 'umc_hardcore_exit',
+        'security' => array(
+            'worlds' => array('deathlands'),
+        ),
+    ),
     'commit' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Deposit the current block to record a score.',
             'long' => "This will take the current block away from you and register it's value as a score for your current game.",
         ),
         'function' => 'umc_hardcore_commit',
+        'security' => array(
+            'worlds' => array('deathlands'),
+        ),
     ),
     'score' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -43,16 +56,55 @@ function umc_hardcore_start() {
     // check if we had a start
     $uuid = $UMC_USER['uuid'];
     $player = $UMC_USER['username'];
-    $sql = "SELECT * FROM minecraft_srvr.hardcore WHERE uuid='$uuid';";
+    $P = umc_hardcore_get_period();
+    $sql = "SELECT * FROM minecraft_srvr.hardcore
+        WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
+        ORDER BY entry_date DESC;";
     $D = umc_mysql_fetch_all($sql);
 
-    if (count($D) > 0) {
-        umc_error("Sorry, you already entered the world this round, no more entries available!");
+    if (count($D) > 0 && $D[0]['clean_exit'] <> 1) {
+        umc_error("Sorry, you already died in the world this round, no more entries available!");
     } else {
-        $ins_sql = "INSERT INTO minecraft_srvr.hardcore(`uuid`, `entry_date`) VALUES ('$uuid' ,NOW())";
+        // check if this is a re-entry
+        $check_sql = "SELECT * FROM minecraft_srvr.hardcore
+            WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}' AND clean_exit = 1
+            ORDER BY entry_date DESC;";
+        $C = umc_mysql_fetch_all($check_sql);
+        if (count($C) == 1) {
+            $ins_sql = "UPDATE minecraft_srvr.hardcore
+                SET `clean_exit` = NULL
+                WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
+                LIMIT 1;";
+        } else {
+            $ins_sql = "INSERT INTO minecraft_srvr.hardcore(`uuid`, `entry_date`) VALUES ('$uuid' ,NOW())";
+        }
+
         umc_mysql_query($ins_sql, true);
         umc_ws_cmd("warp hardcore $player");
     }
+}
+
+function umc_hardcore_exit() {
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
+    $C = $UMC_USER['coords'];
+
+    if ((abs($C['z']) >= 100) || (abs($C['x']) >= 100)) {
+        umc_error("You need to be in the deathlands spawn area (100 blocks from the center)");
+    }
+
+    // get current period
+    $P = umc_hardcore_get_period();
+
+    $score_sql = "UPDATE minecraft_srvr.hardcore
+        SET `clean_exit` = 1
+        WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
+        LIMIT 1;";
+
+    umc_mysql_query($score_sql, true);
+
+    umc_ws_cmd("warp spawn $player");
 }
 
 function umc_hardcore_commit() {
@@ -81,7 +133,15 @@ function umc_hardcore_commit() {
         umc_clear_inv($curr_item['item_name'], 0, $inv);
         $points = $inv * $block_value;
         umc_echo("{yellow}[!]{gray} You received $points points for this commit!");
-        $score_sql = "UPDATE minecraft_srvr.hardcore SET `score`=score+'$points' WHERE `uuid`='$uuid' LIMIT 1;";
+
+        // get current period
+        $P = umc_hardcore_get_period();
+
+        $score_sql = "UPDATE minecraft_srvr.hardcore
+            SET `score`=score+'$points'
+            WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
+            LIMIT 1;";
+
         umc_mysql_query($score_sql, true);
     } else {
         $itemlist = '';
@@ -97,9 +157,9 @@ function umc_hardcore_commit() {
 function umc_hardcore_score() {
     $C = umc_hardcore_get_period();
     // query all scores inbetween the two dates
-    $sql = "SELECT username, score FROM minecraft_srvr.hardcore 
-        LEFT JOIN minecraft_srvr.UUID ON hardcore.UUID=UUID.UUID 
-        WHERE entry_date >= '{$C['start_date']}' AND entry_date < '{$C['end_date']}' 
+    $sql = "SELECT username, score FROM minecraft_srvr.hardcore
+        LEFT JOIN minecraft_srvr.UUID ON hardcore.UUID=UUID.UUID
+        WHERE entry_date >= '{$C['start_date']}' AND entry_date < '{$C['end_date']}'
         ORDER BY score DESC;";
     $D = umc_mysql_fetch_all($sql);
 
@@ -133,10 +193,10 @@ function umc_hardcore_get_period() {
     $period_days_since = $period_no * $period_length;
 
     $first_date_obj->add(new DateInterval('P'.$period_days_since.'D'));
-    $period_start_date = $first_date_obj->format('Y-m-d 00:00:00');    
+    $period_start_date = $first_date_obj->format('Y-m-d 00:00:00');
     $first_date_obj->add(new DateInterval('P'.$period_length.'D'));
     $period_end_date = $first_date_obj->format('Y-m-d 00:00:00');
-    
+
     $retval = array(
         'number' => $period_no,
         'start_date' => $period_start_date,
