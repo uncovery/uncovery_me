@@ -277,7 +277,7 @@ class Minecraft_Icons {
     * Minotar functionality
     */
     public function get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
-        XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         if($default == 'uncovery') {
             //Alternative text
             if (false === $alt) {
