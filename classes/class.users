@@ -25,7 +25,7 @@ class User extends Users{
 
     // for active users
     private $is_active; // does the user have a lot?
-    private $lot_count;
+    private $lot_count; // we could eliminate the above by having this here zero.
     private $lots;
 
     // in-game variables
@@ -41,12 +41,37 @@ class User extends Users{
 
     }
     
-    public function __set($attribute, $value) {
+    // get the uuid, either from the set value, wordpress_id or username
+    public function get_uuid() {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         
-    }
-    
-    public function __get($attribute) {
-        
+        if (isset($this->uuid)) { // we have a uuid already
+            return $this->uuid;
+        } else if (isset($this->wordpress_id)) {
+            // get uuid from wordpress_id
+            $sql = "SELECT meta_value as output FROM minecraft.wp_usermeta "
+                . "WHERE user_id=$this->wordpress_id AND meta_key ='minecraft_uuid' LIMIT 1;";
+            $D = umc_mysql_fetch_all($sql);
+            if (count($D) !== 1) {
+                XMPP_ERROR_trigger("Wordpress ID $this->wordpress_id is invalid!");
+                return false;
+            }
+            $this->uuid = $D[0]['output'];
+            return $this->uuid;
+        } else if (isset($this->username)) {
+            $sql = "SELECT meta_value as output FROM minecraft.wp_users "
+                . "LEFT JOIN minecraft.wp_usermeta ON ID=user_id "
+                . "WHERE display_name=$this->username AND meta_key ='minecraft_uuid' LIMIT 1;";
+            $D = umc_mysql_fetch_all($sql);
+            $this->uuid = $D[0]['output'];
+            if (count($D) !== 1) {
+                XMPP_ERROR_trigger("Username $this->username is invalid!");
+                return false;
+            }
+        } else {
+            XMPP_ERROR_trigger("No unique ID for user found!");
+            return false;
+        }
     }
 
     public function ban($reason) {
