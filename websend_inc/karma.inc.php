@@ -211,7 +211,7 @@ function umc_getkarma($target = false, $return = false) {
 	FROM minecraft_srvr.karma
         LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=uuid
         WHERE receiver_uuid='$receiver_uuid' AND karma < 0
-	  AND senders.lot_count < 0
+	  AND senders.lot_count > 0
         GROUP BY receiver_uuid";
 
     $pos_data = umc_mysql_fetch_all($pos_sql);
@@ -270,7 +270,7 @@ function umc_webkarma() {
             continue;
         }
         $sql = "SELECT karma, sender_uuid, username FROM minecraft_srvr.karma 
-            LEFT JOIN minecraft_srvr.UUID on sender_uuid=uuid
+            LEFT JOIN minecraft_srvr.UUID on sender_uuid=UUID
             WHERE receiver_uuid = '$receiver_uuid'";
         $sender_data = umc_mysql_fetch_all($sql);
         $pos_karma = 0;
@@ -294,8 +294,8 @@ function umc_webkarma() {
 
 function umc_topkarma() {
     $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=uuid
-        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
         GROUP BY receivers.username
         ORDER BY sum(karma) DESC LIMIT 0,10";
@@ -314,8 +314,8 @@ function umc_topkarma() {
 function umc_bottomkarma() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=uuid
-        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
         GROUP BY receivers.username
         HAVING sum(karma) < 0
