@@ -24,6 +24,7 @@ mysql_connect($UNC_DB['server'], $UNC_DB['username'], $UNC_DB['password']);
 require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
 
 // include everything else
+require_once($UMC_PATH_MC . '/server/bin/classes/class.users.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/users.php');
