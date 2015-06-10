@@ -103,7 +103,6 @@ function umc_hardcore_exit() {
         LIMIT 1;";
 
     umc_mysql_query($score_sql, true);
-
     umc_ws_cmd("warp spawn $player");
 }
 
