@@ -327,3 +327,22 @@ function umc_bottomkarma() {
         }
     }
 }
+
+/*
+ CREATE TABLE IF NOT EXISTS `karma` (
+  `karma_id` int(11) NOT NULL,
+  `sender_uuid` varchar(36) NOT NULL,
+  `receiver_uuid` varchar(36) NOT NULL,
+  `karma` tinyint(1) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `karma`
+  ADD PRIMARY KEY (`karma_id`),
+  ADD KEY `sender_uuid` (`sender_uuid`),
+  ADD KEY `receiver_uuid` (`receiver_uuid`),
+  ADD KEY `sender_uuid_2` (`sender_uuid`,`receiver_uuid`);
+
+ALTER TABLE `karma`
+  MODIFY `karma_id` int(11) NOT NULL AUTO_INCREMENT;
+ */
