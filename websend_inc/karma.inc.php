@@ -200,27 +200,29 @@ function umc_getkarma($target = false, $return = false) {
         exit;
     }
 
-    $pos_sql = "SELECT SUM(karma) AS sum_karma, receiver_uuid, username FROM minecraft_srvr.karma "
-        . "LEFT JOIN minecraft_srvr.UUID on receiver_uuid=uuid "
-        . "WHERE receiver_uuid='$receiver_uuid' AND karma > 0 AND sender_uuid IN (SELECT uuid FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=id "
-        . "WHERE owner=1 GROUP BY uuid) "
-        . "GROUP BY receiver_uuid ORDER BY SUM(karma) DESC, username ASC;";
-    $pos_data = umc_mysql_fetch_all($pos_sql);
+    # Get the user's + and - karma entries
+    $pos_sql = "SELECT SUM(karma) AS sum_karma
+	FROM minecraft_srvr.karma
+        LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=uuid
+        WHERE receiver_uuid='$receiver_uuid' AND karma > 0
+	  AND senders.lot_count > 0
+        GROUP BY receiver_uuid";
+    $neg_sql = "SELECT SUM(karma) AS sum_karma
+	FROM minecraft_srvr.karma
+        LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=uuid
+        WHERE receiver_uuid='$receiver_uuid' AND karma < 0
+	  AND senders.lot_count < 0
+        GROUP BY receiver_uuid";
 
+    $pos_data = umc_mysql_fetch_all($pos_sql);
+    $neg_data = umc_mysql_fetch_all($neg_sql);
+
+    # If the user has no karma entries, use 0
     if (count($pos_data) > 0) {
         $pos_karma = $pos_data[0]['sum_karma'];
     } else {
         $pos_karma = 0;
     }
-
-    $neg_sql = "SELECT SUM(karma) AS sum_karma, receiver_uuid, username FROM minecraft_srvr.karma "
-        . "LEFT JOIN minecraft_srvr.UUID on receiver_uuid=uuid "
-        . "WHERE receiver_uuid='$receiver_uuid' AND karma < 0 AND sender_uuid IN (SELECT uuid FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=id "
-        . "WHERE owner=1 GROUP BY uuid) "
-        . "GROUP BY receiver_uuid ORDER BY SUM(karma) DESC, username ASC;";
-    $neg_data = umc_mysql_fetch_all($neg_sql);
     if (count($neg_data) > 0) {
         $neg_karma = $neg_data[0]['sum_karma'];
     } else {
@@ -252,11 +254,13 @@ function umc_webkarma() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $members = umc_get_active_members();
     // list onliny active receivers
-    $all_sql = "SELECT sum(karma), receiver_uuid, username
+    $all_sql = "SELECT SUM(karma), receiver_uuid, receivers.username AS username
         FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID on receiver_uuid=UUID.UUID
+        LEFT JOIN minecraft_srvr.UUID AS receivers ON receiver_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=uuid
+	WHERE senders.lot_count > 0
         GROUP BY receiver_uuid
-        ORDER BY sum(karma) DESC, username ASC";
+        ORDER BY SUM(karma) DESC, username ASC";
     $all_data = umc_mysql_fetch_all($all_sql);
     $out_data = array();
     foreach ($all_data as $row) {
@@ -266,7 +270,7 @@ function umc_webkarma() {
             continue;
         }
         $sql = "SELECT karma, sender_uuid, username FROM minecraft_srvr.karma 
-            LEFT JOIN minecraft_srvr.UUID on sender_uuid=UUID
+            LEFT JOIN minecraft_srvr.UUID on sender_uuid=uuid
             WHERE receiver_uuid = '$receiver_uuid'";
         $sender_data = umc_mysql_fetch_all($sql);
         $pos_karma = 0;
@@ -290,8 +294,8 @@ function umc_webkarma() {
 
 function umc_topkarma() {
     $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
-        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=uuid
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
         GROUP BY receivers.username
         ORDER BY sum(karma) DESC LIMIT 0,10";
@@ -310,8 +314,8 @@ function umc_topkarma() {
 function umc_bottomkarma() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
-        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
+        LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=uuid
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
         GROUP BY receivers.username
         HAVING sum(karma) < 0
