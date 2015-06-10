@@ -507,8 +507,11 @@ function umc_do_offer_internal($deposit) {
     }
 
     // this should always return only one row
-    $sql = "SELECT * FROM minecraft_iconomy.stock "
-        . "WHERE item_name='{$item['item_name']}' AND damage='$item_type' and meta='$meta' AND uuid='$uuid';";
+    $sql = "SELECT * FROM minecraft_iconomy.stock
+        WHERE item_name='{$item['item_name']}'
+	    AND damage='$item_type'
+	    AND meta='$meta'
+	    AND uuid='$uuid';";
     $sql_data = umc_mysql_fetch_all($sql);
     if (count($sql_data) > 1) {
         XMPP_ERROR_trigger("User $player has more than 1 offer for the same item ({$item['full']}) (SQL: $sql");
@@ -532,8 +535,11 @@ function umc_do_offer_internal($deposit) {
 
     // check for price excesses
     $excess_price = $price / 100;
-    $sql_pcheck = "SELECT * FROM minecraft_iconomy.stock "
-        . "WHERE item_name='{$item['item_name']}' AND damage='$item_type' and meta='$meta' AND price<'$excess_price';";
+    $sql_pcheck = "SELECT * FROM minecraft_iconomy.stock
+        WHERE item_name='{$item['item_name']}'
+	    AND damage='$item_type'
+	    AND meta='$meta'
+	    AND price<'$excess_price';";
     $rst_pcheck = mysql_query($sql_pcheck);
     $excess_count = mysql_num_rows($rst_pcheck);
 
@@ -566,8 +572,8 @@ function umc_do_offer_internal($deposit) {
             $posted_id = $row['id'];
         } else { // Create a new listing.
             $sum = $amount;
-            $sql = "INSERT INTO minecraft_iconomy.`stock` (`id` ,`damage` ,`uuid` ,`item_name` ,`price` ,`amount` ,`meta`) "
-                . "VALUES (NULL , '$item_type', '$uuid', '{$item['item_name']}', '$price', '$amount', '$meta');";
+            $sql = "INSERT INTO minecraft_iconomy.`stock` (`id` ,`damage` ,`uuid` ,`item_name` ,`price` ,`amount` ,`meta`)
+                VALUES (NULL , '$item_type', '$uuid', '{$item['item_name']}', '$price', '$amount', '$meta');";
             if (strlen($item['item_name']) < 3) {
                 XMPP_ERROR_trigger("Error posting offer, $sql");
                 umc_error("There was an error, please send a ticket with the details so it can be fixed");
@@ -851,9 +857,12 @@ function umc_do_sell_internal($from_deposit=false) {
 
     umc_echo("{green}[$]{gray} Your account has been credited {cyan}$sum{gray} Uncs.");
 
-    $sql = "SELECT * FROM minecraft_iconomy.deposit "
-        . "WHERE item_name='{$request_item['item_name']}' AND recipient_uuid='{$request['uuid']}' "
-        . "AND damage='{$request_item['type']}' AND meta='{$request_item['meta']}' AND sender_uuid='shop0000-0000-0000-0000-000000000000';";
+    $sql = "SELECT * FROM minecraft_iconomy.deposit
+        WHERE item_name='{$request_item['item_name']}'
+	    AND recipient_uuid='{$request['uuid']}'
+            AND damage='{$request_item['type']}'
+	    AND meta='{$request_item['meta']}'
+	    AND sender_uuid='shop0000-0000-0000-0000-000000000000';";
     $rst = mysql_query($sql);
 
     // check first if item already is in the recipient's deposit
@@ -864,8 +873,8 @@ function umc_do_sell_internal($from_deposit=false) {
     } else {
         // create a new deposit box
         umc_echo("{green}[+]{gray} Depositing {yellow} $amount {$request_item['full']}{gray} for {gold}$recipient");
-        $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`) "
-            . "VALUES ('{$request_item['type']}', 'shop0000-0000-0000-0000-000000000000', '{$request_item['item_name']}', '$recipient_uuid', '$amount', '{$request_item['meta']}');";
+        $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+            VALUES ('{$request_item['type']}', 'shop0000-0000-0000-0000-000000000000', '{$request_item['item_name']}', '$recipient_uuid', '$amount', '{$request_item['meta']}');";
     }
     umc_mysql_query($sql, true);
 
@@ -928,8 +937,8 @@ function umc_do_request() {
     //    umc_error("{red}Sorry, this item (ID $type) is unavailable in the game!",true);
     //}
 
-    $sql = "SELECT * FROM minecraft_iconomy.request "
-        . "WHERE item_name='$item_name' AND damage='$type' and meta='$meta' AND uuid='$uuid';";
+    $sql = "SELECT * FROM minecraft_iconomy.request
+        WHERE item_name='$item_name' AND damage='$type' AND meta='$meta' AND uuid='$uuid';";
     $sql_data = umc_mysql_fetch_all($sql);
     if (count($sql_data) == 0) {
         $row = false;
@@ -1004,8 +1013,8 @@ function umc_do_request() {
         $sum = $amount;
         umc_echo("{green}[+]{gray} You are now requesting {yellow}"
                 . "$sum {$item['full']}{gray} in the shop.");
-        $sql = "INSERT INTO minecraft_iconomy.`request` (`id` ,`damage` ,`uuid` ,`item_name` ,`price` ,`amount` ,`meta`) "
-                . "VALUES (NULL , '$type', '$uuid', '{$item['item_name']}', '$price', '$amount', '$meta');";
+        $sql = "INSERT INTO minecraft_iconomy.`request` (`id` ,`damage` ,`uuid` ,`item_name` ,`price` ,`amount` ,`meta`)
+                VALUES (NULL , '$type', '$uuid', '{$item['item_name']}', '$price', '$amount', '$meta');";
         //XMPP_ERROR_trigger($sql);
         $rst = umc_mysql_query($sql);
         $posted_id = umc_mysql_insert_id();

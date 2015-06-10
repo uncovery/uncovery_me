@@ -529,8 +529,10 @@ function umc_disassemble_map($world = 'empire') {
     }
 
 
-    $sql = "SELECT region_id as lot, min_x, min_z, max_x, max_z FROM minecraft_worldguard.region_cuboid "
-        . "LEFT JOIN minecraft_worldguard.world ON world_id = id WHERE name='$world';";
+    $sql = "SELECT region_id as lot, min_x, min_z, max_x, max_z
+	FROM minecraft_worldguard.region_cuboid
+        LEFT JOIN minecraft_worldguard.world ON world_id = id
+	WHERE name='$world';";
     $rst = mysql_query($sql);
     if (!$rst) {
         $error = mysql_errno($rst) . ": " . mysql_error($rst). "\n";
@@ -969,9 +971,9 @@ function umc_create_cuboids() {
 
     if ($enlarge) {
         // get existing lots, users, flags
-        $region_sql = "SELECT * FROM minecraft_worldguard.region "
-                . "LEFT JOIN minecraft_worldguard.region_cuboid ON id=region_id "
-                . "WHERE id LIKE '$lot_prefix%';";
+        $region_sql = "SELECT * FROM minecraft_worldguard.region
+                LEFT JOIN minecraft_worldguard.region_cuboid ON id=region_id
+                WHERE id LIKE '$lot_prefix%';";
         $region_rst = mysql_query($region_sql);
         while ($region_row = mysql_fetch_array($region_rst, MYSQL_ASSOC)) {
             $lot = $region_row['id'];

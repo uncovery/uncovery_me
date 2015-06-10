@@ -297,8 +297,8 @@ function umc_enter_contest($id_or_title, $entry_title, $name, $level, $descripti
     
     $description = nl2br(strip_tags($description));
     foreach($ids as $id) {
-        $sql[] = "INSERT INTO minecraft_srvr.". $prefix . "entries (title, contest, user, level, description, lot) "
-                . "VALUES ('$entry_title', '$id', '$name', '$level', '$description', '$lot')";
+        $sql[] = "INSERT INTO minecraft_srvr.$prefix entries (title, contest, user, level, description, lot)
+                VALUES ('$entry_title', '$id', '$name', '$level', '$description', '$lot')";
     }
     // var_dump($sql);
     foreach($sql as $statement) {
@@ -313,8 +313,8 @@ function umc_create_contest($title, $desc, $max_entries, $deadline, $type, $x, $
     }
     echo "Creating contest entry...<br>";
     global $prefix;
-    $sql = "INSERT INTO minecraft_srvr.".$prefix."contests (title, description, max_entries, voting_categories, deadline, status, type, x, y, z) "
-		. "VALUES ('$title', '$desc', '$max_entries', '$voting_categories', '$deadline', 'active', '$type', $x, $y, $z)";
+    $sql = "INSERT INTO minecraft_srvr.".$prefix."contests (title, description, max_entries, voting_categories, deadline, status, type, x, y, z)
+		VALUES ('$title', '$desc', '$max_entries', '$voting_categories', '$deadline', 'active', '$type', $x, $y, $z)";
     $rst = mysql_query($sql);
     if (!$rst) {
         echo mysql_error();
@@ -765,12 +765,12 @@ function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
     mysql_select_db('minecraft_worldguard');
 
     // find out if the user can have additional contest entries in this contest
-    $sql = "SELECT * FROM world LEFT JOIN region ON world.id=region.world_id "
-        . "LEFT JOIN region_cuboid ON region.id=region_cuboid.region_id "
-        . "LEFT JOIN region_players ON region_cuboid.region_id=region_players.region_id "
-        . "LEFT JOIN user ON region_players.user_id=user.id "
-        . "WHERE region.id LIKE 'con_". $id ."%' AND Owner=1 AND user.name = '$lower_username' "
-        . "ORDER BY max_z, max_x";
+    $sql = "SELECT * FROM world LEFT JOIN region ON world.id=region.world_id
+        LEFT JOIN region_cuboid ON region.id=region_cuboid.region_id
+        LEFT JOIN region_players ON region_cuboid.region_id=region_players.region_id
+        LEFT JOIN user ON region_players.user_id=user.id
+        WHERE region.id LIKE 'con_$id%' AND Owner=1 AND user.name = '$lower_username'
+        ORDER BY max_z, max_x";
 
     $rst = mysql_query($sql);
     $count = mysql_num_rows($rst);

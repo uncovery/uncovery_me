@@ -98,9 +98,9 @@ function umc_skyblock_warp(){
         }
     }
 
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "WHERE world.name='skyblock' AND region.id = '$lot' ";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        WHERE world.name='skyblock' AND region.id = '$lot' ";
 
     $rst = mysql_query($sql);
     $check = mysql_num_rows($rst);
@@ -148,11 +148,11 @@ function umc_skyblock_abandon(){
     // make sure the user actually owns this enrty
     $user_id = umc_get_worldguard_id('user', strtolower($player));
     // find out if the user can have additional contest entries in this contest
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id "
-        . "LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id "
-        . "WHERE region.id LIKE '$lot' AND Owner=1 AND user.id=$user_id";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
+        LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
+        WHERE region.id LIKE '$lot' AND Owner=1 AND user.id=$user_id";
     $rst = mysql_query($sql);
     if (mysql_num_rows($rst) != 1) {
         umc_error("You do not own the lot $lot in skyblock!");
@@ -161,8 +161,8 @@ function umc_skyblock_abandon(){
     }
 
     $world_id = $row['world_id'];
-    $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner) "
-        . "VALUES ('$lot', $world_id, $abandon_id, 1);";
+    $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner)
+        VALUES ('$lot', $world_id, $abandon_id, 1);";
     mysql_query($ins_user_sql);
     umc_ws_cmd('region load -w skyblock', 'asConsole');
     umc_echo("You have succcessfully abandoned the lot $lot! It will be reset with the next reboot. You can then register a new one!");
@@ -181,9 +181,13 @@ function umc_skyblock_challenge_select() {
     if (!is_numeric($args[2])) {
         umc_error("Your challenge ID needs to be a number!");
     } else {
-        $lot_sql = "SELECT region_cuboid.region_id as lot FROM `region_cuboid` "
-            . "LEFT JOIN region_players ON region_cuboid.region_id=region_players.region_id "
-            . "WHERE user_id IS NULL AND region_cuboid.`region_id` LIKE 'block%' AND min_z<-768 AND min_x>=-1152 AND max_x<1024;";
+        $lot_sql = "SELECT region_cuboid.region_id as lot FROM `region_cuboid`
+            LEFT JOIN region_players ON region_cuboid.region_id=region_players.region_id
+            WHERE user_id IS NULL
+		AND region_cuboid.`region_id` LIKE 'block%'
+		AND min_z<-768
+		AND min_x>=-1152
+		AND max_x<1024;";
         $lot_rst = mysql_query($lot_sql);
         if (mysql_num_rows($lot_rst) == 0) {
             XMPP_ERROR_trigger("We ran out of challenge lots!");
@@ -229,8 +233,8 @@ function umc_skyblock_challenge_select() {
         if ($sub_challenge !== null) {
             $challenge = $sub_challenge;
         }
-        $sql = "INSERT INTO `minecraft_quiz`.`block_games` (`game_id`, `username`, `start`, `end`, `status`, `challenge_id`, `sub_challenge_id`, `lot`) "
-            . "VALUES (NULL, '$player', NOW(), NULL, 'selected', '$challenge', '$sub_challenge', '$challenge_lot');";
+        $sql = "INSERT INTO `minecraft_quiz`.`block_games` (`game_id`, `username`, `start`, `end`, `status`, `challenge_id`, `sub_challenge_id`, `lot`)
+            VALUES (NULL, '$player', NOW(), NULL, 'selected', '$challenge', '$sub_challenge', '$challenge_lot');";
         mysql_query($sql);
         umc_echo("Please type {green}/skyblock start{white} or {green}/skyblock cancel");
         umc_footer();

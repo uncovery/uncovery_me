@@ -160,13 +160,13 @@ function umc_contests_info() {
         . " {gold}Width: {white}{$row['x']} {gold}Depth: {white}{$row['z']} {gold}Height: {white}{$row['y']};");
 
     // find out if the user can have additional contest entries in this contest
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id "
-        . "LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id "
-        . "LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.username "
-        . "WHERE region.id LIKE 'con_". $id ."%' AND Owner=1 AND user.name <> '_abandoned_' "
-        . "ORDER BY max_z, max_x";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
+        LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
+        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.username
+        WHERE region.id LIKE 'con_". $id ."%' AND Owner=1 AND user.name <> '_abandoned_'
+        ORDER BY max_z, max_x";
 
     $rst = mysql_query($sql);
     $count = mysql_num_rows($rst);
@@ -219,11 +219,11 @@ function umc_contests_abandon(){
     // make sure the user actually owns this enrty
     $user_id = umc_get_worldguard_id('user', strtolower($player));
     // find out if the user can have additional contest entries in this contest
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id "
-        . "LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id "
-        . "WHERE region.id LIKE '$lot' AND Owner=1 AND user.id=$user_id";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
+        LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
+        WHERE region.id LIKE '$lot' AND Owner=1 AND user.id=$user_id";
     $rst = mysql_query($sql);
     if (mysql_num_rows($rst) != 1) {
         umc_error("You do not own the lot $lot in world $world!");
@@ -234,8 +234,8 @@ function umc_contests_abandon(){
     $world_id = $row['world_id'];
     $world = $row['world.name'];
 
-    $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner) "
-        . "VALUES ('$lot', $world_id, $abandon_id, 1);";
+    $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner)
+        VALUES ('$lot', $world_id, $abandon_id, 1);";
     $inc_user_rst = mysql_query($ins_user_sql);
     umc_ws_cmd("region load -w $world", 'asConsole');
     umc_echo("You have succcessfully abandoned the lot $lot!");
@@ -256,7 +256,7 @@ function umc_contests_close() {
         umc_error("You have to enter a numeric contest ID ($id). See /contest list");
     }
 
-    $sql = "SELECT * FROM minecraft_worldguard.region WHERE id LIKE 'con_" . $id . "%';";
+    $sql = "SELECT * FROM minecraft_worldguard.region WHERE id LIKE 'con_$id%';";
     $rst = mysql_query($sql);
     $i = 0;
     while ($region = mysql_fetch_array($rst, MYSQL_ASSOC)) {
@@ -264,8 +264,8 @@ function umc_contests_close() {
         $world_id = $region['world_id'];
         $flagname = 'build';
         $flag = 'deny';
-        $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES "
-            . "('$lot', $world_id, '$flagname', '$flag');";
+        $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES
+            ('$lot', $world_id, '$flagname', '$flag');";
         umc_echo($ins_sql);
         $ins_rst = mysql_query($ins_sql);
         $i = $i + mysql_affected_rows();
@@ -289,7 +289,7 @@ function umc_contests_delete() {
         umc_error("You have to enter a numeric contest ID ($id). See /contest list");
     }
 
-    $sql = "DELETE FROM minecraft_worldguard.region WHERE id LIKE 'con_" . $id . "%';";
+    $sql = "DELETE FROM minecraft_worldguard.region WHERE id LIKE 'con_$id%';";
     $rst = mysql_query($sql);
     $count = mysql_affected_rows();
 
@@ -360,13 +360,11 @@ function umc_region_check_Owners($world_id, $lot) {
     }
 
     if (umc_check_lot_exists($world_id, $lot)) {
-        $sql = "SELECT user.name as user_name "
-            . "FROM minecraft_worldguard.region "
-            . "LEFT JOIN minecraft_worldguard.region_players "
-            . "ON region.id = region_players.region_id "
-            . "LEFT JOIN minecraft_worldguard.user "
-            . "ON user.id = region_players.user_id "
-            . "WHERE region.world_id = $world_id AND region.id = '$lot' AND Owner=1;";
+        $sql = "SELECT user.name as user_name
+            FROM minecraft_worldguard.region
+            LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id
+            LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
+            WHERE region.world_id = $world_id AND region.id = '$lot' AND Owner=1;";
         // echo $sql;
         $rst = mysql_query($sql);
         $owners = array();
@@ -565,9 +563,9 @@ function umc_contests_warp(){
         umc_error("You have to be in the $world world to do this!");
     }
 
-    $sql = "SELECT * FROM minecraft_worldguard. world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "WHERE world.name='$world' AND region.id LIKE 'con_". $id . "_" . $num . "' ";
+    $sql = "SELECT * FROM minecraft_worldguard. world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        WHERE world.name='$world' AND region.id LIKE 'con_" . $id . "_" . $num . "' ";
 
     $rst = mysql_query($sql);
     $count = mysql_num_rows($rst);
@@ -653,11 +651,11 @@ function umc_contests_join() {
     $world_id = umc_get_worldguard_id('world', strtolower($world));
 
     // find out if the user can have additional contest entries in this contest
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id "
-        . "WHERE world.name='$world' AND region.id LIKE 'con_". $id ."%' AND user_id=$user_id AND Owner=1 "
-        . "ORDER BY max_z, max_x";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
+        WHERE world.name='$world' AND region.id LIKE 'con_". $id ."%' AND user_id=$user_id AND Owner=1
+        ORDER BY max_z, max_x";
     $rst = mysql_query($sql);
     $count = mysql_num_rows($rst);
     if ($count >= $contest['max_entries'] && $player != 'uncovery' ) {
@@ -665,9 +663,9 @@ function umc_contests_join() {
     }
 
     // find out if a contest lot already exists
-    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id "
-        . "LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id "
-        . "WHERE world.name='$world' AND region.id LIKE 'con%' ORDER BY max_z, max_x";
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        WHERE world.name='$world' AND region.id LIKE 'con%' ORDER BY max_z, max_x";
     $rst = mysql_query($sql);
     $count = mysql_num_rows($rst);
     if ($debug) {umc_echo("$count entries already entered!");}
@@ -717,16 +715,16 @@ function umc_contests_join() {
     umc_echo("Use {gold}/contest warp $id $lotnumber{white} to get there.");
 
     // create insert SQL 	id 	world_id 	type 	priority 	parent
-    $ins_region_sql = "INSERT INTO region (id, world_id, type, priority, parent) "
-        . "VALUES ('$lot', $world_id, 'cuboid', 0, '$parent');";
+    $ins_region_sql = "INSERT INTO region (id, world_id, type, priority, parent)
+        VALUES ('$lot', $world_id, 'cuboid', 0, '$parent');";
     $ins_region_rst = mysql_query($ins_region_sql);
     // insert cuboid region_id 	world_id 	min_x 	min_y 	min_z 	max_x 	max_y 	max_z
-    $ins_cuboid_sql = "INSERT INTO region_cuboid (region_id, world_id, min_x, min_y, min_z, max_x, max_y, max_z) "
-        . "VALUES ('$lot', $world_id, $start_x, $start_y, $start_z, $end_x, $end_y, $end_z);";
+    $ins_cuboid_sql = "INSERT INTO region_cuboid (region_id, world_id, min_x, min_y, min_z, max_x, max_y, max_z)
+        VALUES ('$lot', $world_id, $start_x, $start_y, $start_z, $end_x, $end_y, $end_z);";
     $ins_cuboid_rst = mysql_query($ins_cuboid_sql);
     // add user to lot as Owner  region_id 	world_id 	user_id 	Owner
-    $ins_user_sql = "INSERT INTO region_players (region_id, world_id, user_id, Owner) "
-        . "VALUES ('$lot', $world_id, $user_id, 1);";
+    $ins_user_sql = "INSERT INTO region_players (region_id, world_id, user_id, Owner)
+        VALUES ('$lot', $world_id, $user_id, 1);";
     $inc_user_rst = mysql_query($ins_user_sql);
     umc_ws_cmd("region load -w $world", 'asConsole');
 

@@ -221,8 +221,10 @@ function umc_do_withdraw() {
             //if (in_array($find_item['id'], $umc_unavailable)) {
             //    umc_echo("{red}This item is unavailable. Please check the wiki for the proper item!",true);
             //}
-            $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit "
-                . "WHERE recipient_uuid='$uuid' AND item_name='{$find_item['item_name']}' AND damage='0'";
+            $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit
+                WHERE recipient_uuid='$uuid'
+		    AND item_name='{$find_item['item_name']}'
+		    AND damage='0'";
             umc_log('deposit', 'withdraw', "$player tried to {$find_item['item_name']}:0");
         }
 
@@ -297,9 +299,9 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     $recipient_uuid = umc_uuid_getone($recipient, 'uuid');
     $sender_uuid = umc_uuid_getone($sender, 'uuid');
 
-    $sql = "SELECT * FROM minecraft_iconomy.deposit "
-        . "WHERE item_name='$item_name' AND recipient_uuid='$recipient_uuid' "
-        . "AND damage='$data' AND meta='$meta' AND sender_uuid='$sender_uuid';";
+    $sql = "SELECT * FROM minecraft_iconomy.deposit
+        WHERE item_name='$item_name' AND recipient_uuid='$recipient_uuid'
+        AND damage='$data' AND meta='$meta' AND sender_uuid='$sender_uuid';";
     $rst = mysql_query($sql);
 
         // check first if item already is being sold
@@ -308,8 +310,8 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
         $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+$amount WHERE `id`={$row['id']} LIMIT 1;";
     } else {
         // create a new deposit box
-        $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`) "
-            . "VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
+        $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+            VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
     }
     //umc_echo($sql);
     umc_mysql_query($sql, true);
@@ -390,9 +392,9 @@ function umc_do_deposit_internal($all = false) {
         $count = $allowed - $remaining;
         // umc_echo("Group: $userlevel Allowed: $allowed Remaining $remaining");
 
-        $sql = "SELECT * FROM minecraft_iconomy.deposit "
-            . "WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid' "
-            . "AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
+        $sql = "SELECT * FROM minecraft_iconomy.deposit
+            WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid'
+            AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
         $rst = mysql_query($sql);
 
         // create the seen entry so we do not do this again
@@ -425,8 +427,8 @@ function umc_do_deposit_internal($all = false) {
                 umc_error("There was an error with the deposit. Please send a ticket to the admin so this can be fixed.");
             }
             umc_echo("{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient");
-            $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`) "
-                    . "VALUES ('$data', '$uuid', '{$item['item_name']}', '$recipient_uuid', '$amount', '$meta');";
+            $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+                    VALUES ('$data', '$uuid', '{$item['item_name']}', '$recipient_uuid', '$amount', '$meta');";
             $count++;
             umc_log("Deposit","do_deposit", $sql);
         }
@@ -466,18 +468,22 @@ function umc_depositbox_consolidate() {
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     // find all doupliecate entries
-    $sql_doubles = " SELECT count(id) as counter, item_name, damage, meta "
-        . "FROM minecraft_iconomy.deposit "
-        . "WHERE recipient_uuid='$uuid' "
-        . "GROUP BY item_name, damage, meta HAVING count(id) > 1";
+    $sql_doubles = " SELECT count(id) AS counter, item_name, damage, meta
+        FROM minecraft_iconomy.deposit
+        WHERE recipient_uuid='$uuid'
+        GROUP BY item_name, damage, meta HAVING COUNT(id) > 1";
     $doubles = umc_mysql_fetch_all($sql_doubles);
     $source_boxes = count($doubles);
     $target_boxes = 0;
     if ($source_boxes > 0) {
         foreach ($doubles as $row) {
             // then we take each entry that is not created by the user and move it to a box created by the user
-            $sql_fix = "SELECT * FROM minecraft_iconomy.deposit "
-                . "WHERE item_name='{$row['item_name']}' AND damage='{$row['damage']} AND meta='{$row['meta']} AND recipient_uuid='$uuid' AND sender_uuid !='$uuid';;";
+            $sql_fix = "SELECT * FROM minecraft_iconomy.deposit
+                WHERE item_name='{$row['item_name']}'
+		    AND damage='{$row['damage']}
+		    AND meta='{$row['meta']}
+		    AND recipient_uuid='$uuid'
+		    AND sender_uuid !='$uuid';;";
             $fix_data = umc_mysql_fetch_all($sql_fix);
             if (count($fix_data) > 0) {
                 $target_boxes++;

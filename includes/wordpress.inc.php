@@ -78,9 +78,10 @@ function umc_wp_get_login_from_uuid($uuid) {
         $out = $current_user->user_login;
     } else {
         $uuid_sql = umc_mysql_real_escape_string($uuid);
-        $sql = "SELECT user_login FROM minecraft.wp_users "
-            . "LEFT JOIN minecraft.wp_usermeta ON ID=user_id "
-            . "WHERE meta_value=$uuid_sql AND meta_key ='minecraft_uuid' LIMIT 1;";
+        $sql = "SELECT user_login FROM minecraft.wp_users
+            LEFT JOIN minecraft.wp_usermeta ON ID=user_id
+            WHERE meta_value=$uuid_sql AND meta_key ='minecraft_uuid'
+	    LIMIT 1;";
         $data = umc_mysql_fetch_all($sql);
         $out = $data[0]['user_login'];
     }

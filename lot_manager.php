@@ -266,9 +266,14 @@ function umc_lot_get_from_coords($x, $z, $world) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $floor_x = floor($x);
     $floot_z = floor($z);
-    $sql = "SELECT region_id from minecraft_worldguard.region_cuboid "
-            . "LEFT JOIN minecraft_worldguard.world ON world_id=id "
-            . "WHERE min_x<=$floor_x AND min_z<=$floot_z AND max_x>=$floor_x AND max_z>=$floot_z AND name='$world' LIMIT 1;";
+    $sql = "SELECT region_id from minecraft_worldguard.region_cuboid
+            LEFT JOIN minecraft_worldguard.world ON world_id=id
+            WHERE min_x<=$floor_x
+		AND min_z<=$floot_z
+		AND max_x>=$floor_x
+		AND max_z>=$floot_z
+		AND name='$world'
+	    LIMIT 1;";
     $rst = mysql_query($sql);
     if (mysql_num_rows($rst) == 0) {
         return false;
@@ -994,8 +999,8 @@ function umc_lot_rem_player($player, $lot, $owner) {
         XMPP_ERROR_trigger("World $world could not be found for lot_name $lot to remove member $player (umc_lot_rem_player)");
         die('umc_lot_rem_player');
     }
-    $sql = "DELETE FROM minecraft_worldguard.region_players "
-        . "WHERE region_id='$lot' AND world_id='$world_id' and user_id=$user_id and owner=$owner;";
+    $sql = "DELETE FROM minecraft_worldguard.region_players
+        WHERE region_id='$lot' AND world_id='$world_id' AND user_id=$user_id AND owner=$owner;";
     mysql_query($sql);
     umc_log('lot_manager', 'remove player', "$player was removed from lot $lot; Owner: $owner");
     if (mysql_affected_rows() == 1) {
@@ -1017,11 +1022,11 @@ function umc_get_available_lots($world = false) {
         $world_str = " AND name='$world'";
     }
     // get all empty lots, filter out special lots too
-    $empty_sql = "SELECT region_cuboid.region_id as lot, world.name as world, sqrt(pow(max_x,2)+pow(max_z,2)) as distance "
-            . "FROM minecraft_worldguard.world "
-            . "LEFT JOIN minecraft_worldguard.region_cuboid ON world.id=region_cuboid.world_id "
-            . "LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id "
-            . "WHERE user_id IS NULL AND SUBSTR(region_cuboid.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str;";
+    $empty_sql = "SELECT region_cuboid.region_id AS lot, world.name as world, sqrt(pow(max_x,2)+pow(max_z,2)) as distance
+            FROM minecraft_worldguard.world
+            LEFT JOIN minecraft_worldguard.region_cuboid ON world.id=region_cuboid.world_id
+            LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
+            WHERE user_id IS NULL AND SUBSTR(region_cuboid.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str;";
     // echo $empty_sql;
     $empty_rst = mysql_query($empty_sql);
     $empty_lots = array();
@@ -1074,10 +1079,11 @@ function umc_lot_manager_get_occupied_lots($world=false) {
         $world_str = " AND name='$world'";
     }
     // get all empty lots, filter out special lots too
-    $sql = "SELECT region_players.region_id as lot, world.name as world "
-        . "FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.world ON world.id=region_players.world_id "
-        . "WHERE owner=1 AND SUBSTR(region_players.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str ORDER BY region_id;";
+    $sql = "SELECT region_players.region_id AS lot, world.name AS world
+        FROM minecraft_worldguard.region_players
+        LEFT JOIN minecraft_worldguard.world ON world.id=region_players.world_id
+        WHERE owner=1 AND SUBSTR(region_players.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str
+	ORDER BY region_id;";
     $rst = umc_mysql_query($sql);
     $lots = array();
     while ($R = umc_mysql_fetch_array($rst)) {
@@ -1116,10 +1122,10 @@ function umc_get_lot_members($lot, $owner = false) {
     if ($owner) {
         $owner_val = 1;
     }
-    $sql = "SELECT user.UUID as UUID, username FROM minecraft_worldguard.region_players "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=id "
-        . "LEFT JOIN minecraft_srvr.UUID ON UUID.UUID=user.UUID "
-        . "WHERE region_id='$lot' AND owner=$owner_val;";
+    $sql = "SELECT user.UUID AS UUID, username FROM minecraft_worldguard.region_players
+        LEFT JOIN minecraft_worldguard.user ON user_id=id
+        LEFT JOIN minecraft_srvr.UUID ON UUID.UUID=user.UUID
+        WHERE region_id='$lot' AND owner=$owner_val;";
     $D = umc_mysql_fetch_all($sql);
     $members = false;
     if (count($D) > 0) {
@@ -1198,18 +1204,18 @@ function umc_check_lot_owner($lot, $uuid = false) {
 
     if ($uuid) {
         $uuid = umc_uuid_getone($uuid, 'uuid');
-        $sql = "SELECT region_id FROM minecraft_worldguard.region_players "
-            . "LEFT JOIN minecraft_worldguard.user ON user_id=user.id "
-            . "WHERE Owner=1 AND user.uuid='$uuid' AND region_id='$lot';";
+        $sql = "SELECT region_id FROM minecraft_worldguard.region_players
+            LEFT JOIN minecraft_worldguard.user ON user_id=user.id
+            WHERE Owner=1 AND user.uuid='$uuid' AND region_id='$lot';";
         $D = umc_mysql_fetch_all($sql);
         // echo $sql;
         if (count($D) == 1) {
             return true;
         }
     } else {
-        $sql = "SELECT uuid FROM minecraft_worldguard.region_players "
-            . "LEFT JOIN minecraft_worldguard.user ON user_id=user.id "
-            . "WHERE Owner=1 AND region_id='$lot';";
+        $sql = "SELECT uuid FROM minecraft_worldguard.region_players
+            LEFT JOIN minecraft_worldguard.user ON user_id=user.id
+            WHERE Owner=1 AND region_id='$lot';";
         $data = umc_mysql_fetch_all($sql);
         if (count($data) == 0) {
             return false;
@@ -1736,11 +1742,11 @@ function umc_get_lot_number($user, $world = 'empire') {
 
     // check how many lots the user has in that world
     foreach ($worlds as $world) {
-        $sql = "SELECT region_id FROM minecraft_worldguard.world "
-            . "LEFT JOIN minecraft_worldguard.`region_players` ON world.id=region_players.world_id "
-            . "LEFT JOIN minecraft_worldguard.user ON user.id=region_players.user_id "
-            . "LEFT JOIN minecraft_srvr.UUID ON UUID.UUID = user.uuid "
-            . "WHERE UUID.username=\"$username\" AND world.name = \"$world\" AND Owner=1;";
+        $sql = "SELECT region_id FROM minecraft_worldguard.world
+            LEFT JOIN minecraft_worldguard.`region_players` ON world.id=region_players.world_id
+            LEFT JOIN minecraft_worldguard.user ON user.id=region_players.user_id
+            LEFT JOIN minecraft_srvr.UUID ON UUID.UUID = user.uuid
+            WHERE UUID.username=\"$username\" AND world.name = \"$world\" AND Owner=1;";
 
         $rst = mysql_query($sql);
         //echo $sql;
@@ -1773,9 +1779,9 @@ function umc_get_lot_number($user, $world = 'empire') {
 function umc_lot_manager_dib_get_number($user, $world) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid = umc_uuid_getone($user, 'uuid');
-    $sql = "SELECT lot, reservation_id, action "
-        . "FROM minecraft_srvr.lot_reservation "
-        . "WHERE uuid='$uuid' and world='$world';";
+    $sql = "SELECT lot, reservation_id, action
+        FROM minecraft_srvr.lot_reservation
+        WHERE uuid='$uuid' and world='$world';";
     $D = umc_mysql_fetch_all($sql);
     $dibs_arr = array();
     foreach ($D as $row) {

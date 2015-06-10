@@ -63,8 +63,8 @@ function umc_story_admin() {
             $save_clear_inv = -1;
         }
         if ($save_story != 'Please enter text here') {
-            $sql = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `forcesurvival`, `items`, `clear_inv`, `warp`) "
-                . "VALUES ('$uuid', '$save_story', '$code', '$save_title', '$save_survival', '$items', '$save_clear_inv', '$warp')";
+            $sql = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `forcesurvival`, `items`, `clear_inv`, `warp`)
+                VALUES ('$uuid', '$save_story', '$code', '$save_title', '$save_survival', '$items', '$save_clear_inv', '$warp')";
             $sql = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
             $rst = mysql_query($sql);
         }
@@ -102,9 +102,14 @@ function umc_story_admin() {
         if (isset($_POST['clear_inv'])) {
             $save_clear_inv = -1;
         }
-        $sql = "UPDATE minecraft_iconomy.story SET story= '$save_story', storyline='$save_title', warp='$warp', forcesurvival='$save_survival', "
-            . "`items`='$save_items', `clear_inv`='$save_clear_inv' "
-            . " WHERE uuid='$uuid' and code='$code';";
+        $sql = "UPDATE minecraft_iconomy.story
+	    SET story= '$save_story',
+		storyline='$save_title',
+		warp='$warp',
+		forcesurvival='$save_survival',
+            	`items`='$save_items',
+		`clear_inv`='$save_clear_inv'
+            WHERE uuid='$uuid' and code='$code';";
         $sql = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
         $rst = mysql_query($sql);
     }

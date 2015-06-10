@@ -97,8 +97,9 @@ function umc_money($source = false, $target = false, $amount_raw = 0) {
         $source_uuid = umc_uuid_getone($source, 'uuid');
         $balance = umc_money_check($source);
         if ($balance > $amount) {
-            $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts` "
-                . "SET `balance`=`balance`-'$amount' WHERE `mineconomy_accounts`.`uuid` = '$source_uuid';";
+            $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
+                SET `balance`=`balance`-'$amount'
+		WHERE `mineconomy_accounts`.`uuid` = '$source_uuid';";
             umc_mysql_query($sql);
         } else if ($UMC_ENV == 'websend') {
             umc_error("There is not enough money in the account! You need $amount but have only $balance Uncs.");
@@ -108,8 +109,9 @@ function umc_money($source = false, $target = false, $amount_raw = 0) {
     if ($target) { // give to someone
         $target_uuid = umc_uuid_getone($target, 'uuid');
         $balance = umc_money_check($target);
-        $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts` SET `balance` = `balance` + '$amount' "
-            . "WHERE `mineconomy_accounts`.`uuid` = '$target_uuid';";
+        $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
+	    SET `balance` = `balance` + '$amount'
+            WHERE `mineconomy_accounts`.`uuid` = '$target_uuid';";
         umc_mysql_query($sql);
     }
     // logging
@@ -152,15 +154,16 @@ function umc_money_check($user) {
         $data2 = umc_mysql_fetch_all($sql2);
         if (count($data2) == 1) {
             // yes, add the UUID
-            $fix_sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts` SET uuid='$uuid' "
-                . "  WHERE account='$user';";
+            $fix_sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
+		 SET uuid='$uuid'
+                 WHERE account='$user';";
             umc_mysql_query($fix_sql, true);
             // try again
             return umc_money_check($user);
         } else {
             // insert row
-            $sql3 = "INSERT INTO `minecraft_iconomy`.`mineconomy_accounts` (`uuid`, `account`, `balance`) "
-                . "VALUES ('$uuid', '$user', '0');";
+            $sql3 = "INSERT INTO `minecraft_iconomy`.`mineconomy_accounts` (`uuid`, `account`, `balance`)
+                VALUES ('$uuid', '$user', '0');";
             umc_mysql_query($sql3, true);
             return 0;
         }
