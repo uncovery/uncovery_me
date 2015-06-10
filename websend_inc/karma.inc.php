@@ -256,8 +256,8 @@ function umc_webkarma() {
     // list onliny active receivers
     $all_sql = "SELECT SUM(karma), receiver_uuid, receivers.username AS username
         FROM minecraft_srvr.karma
-        LEFT JOIN minecraft_srvr.UUID AS receivers ON receiver_uuid=uuid
-        LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=uuid
+        LEFT JOIN minecraft_srvr.UUID AS receivers ON receiver_uuid=receivers.uuid
+        LEFT JOIN minecraft_srvr.UUID AS senders ON sender_uuid=senders.uuid
 	WHERE senders.lot_count > 0
         GROUP BY receiver_uuid
         ORDER BY SUM(karma) DESC, username ASC";
