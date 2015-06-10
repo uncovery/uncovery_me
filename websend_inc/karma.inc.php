@@ -289,7 +289,7 @@ function umc_webkarma() {
 }
 
 function umc_topkarma() {
-    $sql = "SELECT SUM(karma), receivers.username as receiver_name FROM minecraft_srvr.karma
+    $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
         LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
         LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
@@ -300,7 +300,7 @@ function umc_topkarma() {
     umc_echo(" ∞     =>    Uncovery");
     foreach ($D as $row) {
         $sum_karma = $row['sum_karma'];
-        $receiver = $row['username'];
+        $receiver = $row['receiver_name'];
         if (!umc_user_is_banned($receiver) && $receiver != 'uncovery') {
             umc_echo("$sum_karma    =>    $receiver");
         }
