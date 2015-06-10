@@ -58,7 +58,7 @@ $WS_INIT['karma'] = array(
         ),
         'function' => 'umc_bottomkarma',
     ),
-    'disabled' => true,
+    'disabled' => false,
     'events' => false,
 );
 
