@@ -289,7 +289,7 @@ function umc_webkarma() {
 }
 
 function umc_topkarma() {
-    $sql = "SELECT SUM(karma), receivers.username as receiver_name FROM `karma` 
+    $sql = "SELECT SUM(karma), receivers.username as receiver_name FROM minecraft_srvr.karma
         LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
         LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
@@ -309,7 +309,7 @@ function umc_topkarma() {
 
 function umc_bottomkarma() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM `karma` 
+    $sql = "SELECT SUM(karma) as sum_karma, receivers.username as receiver_name FROM minecraft_srvr.karma
         LEFT JOIN minecraft_srvr.UUID as senders ON sender_uuid=senders.UUID
         LEFT JOIN minecraft_srvr.UUID as receivers ON receiver_uuid=receivers.UUID
         WHERE senders.lot_count > 0 AND receivers.lot_count > 0
