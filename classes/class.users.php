@@ -36,7 +36,7 @@ class User extends Users{
     private $inventory;
     private $current_item;
 
-    public function __construct($context, $id, $id_type, $is_certain) {
+    public function __construct() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
 
     }
