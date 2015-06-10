@@ -2,7 +2,7 @@
 
 global $UMC_USERS; // this should contain all users that are set as an object
 
-class User extends Users{
+class User extends Users {
 
     // base items
     private $username;     // the current minecraft username
@@ -39,6 +39,11 @@ class User extends Users{
     public function __construct() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
 
+    }
+    
+    public function set_uuid($uuid) {
+        // we assume that this is a valid UUID
+        $this->uuid = $uuid;
     }
     
     // get the uuid, either from the set value, wordpress_id or username
