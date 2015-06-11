@@ -192,10 +192,11 @@ input[type="radio"]:checked+label{
     font-family:sans-serif;
     background: linear-gradient(#fff, #777);
     border: 1px solid;
-    font-size: 80%;
+    font-size: 90%;
     width: 100%;
     top:-2px;
     padding-top:8px;
+    padding-bottom:8px;
     left: -1px;
 }
 
@@ -219,7 +220,8 @@ input[type="radio"]:checked+label{
 }
 
 #scroll_to_icons img{
-    top: 4px;
+    top: 8px;
+    margin-top:-8px;
     position: relative;
     border: 1px solid black;
     padding:1px;
