@@ -26,12 +26,14 @@ function run_umc_scheduler() {
             'on_cmd' => array(
                 0 => 'ch qm u Hungry Wednesday started!',
                 1 => 'mv modify set autoheal false darklands',
-                2 => 'region flag darklands_spawn greeting -w darklands ATTENTION: Today Darklands autoheal is OFF! You being fed does not heal you!',
+                2 => 'mv gamerule naturalRegeneration false darklands',
+                3 => 'region flag darklands_spawn greeting -w darklands ATTENTION: Today Darklands autoheal is OFF! You being fed does not heal you!',
             ),
             'off_cmd' => array(
                 0 => 'ch qm u Hungry Wednesday is over!',
                 1 => 'mv modify set autoheal true darklands',
-                2 => 'region flag darklands_spawn greeting -w darklands Welcome to the Darklands! Today everything is normal. Whatever that means.',
+                2 => 'mv gamerule naturalRegeneration true darklands',
+                3 => 'region flag darklands_spawn greeting -w darklands Welcome to the Darklands! Today everything is normal. Whatever that means.',
             ),
         ),
         4 => array( // Thursday
@@ -100,12 +102,13 @@ function run_umc_scheduler() {
     umc_log('scheduler', "today", "executing commands for yesterday: $today");
     umc_schedule_exec($cmds);
 
-    // switch off daylight cycle for darklands, just to be sure
-    $cmd = "mv gamerule doDaylightCycle false darklands";
-    umc_exec_command($cmd);
-    // also disable autoheal for deathlands
-    $cmd2 = "mv modify set autoheal false deathlands";
-    umc_exec_command($cmd2);
+    $default_commands = array(
+        "mv gamerule doDaylightCycle false darklands",
+        "mv gamerule naturalRegeneration false deathlands",
+    );
+    foreach ($default_commands as $cmd) {
+        umc_exec_command($cmd);
+    }
 
     umc_lottery_log_import();
     umc_ban_to_database();
