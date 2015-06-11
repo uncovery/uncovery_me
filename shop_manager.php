@@ -68,12 +68,12 @@ function umc_shopmgr_show_deposit() {
 
     // $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
-    $sql = "SELECT id, concat(item_name,'|',damage, '|', meta) AS item, s_link.username as sender, amount as quantity, r_link.username as recipient, date "
-        . "FROM minecraft_iconomy.deposit "
-        . "LEFT JOIN minecraft_srvr.UUID as s_link ON sender_uuid=s_link.UUID "
-        . "LEFT JOIN minecraft_srvr.UUID as r_link ON recipient_uuid=r_link.UUID "
-        . "WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid' "
-        . "ORDER BY id, damage, amount DESC;";
+    $sql = "SELECT id, concat(item_name,'|',damage, '|', meta) AS item, s_link.username as sender, amount as quantity, r_link.username as recipient, date
+        FROM minecraft_iconomy.deposit
+        LEFT JOIN minecraft_srvr.UUID as s_link ON sender_uuid=s_link.UUID
+        LEFT JOIN minecraft_srvr.UUID as r_link ON recipient_uuid=r_link.UUID
+        WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid'
+        ORDER BY id, damage, amount DESC;";
     $data_rst = mysql_query($sql);
 
     $non_numeric_columns = array('item', 'sender', 'recipient');
@@ -169,10 +169,14 @@ function umc_shopmgr_items() {
 
 function umc_shopmgr_item_stats($item, $type) {
     global $UMC_DOMAIN;
-    $sql = "SELECT `damage`, AVG(cost / amount) as price, `meta`, `item_name`, DATE_FORMAT(`date`,'%Y-%u') as week "
-        . "FROM minecraft_iconomy.transactions "
-        . "WHERE item_name='$item' AND damage='$type' AND cost > 0 AND seller_uuid NOT LIKE 'cancel%' AND buyer_uuid NOT LIKE 'cancel%' AND date > '0000-00-00 00:00:00'  "
-        . "GROUP BY week ";
+    $sql = "SELECT `damage`, AVG(cost / amount) AS price, `meta`, `item_name`, DATE_FORMAT(`date`,'%Y-%u') AS week
+        FROM minecraft_iconomy.transactions
+        WHERE item_name='$item' AND damage='$type'
+	    AND cost > 0
+	    AND seller_uuid NOT LIKE 'cancel%'
+	    AND buyer_uuid NOT LIKE 'cancel%'
+	    AND date > '0000-00-00 00:00:00'
+        GROUP BY week ";
     $D = umc_mysql_fetch_all($sql);
 
     $out = "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
@@ -270,9 +274,9 @@ function umc_shop_count_amounts($table, $item_name, $type=false, $meta=false) {
     if (strlen($meta) > 0) {
         $meta_sql = "AND meta='$meta' ";
     }
-    $stock_sql = "SELECT sum(amount) as sum "
-        . "FROM minecraft_iconomy.$table "
-        . "WHERE item_name='$item_name' $type_sql $meta_sql;";
+    $stock_sql = "SELECT sum(amount) as sum
+        FROM minecraft_iconomy.$table
+        WHERE item_name='$item_name' $type_sql $meta_sql;";
     $stock_data = umc_mysql_fetch_all($stock_sql);
     if (count($stock_data) > 0) {
         $stock_amount = $stock_data[0]['sum'];
@@ -287,23 +291,29 @@ function umc_shopmgr_offers($where = false) {
     if (!$where) {
         $uuid = $UMC_USER['uuid'];
         $where = "stock.uuid ='$uuid'";
-        $user_data = 'SUM(transactions.amount * transactions.cost) as income';
+        $user_data = 'SUM(transactions.amount * transactions.cost) AS income';
     } else {
-        $user_data = 'stock.uuid as vendor';
+        $user_data = 'stock.uuid AS vendor';
     }
 
     // $username = $UMC_USER['username'];
-    $sql = "SELECT stock.id AS shop_id, concat(stock.item_name,'|', stock.damage, '|', stock.meta) AS item_name, "
-        . "stock.amount AS quantity, stock.price, SUM(transactions.amount) as sold_amount, "
-        . "$user_data, MAX(transactions.date) as latest_sale "
-        . "FROM minecraft_iconomy.stock "
-        . "LEFT JOIN minecraft_iconomy.transactions ON stock.uuid = transactions.seller_uuid AND "
-        . "stock.item_name=transactions.item_name AND "
-        . "stock.price=transactions.cost AND "
-        . "stock.damage=transactions.damage AND "
-        . "stock.meta=transactions.meta "
-        . "WHERE $where "
-        . "GROUP BY stock.id, transactions.cost, transactions.damage, transactions.meta";
+    $sql = "
+	SELECT
+	    stock.id AS shop_id,
+	    CONCAT(stock.item_name,'|', stock.damage, '|', stock.meta) AS item_name,
+            stock.amount AS quantity,
+	    stock.price,
+	    SUM(transactions.amount) AS sold_amount,
+            $user_data,
+	    MAX(transactions.date) AS latest_sale
+        FROM minecraft_iconomy.stock
+        LEFT JOIN minecraft_iconomy.transactions ON stock.uuid = transactions.seller_uuid
+	    AND stock.item_name=transactions.item_name
+	    AND stock.price=transactions.cost
+	    AND stock.damage=transactions.damage
+	    AND stock.meta=transactions.meta
+        WHERE $where
+        GROUP BY stock.id, transactions.cost, transactions.damage, transactions.meta";
     $data_rst = mysql_query($sql);
 
     $sort_column = '0, "desc"';
@@ -321,21 +331,26 @@ function umc_shopmgr_requests($where = false) {
     if (!$where) {
         $uuid = $UMC_USER['uuid'];
         $where = "request.uuid ='$uuid'";
-        $user_data = 'SUM(transactions.amount * transactions.cost) as income';
+        $user_data = 'SUM(transactions.amount * transactions.cost) AS income';
     } else {
         $user_data = 'request.uuid as requestor';
     }
 
-    $sql = "SELECT request.id AS shop_id, concat(request.item_name,'|', request.damage, '|', request.meta) AS item_name, "
-        . "request.amount AS quantity, request.price, SUM(transactions.amount) as sold_amount, "
-        . "$user_data, MAX(transactions.date) as latest_sale "
-        . "FROM minecraft_iconomy.request "
-        . "LEFT JOIN minecraft_iconomy.transactions ON request.uuid = transactions.buyer_uuid AND "
-        . "request.item_name=transactions.item_name AND "
-        . "request.price=transactions.cost AND "
-        . "request.damage=transactions.damage AND request.meta=transactions.meta "
-        . "WHERE $where "
-        . "GROUP BY request.id, transactions.cost, transactions.damage, transactions.meta";
+    $sql = "
+	SELECT request.id AS shop_id,
+	    CONCAT(request.item_name,'|', request.damage, '|', request.meta) AS item_name,
+            request.amount AS quantity,
+	    request.price,
+	    SUM(transactions.amount) AS sold_amount,
+            $user_data, MAX(transactions.date) AS latest_sale
+        FROM minecraft_iconomy.request
+        LEFT JOIN minecraft_iconomy.transactions ON request.uuid = transactions.buyer_uuid
+	    AND request.item_name=transactions.item_name
+	    AND request.price=transactions.cost
+	    AND request.damage=transactions.damage
+	    AND request.meta=transactions.meta
+        WHERE $where
+        GROUP BY request.id, transactions.cost, transactions.damage, transactions.meta";
     $data_rst = mysql_query($sql);
 
     $sort_column = '0, "desc"';
@@ -353,7 +368,7 @@ function umc_shopmgr_buyers() {
     // 1 month ago date:
     $lastmonth = date("Y-m-d", strtotime("-1 month"));
 
-    $sql_buyer = "SELECT `username` as buyer, count(id) as transactions, round(sum(`cost`),2) as value, sum(`amount`) as items, min(`date`) lastest_transaction
+    $sql_buyer = "SELECT `username` AS buyer, count(id) AS transactions, round(sum(`cost`),2) AS value, sum(`amount`) AS items, min(`date`) lastest_transaction
         FROM minecraft_iconomy.`transactions`
         LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
         WHERE date > '$lastmonth' AND UUID <> 'cancel00-depo-0000-0000-000000000000' AND cost > 0
@@ -377,7 +392,7 @@ function umc_shopmgr_sellers() {
     // 1 month ago date:
     $lastmonth = date("Y-m-d", strtotime("-1 month"));
 
-    $sql = "SELECT `username` as seller, count(id) as transactions, round(sum(`cost`),2) as value, sum(`amount`) as items, min(`date`) lastest_transaction
+    $sql = "SELECT `username` AS seller, count(id) AS transactions, round(sum(`cost`),2) AS value, sum(`amount`) AS items, min(`date`) lAStest_transaction
         FROM minecraft_iconomy.`transactions`
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
         WHERE date > '$lastmonth' AND UUID <> 'cancel00-depo-0000-0000-000000000000' AND cost > 0
@@ -415,7 +430,7 @@ function umc_shopmgr_transactions() {
     
     // what did the user sell?
     $out .= "<h2>Items sold by $username</h2>";
-    $sql = "SELECT concat(item_name,'|', damage, '|', meta) AS item_name, cost as income, amount, username as buyer, date
+    $sql = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS income, amount, username AS buyer, date
         FROM minecraft_iconomy.`transactions`
         LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
         WHERE date > '$lastmonth' AND cost > 0 $seller_str
@@ -428,7 +443,7 @@ function umc_shopmgr_transactions() {
     $out .= umc_web_table('shopusers_soldbyplayer', $sort_column, $data_rst);
     
     $out .= "<h2>Items bought by $username</h2>";
-    $sql2 = "SELECT concat(item_name,'|', damage, '|', meta) AS item_name, cost as expense, amount, username as seller, date
+    $sql2 = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS expense, amount, username AS seller, date
         FROM minecraft_iconomy.`transactions`
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
         WHERE date > '$lastmonth' AND cost > 0 AND $buyer_str seller_uuid <> 'cancel00-sell-0000-0000-000000000000'
@@ -512,9 +527,12 @@ function umc_shopmgr_show_help_shop() {
  */
 function umc_shopmgr_stats() {
     global $UMC_DOMAIN;
-    $sql = "SELECT DATE_FORMAT(`date`,'%Y-%u') as week, SUM(amount) as amount, SUM(cost) as value "
-        . "FROM minecraft_iconomy.transactions "
-        . "WHERE date>'2012-03-00 00:00:00' AND seller_uuid NOT LIKE 'cancel%' AND buyer_uuid NOT LIKE 'cancel%' GROUP BY week;";
+    $sql = "SELECT DATE_FORMAT(`date`,'%Y-%u') AS week, SUM(amount) AS amount, SUM(cost) AS value
+        FROM minecraft_iconomy.transactions
+        WHERE date>'2012-03-00 00:00:00'
+	    AND seller_uuid NOT LIKE 'cancel%'
+	    AND buyer_uuid NOT LIKE 'cancel%'
+	GROUP BY week;";
     $rst = umc_mysql_query($sql);
     //$maxval_amount = 0;
     //$maxval_value = 0;

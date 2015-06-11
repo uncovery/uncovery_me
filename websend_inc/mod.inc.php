@@ -221,8 +221,8 @@ function umc_mod_record_lag() {
     $m = json_decode($text);
 
     foreach ($m as $data) {
-        $sql = "INSERT INTO `minecraft_srvr`.`lag_location` (`location_id`, `x_coord`, `y_coord`, `z_coord`, `date`, `world`) "
-            . "VALUES (NULL, '{$data->x}', '{$data->y}', '{$data->z}', CURRENT_TIMESTAMP, '{$data->world}');";
+        $sql = "INSERT INTO `minecraft_srvr`.`lag_location` (`location_id`, `x_coord`, `y_coord`, `z_coord`, `date`, `world`)
+            VALUES (NULL, '{$data->x}', '{$data->y}', '{$data->z}', CURRENT_TIMESTAMP, '{$data->world}');";
         umc_mysql_query($sql);
     }
 }

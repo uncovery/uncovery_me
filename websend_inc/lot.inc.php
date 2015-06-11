@@ -100,8 +100,8 @@ function umc_lot_mod() {
     }
 
     if ($addrem == 'add') {
-        $sql = "INSERT INTO minecraft_worldguard.region_players (`region_id`, `world_id`, `user_id`, `Owner`) "
-            . " VALUES ('$lot', '$world_id', $user_id, 0);";
+        $sql = "INSERT INTO minecraft_worldguard.region_players (`region_id`, `world_id`, `user_id`, `Owner`)
+            VALUES ('$lot', '$world_id', $user_id, 0);";
         $rst = mysql_query($sql);
         umc_echo("Added you to $lot in the $world!");
     } else if ($addrem == 'rem') {

@@ -9,15 +9,20 @@ function umc_error_log() {
         $rst_find = umc_mysql_query($sql_find);
         $f_row = umc_mysql_fetch_array($rst_find);
         $file = umc_mysql_real_escape_string($f_row['file']);
-        $sql_del = "DELETE FROM minecraft_log.`error_log` "
-            . "WHERE `type`='{$f_row['type']}' AND `message`='{$f_row['message']}' AND `line`='{$f_row['line']}' AND `file`=$file;";
+        $sql_del = "DELETE FROM minecraft_log.`error_log`
+            WHERE `type`='{$f_row['type']}'
+		AND `message`='{$f_row['message']}'
+		AND `line`='{$f_row['line']}'
+		AND `file`=$file;";
         $rst_del = umc_mysql_query($sql_del);
         umc_mysql_free_result($rst_del);
         umc_mysql_free_result($rst_find);
     }
 
-    $sql = "SELECT min(error_id) as sample, count(error_id) as freq, `type`,`message`,`line`,`file`,`referer`,max(`datetime`) as latest "
-        . "FROM minecraft_log.`error_log` group by type, file, line, message ORDER BY freq DESC ";
+    $sql = "SELECT min(error_id) AS sample, count(error_id) AS freq, `type`,`message`,`line`,`file`,`referer`,max(`datetime`) AS latest
+        FROM minecraft_log.`error_log`
+	GROUP BY type, file, line, message
+	ORDER BY freq DESC ";
     $rst = umc_mysql_query($sql);
     $out = "<form class=\"shoptables\" action=\"$UMC_DOMAIN/error-log/\" method=\"POST\" style=\"font-size:80%\">\n"
         . "<table>\n<tr><th>Freq</th><th>Type</th><th>Message</th><th>Line</th><th>File</th><th>Date</th><th><input type=\"submit\" name=\"submit\" value=\"Solved\"></th></tr>\n";
@@ -56,8 +61,8 @@ function umc_log($plugin, $action, $text) {
     /*
      * database log
      */
-    $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`) "
-        . "VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', '$action', '$text');";
+    $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
+        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', '$action', '$text');";
     mysql_query($sql);
 }
 
@@ -263,9 +268,13 @@ function umc_logblock_get_lots($world) {
 }
 
 function umc_logblock_get_lot_from_coord($world, $x, $z) {
-    $sql = "SELECT * FROM minecraft_worldguard.region_cuboid "
-        . "LEFT JOIN minecraft_worldguard.world ON world_id=ID "
-        . "WHERE name='$world' AND max_x>=$x AND min_x<=$x AND max_z>=$z AND min_z<=$z;";
+    $sql = "SELECT * FROM minecraft_worldguard.region_cuboid
+        LEFT JOIN minecraft_worldguard.world ON world_id=ID
+        WHERE name='$world'
+	    AND max_x>=$x
+	    AND min_x<=$x
+	    AND max_z>=$z
+	    AND min_z<=$z";
     $rst = mysql_query($sql);
     if (mysql_num_rows($rst) == 0) {
         return 'n/a';
@@ -275,8 +284,8 @@ function umc_logblock_get_lot_from_coord($world, $x, $z) {
 }
 
 function umc_logblock_get_coord_filter_from_lot($lot) {
-    $sql = "SELECT * FROM minecraft_worldguard.region_cuboid "
-        . "WHERE region_id='$lot' LIMIT 1";
+    $sql = "SELECT * FROM minecraft_worldguard.region_cuboid
+        WHERE region_id='$lot' LIMIT 1";
     $rst = mysql_query($sql);
     $row = mysql_fetch_array($rst, MYSQL_ASSOC);
     $filter = "AND x < {$row['max_x']} AND z < {$row['max_z']} AND x > {$row['min_x']} AND z > {$row['min_z']} ";
@@ -347,12 +356,12 @@ function umc_display_logblock() {
     }
     $count_sql = '';
     if (isset($_POST['today'])) {
-        $count_sql = "SELECT count(id) as counter FROM `minecraft_log`.`$world_filter` "
-            . "WHERE date=CURRENT_DATE() $lot_filter;";
+        $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
+            WHERE date=CURRENT_DATE() $lot_filter;";
     } else {
-        $count_sql = "SELECT count(id) as counter FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid` "
-            . "WHERE 1 $username_filter $lot_filter;";
+        $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+            WHERE 1 $username_filter $lot_filter;";
     }
     $count_rst = mysql_query($count_sql);
     $count_row = mysql_fetch_array($count_rst, MYSQL_ASSOC);
@@ -368,13 +377,14 @@ function umc_display_logblock() {
     }
 
     if (isset($_POST['today'])) {
-        $sql = "SELECT * FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid` "
-            . "WHERE date=CURRENT_DATE() $lot_filter ORDER BY `date` DESC LIMIT $post_line,$line_limit;";
+        $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+            WHERE date=CURRENT_DATE() $lot_filter ORDER BY `date` DESC LIMIT $post_line,$line_limit;";
     } else {
-        $sql = "SELECT * FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid` "
-            . "WHERE 1 $username_filter $lot_filter ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+        $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+            WHERE 1 $username_filter $lot_filter
+	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     }
     $rst = mysql_query($sql);
 
@@ -452,12 +462,11 @@ function umc_logores_item_name($type, $data = 0) {
 
 function umc_universal_web_stats() {
     global $UMC_DOMAIN;
-    $sql = "SELECT `date`, COUNT( DISTINCT username) as users "
-        . "FROM minecraft_log.universal_log "
-        . "WHERE (plugin,action) "
-        . "IN (('system','login')) "
-        . "GROUP BY `date` "
-        . "ORDER BY `date`;";
+    $sql = "SELECT `date`, COUNT( DISTINCT username) AS users
+        FROM minecraft_log.universal_log
+        WHERE (plugin,action) IN (('system','login'))
+        GROUP BY `date`
+        ORDER BY `date`;";
 
     $rst = mysql_query($sql);
     $out = '<h2>Unique user logins per day</h2>';
@@ -633,12 +642,12 @@ function umc_log_kill_display() {
     }
     $count_sql = '';
     if (isset($_POST['today'])) {
-        $count_sql = "SELECT count(id) as counter FROM `minecraft_log`.`$world_filter` "
-            . "WHERE date=CURRENT_DATE() $lot_filter;";
+        $count_sql = "SELECT count(id) as counter FROM `minecraft_log`.`$world_filter`
+            WHERE date=CURRENT_DATE() $lot_filter;";
     } else {
-        $count_sql = "SELECT count(id) as counter, playername as killer FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid` "
-            . "WHERE 1 $killer_filter $lot_filter;";
+        $count_sql = "SELECT count(id) as counter, playername as killer FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid`
+            WHERE 1 $killer_filter $lot_filter;";
     }
     // echo $count_sql;
     $count_rst = mysql_query($count_sql);
@@ -657,17 +666,17 @@ function umc_log_kill_display() {
     $badmobs = '(33,138,1114,1115,1117,1123,1126,1128,1129,1131,1136,1930)';
 
     if (isset($_POST['today'])) {
-        $sql = "SELECT id, date, weapon, x,y,z, victims.playername as victim, killers.playername as killer FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` as victims ON `$world_filter`.`victim`=`victims`.`playerid` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid` "
-            . "WHERE date=CURRENT_DATE() AND killers.playerid NOT IN $badmobs AND victims.playerid NOT IN $badmobs $lot_filter "
-            . "ORDER BY `date` DESC LIMIT $post_line,$line_limit;";
+        $sql = "SELECT id, date, weapon, x,y,z, victims.playername AS victim, killers.playername AS killer FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` as victims ON `$world_filter`.`victim`=`victims`.`playerid`
+            LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid`
+            WHERE date=CURRENT_DATE() AND killers.playerid NOT IN $badmobs AND victims.playerid NOT IN $badmobs $lot_filter
+            ORDER BY `date` DESC LIMIT $post_line,$line_limit;";
     } else {
-        $sql = "SELECT id, date, weapon, x,z,y, victims.playername as victim, killers.playername as killer FROM `minecraft_log`.`$world_filter` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` as victims ON `$world_filter`.`victim`=`victims`.`playerid` "
-            . "LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid` "
-            . "WHERE killers.playerid NOT IN $badmobs AND victims.playerid NOT IN $badmobs $killer_filter $lot_filter "
-            . "ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+        $sql = "SELECT id, date, weapon, x,z,y, victims.playername AS victim, killers.playername AS killer FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` as victims ON `$world_filter`.`victim`=`victims`.`playerid`
+            LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`killer`=`killers`.`playerid`
+            WHERE killers.playerid NOT IN $badmobs AND victims.playerid NOT IN $badmobs $killer_filter $lot_filter
+            ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     }
     // echo $sql;
     $rst = mysql_query($sql);

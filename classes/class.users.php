@@ -54,8 +54,8 @@ class User extends Users {
             return $this->uuid;
         } else if (isset($this->wordpress_id)) {
             // get uuid from wordpress_id
-            $sql = "SELECT meta_value as output FROM minecraft.wp_usermeta "
-                . "WHERE user_id=$this->wordpress_id AND meta_key ='minecraft_uuid' LIMIT 1;";
+            $sql = "SELECT meta_value as output FROM minecraft.wp_usermeta
+                WHERE user_id=$this->wordpress_id AND meta_key ='minecraft_uuid' LIMIT 1;";
             $D = umc_mysql_fetch_all($sql);
             if (count($D) !== 1) {
                 XMPP_ERROR_trigger("Wordpress ID $this->wordpress_id is invalid!");
@@ -64,9 +64,9 @@ class User extends Users {
             $this->uuid = $D[0]['output'];
             return $this->uuid;
         } else if (isset($this->username)) {
-            $sql = "SELECT meta_value as output FROM minecraft.wp_users "
-                . "LEFT JOIN minecraft.wp_usermeta ON ID=user_id "
-                . "WHERE display_name=$this->username AND meta_key ='minecraft_uuid' LIMIT 1;";
+            $sql = "SELECT meta_value as output FROM minecraft.wp_users
+                LEFT JOIN minecraft.wp_usermeta ON ID=user_id
+                WHERE display_name=$this->username AND meta_key ='minecraft_uuid' LIMIT 1;";
             $D = umc_mysql_fetch_all($sql);
             $this->uuid = $D[0]['output'];
             if (count($D) !== 1) {

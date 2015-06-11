@@ -136,8 +136,8 @@ function umc_mail_new($recipient = false) {
     }
 
     $mysql_title = trim(mysql_real_escape_string($title));
-    $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) "
-            . "VALUES ('$uuid','$recipient_uuid','$mysql_title','','draft', NOW());";
+    $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
+            VALUES ('$uuid','$recipient_uuid','$mysql_title','','draft', NOW());";
     mysql_query($sql);
     $id = mysql_insert_id();
     umc_mail_display($id);
@@ -442,10 +442,10 @@ function umc_test_mail() {
  */
 function umc_mail_send_alert($mail_id = 3886) {
     global $UMC_DOMAIN;
-    $sql = "SELECT user_mail.*, user_email FROM minecraft_srvr.user_mail "
-        . "LEFT JOIN minecraft_srvr.UUID ON recipient_uuid=UUID "
-        . "LEFT JOIN minecraft.wp_users ON username=display_name "
-        . "WHERE msg_id=$mail_id;";
+    $sql = "SELECT user_mail.*, user_email FROM minecraft_srvr.user_mail
+        LEFT JOIN minecraft_srvr.UUID ON recipient_uuid=UUID
+        LEFT JOIN minecraft.wp_users ON username=display_name
+        WHERE msg_id=$mail_id;";
     $data = umc_mysql_fetch_all($sql);
     $mail = $data[0];
     $alerts = umc_wp_get_meta($mail['recipient_uuid'], 'mc_mail_alerts');
@@ -596,12 +596,12 @@ function umc_mail_web() {
                 $status = 'sent';
             }
             if (isset($msg_id)) {
-                $sql = "UPDATE minecraft_srvr.user_mail "
-                    . "SET `sender_uuid`=$sender, `recipient_uuid`=$recipient, `title`=$subject, `message`=$message, `status`='$status', `date_time`=NOW() "
-                    . "WHERE msg_id=$msg_id;";
+                $sql = "UPDATE minecraft_srvr.user_mail
+                    SET `sender_uuid`=$sender, `recipient_uuid`=$recipient, `title`=$subject, `message`=$message, `status`='$status', `date_time`=NOW()
+                    WHERE msg_id=$msg_id;";
             } else {
-                $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) "
-                    . "VALUES ($sender,$recipient,$subject,$message,'$status', NOW());";
+                $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
+                    VALUES ($sender,$recipient,$subject,$message,'$status', NOW());";
             }
             umc_mysql_query($sql, true);
 
@@ -617,10 +617,10 @@ function umc_mail_web() {
 
     if ($action == 'edit') {
         $msg_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-        $onemail_sql = "SELECT `msg_id`, `date_time`, `recipient_uuid`, username, `title`, `message`, `status` "
-                . "FROM minecraft_srvr.`user_mail` "
-                . "LEFT JOIN minecraft_srvr.UUID ON recipient_uuid=UUID "
-                . "WHERE msg_id=$msg_id AND sender_uuid='$uuid' AND status='draft';";
+        $onemail_sql = "SELECT `msg_id`, `date_time`, `recipient_uuid`, username, `title`, `message`, `status`
+                FROM minecraft_srvr.`user_mail`
+                LEFT JOIN minecraft_srvr.UUID ON recipient_uuid=UUID
+                WHERE msg_id=$msg_id AND sender_uuid='$uuid' AND status='draft';";
         $mail_data = umc_mysql_fetch_all($onemail_sql);
         if (count($mail_data) == 0) {
             $out .= "ERROR: The draft email with ID $msg_id could not be found!";
@@ -644,8 +644,8 @@ function umc_mail_web() {
     } else if ($action == 'mail') {
         $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a>";
         $msg_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-        $onemail_sql = "SELECT `msg_id`, `date_time`, `sender_uuid`, `recipient_uuid`, `title`, `message`, `status` FROM minecraft_srvr.`user_mail` "
-                . "WHERE msg_id=$msg_id AND (recipient_uuid='$uuid' OR sender_uuid='$uuid');";
+        $onemail_sql = "SELECT `msg_id`, `date_time`, `sender_uuid`, `recipient_uuid`, `title`, `message`, `status` FROM minecraft_srvr.`user_mail`
+                WHERE msg_id=$msg_id AND (recipient_uuid='$uuid' OR sender_uuid='$uuid');";
         $mail_data = umc_mysql_fetch_all($onemail_sql);
         if (count($mail_data) == 0) {
             $out .= "ERROR: The email with ID $msg_id could not be found!";
@@ -738,11 +738,11 @@ function umc_mail_web() {
             . "<span style=\"float:right;\"><input type=\"checkbox\" name=\"email_alerts\" value=\"email_alerts\" $checked onchange='this.form.submit()'> Send e-mail alerts</span>"
             . "</div></form>\n";
 
-        $sql = "SELECT `msg_id`, `date_time`, s_ref.username as sender, r_ref.username as recipient, `title`, status "
-                . "FROM minecraft_srvr.`user_mail` "
-                . "LEFT JOIN minecraft_srvr.UUID as s_ref on sender_uuid=s_ref.UUID "
-                . "LEFT JOIN minecraft_srvr.UUID as r_ref on recipient_uuid=r_ref.UUID "
-                . "WHERE $sql_filter ORDER BY date_time DESC;";
+        $sql = "SELECT `msg_id`, `date_time`, s_ref.username as sender, r_ref.username as recipient, `title`, status
+                FROM minecraft_srvr.`user_mail`
+                LEFT JOIN minecraft_srvr.UUID as s_ref on sender_uuid=s_ref.UUID
+                LEFT JOIN minecraft_srvr.UUID as r_ref on recipient_uuid=r_ref.UUID
+                WHERE $sql_filter ORDER BY date_time DESC;";
         $status_header = "";
         if ($post_folder == 'outbox') {
             $status_header = '<th>Status</th>';

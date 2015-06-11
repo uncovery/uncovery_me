@@ -161,8 +161,8 @@ function umc_trivia_ask_users() {
     $question = $quiz_arr['question'];
     $question_id = $quiz_arr['question_id'];
 
-    $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET status='asked' "
-        . " WHERE quiz_id=$quiz_id AND status='preparing';";
+    $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET status='asked'
+        WHERE quiz_id=$quiz_id AND status='preparing';";
     mysql_query($upd_sql);
 
     $question_no = $quiz_arr['question_no'];
@@ -215,8 +215,8 @@ function umc_trivia_answer() {
     // register answer
     umc_money($player, false, $price);
     $answer_str = mysql_real_escape_string($answer);
-    $sql = "INSERT INTO minecraft_quiz.quiz_answers (quiz_id, question_id, answer_text, username, time, result) "
-        . "VALUES ({$quiz_arr['id']}, {$quiz_arr['question_id']}, '$answer_str', '$player', NOW(), 'wrong');";
+    $sql = "INSERT INTO minecraft_quiz.quiz_answers (quiz_id, question_id, answer_text, username, time, result)
+        VALUES ({$quiz_arr['id']}, {$quiz_arr['question_id']}, '$answer_str', '$player', NOW(), 'wrong');";
     mysql_query($sql);
 
     // message the quizmaster
@@ -354,9 +354,9 @@ function umc_trivia_get_current_quiz() {
             'status' => false,
         );
         // get current question
-        $question_sql = "SELECT quiz_questions.question_id, question, status, question_no, answer FROM minecraft_quiz.quiz_questions "
-            . "LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id=catalogue.question_id "
-            . "WHERE quiz_id={$row['quiz_id']} ORDER BY question_no DESC LIMIT 1";
+        $question_sql = "SELECT quiz_questions.question_id, question, status, question_no, answer FROM minecraft_quiz.quiz_questions
+            LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id=catalogue.question_id
+            WHERE quiz_id={$row['quiz_id']} ORDER BY question_no DESC LIMIT 1";
         $question_rst = mysql_query($question_sql);
         if (mysql_num_rows($question_rst) > 0) {
             $question_row = mysql_fetch_array($question_rst, MYSQL_ASSOC);
@@ -371,8 +371,8 @@ function umc_trivia_get_current_quiz() {
 
         // get current answers only if there was a question
         if ($quiz_arr['question_no']) {
-            $answers_sql = "SELECT * FROM minecraft_quiz.quiz_answers "
-                    . "WHERE quiz_id={$quiz_arr['id']} and question_id={$quiz_arr['question_id']} ORDER BY answer_id;";
+            $answers_sql = "SELECT * FROM minecraft_quiz.quiz_answers
+                    WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']} ORDER BY answer_id;";
             $answers_rst = mysql_query($answers_sql);
             if (mysql_num_rows($answers_rst) > 0) {
                 while ($answer_row = mysql_fetch_array($answers_rst, MYSQL_ASSOC)) {
@@ -392,9 +392,9 @@ function umc_trivia_get_current_quiz() {
 
 function umc_trivia_call_question() {
     $luck = mt_rand(1, 7156);
-    $question_sql = "SELECT * FROM minecraft_quiz.catalogue "
-        . "WHERE asked=0 " //AND skipped=0
-        . "AND category NOT IN ('Hard','History','Business') LIMIT $luck, 1;";
+    $question_sql = "SELECT * FROM minecraft_quiz.catalogue
+        WHERE asked=0 AND category NOT IN ('Hard','History','Business')
+	LIMIT $luck, 1;";
     $question_rst = mysql_query($question_sql);
     if (mysql_num_rows($question_rst) == 0) {
         $question_rst = umc_trivia_call_question();
@@ -417,8 +417,10 @@ function umc_trivia_pick_question($quiz_id) {
     );
 
     // find the latest question in this quiz
-    $sql = "SELECT question_no, status, question_id FROM minecraft_quiz.quiz_questions "
-        . "WHERE quiz_id=$quiz_id ORDER BY question_no DESC LIMIT 1";
+    $sql = "SELECT question_no, status, question_id FROM minecraft_quiz.quiz_questions
+        WHERE quiz_id=$quiz_id
+	ORDER BY question_no DESC
+	LIMIT 1";
     $rst = mysql_query($sql);
     $num_rows = mysql_num_rows($rst);
 
@@ -435,13 +437,13 @@ function umc_trivia_pick_question($quiz_id) {
     // insert new question if first or the last one is done
     if ($num_rows == 0 || ($status == 'solved')) {
         // insert new question
-        $ins_sql = "INSERT INTO minecraft_quiz.quiz_questions (`question_id`, `question_no`, `quiz_id`, `status`) "
-            . "VALUES ({$question_arr['id']}, $next_question_no, $quiz_id, 'preparing');";
+        $ins_sql = "INSERT INTO minecraft_quiz.quiz_questions (`question_id`, `question_no`, `quiz_id`, `status`)
+            VALUES ({$question_arr['id']}, $next_question_no, $quiz_id, 'preparing');";
         mysql_query($ins_sql);
     } else {
         // update existing question
-        $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET question_id={$question_arr['id']} "
-            . " WHERE quiz_id=$quiz_id AND question_no=$question_no;";
+        $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET question_id={$question_arr['id']}
+            WHERE quiz_id=$quiz_id AND question_no=$question_no;";
         mysql_query($upd_sql);
         // mark question as skipped
         $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id=$question_id";
@@ -524,9 +526,9 @@ function umc_trivia_webstats() {
         if ($days > 3) {
             continue;
         }
-        $question_sql = "SELECT question_no, question, answer, quiz_questions.question_id FROM minecraft_quiz.quiz_questions "
-            . "LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id = catalogue.question_id "
-            . "WHERE quiz_id = $quiz_id ORDER BY question_no;";
+        $question_sql = "SELECT question_no, question, answer, quiz_questions.question_id FROM minecraft_quiz.quiz_questions
+            LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id = catalogue.question_id
+            WHERE quiz_id = $quiz_id ORDER BY question_no;";
         $question_rst = mysql_query($question_sql);
         while ($question_row = mysql_fetch_array($question_rst, MYSQL_ASSOC)) {
             $question_no = $question_row['question_no'];

@@ -73,9 +73,9 @@ function umc_get_uuid_level($uuid) {
     }
     //SELECT * FROM `permissions_inheritance` WHERE `child` LIKE 'a1b763b9-bd7d-4914-8b4b-8c20bddb5882' ORDER BY `child` DESC
 
-    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions "
-        . "LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child "
-        . "WHERE `name` IN ('$uuid_str') AND permissions.permission='name'";
+    $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
+        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
+        WHERE `name` IN ('$uuid_str') AND permissions.permission='name'";
     $rst = mysql_query($sql);
     $uuid_levels = array();
     // user not found, so he's guest
@@ -384,8 +384,8 @@ function umc_check_user($username) {
         } else {
             // let's try wildcards
             $user_quoted_wild = umc_mysql_real_escape_string("%$username%");
-            $sql_wild = "SELECT display_name FROM minecraft.wp_users "
-                . "WHERE display_name LIKE $user_quoted_wild;";
+            $sql_wild = "SELECT display_name FROM minecraft.wp_users
+                WHERE display_name LIKE $user_quoted_wild;";
             $data_wild = umc_mysql_fetch_all($sql_wild);
             if (count($data_wild) == 1) {
                 return $data_wild[0]['display_name'];
@@ -440,10 +440,10 @@ function umc_user_countlots($user) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // worldguard stores everything in lower case.
     $uuid = umc_uuid_getone($user, 'uuid');
-    $sql = "SELECT count(region_id) as counter "
-        . "FROM minecraft_worldguard.`region_players` "
-        . "LEFT JOIN minecraft_worldguard.user ON user_id=user.id "
-        . "WHERE Owner=1 AND user.uuid='$uuid';";
+    $sql = "SELECT COUNT(region_id) AS counter
+        FROM minecraft_worldguard.`region_players`
+        LEFT JOIN minecraft_worldguard.user ON user_id=user.id
+        WHERE owner=1 AND user.uuid='$uuid';";
     $rst = umc_mysql_query($sql);
     $row = umc_mysql_fetch_array($rst);
     umc_mysql_free_result($rst);
@@ -625,9 +625,9 @@ function umc_user_directory() {
             echo "<strong>Offline since:</strong> $lastlogin days<br>";
         }
         // get user bio
-        $sql = "SELECT meta_value FROM minecraft.wp_users "
-            . "LEFT JOIN minecraft.wp_usermeta ON wp_users.ID = wp_usermeta.user_id "
-            . "WHERE display_name='$username' AND meta_key='description';";
+        $sql = "SELECT meta_value FROM minecraft.wp_users
+            LEFT JOIN minecraft.wp_usermeta ON wp_users.ID = wp_usermeta.user_id
+            WHERE display_name='$username' AND meta_key='description';";
         $rst = mysql_query($sql);
         if (mysql_num_rows($rst) > 0) {
             $row = mysql_fetch_array($rst, MYSQL_ASSOC);
@@ -636,10 +636,10 @@ function umc_user_directory() {
 
 
         // comments
-        $sql = "SELECT comment_date, comment_author, Id, comment_ID, post_title FROM minecraft.wp_comments "
-            . "LEFT JOIN minecraft.wp_posts ON comment_post_ID=Id "
-            . "WHERE comment_author = '$username' AND comment_approved='1' AND Id <> 'NULL' "
-            . "ORDER BY comment_date DESC";
+        $sql = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
+            LEFT JOIN minecraft.wp_posts ON comment_post_id=id
+            WHERE comment_author = '$username' AND comment_approved='1' AND id <> 'NULL'
+            ORDER BY comment_date DESC";
         $rst = mysql_query($sql);
         echo "<strong>Comments:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
@@ -648,10 +648,12 @@ function umc_user_directory() {
         echo "</ul>\n";
 
         //forum posts
-        $sql = "SELECT wp_posts.ID, post_title, post_date, post_parent, post_type FROM minecraft.wp_posts "
-            . "LEFT JOIN minecraft.wp_users ON post_author=wp_users.ID "
-            . "WHERE display_name='$username' AND (post_type='reply' OR post_type='topic') AND post_status='publish'"
-            . "ORDER BY post_date DESC";
+        $sql = "SELECT wp_posts.ID, post_title, post_date, post_parent, post_type FROM minecraft.wp_posts
+            LEFT JOIN minecraft.wp_users ON post_author=wp_users.ID
+            WHERE display_name='$username'
+		AND (post_type='reply' OR post_type='topic')
+		AND post_status='publish'
+            ORDER BY post_date DESC";
         $rst = mysql_query($sql);
         // echo $sql;
         echo "<strong>Forum Posts:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
@@ -772,8 +774,8 @@ function umc_ban_to_database() {
         $reason = $D['reason'];
         $admin = $D['admin'];
         if (!in_array($uuid, $banned_db)) {
-            $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `date`, `uuid`, `source`) "
-                . "VALUES ('$name','$reason', '$admin', '$date', '$uuid', '$source');";
+            $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `date`, `uuid`, `source`)
+                VALUES ('$name','$reason', '$admin', '$date', '$uuid', '$source');";
             mysql_query($sql);
         }
     }
