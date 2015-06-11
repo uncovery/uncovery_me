@@ -4,13 +4,13 @@ global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['update_usericons'] = 'umc_update_usericons';
 
 function umc_sanity_check_users() {
-    $sql = "SELECT username, userlevel, user.uuid, count(region_id) as counter 
-        FROM minecraft_worldguard.`region_players` 
-        LEFT JOIN minecraft_worldguard.user ON user_id = user.id 
-        LEFT JOIN minecraft_worldguard.world ON world_id = world.id 
-        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID 
-        WHERE Owner=1 AND (userlevel LIKE 'Settler%' OR userlevel LIKE 'Citizen%') AND (world.name IN ('flatlands', 'empire')) 
-        GROUP BY uuid 
+    $sql = "SELECT username, userlevel, user.uuid, count(region_id) as counter
+        FROM minecraft_worldguard.`region_players`
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id
+        LEFT JOIN minecraft_worldguard.world ON world_id = world.id
+        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
+        WHERE Owner=1 AND (userlevel LIKE 'Settler%' OR userlevel LIKE 'Citizen%') AND (world.name IN ('flatlands', 'empire'))
+        GROUP BY uuid
         HAVING counter > 1 ";
     $D = umc_mysql_fetch_all($sql);
 }
@@ -300,8 +300,8 @@ function umc_get_userlevel($username) {
     }
     $username_str = implode("','", $user_arr_ok);
 
-    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions 
-        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child 
+    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions
+        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
         WHERE `value` IN ('$username_str') AND permissions.permission='name';";
     $D = umc_mysql_fetch_all($sql);
 
@@ -338,6 +338,47 @@ function umc_get_userlevel($username) {
             return "Guest";
         }
         return $user_levels[$lower_user];
+    }
+}
+/**
+ * Checks for a specific user to exist in wordpress
+ * Can take user_login, display_name or UUID
+ *
+ * returns the wordpress ID
+ *
+ * This will replace the below umc_check_user
+ *
+ * @param type $display_name
+ */
+function umc_user_get_wordpress_id($query) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if (strlen($query) < 2) {
+        return false;
+    }
+    $username_quoted = umc_mysql_real_escape_string($query);
+    // UUID
+    if (strlen($query) > 17) {
+        $uuid = true;
+        $sql = "SELECT user_id as ID FROM minecraft.wp_usermeta
+            WHERE meta_value LIKE $username_quoted;";
+        $D = umc_mysql_fetch_all($sql);
+    } else {
+        // Username
+        $uuid = false;
+        $sql = "SELECT ID FROM minecraft.wp_users
+            WHERE user_login LIKE $username_quoted;";
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) == 0) { // we might have the display_name, not the login
+            $sql = "SELECT ID FROM minecraft.wp_users
+                WHERE display_name LIKE $username_quoted;";
+            $D = umc_mysql_fetch_all($sql);
+        }
+    }
+
+    if (count($D) == 0) {
+        return false;
+    } else {
+        return $D[0]['ID'];
     }
 }
 
@@ -417,9 +458,9 @@ function umc_user_getlots($uuid, $world = false) {
     if ($world) {
         $filter = "AND world.name = '$world'";
     }
-    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players` 
-        LEFT JOIN minecraft_worldguard.user ON user_id = user.id 
-        LEFT JOIN minecraft_worldguard.world ON world_id = world.id 
+    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players`
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id
+        LEFT JOIN minecraft_worldguard.world ON world_id = world.id
         WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
     $rst = umc_mysql_query($sql);
     $out = array();
@@ -568,13 +609,14 @@ function umc_user_directory() {
     if (isset($_GET['u'])) {
         $username_get = filter_var($_GET['u'], FILTER_SANITIZE_STRING);
 
+        $wordpress_id = umc_user_get_wordpress_id($username_get);
         $username = strtolower(umc_check_user($username_get));
-        if (!$username) {
+        if (!$wordpress_id) {
             return "User does not exist!";
         }
 
         // user icon
-        echo get_avatar($username, $size = '96');
+        echo get_avatar($wordpress_id, $size = '96');
         echo "<br><strong>Username:</strong> $username<br>";
         $uuid = umc_user2uuid($username);
         echo "<br><strong>UUID:</strong> $uuid<br>";
@@ -643,7 +685,7 @@ function umc_user_directory() {
         $rst = mysql_query($sql);
         echo "<strong>Comments:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['Id'] . "#comment-" . $row['comment_ID'] . "\">" . $row['post_title'] . "</a></li>\n";
+            echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
         }
         echo "</ul>\n";
 
