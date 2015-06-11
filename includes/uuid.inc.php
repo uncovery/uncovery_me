@@ -140,11 +140,13 @@ function umc_uuid_check_usernamechange($uuid) {
         $wordpress_name = strtolower($d['display_name']);
         $uuid_name = strtolower($d['username']);
         $wp_login = $d['user_login'];
-        $wp_id = $d['ID'];
+        // $wp_id = $d['ID'];
         $mojang_raw = umc_uuid_get_from_mojang($uuid);
         $mojang_name = strtolower($mojang_raw['name']);
-        if (!$mojang_name) {
+        if (!$mojang_name || $mojang_name == '') {
             XMPP_ERROR_trigger("Tried to check for username change, failed to confirm ($sql)");
+            XMPP_ERROR_send_msg("Mojang name for $uuid is $mojang_name");
+            return;
             // let's try the user_login
         /*    $mojang_uuid = umc_uuid_get_from_mojang($wp_login);
             // update the meta table
