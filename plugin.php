@@ -125,7 +125,7 @@ function umc_show_help($args = false) {
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
                         $plugin_name = $args[1] . " ";
                     } else {
-                        $plugin_name = $cmd . " ";
+                        $plugin_name = "";
                     }
                     $command_args = '' ;
                     if (isset($cmd_data['help']['args'])) {
