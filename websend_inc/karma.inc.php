@@ -136,13 +136,14 @@ function umc_setkarma() {
             umc_echo("Giving $receiver $new_karma karma instead of $oldkarma karma.");
             $update_sql = "UPDATE minecraft_srvr.karma set karma=$new_karma
                 WHERE sender_uuid='$sender_uuid' AND receiver_uuid='$receiver_uuid';";
+            umc_mysql_query($update_sql, true);
         }
     } else {
         umc_echo("Giving $new_karma karma to $receiver.");
         $update_sql = "INSERT INTO minecraft_srvr.karma (sender_uuid, receiver_uuid, karma)
             VALUES ('$sender_uuid', '$receiver_uuid', $new_karma);";
+        umc_mysql_query($update_sql, true);
     }
-    umc_mysql_query($sql, true);
     umc_log('karma', 'set', "$sender ($sender_uuid) set $new_karma for $receiver ($receiver_uuid)");
     umc_getkarma($receiver_uuid);
 }
