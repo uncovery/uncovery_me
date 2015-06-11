@@ -7,8 +7,9 @@ body {
 }
 input[type="radio"]:checked+label{  
     font-weight: bold;
-    color: green;
+    color: greenyellow;
     font-size: 15px;    
+    opacity: 1;
 }
 .outerframe {
     font:10px arial,sans-serif;
