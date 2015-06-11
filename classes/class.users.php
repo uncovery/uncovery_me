@@ -36,9 +36,9 @@ class User extends Users {
     private $inventory;
     private $current_item;
 
+    // question: Should we only construct if we have either UUID or wordpress id?
     public function __construct() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-
     }
     
     public function set_uuid($uuid) {
@@ -79,6 +79,15 @@ class User extends Users {
         }
     }
 
+    public function set_username($username) {
+        $this->username = $username;
+    }
+    
+    // requires the UUID to be set
+    public function get_username() {
+        
+    }
+    
     public function ban($reason) {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         global $UMC_USERS;
@@ -103,6 +112,8 @@ class User extends Users {
     }
 }
 
+// This is currently not implemented. We need a way to add user objects as an element of all users
+// currently we simply create a global array that has all user objects in it ($UMC_USERS)
 class Users {
 
 }
