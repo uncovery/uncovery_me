@@ -80,8 +80,8 @@ function umc_setkarma() {
     }
 
     // get user age
-    $age_sql = "SELECT DATEDIFF(NOW(),firstlogin) as online_days FROM minecraft_srvr.UUID "
-        . "WHERE uuid='$sender_uuid'";
+    $age_sql = "SELECT DATEDIFF(NOW(),firstlogin) as online_days FROM minecraft_srvr.UUID
+        WHERE uuid='$sender_uuid'";
     $age_data = umc_mysql_fetch_all($age_sql);
 
     $online_time = $age_data[0]['online_days'];
@@ -110,8 +110,8 @@ function umc_setkarma() {
     $receiver_uuid = umc_user2uuid($receiver);
 
     // get user age
-    $rec_age_sql = "SELECT DATEDIFF(NOW(),firstlogin) as online_days FROM minecraft_srvr.UUID "
-        . "WHERE uuid='$receiver_uuid'";
+    $rec_age_sql = "SELECT DATEDIFF(NOW(),firstlogin) as online_days FROM minecraft_srvr.UUID
+        WHERE uuid='$receiver_uuid'";
     $rec_age_data = umc_mysql_fetch_all($rec_age_sql);
     $rec_online_time = $rec_age_data[0]['online_days'];
 
@@ -122,8 +122,8 @@ function umc_setkarma() {
     }
 
     // check if there is the same karma already, otherwise fix
-    $sql = "SELECT karma FROM minecraft_srvr.karma "
-        . "WHERE sender_uuid='$sender_uuid' AND receiver_uuid='$receiver_uuid';";
+    $sql = "SELECT karma FROM minecraft_srvr.karma
+        WHERE sender_uuid='$sender_uuid' AND receiver_uuid='$receiver_uuid';";
     $data_arr = umc_mysql_fetch_all($sql);
     if (count($data_arr) > 0) {
         $oldkarma = $data_arr[0]['karma'];
@@ -134,13 +134,13 @@ function umc_setkarma() {
             exit;
         } else {
             umc_echo("Giving $receiver $new_karma karma instead of $oldkarma karma.");
-            $update_sql = "UPDATE minecraft_srvr.karma set karma=$new_karma "
-                    . "WHERE sender_uuid='$sender_uuid' AND receiver_uuid='$receiver_uuid';";
+            $update_sql = "UPDATE minecraft_srvr.karma set karma=$new_karma
+                WHERE sender_uuid='$sender_uuid' AND receiver_uuid='$receiver_uuid';";
         }
     } else {
         umc_echo("Giving $new_karma karma to $receiver.");
-        $update_sql = "INSERT INTO minecraft_srvr.karma (sender_uuid, receiver_uuid, karma) "
-                . "VALUES ('$sender_uuid', '$receiver_uuid', $new_karma);";
+        $update_sql = "INSERT INTO minecraft_srvr.karma (sender_uuid, receiver_uuid, karma)
+            VALUES ('$sender_uuid', '$receiver_uuid', $new_karma);";
     }
     umc_mysql_query($sql, true);
     umc_log('karma', 'set', "$sender ($sender_uuid) set $new_karma for $receiver ($receiver_uuid)");

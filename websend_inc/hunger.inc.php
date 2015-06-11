@@ -241,8 +241,8 @@ function umc_hunger_announce() {
         $center = umc_hunger_find_random_location();
 
         // create database entry
-        $sql = "INSERT INTO minecraft_iconomy.`hunger_games` (`admin`, `status`, `x`, `z`) "
-            . "VALUES ('$uuid', 'preparing', {$center['x']}, {$center['z']});";
+        $sql = "INSERT INTO minecraft_iconomy.`hunger_games` (`admin`, `status`, `x`, `z`)
+            VALUES ('$uuid', 'preparing', {$center['x']}, {$center['z']});";
         umc_mysql_query($sql, true);
 
         umc_hunger_addplayer($uuid);
@@ -759,11 +759,11 @@ function umc_hunger_removeplayer($died = true) {
     }
 
     if (!$died) {
-        $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='left', death=NOW() "
-            . "WHERE game_id=$game_id AND uuid='$uuid';";
+        $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='left', death=NOW()
+            WHERE game_id=$game_id AND uuid='$uuid';";
     } else {
-        $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='dead', death=NOW() "
-            . "WHERE game_id=$game_id AND uuid='$uuid';";
+        $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='dead', death=NOW()
+            WHERE game_id=$game_id AND uuid='$uuid';";
     }
     $rst = mysql_query($sql);
     if (mysql_affected_rows() == 0) {
@@ -820,11 +820,11 @@ function umc_hunger_check_winner() {
         XMPP_ERROR_send_msg("Found winner! $winner_uuid");
         $winner = current($player_list);
         if (!in_array($winner, $UMC_PLAYER['online_players']['alive'])) {
-            $sql_game = "UPDATE minecraft_iconomy.`hunger_games` "
-                . "SET status='aborted', end=NOW() WHERE id = $id;";
+            $sql_game = "UPDATE minecraft_iconomy.`hunger_games`
+                SET status='aborted', end=NOW() WHERE id = $id;";
             umc_mysql_query($sql_game, true);
-            $sql_player = "UPDATE minecraft_iconomy.`hunger_players` "
-                . "SET status='left' WHERE uuid='$winner_uuid' and game_id = $id;";
+            $sql_player = "UPDATE minecraft_iconomy.`hunger_players`
+                SET status='left' WHERE uuid='$winner_uuid' and game_id = $id;";
             umc_mysql_query($sql_player, true);
             if ($HUNGER['announce']) {
                 umc_announce("The Hunger Game has been {red}aborted{purple}, no active players online.", $HUNGER['channel']);
@@ -832,8 +832,8 @@ function umc_hunger_check_winner() {
                 umc_echo("The Hunger Game has been {red}aborted{purple}, no active players online.");
             }
         }
-        $sql_winner = "UPDATE minecraft_iconomy.`hunger_games` "
-            . "SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
+        $sql_winner = "UPDATE minecraft_iconomy.`hunger_games`
+            SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
         umc_mysql_query($sql_winner, true);
         $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
         umc_mysql_query($sql, true);
@@ -914,8 +914,11 @@ function umc_hunger_find_random_location() {
         $center_z = $center_z * -1;
     }
     // check if a game existed on that location
-    $sql = "SELECT id FROM minecraft_iconomy.hunger_games "
-        . "WHERE x > ($center_x - 500) AND x < ($center_x + 500) AND z < ($center_z + 500) and z > ($center_z - 500);";
+    $sql = "SELECT id FROM minecraft_iconomy.hunger_games
+        WHERE x > ($center_x - 500)
+	    AND x < ($center_x + 500)
+	    AND z < ($center_z + 500)
+	    AND z > ($center_z - 500);";
     $data = umc_mysql_fetch_all($sql);
     // too close, try again
     if (count($data) > 0) {

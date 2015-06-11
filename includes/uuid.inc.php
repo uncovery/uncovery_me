@@ -325,9 +325,10 @@ function umc_uuid_get_from_wordpress($query) {
         $where_field = 'meta_value';
     }
     // look in the wordpress database
-    $sql = "SELECT $sel_field as output FROM minecraft.wp_users "
-        . "LEFT JOIN minecraft.wp_usermeta ON ID=user_id "
-        . "WHERE $where_field=$query_sql AND meta_key ='minecraft_uuid' LIMIT 1;";
+    $sql = "SELECT $sel_field AS output FROM minecraft.wp_users
+        LEFT JOIN minecraft.wp_usermeta ON ID=user_id
+        WHERE $where_field=$query_sql AND meta_key ='minecraft_uuid'
+	LIMIT 1;";
     $data = umc_mysql_fetch_all($sql);
     if (count($data) == 1) {
         return $data[0]['output'];
@@ -356,8 +357,9 @@ function umc_uuid_get_from_uuid_table($query) {
         $where_field = 'UUID';
     }
     // look in the wordpress database
-    $sql = "SELECT $sel_field as output FROM minecraft_srvr.UUID "
-        . "WHERE $where_field=$query_sql LIMIT 1;";
+    $sql = "SELECT $sel_field as output FROM minecraft_srvr.UUID
+        WHERE $where_field=$query_sql
+	LIMIT 1;";
     $data = umc_mysql_fetch_all($sql);
     if (count($data) == 1) {
         return $data[0]['output'];

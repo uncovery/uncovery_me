@@ -229,8 +229,7 @@ function umc_shop_transaction_record($from, $to, $amount, $value, $item, $type =
         $item_name = $item;
     }
 
-    $ins_sql = "INSERT INTO minecraft_iconomy.`transactions` "
-                 . "(`damage`, `buyer_uuid`, `seller_uuid`, `item_name`, `cost`, `amount`, `meta`) "
-            . "VALUES ('$type', '$to_uuid', '$from_uuid', '$item_name', '$value', '$amount', '$meta');";
+    $ins_sql = "INSERT INTO minecraft_iconomy.`transactions` (`damage`, `buyer_uuid`, `seller_uuid`, `item_name`, `cost`, `amount`, `meta`)
+        VALUES ('$type', '$to_uuid', '$from_uuid', '$item_name', '$value', '$amount', '$meta');";
     umc_mysql_query($ins_sql, true);
 }

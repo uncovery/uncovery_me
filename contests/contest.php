@@ -152,8 +152,8 @@ function umc_create_contest() {
 
     echo "Creating contest entry...<br>";
     global $prefix;
-    $sql = "INSERT INTO ".$prefix."contests (title, description, max_entries, voting_categories, deadline, status, type, x, y, z) "
-		. "VALUES ('$title', '$desc', '$max_entries', '$voting_categories', '$deadline', 'active', '$type', $x, $y, $z)";
+    $sql = "INSERT INTO ".$prefix."contests (title, description, max_entries, voting_categories, deadline, status, type, x, y, z)
+		VALUES ('$title', '$desc', '$max_entries', '$voting_categories', '$deadline', 'active', '$type', $x, $y, $z)";
     mysql_select_db('minecraft_srvr');
     $rst = mysql_query($sql);
     if (!$rst) {

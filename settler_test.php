@@ -289,10 +289,10 @@ function umc_settler_new() {
             umc_log('settler_test', 'step_6', "$player is at step 6");
             $spawn_lot = strtoupper($UMC_SETTING['world_data'][$world]['spawn']);
             $lower_lot = strtolower($lot);
-            $lot_sql = "SELECT region_cuboid.region_id as lot, sqrt(pow(max_x,2)+pow(max_z,2)) as distance, max_x, max_z "
-                . "FROM minecraft_worldguard.world "
-                . "LEFT JOIN minecraft_worldguard.region_cuboid ON world.id=region_cuboid.world_id "
-                . "WHERE region_cuboid.region_id='$lower_lot';";
+            $lot_sql = "SELECT region_cuboid.region_id AS lot, sqrt(pow(max_x,2)+pow(max_z,2)) AS distance, max_x, max_z
+                FROM minecraft_worldguard.world
+                LEFT JOIN minecraft_worldguard.region_cuboid ON world.id=region_cuboid.world_id
+                WHERE region_cuboid.region_id='$lower_lot';";
             $lot_rst = mysql_query($lot_sql);
             $lot_data = mysql_fetch_array($lot_rst, MYSQL_ASSOC);
 

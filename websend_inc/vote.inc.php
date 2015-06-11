@@ -123,10 +123,10 @@ function umc_vote_stats() {
     }
 
     // find time for successful votes
-    $sql = "SELECT AVG(DATEDIFF(proposals_votes.`date`, proposals.`date`)) as average, max( DATEDIFF(proposals_votes.`date`, proposals.`date`)) as maximum "
-        . "FROM minecraft_srvr.proposals "
-        . "LEFT JOIN minecraft_srvr.proposals_votes ON proposals.pr_id = proposals_votes.pr_id "
-        . "WHERE STATUS = 'success'";
+    $sql = "SELECT AVG(DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS average, max( DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS maximum
+        FROM minecraft_srvr.proposals
+        LEFT JOIN minecraft_srvr.proposals_votes ON proposals.pr_id = proposals_votes.pr_id
+        WHERE STATUS = 'success'";
     $rst = mysql_query($sql);
     $row = mysql_fetch_array($rst, MYSQL_ASSOC);
     $max = $row['maximum'];
@@ -206,11 +206,11 @@ function umc_vote_web() {
 
     foreach ($lvl_str_arr as $lvl_code => $lvl_str) {
         // This takes all lots where the owners are in one of the user 4 levels that can vote
-        $sql = "SELECT user_id, UUID.UUID as uuid, username FROM `minecraft_worldguard`.`region_players` "
-            . "LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id "
-            . "LEFT JOIN minecraft_srvr.UUID ON minecraft_worldguard.user.uuid=minecraft_srvr.UUID.UUID "
-            . "LEFT JOIN minecraft_srvr.permissions_inheritance ON minecraft_srvr.UUID.UUID=minecraft_srvr.permissions_inheritance.child "
-            . "WHERE parent IN ($lvl_str) AND type=1 AND owner=1 GROUP BY user_id;";
+        $sql = "SELECT user_id, UUID.UUID as uuid, username FROM `minecraft_worldguard`.`region_players`
+            LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
+            LEFT JOIN minecraft_srvr.UUID ON minecraft_worldguard.user.uuid=minecraft_srvr.UUID.UUID
+            LEFT JOIN minecraft_srvr.permissions_inheritance ON minecraft_srvr.UUID.UUID=minecraft_srvr.permissions_inheritance.child
+            WHERE parent IN ($lvl_str) AND type=1 AND owner=1 GROUP BY user_id;";
         $C = umc_mysql_fetch_all($sql);
         // count all the people in the userlevel to know how many votes are needed
         $lvl_amounts[$lvl_code] = count($C);
@@ -261,8 +261,8 @@ function umc_vote_web() {
                 $out .= "<strong>Sorry $username, but you cannot propose yourself!</strong>";
             } else {
                 // ok to be promoted
-                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`) "
-                    . "VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting');";
+                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`)
+                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting');";
                 mysql_query($ins_proposal_sql);
                 $pr_id = mysql_insert_id();
                 $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) VALUES ($pr_id, '$uuid', NOW(), 1);";
@@ -365,13 +365,13 @@ function umc_vote_web() {
                         $sql = "DELETE FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
                         $rst_insert = mysql_query($sql);
                     } else if ($row_check['vote'] != $new_vote) {
-                        $sql = "REPLACE INTO minecraft_srvr.`proposals_votes` (`vote_id`, `pr_id`, `voter_uuid`, `date`, `vote`) VALUES "
-                            . "($vote_id, $pr_id, '$uuid', NOW(), $new_vote);";
+                        $sql = "REPLACE INTO minecraft_srvr.`proposals_votes` (`vote_id`, `pr_id`, `voter_uuid`, `date`, `vote`)
+			    VALUES ($vote_id, $pr_id, '$uuid', NOW(), $new_vote);";
                         $rst_insert = mysql_query($sql);
                     }
                 } else if ($new_vote != 0) {
-                    $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) "
-                        . "VALUES ($pr_id, '$uuid', NOW(), $new_vote);";
+                    $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`)
+                        VALUES ($pr_id, '$uuid', NOW(), $new_vote);";
                     $rst_insert = mysql_query($sql);
                 }
             } else if ($prop_status == 'closed') {

@@ -328,11 +328,11 @@ function umc_vanity_get_title() {
 }
 
 function umc_vanity_web() {
-    $sql = "SELECT name, value, username "
-            . "FROM minecraft_srvr.permissions "
-            . "LEFT JOIN minecraft_srvr.UUID ON name=UUID "
-            . "WHERE permission='suffix' AND value NOT LIKE \"\" AND type=1 "
-            . "ORDER BY name;";
+    $sql = "SELECT name, value, username
+            FROM minecraft_srvr.permissions
+            LEFT JOIN minecraft_srvr.UUID ON name=UUID
+            WHERE permission='suffix' AND value NOT LIKE \"\" AND type=1
+            ORDER BY name;";
     $rst = mysql_query($sql);
     $out = "<table>\n<tr><th>No.</th><th>Username</th><th>Title</th></tr>\n";
     $count = 0;

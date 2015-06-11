@@ -400,8 +400,8 @@ function umc_lottery_log_import() {
 
             $date_time = umc_lottery_lot_fix_time($matches[4]);
             // echo $matches[4] . " => $date_time <br>";
-            $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`) "
-                . "VALUES ('{$matches[2]}', '$date_time', '{$matches[1]}', '{$matches[3]}');";
+            $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
+                VALUES ('{$matches[2]}', '$date_time', '{$matches[1]}', '{$matches[3]}');";
             mysql_query($sql);
             $count++;
         }
@@ -452,11 +452,11 @@ function umc_lottery_lot_fix_time($datetime) {
 
 function umc_lottery_web_stats() {
     global $UMC_DOMAIN;
-    $sql = "SELECT count( vote_id ) as vote_count, website, DATE_FORMAT(`datetime`,'%Y-%m-%d') as date "
-        . "FROM minecraft_log.votes_log "
-        ."WHERE website <> 'minecraftservers' "
-        . "GROUP BY website, DAY( `datetime` ),MONTH( `datetime` ), YEAR( `datetime` ) "
-        . "ORDER BY YEAR( `datetime` ) , MONTH( `datetime` ), DAY( `datetime` ) ";
+    $sql = "SELECT count( vote_id ) AS vote_count, website, DATE_FORMAT(`datetime`,'%Y-%m-%d') AS date
+        FROM minecraft_log.votes_log
+        WHERE website <> 'minecraftservers'
+        GROUP BY website, DAY( `datetime` ),MONTH( `datetime` ), YEAR( `datetime` )
+        ORDER BY YEAR( `datetime` ) , MONTH( `datetime` ), DAY( `datetime` ) ";
 
     $rst = mysql_query($sql);
     $out = '';
