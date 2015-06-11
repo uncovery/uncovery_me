@@ -18,7 +18,6 @@ $WS_INIT['story'] = array(
             'args' => '<story code>',
             'long' => 'Stories can be created by all users on the website. If you find a sign with /story <code> you can type that command and see that story.;',
             ),
-        'top' => true,
         'function' => 'umc_story_show',
     ),
 );
