@@ -103,6 +103,9 @@ function run_umc_scheduler() {
     // switch off daylight cycle for darklands, just to be sure
     $cmd = "mv gamerule doDaylightCycle false darklands";
     umc_exec_command($cmd);
+    // also disable autoheal for deathlands
+    $cmd2 = "mv modify set autoheal false deathlands";
+    umc_exec_command($cmd2);
 
     umc_lottery_log_import();
     umc_ban_to_database();
