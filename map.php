@@ -79,9 +79,9 @@ function umc_create_map() {
 
     $freeonly = false;
     if (
-        (isset($s_get['freeonly']) && $s_get['freeonly'] == 'true') 
-        || 
-        (isset($s_post['freeonly']) && $s_post['freeonly'] == 'true')) 
+        (isset($s_get['freeonly']) && $s_get['freeonly'] == 'true')
+        ||
+        (isset($s_post['freeonly']) && $s_post['freeonly'] == 'true'))
         {
         $freeonly = true;
     }
@@ -105,11 +105,11 @@ function umc_create_map() {
         // create the top menu
         $menu .= umc_map_menu($worlds, $world, $freeonly);
     } else if ($settler_test){
-        $menu .= "Pick a lot that looks nice to you. Closer to spawn is more convenient. Then click here: "
+        $menu .= "Pick a lot that looks nice to you. Closer to spawn is more convenient. <button type='button' onclick='find_spawn()'>Find Spawn</button> Then click here: "
             . "<input id=\"settler_test_next\" type=\"submit\" name=\"Next\" value=\"Next\">\n";
     } else if ($find_lot) {
-        $menu .= "Follow the red line from your icon to your lot $player_lot and then press "
-            . "<input type=\"submit\" name=\"Next\" value=\"Next\">\n";
+        $menu .= "Walk in-game along the red line to your lot $player_lot and then press "
+            . "<input type=\"submit\" name=\"Next\" value=\"Next\"> <button type='button' onclick='find_spawn()'>Find Spawn</button> \n";
     } else {
         $menu .= "Find your user head on the map and click on the button next to it!";
     }
@@ -640,10 +640,10 @@ function umc_region_data($world_name) {
         XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
         return false;
     }
-    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version 
-        FROM minecraft_worldguard.region 
-        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id 
-        LEFT JOIN minecraft_srvr.lot_version ON id=lot 
+    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version
+        FROM minecraft_worldguard.region
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id
+        LEFT JOIN minecraft_srvr.lot_version ON id=lot
         WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
     //echo $reg_sql;
     $reg_rst = mysql_query($reg_sql);
@@ -768,9 +768,9 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
         $menu .= "<a href=\"$UMC_DOMAIN/admin/index.php?function=create_map&amp;world=$world&amp;lag=true\">Heatmap</a>\n | ";
     }
     */
-    
+
     $menu .= umc_read_markers_file('scrollto', $current_world);
-    
+
     return $menu;
 }
 
