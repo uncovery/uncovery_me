@@ -128,10 +128,10 @@ function umc_uuid_record_lotcount($user = false) {
 function umc_uuid_check_usernamechange($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    $sql = 'SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
+    $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
         LEFT JOIN minecraft.wp_usermeta ON ID=wp_usermeta.user_id
         LEFT JOIN minecraft_srvr.UUID ON UUID.UUID=wp_usermeta.meta_value
-        WHERE meta_key=\'minecraft_uuid\' AND meta_value=\'' . $uuid . '\'';
+        WHERE meta_key='minecraft_uuid' AND meta_value='$uuid';";
     $D = umc_mysql_fetch_all($sql);
 
     foreach ($D as $d) {
