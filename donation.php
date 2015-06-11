@@ -265,7 +265,7 @@ function umc_process_donation() {
         shipping=0.00
         "
      */
-    
+
     if(!$res){
         //HTTP ERROR
     } else {
@@ -277,7 +277,7 @@ function umc_process_donation() {
                 list($key,$val) = explode("=", $lines[$i]);
                 $keyarray[urldecode($key)] = urldecode($val);
             }
-          
+
             XMPP_ERROR_trigger($res);
             // process payment
             $firstname = $keyarray['first_name'];
@@ -511,36 +511,29 @@ function umc_donation_level($user, $debug = false) {
     $U = umc_uuid_getboth($user);
     $uuid = $U['uuid'];
     $username = $U['username'];
-    if ($debug) {
-        XMPP_ERROR_send_msg("Checking donation upgrade of user $username");
-    }
-
+    $debug_txt = '';
 
     global $UMC_SETTING;
     $date_now = new DateTime("now");
 
     $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid='$uuid';";
     $level = umc_get_uuid_level($uuid);
-    if ($debug) {
-        XMPP_ERROR_send_msg("Level: $level / SQL: $sql");
-    }
 
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     // if there are 0 donations, user should not be changes
-    if (mysql_num_rows($rst) == 0 && (strstr($level, "Donator"))) {
+    if (count($D) == 0 && (strstr($level, "Donator"))) {
         XMPP_ERROR_trigger("User $username ($uuid) never donated but has a donator level ($level)");
-    } else if (mysql_num_rows($rst) == 0) {
-        if ($debug) {
-            XMPP_ERROR_send_msg("$username ($uuid) does not have any donations");
-        }
+    } else if (count($D) == 0) {
+        $debug_txt .= "$username ($uuid) does not have any donations\n";
         return;
     }
+    $debug_txt .= "Checking donation upgrade of user $username, current UserLevel: $level\n";
 
     $donation_level = 0;
 
     // go through all donations and find out how much is still active
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $date_donation = new DateTime($row['date']);
         $interval = $date_donation->diff($date_now);
         $years = $interval->format('%y');
@@ -550,15 +543,12 @@ function umc_donation_level($user, $debug = false) {
         if ($donation_leftover < 0) {
             $donation_leftover = 0; // do not create negative carryforward
         }
-        $donation_level = $donation_level + ceil($donation_leftover);
-        if ($debug) {
-            XMPP_ERROR_send_msg("Interval: $years, $months = $donation_term months, $donation_leftover are leftover, Donation level: $donation_level");
-        }
+        $donation_level = $donation_level + $donation_leftover;
+        $debug_txt .= "Amount donated {$row['amount']} $years years $months m ago = $donation_term months ago, $donation_leftover leftover, level: $donation_level\n";
     }
+    $donation_level_rounded = ceil($donation_level);
     // get userlevel and check if demotion / promotion is needed
-    if ($debug) {
-        XMPP_ERROR_send_msg("user $username ($uuid) has donation level of $donation_level, now is $level");
-    }
+    $debug_txt .= "user $username ($uuid) has donation level of $donation_level_rounded, now is $level\n";
 
     // current userlevel
     $ranks_lvl = array_flip($UMC_SETTING['ranks']);
@@ -574,39 +564,34 @@ function umc_donation_level($user, $debug = false) {
     }
 
     // get future promotion level
-    if (mysql_num_rows($rst) == 0) {
+    if (count($D) == 0) { // this never happens since it's excluded above
         $future = 0;
-    } else if ($donation_level >= 1) {
+    } else if ($donation_level_rounded >= 1) {
         $future = 2;
-    } else if ($donation_level < 1) {
+    } else if ($donation_level_rounded < 1) {
         $future = 1;
     }
-    if ($debug) {
-        XMPP_ERROR_send_msg("future = $future, current = $current");
-    }
+    $debug_txt .= "future = $future, current = $current\n";
 
     $change = $future - $current;
     if ($change == 0) {
-        if ($debug) {
-            XMPP_ERROR_send_msg("User has right level, nothing to do");
-        }
+        $debug_txt .= "User has right level, nothing to do\n";
         return false; // bail if no change needed
+    } else {
+        // we have a change in level, let's get an error report
+        $debug = true;
     }
 
-    if ($debug) {
-        XMPP_ERROR_send_msg("User will change $change levels");
-    }
+    $debug_txt .= "User will change $change levels\n";
 
     // get currect rank index
 
-    if ($debug) {
-        XMPP_ERROR_send_msg("Current Rank index = $cur_lvl");
-    }
+    $debug_txt .= "Current Rank index = $cur_lvl\n";
+
     // calculate base level
     $base_lvl = $cur_lvl - $current;
-    if ($debug) {
-        XMPP_ERROR_send_msg("User base level = $base_lvl");
-    }
+    $debug_txt .= "User base level = $base_lvl\n";
+
     $new_lvl = $base_lvl + $future;
     if ($new_lvl == $cur_lvl) {
         XMPP_ERROR_send_msg("Donations upgrade: Nothing to do, CHECK this should have bailed earlier!");
@@ -614,11 +599,13 @@ function umc_donation_level($user, $debug = false) {
     }
     $new_rank = $UMC_SETTING['ranks'][$new_lvl];
 
-    if ($debug) {
-        XMPP_ERROR_send_msg("User $username upgraded from $level to $new_rank");
-    }
+    $debug_txt .= "User $username upgraded from $level to $new_rank\n";
+
     umc_exec_command("pex user $uuid group set $new_rank");
     umc_log('Donations', 'User Level de/promotion', "User $username upgraded from $level to $new_rank");
 
-    return ceil($donation_level); // . "($donation_level $current - $future - $change)";
+    if ($debug) {
+        XMPP_ERROR_send_msg($debug_txt);
+    }
+    return $donation_level_rounded; // . "($donation_level $current - $future - $change)";
 }
