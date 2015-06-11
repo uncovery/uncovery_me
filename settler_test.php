@@ -149,7 +149,7 @@ function umc_settler_new() {
             } else if ($player_lot != $s_post['lot']) {
                 $step = 8;
                 umc_log('settler_test', 'step_8_fail', "$player failed step 8");
-                $error = "You need to walk until lot {$s_post['lot']} before you can continue. you are now in lot $player_lot!";
+                $error = "You need to get lot {$s_post['lot']} before you can continue. Please either walk there or use /jump {$s_post['lot']}. You are now in lot $player_lot!";
             }
             break;
     }
@@ -377,11 +377,11 @@ function umc_settler_new() {
             $out .="<h1>Step 11: Congratulations!</h1>"
                . "You have been promoted to Settler!<br>";
             if ($userlevel == 'Guest') {
-                $cmd = "pex promote {$UMC_USER['uuid']}";                
+                $cmd = "pex promote {$UMC_USER['uuid']}";
                 umc_exec_command($cmd);
                 // update UUID database
                 $sql = "UPDATE minecraft_srvr.UUID SET userlevel='Settler' WHERE UUID='{$UMC_USER['uuid']}';";
-                umc_mysql_query($sql);                
+                umc_mysql_query($sql);
                 umc_exec_command('pex reload');
                 umc_exec_command("ch qm u Congrats $player for becoming Settler!");
                 XMPP_ERROR_send_msg("$userlevel $player got promoted with command " . $cmd);
