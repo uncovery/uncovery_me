@@ -12,6 +12,7 @@ function umc_github_link() {
     // headers:
     $headers = array('X-Github-Event', 'X-Hub-Signature', 'X-Github-Delivery');
 
+    
     $out = '';
     foreach (getallheaders() as $name => $value) {
         $out .= "$name: $value\n";
