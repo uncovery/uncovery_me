@@ -2,6 +2,8 @@
 
 function umc_github_link() {
     $secret = 'IY8uSgfq3HWl60jiOzgC';
+    // sha1 hash: b89d1eb00d87d281b3aa3c7ddf480524996eb6d2
+    //            625b5f28731e107596fd4b0b7464b0eac6a0d35f
     echo "Hello World!";
 
     $foo = file_get_contents("php://input");
@@ -10,13 +12,47 @@ function umc_github_link() {
     XMPP_ERROR_trace("$value");
 
     // header verification:
+    // create $event and $D (data) arrays
+    extract(umc_github_verify());
+    XMPP_ERROR_send_msg($event);
+    XMPP_ERROR_send_msg($D);
+
+
+
+
+}
+
+function umc_github_verify() {
+    // source: http://isometriks.com/verify-github-webhooks-with-php
+    $secret = '[some secret here]';
+
     $headers = getallheaders();
     if (!isset($headers['X-Hub-Signature'])) {
-        return;
+        die();
     }
-    $key = $headers['X-Hub-Signature'];
-    XMPP_ERROR_send_msg("$key");
+    $hubSignature = $headers['X-Hub-Signature'];
+
+    // Split signature into algorithm and hash
+    list($algo, $hash) = explode('=', $hubSignature, 2);
+
+    // Get payload
+    $payload = file_get_contents('php://input');
+
+    // Calculate hash based on payload and the secret
+    $payloadHash = hash_hmac($algo, $payload, $secret);
+
+    // Check if hashes are equivalent
+    if ($hash !== $payloadHash) {
+        // Kill the script or do something else here.
+        die('Bad secret');
+    }
+
+    // Your code here.
+    $data = json_decode($payload);
+    $event = $headers['X-Github-Event'];
+    return array('event' => $event, 'D' => $data);
 }
+
 
 /* sample data issue opening
 'action' => 'opened',
