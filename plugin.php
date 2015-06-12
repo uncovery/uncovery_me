@@ -84,6 +84,7 @@ function umc_wsplg_dispatch($module) {
 }
 
 function umc_show_help($args = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WSEND, $WS_INIT;
     $player = $WSEND['player'];
     $userlevel = umc_get_userlevel($player);
@@ -100,8 +101,8 @@ function umc_show_help($args = false) {
     }
     if ($args[0] == 'help' && isset($args[1]) && !$command) {
         $given_command = $args[1];
-        if(isset($args[2])) { 
-            $given_command .= " " . $args[2]; 
+        if(isset($args[2])) {
+            $given_command .= " " . $args[2];
         }
         umc_error("{white}Action {green}$given_command{white} not recognized, try {yellow}/helpme");
     }
