@@ -3,18 +3,53 @@
 function umc_github_link() {
     // header verification:
     // create $event and $D (data) arrays
-    extract(umc_github_verify());
-    XMPP_ERROR_send_msg($event);
-    // XMPP_ERROR_send_msg($D);
 
+    echo "test";
+    // check if we have valid data
+    $D = umc_github_verify();
+    if ($D) { // yes, insert into table
+        umc_github_data_parse($D);
+    }
+    // display contents
+
+
+    echo "test2";
 }
 
+function umc_github_data_parse($data) {
+    $event = false;
+    $D = false;
+    extract($data);
+    XMPP_ERROR_send_msg($event);
+    XMPP_ERROR_send_msg($D);
+
+    switch ($event) {
+        case 'issue_comment':
+            $id = $D['issue']['id'];
+            $number = $D['issue']['number'];
+            $action = 'comment';
+            $user = umc_mysql_real_escape_string($D['issue']['user']['login']);
+            $action_detail = umc_mysql_real_escape_string($D['comment']['body']);
+            break;
+    }
+
+    $sql = "INSERT INTO `issue_actions`(`id`, `number`, `action`, `user`, `action_detail`)
+        VALUES ($id,$number,$action,$user,$action_detail)";
+    umc_mysql_query($sql, true);
+}
+
+
+/**
+ * Verify the github signature, return the data
+ *
+ * @return array
+ */
 function umc_github_verify() {
     // source: http://isometriks.com/verify-github-webhooks-with-php
     $secret = 'IY8uSgfq3HWl60jiOzgC';
     $headers = getallheaders();
     if (!isset($headers['X-Hub-Signature'])) {
-        die();
+        return false;
     }
     $event = $headers['X-GitHub-Event'];
     $hubSignature = $headers['X-Hub-Signature'];
