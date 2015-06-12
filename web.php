@@ -502,3 +502,8 @@ function umc_web_sphere_generator() {
     </div>';
     return $out;
 }
+
+function umc_github_link() {
+    require_once ('/home/includes/github/index.php');
+    echo unc_github_web('uncovery', 'uncovery_me');
+}
