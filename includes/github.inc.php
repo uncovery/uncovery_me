@@ -17,14 +17,11 @@ function umc_github_link() {
     XMPP_ERROR_send_msg($event);
     XMPP_ERROR_send_msg($D);
 
-
-
-
 }
 
 function umc_github_verify() {
     // source: http://isometriks.com/verify-github-webhooks-with-php
-    $secret = '[some secret here]';
+    $secret = 'IY8uSgfq3HWl60jiOzgC';
 
     $headers = getallheaders();
     if (!isset($headers['X-Hub-Signature'])) {
@@ -44,6 +41,7 @@ function umc_github_verify() {
     // Check if hashes are equivalent
     if ($hash !== $payloadHash) {
         // Kill the script or do something else here.
+        XMPP_ERROR_send_msg('Bad secret');
         die('Bad secret');
     }
 
