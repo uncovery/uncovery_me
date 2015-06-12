@@ -93,6 +93,7 @@ function umc_display_guestinfo(){
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
     } else {
+        $title = "Welcome, $userlevel $username";
         $votables =  umc_vote_get_votable($username, true);
         $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
         if (strstr($userlevel, 'Elder') || $userlevel == 'Owner') { // elders only content
