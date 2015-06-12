@@ -9,4 +9,5 @@ function umc_github_link() {
     $value = var_export(json_decode($foo, true), true);
     XMPP_ERROR_trigger("$value");
 
+    
 }
