@@ -1480,8 +1480,8 @@ function umc_lot_manager_reset_lot($lot, $a) {
                 break;
             } else {
                 $debug .= " NOT OK, going for next!";
-                umc_lot_manager_dib_delete($dibs_uuid, $lot);
             }
+            umc_lot_manager_dib_delete($dibs_uuid, $lot);
             XMPP_ERROR_send_msg("$debug");
         }
         //echo $debug . "<br>";
