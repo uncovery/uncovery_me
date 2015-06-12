@@ -9,16 +9,13 @@ function umc_github_link() {
     $value = var_export(json_decode($foo, true), true);
     XMPP_ERROR_trace("$value");
 
-    // headers:
-    $headers = array('X-Github-Event', 'X-Hub-Signature', 'X-Github-Delivery');
-
-    
-    $out = '';
-    foreach (getallheaders() as $name => $value) {
-        $out .= "$name: $value\n";
+    // header verification:
+    $headers = getallheaders();
+    if (!isset($headers['X-Hub-Signature'])) {
+        return;
     }
-    XMPP_ERROR_trigger("$out");
-
+    $key = $headers['X-Hub-Signature'];
+    XMPP_ERROR_send_msg("$value");
 }
 
 /* sample data issue opening
