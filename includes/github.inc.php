@@ -12,11 +12,11 @@ function umc_github_link() {
 function umc_github_verify() {
     // source: http://isometriks.com/verify-github-webhooks-with-php
     $secret = 'IY8uSgfq3HWl60jiOzgC';
-
     $headers = getallheaders();
     if (!isset($headers['X-Hub-Signature'])) {
         die();
     }
+    $event = $headers['X-GitHub-Event'];
     $hubSignature = $headers['X-Hub-Signature'];
 
     // Split signature into algorithm and hash
@@ -37,7 +37,7 @@ function umc_github_verify() {
 
     // Your code here.
     $data = json_decode($payload, true);
-    $event = $headers['X-Github-Event'];
+
     XMPP_ERROR_send_msg(var_export($headers, true));
     return array('event' => $event, 'D' => $data);
 }
