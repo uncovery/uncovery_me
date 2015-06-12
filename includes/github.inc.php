@@ -4,8 +4,8 @@ function umc_github_link() {
     // header verification:
     // create $event and $D (data) arrays
     extract(umc_github_verify());
-    //XMPP_ERROR_send_msg($event);
-    //XMPP_ERROR_send_msg($D);
+    XMPP_ERROR_send_msg($event);
+    // XMPP_ERROR_send_msg($D);
 
 }
 
@@ -35,10 +35,7 @@ function umc_github_verify() {
         die('Bad secret');
     }
 
-    // Your code here.
     $data = json_decode($payload, true);
-
-    XMPP_ERROR_send_msg(var_export($headers, true));
     return array('event' => $event, 'D' => $data);
 }
 
