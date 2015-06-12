@@ -81,6 +81,8 @@ function umc_display_guestinfo(){
     $notice = '';
 
     $content = "<ul>\n";
+
+    # If not logged in
     if (!$UMC_USER) {
         $title = 'Welcome, stranger!';
         $content = "Please feel free to look around! In order to start building with us, please <a href=\"$UMC_DOMAIN/wp-login.php\">whitelist yourself</a>. "
@@ -88,12 +90,22 @@ function umc_display_guestinfo(){
             . "If you are a member already, don\'t be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
             . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" frameborder="0" allowfullscreen></iframe><br><br>';
-    } else if ($userlevel == 'Guest') {
+    }
+
+    # If guest
+    else if ($userlevel == 'Guest') {
         $title = "Welcome, $username!";
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
-    } else {
-        $title = "Welcome, $userlevel $username";
+    }
+
+    # If logged in and non-guest
+    else {
+        $title = "Welcome, <span class='" . strtolower($userlevel} . "'>$username</span>";
+	if (strpos($userlevel, 'Donor'))
+	    $title .= "<span class='pluscolor'>+</span>";
+	if (strpos($userlevel, 'Plus'))
+	    $title .= "<span class='pluscolor'>+</span>";
         $votables =  umc_vote_get_votable($username, true);
         $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
         if (strstr($userlevel, 'Elder') || $userlevel == 'Owner') { // elders only content
