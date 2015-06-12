@@ -1,16 +1,6 @@
 <?php
 
 function umc_github_link() {
-    $secret = 'IY8uSgfq3HWl60jiOzgC';
-    // sha1 hash: b89d1eb00d87d281b3aa3c7ddf480524996eb6d2
-    //            625b5f28731e107596fd4b0b7464b0eac6a0d35f
-    echo "Hello World!";
-
-    $foo = file_get_contents("php://input");
-
-    $value = var_export(json_decode($foo, true), true);
-    XMPP_ERROR_trace("$value");
-
     // header verification:
     // create $event and $D (data) arrays
     extract(umc_github_verify());
@@ -46,7 +36,7 @@ function umc_github_verify() {
     }
 
     // Your code here.
-    $data = json_decode($payload);
+    $data = json_decode($payload, true);
     $event = $headers['X-Github-Event'];
     return array('event' => $event, 'D' => $data);
 }
