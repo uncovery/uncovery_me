@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * This cuntion iterates the plugin folder and includes
+ * all the modules in there.
+ */
 function umc_plg_include() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $folder = '/home/minecraft/server/bin/websend_inc';
