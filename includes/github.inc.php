@@ -15,7 +15,7 @@ function umc_github_link() {
         return;
     }
     $key = $headers['X-Hub-Signature'];
-    XMPP_ERROR_send_msg("$value");
+    XMPP_ERROR_send_msg("$key");
 }
 
 /* sample data issue opening
