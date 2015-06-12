@@ -1,12 +1,17 @@
 <?php
 
 global $UMC_SETTING, $WS_INIT;
+global $HARDCORE;
+
+$HARDCORE = array(
+    'worlds' => array('deathlands'),
+    'first_date' => '2015-06-09 00:00:00',
+    'period_length' => 7, // in days
+);
+
 
 $WS_INIT['hardcore'] = array(  // the name of the plugin
     'disabled' => false,
-    'worlds' => array('deathlands'),
-    'period_length' => 7, // in days
-    'first_date' => '2015-06-09 00:00:00',
     'events' => false,
     'default' => array(
         'help' => array(
@@ -182,12 +187,12 @@ function umc_hardcore_resetworld() {
  *
  */
 function umc_hardcore_get_period() {
-    global $WS_INIT;
-    $first_date_obj = umc_datetime($WS_INIT['hardcore']['first_date']);
+    global $HARDCORE;
+    $first_date_obj = umc_datetime($HARDCORE['first_date']);
     $interval = umc_timer_array_diff($first_date_obj);
     $days_count = $interval->format('%a');
 
-    $period_length = $WS_INIT['hardcore']['period_length'];
+    $period_length = $HARDCORE['period_length'];
     $period_no = floor($days_count / $period_length);
     $period_days_since = $period_no * $period_length;
 
