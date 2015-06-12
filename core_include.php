@@ -45,7 +45,6 @@ require_once($UMC_PATH_MC . '/server/bin/includes/item_search.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/github.inc.php');
 
 // include all websend plugins
 umc_plg_include();
