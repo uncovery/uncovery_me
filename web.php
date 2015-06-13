@@ -74,6 +74,7 @@ function umc_display_guestinfo(){
     if ($UMC_USER) {
         $userlevel = $UMC_USER['userlevel'];
         $username = $UMC_USER['username'];
+        $uuid = $UMC_USER['uuid']; 
     }
 
     $latest_settlers = implode(", ", umc_get_latest_settlers(5));
@@ -122,14 +123,14 @@ function umc_display_guestinfo(){
             $content .= "<li>$votables</li>\n";
         }
 	// Group information
-	$content .= '<li><strong>Your group:</strong> '.  $UMC_USER['userlevel'] . '<li>';
+	$content .= '<li><strong>Your group:</strong> '.  $UMC_USER['userlevel'] . '</li>';
 	// Online time information
 	$online_time = umc_get_lot_owner_age('days', $uuid);
 	if ($online_time) {
 	    $days = $online_time[$username]['firstlogin']['days'];
             $content .= "<li><strong>Member since: </strong> $days days</li>";
             $online_hours = umc_get_online_hours($uuid);
-            $content .= "<li>Online time: </strong> $online_hours hours<li>";
+            $content .= "<li><strong>Online time: </strong> $online_hours hours</li>";
             if ($online_hours < 60) {
                 $remaining = 60 - $online_hours;
                 $content .= "<li>You need <strong>$remaining</strong> more hours online until Citizen status.</li>";
