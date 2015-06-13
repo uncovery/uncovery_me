@@ -90,18 +90,12 @@ function umc_display_guestinfo(){
             . "If you are a member already, don\'t be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
             . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" frameborder="0" allowfullscreen></iframe><br><br>';
-    }
-
-    # If guest
-    else if ($userlevel == 'Guest') {
+    } else if ($userlevel == 'Guest') {
         $title = "Welcome, $username!";
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
-    }
-
-    # If logged in and non-guest
-    else {
-        $title = "Welcome, <span class='" . strtolower($userlevel} . "'>$username</span>";
+    } else {
+        $title = "Welcome, <span class='" . strtolower($userlevel) . "'>$username</span>";
 	if (strpos($userlevel, 'Donor'))
 	    $title .= "<span class='pluscolor'>+</span>";
 	if (strpos($userlevel, 'Plus'))
