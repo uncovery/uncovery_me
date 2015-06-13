@@ -1,0 +1,12 @@
+/* This file defines styles for dynamic pages */
+
+
+/*  Colors for user levels */
+.settler, .settlerdonator, .settlerdonatorplus { color: #FF0 }
+.citizen, .citizendonator, .citizendonatorplus { color: #0FF }
+.architect, .architectdonator, .architectdonatorplus { color: #090 }
+.designer, .designerdonator, .designerdonatorplus { color: #00F }
+.master, .masterdonator, .masterdonatorplus { color: #F44 }
+.elder, .elderdonator, .elderdonatorplus { color: #F80 }
+.pluscolor { color: #EA2 }
+
