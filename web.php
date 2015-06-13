@@ -74,8 +74,7 @@ function umc_display_guestinfo(){
     if ($UMC_USER) {
 	$uuid = $UMC_USER['uuid'];
         $userlevel = $UMC_USER['userlevel'];
-        $username = $UMC_USER['username'];
-        $uuid = $UMC_USER['uuid']; 
+        $username = $UMC_USER['username']; 
     }
 
     $latest_settlers = implode(", ", umc_get_latest_settlers(5));
