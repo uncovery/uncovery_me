@@ -72,6 +72,7 @@ function umc_display_guestinfo(){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     if ($UMC_USER) {
+	$uuid = $UMC_USER['uuid'];
         $userlevel = $UMC_USER['userlevel'];
         $username = $UMC_USER['username'];
         $uuid = $UMC_USER['uuid']; 
