@@ -96,12 +96,14 @@ function umc_display_guestinfo(){
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
     } else {
         $title = "Welcome, <span class='" . strtolower($userlevel) . "'>$username</span>";
-	if (strpos($userlevel, 'Donor'))
+	if (strpos($userlevel, 'Donator'))
 	    $title .= "<span class='pluscolor'>+</span>";
 	if (strpos($userlevel, 'Plus'))
 	    $title .= "<span class='pluscolor'>+</span>";
         $votables =  umc_vote_get_votable($username, true);
+	// Teamspeak information
         $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
+	// Elder/Owner information
         if (strstr($userlevel, 'Elder') || $userlevel == 'Owner') { // elders only content
             $ban_arr = umc_get_recent_bans(3);
             $content .= "<li><strong>Logs:</strong> <a href=\"$UMC_DOMAIN/kills-logfile/\">Kills Logs</a>, <a href=\"$UMC_DOMAIN/logblock-logfile/\">Block Logs</a></li>\n"
@@ -113,11 +115,27 @@ function umc_display_guestinfo(){
             $content = rtrim($content, ", ");
         $content .= "</li>\n";
         }
-        // everyone else's content
+        // Latest settlers
         $content .= "<li><strong>Please welcome our latest settlers:</strong> $latest_settlers</li>\n";
+	// Voting information
         if ($votables) {
             $content .= "<li>$votables</li>\n";
         }
+	// Group information
+	$content .= '<li><strong>Your group:</strong> '.  $UMC_USER['userlevel'] . '<li>';
+	// Online time information
+	$online_time = umc_get_lot_owner_age('days', $uuid);
+	if ($online_time) {
+	    $days = $online_time[$username]['firstlogin']['days'];
+            $content .= "<li><strong>Member since: </strong> $days days</li>";
+            $online_hours = umc_get_online_hours($uuid);
+            $content .= "<li>Online time: </strong> $online_hours hours<li>";
+            if ($online_hours < 60) {
+                $remaining = 60 - $online_hours;
+                $content .= "<li>You need <strong>$remaining</strong> more hours online until Citizen status.</li>";
+            }
+        }
+	// Deposit information
         $deposit = umc_show_depotlist(true, $username, true);
         if (is_array($deposit) && count($deposit) > 0) {
             $content .= "<li><strong>Your Deposit:</strong><ul>";
@@ -256,24 +274,6 @@ function umc_server_status() {
                 $out .= "nobody";
             }
             $out = rtrim($out, ", ");
-            $out .= '<br><strong>Your group:</strong> '.  $UMC_USER['userlevel'] . '<br>';
-
-            $online_time = umc_get_lot_owner_age('days', $uuid);
-            if ($online_time) {
-                $days = $online_time[$username]['firstlogin']['days'];
-                //if ($UMC_USER['userlevel'] == 'Settler') {
-                //    $remaining = 90-$days;
-                //    $out .= "You have <strong>$remaining</strong> days until Citizen status.";
-                // }
-                $out .= "<strong>Member since: </strong> $days days<br>";
-                $online_hours = umc_get_online_hours($uuid);
-                $out .= "<strong>Online time: </strong> $online_hours hours<br>";
-                if ($online_hours < 60) {
-                    $remaining = 60 - $online_hours;
-                    $out .= "You need <strong>$remaining</strong> more hours online until Citizen status.";
-                }
-
-            }
             // $out .= "<br>". umc_donation_stats();
             $dlevel = umc_donation_level($UMC_USER['username']);
             if ($dlevel) {
