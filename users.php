@@ -690,23 +690,28 @@ function umc_user_directory() {
         echo "</ul>\n";
 
         //forum posts
-        $sql = "SELECT wp_posts.ID, post_title, post_date, post_parent, post_type FROM minecraft.wp_posts
-            LEFT JOIN minecraft.wp_users ON post_author=wp_users.ID
-            WHERE display_name='$username'
-		AND (post_type='reply' OR post_type='topic')
-		AND post_status='publish'
-            ORDER BY post_date DESC";
+        $sql = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
+		wpp.post_parent AS parent, wpp.post_type AS type, parent.title AS parent_title
+	    FROM minecraft.wp_posts AS wpp
+	    LEFT JOIN minecraft.wp_users ON wpp.post_author=wp_users.id
+	    LEFT JOIN minecraft.wpp AS parent ON parent.id=wpp.post_parent
+	    WHERE wpp.display_name='$username'
+		AND (wpp.post_type='reply' OR wpp.post_type='topic')
+		AND wpp.post_status='publish'
+	    ORDER BY wpp.post_date DESC";
         $rst = mysql_query($sql);
         // echo $sql;
         echo "<strong>Forum Posts:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            if ($row['post_type'] == 'reply') {
-                $link = $row['post_parent'] . "#post-" . $row['ID'];
+            $date = $row['post_date'];
+            if ($row['type'] == 'reply') {
+                $link = $row['parent'] . "#post-" . $row['ID'];
+                $title = $row['parent_title'];
             } else {
                 $link = $row['ID'];
+                $title = $row['title'];
             }
-            echo "<li>" . $row['post_date'] . " on <a href=\"/index.php?p=" . $link. "\">" . $row['post_title'] . "</a>";
-            echo "</li>";
+            echo "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
         }
         echo "</ul>\n";
     } else {
