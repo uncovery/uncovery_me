@@ -703,7 +703,7 @@ function umc_user_directory() {
         // echo $sql;
         echo "<strong>Forum Posts:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $date = $row['post_date'];
+            $date = $row['date'];
             if ($row['type'] == 'reply') {
                 $link = $row['parent'] . "#post-" . $row['ID'];
                 $title = $row['parent_title'];
