@@ -32,6 +32,7 @@ $WS_INIT['hunger'] = array(
         'function' => 'umc_hunger_announce',
         'security' => Array(
             'worlds' => Array( 'empire', 'kingdom', 'draftlands', 'skylands', 'aether', 'flatlands', 'city'),
+            'level' => 'Settler',
          ),
     ),
     'join' => array(
@@ -43,6 +44,7 @@ $WS_INIT['hunger'] = array(
         'function' => 'umc_hunger_addplayer',
         'security' => Array(
             'worlds' => Array( 'empire', 'kingdom', 'draftlands', 'skylands', 'aether', 'flatlands', 'city'),
+            'level' => 'Settler',
          ),
     ),
     'start' => array(
