@@ -691,11 +691,11 @@ function umc_user_directory() {
 
         //forum posts
         $sql = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
-		wpp.post_parent AS parent, wpp.post_type AS type, parent.title AS parent_title
-	    FROM minecraft.wp_posts AS wpp
+		wpp.post_parent AS parent, wpp.post_type AS type, parent.post_title AS parent_title
+            FROM minecraft.wp_posts AS wpp
 	    LEFT JOIN minecraft.wp_users ON wpp.post_author=wp_users.id
-	    LEFT JOIN minecraft.wpp AS parent ON parent.id=wpp.post_parent
-	    WHERE wpp.display_name='$username'
+	    LEFT JOIN minecraft.wp_posts AS parent ON parent.id=wpp.post_parent
+	    WHERE wp_users.display_name='$username'
 		AND (wpp.post_type='reply' OR wpp.post_type='topic')
 		AND wpp.post_status='publish'
 	    ORDER BY wpp.post_date DESC";
