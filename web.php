@@ -97,10 +97,12 @@ function umc_display_guestinfo(){
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
     } else {
         $title = "Welcome, <span class='" . strtolower($userlevel) . "'>$username</span>";
-	if (strpos($userlevel, 'Donator'))
+	if (strpos($userlevel, 'Donator')) {
 	    $title .= "<span class='pluscolor'>+</span>";
-	if (strpos($userlevel, 'Plus'))
+        }
+	if (strpos($userlevel, 'Plus')) {
 	    $title .= "<span class='pluscolor'>+</span>";
+        }
         $votables =  umc_vote_get_votable($username, true);
 	// Teamspeak information
         $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
@@ -123,19 +125,21 @@ function umc_display_guestinfo(){
             $content .= "<li>$votables</li>\n";
         }
 	// Group information
-	$content .= '<li><strong>Your group:</strong> '.  $UMC_USER['userlevel'] . '</li>';
+	$content .= '<li><strong>Your stats:</strong> Your level is <strong>'.  $UMC_USER['userlevel'] . '</strong>';
 	// Online time information
 	$online_time = umc_get_lot_owner_age('days', $uuid);
 	if ($online_time) {
 	    $days = $online_time[$username]['firstlogin']['days'];
-            $content .= "<li><strong>Member since: </strong> $days days</li>";
+            $content .= ", you are on the server since <strong> $days days</strong>";
             $online_hours = umc_get_online_hours($uuid);
-            $content .= "<li><strong>Online time: </strong> $online_hours hours</li>";
+            $content .= " and have been online for <strong> $online_hours hours</strong>";
             if ($online_hours < 60) {
                 $remaining = 60 - $online_hours;
-                $content .= "<li>You need <strong>$remaining</strong> more hours online until Citizen status.</li>";
+                $content .= " but you need <strong>$remaining</strong> more hours online until Citizen status";
             }
         }
+        $content .= "!</li>\n";
+               
 	// Deposit information
         $deposit = umc_show_depotlist(true, $username, true);
         if (is_array($deposit) && count($deposit) > 0) {
