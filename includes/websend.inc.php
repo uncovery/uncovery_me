@@ -114,7 +114,7 @@ function umc_ws_eventhandler($event) {
  */
 function umc_ws_get_vars() {
     // make sure we are on websend
-    global $UMC_ENV, $UMC_USER;
+    global $UMC_ENV, $UMC_USER, $UMC_USERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($UMC_ENV !== 'websend') {
         XMPP_ERROR_trigger("Tried to get websend vars, but environment did not match: " . var_export($UMC_ENV, true));
@@ -126,7 +126,7 @@ function umc_ws_get_vars() {
     $json = json_decode(stripslashes($_POST["jsonData"]), true);
     if (!isset($json['Invoker']['Name'])) {
         XMPP_ERROR_trigger("No invoker name in " . var_export($json,true));
-    }
+    }    
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
@@ -200,6 +200,13 @@ function umc_ws_get_vars() {
         $UMC_USER['online_players'] = $players;
         $UMC_USER['player_data'] = $player_all_data;
     }
+    /*
+    $current_user = new User();                         // create a user object
+    $current_user->set_uuid($UMC_USER['uuid']);         // give it a uuid
+    $UMC_USERS['current_user'] = $UMC_USER['uuid'];     // remember that this is the current user
+    $UMC_USERS[$UMC_USER['uuid']] = $current_user;      // add the object to the list of all users
+     * 
+     */
 }
 
 // collect a command from the server
