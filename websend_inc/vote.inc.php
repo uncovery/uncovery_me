@@ -269,7 +269,7 @@ function umc_vote_web() {
                 $rst = umc_mysql_query($sql, true);
                 $out .= "Thanks $username, $proposed_username as been submitted for voting, and your vote has been set, too!";
 
-                
+                /**
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
                     $sql = "";
                     $rst = mysql_query($sql);
@@ -284,6 +284,8 @@ function umc_vote_web() {
                         mail($row['user_email'], $subject, $content, $headers);
                     }
                 }
+                 * 
+                 */
             }
         }
     }
