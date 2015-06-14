@@ -705,10 +705,10 @@ function umc_user_directory() {
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
             $date = $row['date'];
             if ($row['type'] == 'reply') {
-                $link = $row['parent'] . "#post-" . $row['ID'];
+                $link = $row['parent'] . "#post-" . $row['id'];
                 $title = $row['parent_title'];
             } else {
-                $link = $row['ID'];
+                $link = $row['id'];
                 $title = $row['title'];
             }
             echo "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
