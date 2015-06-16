@@ -129,7 +129,7 @@ function umc_display_guestinfo(){
 	// Online time information
 	$online_time = umc_get_lot_owner_age('days', $uuid);
 	if ($online_time) {
-	    $days = $online_time[$username]['firstlogin']['days'];
+	    $days = $online_time[$uuid]['firstlogin']['days'];
             $content .= ", you are on the server since <strong> $days days</strong>";
             $online_hours = umc_get_online_hours($uuid);
             $content .= " and have been online for <strong> $online_hours hours</strong>";
