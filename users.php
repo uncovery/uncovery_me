@@ -659,10 +659,10 @@ function umc_user_directory() {
         echo "<strong>Donations remaining:</strong> $donator_str<br>";
 
         // get member since
-        $online_time = umc_get_lot_owner_age('days', $username);
+        $online_time = umc_get_lot_owner_age('days', $uuid);
         if ($online_time) {
-            $lastlogin = $online_time[$username]['lastlogin']['days'];
-            $firstlogin = $online_time[$username]['firstlogin']['days'];
+            $lastlogin = $online_time[$uuid]['lastlogin']['days'];
+            $firstlogin = $online_time[$uuid]['firstlogin']['days'];
             echo "<strong>Member since:</strong> $firstlogin days<br>";
             echo "<strong>Offline since:</strong> $lastlogin days<br>";
         }
@@ -900,26 +900,26 @@ function umc_get_lot_owner_age($format = 'string', $oneuser = false, $debug  = f
             $first_diff = umc_timer_array_diff($first_datetime);
             foreach ($diff_steps as $code => $text) {
                 $last_val = $last_diff->$code;
-                $users[$username]['lastlogin'][$text] = $last_val;
+                $users[$uuid]['lastlogin'][$text] = $last_val;
 
                 $first_val = $first_diff->$code;
-                $users[$username]['firstlogin'][$text] = $first_val;
+                $users[$uuid]['firstlogin'][$text] = $first_val;
             }
         } else { // days
             $first_seconds = umc_timer_raw_diff($first_datetime);
             if ($debug) {echo "First_seconds = " . var_export($first_seconds, true);}
             $first_days = round($first_seconds / 60 / 60 / 24);
-            $users[$username]['firstlogin']['days'] = $first_days;
-            $users[$username]['firstlogin']['seconds'] = $first_seconds;
+            $users[$uuid]['firstlogin']['days'] = $first_days;
+            $users[$uuid]['firstlogin']['seconds'] = $first_seconds;
             $last_seconds = umc_timer_raw_diff($last_datetime);
             $last_days = round($last_seconds / 60 / 60 / 24);
-            $users[$username]['lastlogin']['days'] = $last_days;
-            $users[$username]['lastlogin']['seconds'] = $last_seconds;
+            $users[$uuid]['lastlogin']['days'] = $last_days;
+            $users[$uuid]['lastlogin']['seconds'] = $last_seconds;
         }
-        $users[$username]['lastlogin']['full'] = $last_time;
-        $users[$username]['firstlogin']['full'] = $first_time;
-        $users[$username]['onlinetime']['seconds'] = $row['onlinetime'];
-        $users[$username]['onlinetime']['days'] = round($row['onlinetime'] / 60 /60 / 24);
+        $users[$uuid]['lastlogin']['full'] = $last_time;
+        $users[$uuid]['firstlogin']['full'] = $first_time;
+        $users[$uuid]['onlinetime']['seconds'] = $row['onlinetime'];
+        $users[$uuid]['onlinetime']['days'] = round($row['onlinetime'] / 60 /60 / 24);
     }
     return $users;
 }
