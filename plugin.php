@@ -93,6 +93,8 @@ function umc_show_help($args = false) {
     $userlevel = umc_get_userlevel($player);
 
     if ($args) { // if show_help is called from another program, we simulate a /help command being issued.
+        $args = array_merge(array('call'), $WSEND['args']);
+    } else {
         $args = $WSEND['args'];
     }
 
