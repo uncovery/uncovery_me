@@ -127,8 +127,6 @@ function umc_uuid_record_lotcount($user = false) {
  */
 function umc_uuid_check_usernamechange($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    XMPP_ERROR_send_msg("checking username change for $uuid");
-    return;
 
     $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
         LEFT JOIN minecraft.wp_usermeta ON ID=wp_usermeta.user_id
