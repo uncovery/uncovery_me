@@ -127,6 +127,8 @@ function umc_uuid_record_lotcount($user = false) {
  */
 function umc_uuid_check_usernamechange($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_send_msg("checking username change for $uuid");
+    return;
 
     $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
         LEFT JOIN minecraft.wp_usermeta ON ID=wp_usermeta.user_id
@@ -144,8 +146,10 @@ function umc_uuid_check_usernamechange($uuid) {
         $mojang_raw = umc_uuid_get_from_mojang($uuid);
         $mojang_name = strtolower($mojang_raw['name']);
         if (!$mojang_name || $mojang_name == '') {
-            XMPP_ERROR_trigger("Tried to check for username change, failed to confirm ($sql)");
-            XMPP_ERROR_send_msg("Mojang name for $uuid is $mojang_name");
+            //XMPP_ERROR_trigger("Tried to check for username change, failed to confirm ($sql)");
+            $s_server = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
+            $referer = "\nREQUEST_URI: " . $s_server['REQUEST_URI'];
+            XMPP_ERROR_send_msg("Fail on Username change check umc_uuid_check_usernamechange: Mojang name for $uuid is $mojang_name $referer");
             return;
             // let's try the user_login
         /*    $mojang_uuid = umc_uuid_get_from_mojang($wp_login);
