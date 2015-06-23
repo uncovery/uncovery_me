@@ -3631,6 +3631,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'redstone_comparator' => 'comparator',
     'gold_chestplate' => 'golden_chestplate',
     'clay_brick' => 'brick',
+    'brick' => 'brick_block',
     'gold_sword' => 'golden_sword',
     'gold_helmet' => 'golden_helmet',
     'stone_plate' => 'stone_pressure_plate',
