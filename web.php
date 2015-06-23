@@ -74,7 +74,7 @@ function umc_display_guestinfo(){
     if ($UMC_USER) {
 	$uuid = $UMC_USER['uuid'];
         $userlevel = $UMC_USER['userlevel'];
-        $username = $UMC_USER['username']; 
+        $username = $UMC_USER['username'];
     }
 
     $latest_settlers = implode(", ", umc_get_latest_settlers(5));
@@ -139,7 +139,7 @@ function umc_display_guestinfo(){
             }
         }
         $content .= "!</li>\n";
-               
+
 	// Deposit information
         $deposit = umc_show_depotlist(true, $username, true);
         if (is_array($deposit) && count($deposit) > 0) {
@@ -502,5 +502,5 @@ function umc_web_sphere_generator() {
 
 function umc_github_link() {
     require_once ('/home/includes/github/index.php');
-    echo unc_github_web('uncovery', 'uncovery_me');
+    echo unc_github_issues('uncovery', 'uncovery_me');
 }
