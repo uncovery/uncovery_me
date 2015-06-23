@@ -99,26 +99,25 @@ function umc_show_help($args = false) {
     }
 
     $command = false;
+    $command_name = '';
+    $plugin_name = '';
     if (isset($args[1])) {
         $command = umc_wsplg_find_command($args[1]);
+        $command_name = $args[1];
     }
-    if ($args[0] == 'help' && isset($args[1]) && !$command) {
-        $given_command = $args[1];
-        if(isset($args[2])) {
-            $given_command .= " " . $args[2];
-        }
-        umc_error("{white}Action {green}$given_command{white} not recognized, try {yellow}/helpme");
+    // If we have a help query, a command name, but it didn't match any known commands
+    if ($args[0] == 'help' && $command_name && !$command) {
+        umc_error("{white}Action {green}$command_name{white} not recognized, try {yellow}/helpme");
     }
 
     umc_header('Uncovery Help', true);
     umc_echo("{gray}   <..> = mandatory   [..] = optional   {ro} = request or offer", true);
-    $plugin_name = "";
     $non_commands = array('default', 'events', 'disabled');
-    if (isset($args[1])) {
+    if ($command_name) {
         if (isset($command['help']['title'])) { // This is a 'default' listing
             umc_pretty_bar("darkblue", "-", "{darkcyan}".$command['help']['title'], 52, true);
             umc_echo($command['help']['long'], true);
-            foreach ($WS_INIT[$args[1]] as $cmd => $cmd_data) {
+            foreach ($WS_INIT[$command_name] as $cmd => $cmd_data) {
                 if (!in_array($cmd, $non_commands)) {
                     // This command is restricted to a user level or higher
                     if (isset($cmd_data['security']['level']) && $player != 'uncovery') {
@@ -127,11 +126,9 @@ function umc_show_help($args = false) {
                         }
                     }
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
-                        $plugin_name = $args[1] . " ";
-                    } else {
-                        $plugin_name = "";
+                        $plugin_name = $command_name . ' ';
                     }
-                    $command_args = '' ;
+                    $command_args = '';
                     if (isset($cmd_data['help']['args'])) {
                         $command_args = "{yellow}" . $cmd_data['help']['args'];
                     }
@@ -140,15 +137,13 @@ function umc_show_help($args = false) {
             }
         } else if (isset($command)) { // sub-command help
             if (!isset($command['top']) || !$command['top']) {
-                $plugin_name = $args[1] . " ";
+                $plugin_name = $command_name . ' ';
             }
             $args_str = '';
             if (isset ($command['help']['args'])) {
                 $args_str = "{yellow}" . $command['help']['args'];
             }
-            umc_echo(
-                "{green}/{$plugin_name}{$command_name} $args_str"
-                . "{gray} => {white}" . $command['help']['short'],true);
+            umc_echo("{green}/$plugin_name$command_name $args_str{gray} => {white}" . $command['help']['short'], true);
             umc_pretty_bar("darkgray","-","",49,true);
             foreach (split(';',$command['help']['long']) as $line) {
                 if ($line != '') {
