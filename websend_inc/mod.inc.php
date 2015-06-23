@@ -96,10 +96,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER;
-    // $args = $UMC_USER['args'];
-    // $message = $args[1];
-    umc_lot_manager_check_before_assign('0b09cd57-5e46-43d0-9949-72a485fed65e', 'emp_x20');
+    XMPP_ERROR_trigger("test");
 }
 
 function umc_mod_banrequest() {
