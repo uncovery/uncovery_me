@@ -1397,7 +1397,7 @@ function umc_lot_reset_process() {
             );
         } else if ($world == 'draftlands' && $choice == umc_get_draftlands_kingdom_equivalent($lot)) {
             $A[$lot] = array(
-                'reason' => "Lot $lot version was set from $version to $mint_version after reset",
+                'reason' => "Lot $lot version was reset to kingdom version $choice by user choice",
                 'source_world' => "$source_path/kingdom",
                 'dest_world' => "$source_path/draftlands",
                 'del_skyblock_inv' => false,
