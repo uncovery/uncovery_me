@@ -12,7 +12,7 @@ $UMC_PATH_MC = "/home/minecraft";
 // include error handling
 global $XMPP_ERROR;
 $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
-$XMPP_ERROR['config']['enabled'] = false;
+$XMPP_ERROR['config']['enabled'] = true;
 require_once('/home/includes/xmpp_error/xmpp_error.php');
 
 // include database abstraction
