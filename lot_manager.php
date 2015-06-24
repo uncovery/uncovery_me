@@ -56,10 +56,6 @@ function umc_lot_manager_main() {
         $world = 'empire';
     }
 
-
-    if (isset($sani_post['save_lot'])) {
-        $out .= umc_lot_manager_process();
-    }
     if (isset($sani_post['delete_dib'])) {
         $dib_lot = $sani_post['lot'];
 
@@ -476,26 +472,21 @@ function umc_lot_do_action($lot, $choice) {
             break;
         default:
             if ($world == 'kingdom') { // gifting choices for kingdom
-                if (in_array($choice, $members)) {
+                if (isset($choice, $members)) {
                     XMPP_ERROR_send_msg("$username tries to give $lot to $choice");
                     // This is pre-checked already but let's make sure this does not conflict and fail with other upcomingoptions
                     umc_lot_remove_all($lot);
                     umc_lot_add_player($choice, $lot, 1);
                     umc_log('lot_manager', 'TRANSFER', "$username gave lot $lot in $world to $choice");
                 }
-            } else  if (($world == 'draftlands') && (substr($choice, 0, 4) == 'king')) {
+            } else if (($world == 'flatlands') || ($world == 'skyblock') || ($world == 'draftlands')) {
                 $sql = "UPDATE minecraft_srvr.lot_version SET `choice`='$choice' WHERE lot='$lot';";
-                $rst = mysql_query($sql);
-                umc_log('lot_manager', 'RESET', "$username had lot $lot reset to kingdom-lot $choice");
-            } else if (($world == 'flatlands') || ($world == 'skyblock')) {
-                $sql = "UPDATE minecraft_srvr.lot_version SET `choice`='$choice' WHERE lot='$lot';";
-                $rst = mysql_query($sql);
-                umc_log('lot_manager', 'RESET', "$username had lot $lot reset to $world-lot $choice");
+                umc_mysql_query($sql, true);
+                umc_log('lot_manager', 'RESET', "$username had lot $lot reset to choice $choice");
             } else {
-                XMPP_ERROR_trigger("$username had invalid $choice for $lot in $world!");
+                XMPP_ERROR_trigger("$username had invalid choice $choice for $lot in $world!");
             }
     }
-
     return $message;
 }
 
@@ -520,7 +511,7 @@ function umc_get_lot_options($lot, $form = false){
         if ($form) {
             $members = umc_get_active_members();
             foreach ($members as $uuid => $member) {
-                $lot_options[$member] = "Gift to $member";
+                $lot_options[$uuid] = "Gift to $member";
             }
         } else {
             $lot_options['gift'] = "Gift to someone (as-is)";
