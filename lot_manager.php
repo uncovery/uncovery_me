@@ -529,8 +529,8 @@ function umc_get_lot_options($lot, $form = false){
         // allow gift & refund etc
         $lot_options['refund'] = 'abandon & refund for 50%';
         $lot_options['reset'] = 'reset to flatlands';
-        $king_lot = umc_get_draftlands_kingdom_equivalent($lot);
-        $lot_options[$king_lot] = 'reset to kingdom';
+        $lot_options['mint_king'] = 'reset to mint kingdom';
+        $lot_options['curr_king'] = 'reset to current kingdom';
         return $lot_options;
     } else if ($world == 'flatlands' || $world == 'skyblock') {
         $lot_choices = $UMC_SETTING['mint_lots'][$world];
@@ -1395,9 +1395,10 @@ function umc_lot_reset_process() {
                 'dibs' => false,
                 'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$mint_version' WHERE lot='$lot' LIMIT 1;",
             );
-        } else if ($world == 'draftlands' && $choice == umc_get_draftlands_kingdom_equivalent($lot)) {
+        } else if ($choice == 'mint_king' && $world == 'draftlands') {
+            $choice = umc_get_draftlands_kingdom_equivalent($lot);
             $A[$lot] = array(
-                'reason' => "Lot $lot version was reset to kingdom version $choice by user choice",
+                'reason' => "Lot $lot version was reset to mint kingdom version $choice by user choice",
                 'source_world' => "$source_path/kingdom",
                 'dest_world' => "$source_path/draftlands",
                 'del_skyblock_inv' => false,
@@ -1407,6 +1408,19 @@ function umc_lot_reset_process() {
                 'dibs' => false,
                 'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$choice' WHERE lot='$lot' LIMIT 1;",
             );
+        } else if ($choice == 'curr_king' && $world == 'draftlands') {
+            $choice = umc_get_draftlands_kingdom_equivalent($lot);
+            $A[$lot] = array(
+                'reason' => "Lot $lot version was reset to current kingdom version $choice by user choice",
+                'source_world' => "$dest_path/kingdom",
+                'dest_world' => "$source_path/draftlands",
+                'del_skyblock_inv' => false,
+                'remove_users' => false,
+                'reset_to' => $choice,
+                'user_shop_clean' => false,
+                'dibs' => false,
+                'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$choice' WHERE lot='$lot' LIMIT 1;",
+            );            
         } else { // other non-default options to reset to, usually lot names on the same world
             // assume that we always copy from the same world, but mint version
             $A[$lot] = array(
