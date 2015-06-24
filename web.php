@@ -504,3 +504,24 @@ function umc_github_link() {
     require_once ('/home/includes/github/index.php');
     echo unc_github_issues('uncovery', 'uncovery_me');
 }
+
+/**
+ * Tablist should be an array('title' => 'link'
+ *
+ * @param type $tablist
+ */
+function umc_web_tabs($tabs_arr, $current_page, $tab_content) {
+    // menu
+    $out = "<ul class=\"umc_tabs\">\n";
+    foreach ($tabs_arr as $tab => $tab_code) {
+        $tab_title = umc_pretty_name($tab);
+        if ($tab_code == $current_page) {
+            $out .= "    <li class=\"umc_active_tab\">$tab_title</li>\n";
+        } else {
+            $out .= "    <li class=\"umc_inactive_tab\"><a href=\"?tab=$tab_code\">$tab_title</a></li>\n";
+        }
+    }
+    $out .= "</ul>\n";
+    $out .= "<div class=\"umc_tab_content\">n$tab_content</div>\n";
+    return $out;
+}
