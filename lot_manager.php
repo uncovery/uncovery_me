@@ -1391,7 +1391,7 @@ function umc_lot_reset_process() {
             $A[$lot] = array(
                 'reason' => "Lot $lot version was reset to mint kingdom version $choice by user choice",
                 'source_world' => "$source_path/kingdom",
-                'dest_world' => "$source_path/draftlands",
+                'dest_world' => "$dest_path/draftlands",
                 'del_skyblock_inv' => false,
                 'remove_users' => false,
                 'reset_to' => $choice,
@@ -1404,7 +1404,7 @@ function umc_lot_reset_process() {
             $A[$lot] = array(
                 'reason' => "Lot $lot version was reset to current kingdom version $choice by user choice",
                 'source_world' => "$dest_path/kingdom",
-                'dest_world' => "$source_path/draftlands",
+                'dest_world' => "$dest_path/draftlands",
                 'del_skyblock_inv' => false,
                 'remove_users' => false,
                 'reset_to' => $choice,
