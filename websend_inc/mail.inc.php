@@ -586,32 +586,8 @@ function umc_mail_web() {
         if ($action == 'Send' && !$check) { // only complain if we are trying to send
             $action = "New Mail";
         } else {
-            $recipient = umc_mysql_real_escape_string($recipient_uuid);
-            $sender = umc_mysql_real_escape_string($uuid);
-            $message = umc_mysql_real_escape_string($message);
-            $subject = umc_mysql_real_escape_string($subject);
-
-            $status = 'draft';
-            if ($action ==  'Send') {
-                $status = 'sent';
-            }
-            if (isset($msg_id)) {
-                $sql = "UPDATE minecraft_srvr.user_mail
-                    SET `sender_uuid`=$sender, `recipient_uuid`=$recipient, `title`=$subject, `message`=$message, `status`='$status', `date_time`=NOW()
-                    WHERE msg_id=$msg_id;";
-            } else {
-                $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
-                    VALUES ($sender,$recipient,$subject,$message,'$status', NOW());";
-            }
-            umc_mysql_query($sql, true);
-
-            if ($action == 'Send') {
-                $mail_id = umc_mysql_insert_id();
-                umc_mail_send_alert($mail_id);
-            }
-
+            umc_mail_backend_send($recipient_uuid, $uuid, $message, $subject, $action, $msg_id);
             $action = '';
-            $post_folder = 'drafts';
         }
     }
 
@@ -763,6 +739,33 @@ function umc_mail_web() {
     $out .= "</div>\n";
     return $out;
 }
+
+function umc_mail_backend_send($recipient_uuid, $sender_uuid, $message_raw, $subject_raw, $action, $msg_id = false) {
+    $recipient = umc_mysql_real_escape_string($recipient_uuid);
+    $sender = umc_mysql_real_escape_string($sender_uuid);
+    $message = umc_mysql_real_escape_string($message_raw);
+    $subject = umc_mysql_real_escape_string($subject_raw);
+
+    $status = 'draft';
+    if ($action ==  'Send') {
+        $status = 'sent';
+    }
+    if (isset($msg_id)) {
+        $sql = "UPDATE minecraft_srvr.user_mail
+            SET `sender_uuid`=$sender, `recipient_uuid`=$recipient, `title`=$subject, `message`=$message, `status`='$status', `date_time`=NOW()
+            WHERE msg_id=$msg_id;";
+    } else {
+        $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
+            VALUES ($sender,$recipient,$subject,$message,'$status', NOW());";
+    }
+    umc_mysql_query($sql, true);
+
+    if ($action == 'Send') {
+        $mail_id = umc_mysql_insert_id();
+        umc_mail_send_alert($mail_id);
+    }
+}
+
 
 /**
  * Formats a column in the mail display
