@@ -269,23 +269,26 @@ function umc_vote_web() {
                 $rst = umc_mysql_query($sql, true);
                 $out .= "Thanks $username, $proposed_username as been submitted for voting, and your vote has been set, too!";
 
-                /**
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
-                    $sql = "";
-                    $rst = mysql_query($sql);
-                    $subject = "[Uncovery Minecraft] $proposed proposed for Elder, please vote!";
+                    $sql = "SELECT user_email, UUID, username FROM minecraft_srvr.`UUID`
+                        LEFT JOIN minecraft.wp_usermeta ON UUID.UUID=meta_value
+                        LEFT JOIN minecraft.wp_users ON user_id=ID
+                        WHERE `userlevel` LIKE 'Elder%' AND lot_count > 0";
+                    $D = umc_mysql_fetch_all($sql);
+                    $subject = "$proposed proposed for Elder, please vote!";
                     $content = "Dear Elder, \r\n\r\nthe user $proposed has been proposed to be promoted to Elder. Please go to\r\n\r\n$UMC_DOMAIN/vote-for-users/\r\n\r\n"
                         . "and vote on this proposal. Please either SUPPORT or VETO the proposal.\r\n"
                         . "Please note that the vote will be closed as 'failed' unless all Elders cast a vote within the coming 2 months.\r\n"
                         . "Thanks a lot for supporting Uncovery Minecraft!\r\n\r\nBest regards,\r\nUncovery";
                     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
                     mail('minecraft@uncovery.me', $subject, $content, $headers);
-                    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-                        mail($row['user_email'], $subject, $content, $headers);
+                    foreach ($D as $row) {
+                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers);
+                        umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
                     }
                 }
-                 * 
-                 */
+
+                
             }
         }
     }
