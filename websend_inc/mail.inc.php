@@ -118,11 +118,12 @@ function umc_mail_new($recipient = false) {
         array_unshift($args, "[Ticket]");
     }
 
-    $recipient_uuid = umc_user2uuid($recipient);
     // check recipient
-    if (!umc_check_user($recipient)) {
+    if (!umc_check_user($recipient_uuid)) {
         umc_error("The user $recipient does not exist!");
     }
+    
+    $recipient_uuid = umc_user2uuid($recipient);
 
     if (!isset($args[3])) {
         umc_error("You need to provide at title to your mail!");
@@ -561,17 +562,17 @@ function umc_mail_web() {
         $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
         $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
         $recipient = strtolower(filter_input(INPUT_POST, 'recipient', FILTER_SANITIZE_STRING));
-        $check = strtolower(umc_check_user($recipient));
+        $recipient_uuid = umc_user2uuid($recipient);
+        
+        $check = umc_check_user($recipient_uuid);
         if ($recipient == $username) {
             $check = false;
             $error = "You cannot send emails to yourself!";
-        }
-        if (!$check) {
+        } else if (!$check) {
             $error = "ERROR: Recipient '$recipient' could not be found!";
             $recipient = '';
-        } else {
-            $recipient_uuid = umc_user2uuid($recipient);
         }
+        
         $msg_id = filter_input(INPUT_GET, 'msg_id', FILTER_SANITIZE_NUMBER_INT);
         if (strlen($message) < 5 ) {
             $error = "Your message is too short!";
@@ -590,6 +591,7 @@ function umc_mail_web() {
             $action = '';
         }
     }
+    $out .= $error;
 
     if ($action == 'edit') {
         $msg_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
@@ -611,7 +613,7 @@ function umc_mail_web() {
     }
 
     if ($action == 'New Mail') { //onsubmit=\"return umcAjaxFormProcess('" . umc_web_curr_url() . "', event)\"
-        $out .= $error  . "<form id=\"newmailform\" method=\"post\"><div>\n"
+        $out .= "<form id=\"newmailform\" method=\"post\"><div>\n"
             . "<span style=\"max-width:50%;\">Recipient: <input type=\"text\" name=\"recipient\" value=\"$recipient\" style=\"width:35%;\" maxlength=\"32\"></span>\n "
             . "<span style=\"max-width:50%;\">Subject: <input type=\"text\" name=\"subject\" value=\"$subject\" style=\"width:35%;\" maxlength=\"32\"></span><br>\n"
             . "Message:<br><textarea name=\"message\" value=\"\" rows=\"10\" style=\"width:100%;\">$message</textarea><input type=\"hidden\" name=\"msg_id\" value=\"\">\n"
