@@ -8,7 +8,7 @@ function umc_shopmgr_main() {
     if (!$UMC_USER) {
         return "You have to be logged in to see this!";
     }
-
+    
     if (!isset($s_get['page'])) {
         $sel_page = 'deposit';
     } else {
@@ -145,7 +145,7 @@ function umc_shopmgr_items() {
             } else {
                 $item_type = $s_get['type'];
             }
-            
+
             $stock_amount = umc_shop_count_amounts('stock', $item_name, $item_type);
             $request_amount = umc_shop_count_amounts('request', $item_name, $item_type);
             $items[0] = array('item_name' => "$item_name|$item_type|", 'stock' => $stock_amount, 'requests' => $request_amount);
@@ -160,7 +160,7 @@ function umc_shopmgr_items() {
                 }
             // no sub items, display data
             } else {
-                
+
             }
             return umc_web_table("goods", "0, 'asc'", $items, '', array(), $non_numeric_cols);
         }
@@ -191,7 +191,7 @@ function umc_shopmgr_item_stats($item, $type) {
     if ($count == 0) {
         return "No data found";
     }
-    
+
     foreach ($D as $d) {
         //$maxval_amount = max($maxval_amount, $row['amount']);
         //$maxval_value = max($maxval_value, $row['value']);
@@ -204,7 +204,7 @@ function umc_shopmgr_item_stats($item, $type) {
     $out .= "];\n";
 
     // $average = $sum / $count;
-    
+
     $out .= 'AmCharts.ready(function () {
     // SERIAL CHART
     chart = new AmCharts.AmSerialChart();
@@ -413,21 +413,21 @@ function umc_shopmgr_sellers() {
 
 function umc_shopmgr_transactions() {
     $out = "This data only covers the last month, max 100 entries";
-    
+
     $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
-    
+
     $seller_str = '';
     $buyer_str = '';
     $username = "anyone";
     if (isset($s_get['user'])) {
-        $username = $s_get['user'];    
-        $uuid = umc_uuid_getone($username, 'uuid');        
+        $username = $s_get['user'];
+        $uuid = umc_uuid_getone($username, 'uuid');
         $seller_str = "AND seller_uuid = '$uuid'";
         $buyer_str = "buyer_uuid = '$uuid' AND";
     }
 
     $lastmonth = date("Y-m-d", strtotime("-1 month"));
-    
+
     // what did the user sell?
     $out .= "<h2>Items sold by $username</h2>";
     $sql = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS income, amount, username AS buyer, date
@@ -436,12 +436,12 @@ function umc_shopmgr_transactions() {
         WHERE date > '$lastmonth' AND cost > 0 $seller_str
         ORDER BY date DESC
         LIMIT 100";
-    
+
     $data_rst = mysql_query($sql);
 
     $sort_column = '4, "desc"';
     $out .= umc_web_table('shopusers_soldbyplayer', $sort_column, $data_rst);
-    
+
     $out .= "<h2>Items bought by $username</h2>";
     $sql2 = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS expense, amount, username AS seller, date
         FROM minecraft_iconomy.`transactions`
@@ -453,13 +453,13 @@ function umc_shopmgr_transactions() {
 
     $sort_column2 = '4, "desc"';
     $check = umc_web_table('shopplayers_sellers', $sort_column2, $data_rst2);
-    
+
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
     } else {
         return $out . $check;
-    }    
+    }
 }
 
 function umc_shopmgr_goods_detail($item, $type) {
