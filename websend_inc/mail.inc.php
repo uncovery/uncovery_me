@@ -586,7 +586,7 @@ function umc_mail_web() {
         if ($action == 'Send' && !$check) { // only complain if we are trying to send
             $action = "New Mail";
         } else {
-            umc_mail_backend_send($recipient_uuid, $uuid, $message, $subject, $action, $msg_id);
+            umc_mail_send_backend($recipient_uuid, $uuid, $message, $subject, $action, $msg_id);
             $action = '';
         }
     }
@@ -740,7 +740,7 @@ function umc_mail_web() {
     return $out;
 }
 
-function umc_mail_backend_send($recipient_uuid, $sender_uuid, $message_raw, $subject_raw, $action, $msg_id = false) {
+function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $subject_raw, $action, $msg_id = false) {
     $recipient = umc_mysql_real_escape_string($recipient_uuid);
     $sender = umc_mysql_real_escape_string($sender_uuid);
     $message = umc_mysql_real_escape_string($message_raw);
