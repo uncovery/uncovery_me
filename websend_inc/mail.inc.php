@@ -117,13 +117,12 @@ function umc_mail_new($recipient = false) {
     } else {
         array_unshift($args, "[Ticket]");
     }
-
+    $recipient_uuid = umc_user2uuid($recipient);
+    
     // check recipient
     if (!umc_check_user($recipient_uuid)) {
         umc_error("The user $recipient does not exist!");
     }
-    
-    $recipient_uuid = umc_user2uuid($recipient);
 
     if (!isset($args[3])) {
         umc_error("You need to provide at title to your mail!");
