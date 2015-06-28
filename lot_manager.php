@@ -1497,6 +1497,8 @@ function umc_lot_manager_reset_lot($lot, $a) {
     if ($a['user_shop_clean']) {
         $debug .= " Shop cleanout user " . $a['user_shop_clean']. ", ";
         umc_shop_cleanout_olduser($a['user_shop_clean']);
+        // also remove teamspeak priviledges
+        umc_ts_clear_rights($a['user_shop_clean'], false);
     }
     if ($a['remove_users']) {
         $debug .= " Removing all users ";
