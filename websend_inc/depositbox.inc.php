@@ -117,8 +117,8 @@ function umc_show_depotlist($silent = false) {
     }
 
     $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid' ORDER BY id, damage, amount DESC;";
-    $rst = mysql_query($sql);
-    $num_rows = mysql_num_rows($rst);
+    $D = umc_mysql_fetch_all($sql);
+    $num_rows = count($D);
     $web_arr = array();
     if ($silent && $num_rows == 0) {
         return '';
@@ -134,7 +134,7 @@ function umc_show_depotlist($silent = false) {
             umc_echo("{gray}Depot-Id   Description");
         }
         $count = 0;
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $sender_uuid = $row['sender_uuid'];
             $sender = umc_user2uuid($sender_uuid);
 
