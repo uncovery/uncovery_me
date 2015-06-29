@@ -174,7 +174,7 @@ function umc_donation_chart() {
     $sql = "SELECT SUM(amount) as sum, uuid FROM minecraft_srvr.`donations` GROUP BY uuid ORDER by sum DESC LIMIT 25;";
     $rst = umc_mysql_query($sql);
     $out .= '<h1>Top 25 Donators</h1>If you are on this list and would like to be named, please tell me.<table style="width:30%;">';
-    $out .= "<tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td</tr>";
+    $out .= "\n<tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td</tr>\n";
     while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
         if ((isset($show_users[$row['uuid']])) && ($uuid == $row['uuid'])) {
             $user = $username . " (You)";
@@ -185,10 +185,10 @@ function umc_donation_chart() {
         } else {
             $user = 'anonymous';
         }
-        $out .= "<tr><td style=\"text-align:right\">". $row['sum'] . " USD</td><td style=\"text-align:right\">$user</td</tr>";
+        $out .= "<tr><td style=\"text-align:right\">". $row['sum'] . " USD</td><td style=\"text-align:right\">$user</td</tr>\n";
     }
     umc_mysql_free_result($rst);
-    $out .= "</table>";
+    $out .= "</table>\n";
     return $out;
 }
 
@@ -273,7 +273,7 @@ function umc_process_donation() {
         $lines = explode("\n", $res);
         $keyarray = array();
         if (strcmp ($lines[0], "SUCCESS") == 0) {
-            for ($i=1; $i<count($lines);$i++){
+            for ($i=1; $i<count($lines); $i++){
                 list($key,$val) = explode("=", $lines[$i]);
                 $keyarray[urldecode($key)] = urldecode($val);
             }
@@ -299,7 +299,15 @@ function umc_process_donation() {
     echo "Your transaction has been completed, and a receipt for your purchase has been emailed to you.<br> "
         . "You may log into your account at <a href='https://www.paypal.com'>www.paypal.com</a> "
         . "to view details of this transaction.<br>";
-    // return $out;
+
+    // list of verifiable entries:
+    $verify_entries = array(
+        'payment_status' => 'Completed',
+        'option_selection2' => false, // ÜUID b85cd837-2d00-47c5-999d-ef90ae36d868
+        'payer_email' => false, // player email, URL encoded SamBecker0523%40gmail.com
+        'payment_gross' => false, // '25.00'
+        'payment_fee' => false, //'1.40'
+    );
 
 }
 
