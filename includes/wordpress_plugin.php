@@ -58,7 +58,8 @@ function umc_wp_template_picker($template) {
  * add additional CSS and JS
  */
 function umc_wp_add_css_and_js() {
-	wp_enqueue_style( 'style-name', 'http://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'style-name', 'http://uncovery.me/admin/dataTables.css' );
+    wp_enqueue_style( 'style-name', 'http://uncovery.me/admin/global.css' );
 	//wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
 }
 
