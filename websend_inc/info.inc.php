@@ -196,11 +196,11 @@ function umc_info_who() {
 
     $players_data = $UMC_USER['player_data'];
     $count = count($players_data);
-    
+
     foreach ($players_data as  $uuid => $players_details) {
         $level = umc_get_uuid_level($uuid);
         $player = $players_details['Name'];
-        
+
         if (strstr($level, "DonatorPlus")) {
             $new_lvl = substr($level, 0, -11);
             $new_player = "$player{yellow}++{white}";
@@ -211,7 +211,7 @@ function umc_info_who() {
             $new_lvl = $level;
             $new_player = $player;
         }
-        if ($user_worlds) {
+        if ($user_worlds && isset($user_worlds[$lower_username])) {
             $lower_username = strtolower($player);
             $new_player .= " {grey}({$user_worlds[$lower_username]['world']}){white}";
         }
