@@ -365,7 +365,7 @@ function umc_settler_new() {
             // do you like it? claim it
             $out .= "<h1>Step 10: Do you like the lot {$s_post['lot']}?</h1>"
                 . "<form action=\"$UMC_DOMAIN/server-access/buildingrights/\" method=\"post\">\n"
-                . '<input type="radio" name="step" value="10">Yes! I take it! I will type <strong>/sethome</strong> now so I can warp back here!<br>'
+                . '<input type="radio" name="step" value="10" checked>Yes! I take it! I will type <strong>/sethome</strong> now so I can warp back here!<br>'
                 . '<input type="radio" name="step" value="1">No,I would like to start over!<br>'
                 . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
                 . "<input type=\"hidden\" name=\"world\" value=\"$world\">\n"
