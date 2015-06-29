@@ -78,12 +78,12 @@ function umc_donation_chart() {
     $lastdate = "2010-11";
 
     $sql_chart = "SELECT SUM(amount) as monthly, year(date) as date_year, month(date) as date_month FROM minecraft_srvr.`donations` GROUP BY YEAR(date), MONTH(date);";
-    $rst_chart = mysql_query($sql_chart);
+    $D = umc_mysql_fetch_all($sql_chart);
 
     $ydata = array();
     $legend = array();
     $minval = $maxval = 0;
-    while ($row = mysql_fetch_array($rst_chart, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $month = sprintf("%02d", $row['date_month']);
         $date = $row['date_year'] . '-' .  $month;
 
@@ -153,7 +153,6 @@ function umc_donation_chart() {
         . '<h2>Donate now!</h2>'
         . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
         . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
-        . "<a href=\"{$UMC_SETTING['path']['url']}/support/\">Contact me</a> if you want to donate a different amount or for someone else.\n"
         . '<form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
         . '<p style="text-align:center; width:50%"><input type="hidden" name="on0" value="DonatorPlus Status">'
         . "The average donation amount is <strong>$donation_avg USD</strong><br>
