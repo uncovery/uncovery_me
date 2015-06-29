@@ -26,6 +26,8 @@ function umc_wp_init_plugins() {
     add_action('transition_post_status', 'umc_wp_notify_new_post', 10, 3);
     // make notification when new comment is made on post
     add_action('comment_post', 'umc_wp_notify_new_comment', 10, 2);
+    // add additional CSS and JS
+    add_action( 'wp_enqueue_scripts', 'umc_wp_add_css_and_js' );
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     new Minecraft_Icons();
@@ -52,6 +54,13 @@ function umc_wp_template_picker($template) {
     return $template;
 }
 
+/**
+ * add additional CSS and JS
+ */
+function umc_wp_add_css_and_js() {
+	wp_enqueue_style( 'style-name', 'http://uncovery.me/admin/global.css' );
+	//wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
+}
 
 /**
  * Notify in-game when there is a new comment posted to the blog
@@ -244,17 +253,17 @@ class Minecraft_Icons {
         add_filter('get_avatar', array($this, 'get_uncovery_avatar'), 1, 5);
 
         // If BuddyPress is enabled and uncovery is chosen as avatar
-        /*if(is_plugin_active('buddypress/bp-loader.php')) { // && get_option( 'avatar_default' ) == 'uncovery' ) 
+        /*if(is_plugin_active('buddypress/bp-loader.php')) { // && get_option( 'avatar_default' ) == 'uncovery' )
             add_filter('bp_core_fetch_avatar_no_grav', array($this, 'bp_core_fetch_avatar_no_grav'));
             add_filter('bp_core_default_avatar_user', array($this, 'bp_core_default_avatar_user'), 10, 2);
         }*/
     } // end constructor
-    
+
     // BuddyPress support
     public function bp_core_fetch_avatar_no_grav() {
         return true;
     } // end bp_core_fetch_avatar_no_grav
-	
+
     public function bp_core_default_avatar_user($url, $params) {
         require_once('/home/minecraft/server/bin/includes/wordpress.inc.php');
         // http://uncovery.me/websend/user_icons/b330abbd-355c-4c31-97bc-74c14cbd690c.20.png
@@ -263,7 +272,7 @@ class Minecraft_Icons {
         $uncovery_url = "http://uncovery.me/websend/user_icons/$uuid.20.png";
         return $uncovery_url;
     } // end bp_core_default_avatar_user
-	
+
     /**
     * Apply a filter to the default avatar list and add Minotars
     */
@@ -271,7 +280,7 @@ class Minecraft_Icons {
         $avatar_defaults['uncovery'] = 'Minecraft Avatar';
         return $avatar_defaults;
     } // end add_uncovery_avatar
-	
+
     /**
     * Apply a filter to the default get_avatar function to add
     * Minotar functionality
@@ -286,7 +295,7 @@ class Minecraft_Icons {
                 $safe_alt = esc_attr($alt);
             }
 
-            //Get username            
+            //Get username
             if (is_numeric($id_or_email)) {
                 $id = (int) $id_or_email;
                 $user = get_userdata($id);
