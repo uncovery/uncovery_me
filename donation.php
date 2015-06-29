@@ -147,18 +147,18 @@ function umc_donation_chart() {
     $g->set_js_path('/admin/flash/');
     $g->set_swf_path('/admin/flash/');
 
-    $out =  $g->render() . "<div style=\"float:left; width:50%;\"><h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations." . umc_donation_monthly_target()
-        . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>"
-        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month."
+    $out =  $g->render() . "<div style=\"float:left; width:50%;\"><h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.\n" . umc_donation_monthly_target()
+        . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
+        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n"
         . '<h2>Donate now!</h2>'
-        . "<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. "
-        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>"
-        . "<a href=\"{$UMC_SETTING['path']['url']}/support/\">Contact me</a> if you want to donate a different amount or for someone else."
+        . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
+        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
+        . "<a href=\"{$UMC_SETTING['path']['url']}/support/\">Contact me</a> if you want to donate a different amount or for someone else.\n"
         . '<form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
         . '<p style="text-align:center; width:50%"><input type="hidden" name="on0" value="DonatorPlus Status">'
-        . "The average donation amount is <strong>$donation_avg USD</strong><br>"
-        . 'Buy DonatorPlus Status as user <strong>'
-        . "$username<br>(UUID: $uuid)" . '</strong> for <select style="font-size:12px" name="os0">
+        . "The average donation amount is <strong>$donation_avg USD</strong><br>
+        Buy DonatorPlus Status as user <strong>
+        $username<br>(UUID: $uuid)" . '</strong> for <select style="font-size:12px" name="os0">
             <option value="1 Month">1 month: $2.00 USD</option>
             <option value="6 Months">6 months: $7.00 USD</option>
             <option value="1 Year" selected>1 year: $13.00 USD</option>
