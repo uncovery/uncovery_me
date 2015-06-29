@@ -289,6 +289,7 @@ function umc_uuid_get_system_users($query) {
         'Shop' =>           'shop0000-0000-0000-0000-000000000000',
         'Console' =>        'Console0-0000-0000-0000-000000000000',
         'Server' =>         'Server00-0000-0000-0000-000000000000',
+        'UnknownUser' =>    'ea247d4c-bc78-44af-ae64-02375ae1b7bb',
     );
 
     if (strlen($query) < 17) {
