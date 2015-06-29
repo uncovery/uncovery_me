@@ -142,7 +142,7 @@ function umc_uuid_check_usernamechange($uuid) {
         $wp_login = $d['user_login'];
         // $wp_id = $d['ID'];
         $mojang_raw = umc_uuid_get_from_mojang($uuid);
-        $mojang_name = strtolower($mojang_raw['name']);
+        $mojang_name = strtolower($mojang_raw);
         if (!$mojang_name || $mojang_name == '') {
             //XMPP_ERROR_trigger("Tried to check for username change, failed to confirm ($sql)");
             $s_server = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
@@ -289,7 +289,6 @@ function umc_uuid_get_system_users($query) {
         'Shop' =>           'shop0000-0000-0000-0000-000000000000',
         'Console' =>        'Console0-0000-0000-0000-000000000000',
         'Server' =>         'Server00-0000-0000-0000-000000000000',
-        'UnknownUser' =>    'ea247d4c-bc78-44af-ae64-02375ae1b7bb',
     );
 
     if (strlen($query) < 17) {
@@ -489,7 +488,7 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
             return false; // invalid uuid or too long username
         } else {
             $id = count($json_data) - 1;
-            return $json_data[$id];
+            return $json_data[$id]['name'];
         }
     }
 }
