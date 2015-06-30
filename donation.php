@@ -83,7 +83,7 @@ function umc_donation_chart() {
         . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
         . "The average donation amount is <strong>$donation_avg USD</strong><br>
         Buy DonatorPlus Status as user <strong>$username<br>
-            (UUID: $uuid)" . '</strong><br> for <select style="font-size:12px" name="os0">
+            (UUID: $uuid)" . '</strong><br> Duration <select style="font-size:12px" name="os0">
             <option value="1">1 month: $2.00 USD</option>
             <option value="6">6 months: $7.00 USD</option>
             <option value="12" selected>1 year: $13.00 USD</option>
@@ -91,8 +91,10 @@ function umc_donation_chart() {
             <option value="48">4 years: $50.00 USD</option>
         </select>
         <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '"><br>
-        <input type="hidden" name="on2" value="Recipient(s)">Recipient: ' . umc_web_active_users_dropdown('on2', $uuid)
+        <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_active_users_dropdown('on2', $uuid)
         . '<input type="hidden" name="currency_code" value="USD"><br>
+            <strong>Important:</strong> If you want the amount split between several users, please do not make several donations.<br>
+            Make the donation for yourself and then send me a message with the details.<br>
         <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
         <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
         </p>
@@ -360,7 +362,6 @@ function umc_process_donation() {
             VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
         umc_mysql_query($sql, true);
     }
-
 }
 
 
