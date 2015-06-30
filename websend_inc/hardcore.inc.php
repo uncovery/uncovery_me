@@ -176,10 +176,21 @@ function umc_hardcore_score() {
     umc_footer();
 }
 
+/**
+ * Check if the current period's end date is today and if so delete the deathlands contents
+ */
 function umc_hardcore_resetworld() {
+    $dates = umc_hardcore_get_period();
 
+    $today_obj = umc_datetime();
+    $today_str = $today_obj->format('Y-m-d 00:00:00');
 
+    $end_date = $dates['end_date'];
 
+    if ($end_date == $today_str) {
+        $cmd = '"rm -R /home/minecraft/server/bukkit/deathlands/*"';
+        exec($cmd);
+    }
 }
 
 /*
