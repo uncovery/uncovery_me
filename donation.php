@@ -61,23 +61,24 @@ function umc_donation_chart() {
     $outstanding = $chart_data['outstanding'];
     $chart = $chart_data['chart'];
     $donation_avg = umc_donation_calc_average();
+    $table = umc_donation_top_table($outstanding);
 
-    $out = "<div style=\"float:right; width:50%; margin-left: 30px;\">\n$chart\n</div>\n"
-        . "<div>Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\" "
-        . "and therefore also want to only provide non-essential benefits to donators. Those benefits can be seen on the bottom of "
-        . "the \"<a href=\"http://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page.If you ask me what I am doing with the donation money, "
-        . "you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month. "
-        . "So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other "
-        . "plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that "
-        . "this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome "
-        . "and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users."
-        . "<h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.<br>\n" . umc_donation_monthly_target()
+    $out = "<div style=\"float:right; width:440px; margin-left: 30px;\">\n$chart\n$table</div>\n"
+        . "<div style=\"width:auto; overflow:hidden; \">Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\"
+        and therefore also want to only provide non-essential benefits to donators. Those benefits can be seen on the bottom of
+        the \"<a href=\"http://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page. If you ask me what I am doing with the donation money,
+        you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month.
+        So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other
+        plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that
+        this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome
+        and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users.
+        <h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.<br>\n" . umc_donation_monthly_target()
         . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
-        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n"
-        . '<h2>Donate now!</h2>'
+        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n</div>"
+        . '<h2 style="clear:both;">Donate now!</h2>'
         . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
-        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
-        . '<br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post">'
+        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.\n"
+        . '<br><br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post">'
         . '<input type="hidden" name="cmd" value="_s-xclick">'
         . '<input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
         . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
@@ -99,8 +100,6 @@ function umc_donation_chart() {
         <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
         </p>
         </form>';
-    $out .= umc_donation_top_table($outstanding);
-
     return $out;
 }
 
@@ -206,8 +205,8 @@ function umc_donation_top_table($outstanding) {
 
     $sql = "SELECT SUM(amount) as sum, uuid FROM minecraft_srvr.`donations` GROUP BY uuid ORDER by sum DESC LIMIT 25;";
     $rst = umc_mysql_query($sql);
-    $out = '<h1>Top 25 Donators</h1>If you are on this list and would like to be named, please tell me.<table style="width:30%;">';
-    $out .= "\n<tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td</tr>\n";
+    $out = "<h2>Top 25 Donators</h2>If you are on this list and would like to be named, please tell me.\n<table>";
+    $out .= "\n    <tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td></tr>\n";
     while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
         if ((isset($show_users[$row['uuid']])) && ($uuid == $row['uuid'])) {
             $user = $username . " (You)";
@@ -218,7 +217,7 @@ function umc_donation_top_table($outstanding) {
         } else {
             $user = 'anonymous';
         }
-        $out .= "<tr><td style=\"text-align:right\">". $row['sum'] . " USD</td><td style=\"text-align:right\">$user</td</tr>\n";
+        $out .= "    <tr><td style=\"text-align:right\">". $row['sum'] . " USD</td><td style=\"text-align:right\">$user</td></tr>\n";
     }
     umc_mysql_free_result($rst);
     $out .= "</table>\n";
