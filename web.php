@@ -506,22 +506,44 @@ function umc_github_link() {
 }
 
 /**
+ * Create a dropdown for all active users
+ *
+ * @param type $fieldname
+ * @param type $presel_uuid
+ * @return string
+ */
+function umc_web_active_users_dropdown($fieldname, $presel_uuid = false) {
+    $users = umc_get_active_members();
+    $out = "<select name=\"$fieldname\">";
+    foreach ($users as $uuid => $username) {
+        $sel = '';
+        if ($uuid == $presel_uuid) {
+            $sel = ' selected="selected"';
+            $username .= " (yourself)";
+        }
+        $out .= "    <option value=\"$uuid\"$sel>$username</option>\n";
+    }
+    $out .= "</select>\n";
+    return $out;
+}
+
+/**
  * Tablist should be an array('title' => 'link'
  *
  * @param type $tablist
  */
 function umc_web_tabs($tabs_arr, $current_page, $tab_content) {
     // menu
-    $out = "<ul class=\"umc_tabs\">\n";
+    $out = "/n<div class=\"umc_tabs\">\n    <ul>\n";
     foreach ($tabs_arr as $tab => $tab_code) {
         $tab_title = umc_pretty_name($tab);
         if ($tab_code == $current_page) {
-            $out .= "    <li class=\"umc_active_tab\">$tab_title</li>\n";
+            $out .= "        <li class=\"umc_active_tab\">$tab_title</li>\n";
         } else {
-            $out .= "    <li class=\"umc_inactive_tab\"><a href=\"?tab=$tab_code\">$tab_title</a></li>\n";
+            $out .= "        <li class=\"umc_inactive_tab\"><a href=\"?tab=$tab_code\">$tab_title</a></li>\n";
         }
     }
-    $out .= "</ul>\n";
-    $out .= "<div class=\"umc_tab_content\">n$tab_content</div>\n";
+    $out .= "    </ul>\n</div>\n";
+    $out .= "<div class=\"umc_tab_content\">\n$tab_content</div>\n";
     return $out;
 }
