@@ -71,24 +71,28 @@ function umc_donation_chart() {
         . "plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that "
         . "this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome "
         . "and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users."
-        . "<h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.\n" . umc_donation_monthly_target()
+        . "<h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.<br>\n" . umc_donation_monthly_target()
         . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
         . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n"
         . '<h2>Donate now!</h2>'
         . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
         . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
-        . '<form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
+        . '<br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post">'
+        . '<input type="hidden" name="cmd" value="_s-xclick">'
+        . '<input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
         . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
         . "The average donation amount is <strong>$donation_avg USD</strong><br>
         Buy DonatorPlus Status as user <strong>$username<br>
-            (UUID: $uuid)" . '</strong> for <select style="font-size:12px" name="os0">
+            (UUID: $uuid)" . '</strong><br> for <select style="font-size:12px" name="os0">
             <option value="1">1 month: $2.00 USD</option>
             <option value="6">6 months: $7.00 USD</option>
             <option value="12" selected>1 year: $13.00 USD</option>
             <option value="24">2 years: $25.00 USD</option>
             <option value="48">4 years: $50.00 USD</option>
-        </select><input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '">
-        <input type="hidden" name="currency_code" value="USD"><br>
+        </select>
+        <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '"><br>
+        <input type="hidden" name="on2" value="Recipient(s)">Recipient: ' . umc_web_active_users_dropdown('on2', $uuid)
+        . '<input type="hidden" name="currency_code" value="USD"><br>
         <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
         <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
         </p>
@@ -109,7 +113,7 @@ function umc_donation_java_chart() {
     $legend = array();
     $minval = $maxval = 0;
     $sum = 0;
-    
+
     foreach ($D as $row) {
         $month = sprintf("%02d", $row['date_month']);
         $date = $row['date_year'] . '-' .  $month;
@@ -191,36 +195,6 @@ function umc_donation_calc_average() {
 
     return $donation_avg;
 }
-
-function umc_donation_paypal_button($uuid) {
-    $out = "<form target=\"paypal\" action=\"https://www.paypal.com/cgi-bin/webscr\" method=\"post\">
-    <input type=\"hidden\" name=\"cmd\" value=\"_s-xclick\">
-    <input type=\"hidden\" name=\"hosted_button_id\" value=\"39TSUWZ9XPW5G\">
-    <tr>
-        <td><input type=\"hidden\" name=\"on0\" value=\"DonatorPlus Duration\">Duration</td>
-        <td><select name=\"os0\">
-                <option value=\"1 Month\">1 Month $2.00 USD</option>
-                <option value=\"6 Months\">6 Months $7.00 USD</option>
-                <option value=\"1 Year\">1 Year $13.00 USD</option>
-                <option value=\"2 Years\">2 Years $25.00 USD</option>
-                <option value=\"4 Years\">4 Years $50.00 USD</option>
-            </select>
-        </td>
-
-        <tr>
-            <td><input type=\"hidden\" name=\"on0\" value=\"Duration\">Duration</td>
-            <td><input type=\"text\" name=\"os0\" maxlength=\"200\"></td></tr>
-        <tr>
-            <td><input type=\"hidden\" name=\"on1\" value=\"Recipient(s)\">Recipient(s) (to be split evenly)</td>
-            <td>" . umc_web_active_users_dropdown('os1', $uuid) . " </td>
-        </tr>
-    </table>
-    <input type=\"image\" src=\"https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif\" border=\"0\" name=\"submit\" alt=\"PayPal – The safer, easier way to pay online.\">
-    <img alt=\"\" border=\"0\" src=\"https://www.paypalobjects.com/en_GB/i/scr/pixel.gif\" width=\"1\" height=\"1\">
-    </form>\n";
-    return $out;
-}
-
 
 function umc_donation_top_table($outstanding) {
     global $UMC_SETTING, $UMC_USER;
@@ -366,6 +340,7 @@ function umc_process_donation() {
         'payment_fee' => false, //'1.40'
         'txn_id' => false, // 4TT776949B495984P
         'btn_id' => '52930807',
+        'option_selection3' => false,
     );
 
     $is_ok = true;
@@ -382,7 +357,7 @@ function umc_process_donation() {
         $date = umc_mysql_real_escape_string(date('Y-m-d'));
         $final_value = umc_mysql_real_escape_string($keyarray['payment_gross'] - $keyarray['payment_fee']);
         $sql = "INSERT INTO `donations`(`amount`, `uuid`, `email`, `date`, `txn_id`)
-            VALUES ($final_value, {$sql_vals['option_selection2']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
+            VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
         umc_mysql_query($sql, true);
     }
 
