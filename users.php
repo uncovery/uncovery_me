@@ -643,7 +643,7 @@ function umc_user_directory() {
         // get lots
         $lots = umc_user_getlots($uuid);
         echo "<strong>Lots:</strong><br>    ";
-        foreach ($lots as $lot => $data) {
+        foreach ($lots as $data) {
             echo $data['lot'] . "<br>" . $data['image'] . "<br>";
         }
 
@@ -852,6 +852,9 @@ function umc_get_lot_owner_age($format = 'string', $oneuser = false, $debug  = f
         $uuid = umc_uuid_getone($oneuser, 'uuid');
         $playerfilter = " AND UUID.uuid = '$uuid'";
     }
+    
+    //temp fix for wrong userlogin
+    umc_uuid_firstlogin_update($uuid);
 
     $sql = "SELECT username, lastlogin, firstlogin, onlinetime
         FROM minecraft_srvr.UUID
@@ -860,6 +863,7 @@ function umc_get_lot_owner_age($format = 'string', $oneuser = false, $debug  = f
         WHERE owner=1 $playerfilter
         GROUP BY username, lastlogin
         ORDER BY lastlogin ASC";
+
     $R = umc_mysql_fetch_all($sql);
     $users = array();
     $diff_steps = array('y'=>'years','m'=>'months','d'=>'days','h'=>'hours','i'=>'minutes','s'=>'seconds');
