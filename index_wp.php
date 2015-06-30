@@ -24,6 +24,8 @@ if (!$UMC_ENV) {
 /**
  * Verify that an externally called function is actually a vaild, no-risk function call.
  *
+ * $UMC_FUNCTIONS is defined in all the files where the respective function is located
+ *
  * @global type $UMC_FUNCTIONS
  * @param type $function
  */
