@@ -2,7 +2,7 @@
 
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_todays_users'] = 'umc_get_todays_users';
-$UMC_FUNCTIONS['github_wordpress_update'] = 'umc_github_wordpress_update';
+
 /**
  * returns the current URL, filtered
  * @return string
