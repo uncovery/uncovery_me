@@ -514,7 +514,7 @@ function umc_github_link() {
  */
 function umc_web_active_users_dropdown($fieldname, $presel_uuid = false) {
     $users = umc_get_active_members();
-    $out = "<select name=\"$fieldname\">";
+    $out = "<select name=\"$fieldname\">\n";
     foreach ($users as $uuid => $username) {
         $sel = '';
         if ($uuid == $presel_uuid) {
