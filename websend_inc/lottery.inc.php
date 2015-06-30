@@ -139,7 +139,7 @@ $lottery = array(
         ),
     ),
     'random_pet' => array(
-        'chance' => 8,
+        'chance' => 1,
         'type' => 'random_pet',
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
@@ -149,7 +149,7 @@ $lottery = array(
         ),
     ),
     'random_unc' => array(
-        'chance' => 10,
+        'chance' => 18,
         'type' => 'random_unc',
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
