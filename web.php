@@ -2,7 +2,7 @@
 
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_todays_users'] = 'umc_get_todays_users';
-
+$UMC_FUNCTIONS['github_wordpress_update'] = 'umc_github_wordpress_update';
 /**
  * returns the current URL, filtered
  * @return string
@@ -505,6 +505,13 @@ function umc_github_link() {
     echo unc_github_issues('uncovery', 'uncovery_me');
 }
 
+function umc_github_wordpress_update() {
+    require_once ('/home/includes/github/index.php');
+    require_once('/home/minecraft/public_html/wp-load.php'); 
+    unc_github_wordpress_update('uncovery', 'uncovery_me', 'http://uncovery.me/server-features/development-status/');
+}
+
+
 /**
  * Create a dropdown for all active users
  *
@@ -541,7 +548,8 @@ function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
             $out .= "        <li class=\"umc_inactive_tab\"><a href=\"?tab=$tab_code\">$tab_title</a></li>\n";
         }
     }
-    $out .= "    </ul>\n</div>\n";
-    $out .= "<div class=\"umc_tab_content\">\n$tab_content</div>\n";
+    $out .= "    </ul>\n</div>\n
+    <div class=\"umc_tab_content\">\n$tab_content\n</div>\n";
     return $out;
 }
+
