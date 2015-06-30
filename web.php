@@ -532,11 +532,9 @@ function umc_web_active_users_dropdown($fieldname, $presel_uuid = false) {
  *
  * @param type $tablist
  */
-function umc_web_tabs($tabs_arr, $current_page, $tab_content) {
-    // menu
+function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
     $out = "/n<div class=\"umc_tabs\">\n    <ul>\n";
-    foreach ($tabs_arr as $tab => $tab_code) {
-        $tab_title = umc_pretty_name($tab);
+    foreach ($tabs_menu as $tab_code => $tab_title) {
         if ($tab_code == $current_page) {
             $out .= "        <li class=\"umc_active_tab\">$tab_title</li>\n";
         } else {
