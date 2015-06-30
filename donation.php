@@ -57,32 +57,59 @@ function umc_donation_chart() {
         $username = $UMC_USER['username'];
     }
 
-    $show_users = $UMC_SETTING['donation_users'];
+    $chart_data = umc_donation_java_chart();
+    $outstanding = $chart_data['outstanding'];
+    $chart = $chart_data['chart'];
+    $donation_avg = umc_donation_calc_average();
 
-    $out = '';
+    $out = "<div style=\"float:right; width:50%; margin-left: 30px;\">\n$chart\n</div>\n"
+        . "<div>Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\" "
+        . "and therefore also want to only provide non-essential benefits to donators. Those benefits can be seen on the bottom of "
+        . "the \"<a href=\"http://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page.If you ask me what I am doing with the donation money, "
+        . "you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month. "
+        . "So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other "
+        . "plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that "
+        . "this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome "
+        . "and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users."
+        . "<h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.\n" . umc_donation_monthly_target()
+        . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
+        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n"
+        . '<h2>Donate now!</h2>'
+        . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
+        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
+        . '<form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
+        . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
+        . "The average donation amount is <strong>$donation_avg USD</strong><br>
+        Buy DonatorPlus Status as user <strong>$username<br>
+            (UUID: $uuid)" . '</strong> for <select style="font-size:12px" name="os0">
+            <option value="1">1 month: $2.00 USD</option>
+            <option value="6">6 months: $7.00 USD</option>
+            <option value="12" selected>1 year: $13.00 USD</option>
+            <option value="24">2 years: $25.00 USD</option>
+            <option value="48">4 years: $50.00 USD</option>
+        </select><input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '">
+        <input type="hidden" name="currency_code" value="USD"><br>
+        <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+        </p>
+        </form>';
+    $out .= umc_donation_top_table($outstanding);
 
-    $sql_count = "SELECT count(UUID) AS count FROM minecraft_srvr.donations;";
-    $rst_count = umc_mysql_query($sql_count);
-    $row_count = umc_mysql_fetch_array($rst_count);
-    umc_mysql_free_result($rst_count);
-    $donator_count = $row_count['count'];
+    return $out;
+}
 
-    $sql_sum = "SELECT sum(amount) as sum from minecraft_srvr.donations;";
-    $rst_sum = umc_mysql_query($sql_sum);
-    $row_sum = umc_mysql_fetch_array($rst_sum, MYSQL_ASSOC);
-    umc_mysql_free_result($rst_sum);
-    $donation_sum = $row_sum['sum'];
-    $donation_avg = round($donation_sum / $donator_count, 2);
-
-    $sum = 0;
-    $lastdate = "2010-11";
+function umc_donation_java_chart() {
+    global $UMC_SETTING;
 
     $sql_chart = "SELECT SUM(amount) as monthly, year(date) as date_year, month(date) as date_month FROM minecraft_srvr.`donations` GROUP BY YEAR(date), MONTH(date);";
     $D = umc_mysql_fetch_all($sql_chart);
 
+    $lastdate = "2010-11";
     $ydata = array();
     $legend = array();
     $minval = $maxval = 0;
+    $sum = 0;
+    
     foreach ($D as $row) {
         $month = sprintf("%02d", $row['date_month']);
         $date = $row['date_year'] . '-' .  $month;
@@ -115,8 +142,6 @@ function umc_donation_chart() {
     }
     $outstanding = $sum * -1;
 
-    // var_dump($ydata);
-
     require_once($UMC_SETTING['path']['html'] . '/admin/flash/open-flash-chart.php');
     $g = new graph();
     //$g->title("Donation Stats", '{font-size: 15px; color: #000000}');
@@ -147,32 +172,65 @@ function umc_donation_chart() {
     $g->set_js_path('/admin/flash/');
     $g->set_swf_path('/admin/flash/');
 
-    $out =  $g->render() . "<div style=\"float:left; width:50%;\"><h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.\n" . umc_donation_monthly_target()
-        . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
-        . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n"
-        . '<h2>Donate now!</h2>'
-        . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
-        . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.</div>\n"
-        . '<form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
-        . '<p style="text-align:center; width:50%"><input type="hidden" name="on0" value="DonatorPlus Status">'
-        . "The average donation amount is <strong>$donation_avg USD</strong><br>
-        Buy DonatorPlus Status as user <strong>
-        $username<br>(UUID: $uuid)" . '</strong> for <select style="font-size:12px" name="os0">
-            <option value="1 Month">1 month: $2.00 USD</option>
-            <option value="6 Months">6 months: $7.00 USD</option>
-            <option value="1 Year" selected>1 year: $13.00 USD</option>
-            <option value="2 Years">2 years: $25.00 USD</option>
-            <option value="4 Years">4 years: $50.00 USD</option>
-        </select><input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '">
-        <input type="hidden" name="currency_code" value="USD"><br>
-        <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
-        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-        </p>
-        </form>';
+    return array('chart' => $g->render(), 'outstanding' => $outstanding);
+}
+
+function umc_donation_calc_average() {
+    $sql_count = "SELECT count(UUID) AS count FROM minecraft_srvr.donations;";
+    $rst_count = umc_mysql_query($sql_count);
+    $row_count = umc_mysql_fetch_array($rst_count);
+    umc_mysql_free_result($rst_count);
+    $donator_count = $row_count['count'];
+
+    $sql_sum = "SELECT sum(amount) as sum from minecraft_srvr.donations;";
+    $rst_sum = umc_mysql_query($sql_sum);
+    $row_sum = umc_mysql_fetch_array($rst_sum, MYSQL_ASSOC);
+    umc_mysql_free_result($rst_sum);
+    $donation_sum = $row_sum['sum'];
+    $donation_avg = round($donation_sum / $donator_count, 2);
+
+    return $donation_avg;
+}
+
+function umc_donation_paypal_button($uuid) {
+    $out = "<form target=\"paypal\" action=\"https://www.paypal.com/cgi-bin/webscr\" method=\"post\">
+    <input type=\"hidden\" name=\"cmd\" value=\"_s-xclick\">
+    <input type=\"hidden\" name=\"hosted_button_id\" value=\"39TSUWZ9XPW5G\">
+    <tr>
+        <td><input type=\"hidden\" name=\"on0\" value=\"DonatorPlus Duration\">Duration</td>
+        <td><select name=\"os0\">
+                <option value=\"1 Month\">1 Month $2.00 USD</option>
+                <option value=\"6 Months\">6 Months $7.00 USD</option>
+                <option value=\"1 Year\">1 Year $13.00 USD</option>
+                <option value=\"2 Years\">2 Years $25.00 USD</option>
+                <option value=\"4 Years\">4 Years $50.00 USD</option>
+            </select>
+        </td>
+
+        <tr>
+            <td><input type=\"hidden\" name=\"on0\" value=\"Duration\">Duration</td>
+            <td><input type=\"text\" name=\"os0\" maxlength=\"200\"></td></tr>
+        <tr>
+            <td><input type=\"hidden\" name=\"on1\" value=\"Recipient(s)\">Recipient(s) (to be split evenly)</td>
+            <td>" . umc_web_active_users_dropdown('os1', $uuid) . " </td>
+        </tr>
+    </table>
+    <input type=\"image\" src=\"https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif\" border=\"0\" name=\"submit\" alt=\"PayPal – The safer, easier way to pay online.\">
+    <img alt=\"\" border=\"0\" src=\"https://www.paypalobjects.com/en_GB/i/scr/pixel.gif\" width=\"1\" height=\"1\">
+    </form>\n";
+    return $out;
+}
+
+
+function umc_donation_top_table($outstanding) {
+    global $UMC_SETTING, $UMC_USER;
+    $show_users = $UMC_SETTING['donation_users'];
+    $username = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
 
     $sql = "SELECT SUM(amount) as sum, uuid FROM minecraft_srvr.`donations` GROUP BY uuid ORDER by sum DESC LIMIT 25;";
     $rst = umc_mysql_query($sql);
-    $out .= '<h1>Top 25 Donators</h1>If you are on this list and would like to be named, please tell me.<table style="width:30%;">';
+    $out = '<h1>Top 25 Donators</h1>If you are on this list and would like to be named, please tell me.<table style="width:30%;">';
     $out .= "\n<tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td</tr>\n";
     while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
         if ((isset($show_users[$row['uuid']])) && ($uuid == $row['uuid'])) {
@@ -306,7 +364,27 @@ function umc_process_donation() {
         'payer_email' => false, // player email, URL encoded SamBecker0523%40gmail.com
         'payment_gross' => false, // '25.00'
         'payment_fee' => false, //'1.40'
+        'txn_id' => false, // 4TT776949B495984P
+        'btn_id' => '52930807',
     );
+
+    $is_ok = true;
+    $sql_vals = array();
+    foreach ($verify_entries as $entry => $value) {
+        if ($value && $keyarray[$entry] != $value) {
+            $is_ok = false;
+        } else {
+            $sql_vals[$entry] = umc_mysql_real_escape_string($keyarray[$entry]);
+        }
+    }
+    // add the entry to the database
+    if ($is_ok) {
+        $date = umc_mysql_real_escape_string(date('Y-m-d'));
+        $final_value = umc_mysql_real_escape_string($keyarray['payment_gross'] - $keyarray['payment_fee']);
+        $sql = "INSERT INTO `donations`(`amount`, `uuid`, `email`, `date`, `txn_id`)
+            VALUES ($final_value, {$sql_vals['option_selection2']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
+        umc_mysql_query($sql, true);
+    }
 
 }
 
