@@ -27,7 +27,7 @@ function umc_wp_get_vars() {
             $uuid = umc_user2uuid($user_login);
             $UMC_USER['uuid'] = $uuid;
             $UMC_USER['userlevel'] = 'Guest';
-        } else {
+        } else { // there is a logged-in user
             umc_uuid_check_usernamechange($uuid);
             $UMC_USER['email'] = $user_email;
             $UMC_USER['username'] = umc_uuid_getone($uuid, 'username');
@@ -189,7 +189,7 @@ function umc_wp_set_meta($uuid, $meta_key, $meta_value) {
 
 /**
  * takes the wordpress userlogin and returns the UUID as stored in the meta data
- * 
+ *
  * @param type $user_login
  * @return type
  */
