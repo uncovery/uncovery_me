@@ -500,18 +500,6 @@ function umc_web_sphere_generator() {
     return $out;
 }
 
-function umc_github_link() {
-    require_once ('/home/includes/github/index.php');
-    echo unc_github_issues('uncovery', 'uncovery_me');
-}
-
-function umc_github_wordpress_update() {
-    require_once ('/home/includes/github/index.php');
-    require_once('/home/minecraft/public_html/wp-load.php'); 
-    unc_github_wordpress_update('uncovery', 'uncovery_me', 'http://uncovery.me/server-features/development-status/');
-}
-
-
 /**
  * Create a dropdown for all active users
  *
