@@ -586,6 +586,12 @@ function umc_get_new_lot_form($world, $dibs = false) {
         // check if the user has a main lot already, if not, hide street lots.
         $mainlot = umc_check_if_world_mainlot($world);
     }
+    
+    $intro_text = '';
+    if ($world == 'kingdom' && $dibs == false) {
+        $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"http://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
+    }
+    
     $username = $UMC_USER['username'];
     $account = umc_money_check($username);
 
@@ -628,12 +634,12 @@ function umc_get_new_lot_form($world, $dibs = false) {
         $count++;
         $out .= "<option value=\"$lot\">$lot @ $price</option>\n";
     }
-    $out .= "</select> Action on Tranfer: " . $actions;
+    $out .= "</select><br>Action on Tranfer: " . $actions;
     if ($count == 0) {
         $out = umc_lot_manager_minimum_requirements($UMC_USER['userlevel'], $world);
         return false;
     }
-    return $out;
+    return $out . $intro_text;
 }
 
 
