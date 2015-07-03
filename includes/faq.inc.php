@@ -177,11 +177,16 @@ $UMC_FAQ = array(
     ),
 );
 
-function umc_faq_web($id = 'accordion', $sel_id = 1) {
+function umc_faq_web($id = 'accordion') {
     global $UMC_FAQ;
 
-    $active = $sel_id - 1;
-
+    $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+    if (isset($s_get['id']) && isset($UMC_FAQ[$s_get['id']])) {
+        $active = $s_get['id'] - 1;
+    } else {
+        $active = 0;
+    }
+    
     $out = "<script>
     jQuery(document).ready(function($) {
         $( \"#$id\" ).accordion({
