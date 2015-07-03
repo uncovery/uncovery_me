@@ -176,7 +176,7 @@ $UMC_FAQ = array(
         'categories' => array('misc', 'worlds'),
     ),
     27 => array(
-        'questions' => 'Can we install chest shops?',
+        'question' => 'Can we install chest shops?',
         'answer' => 'No. We have hundreds of users and people need to walk to most of the places. Having chest shops is good for people near spawn but not for people further away.
             In order to get a fair system, we would need shops somewhere in the center. Having hundreds of shops in spawn is not feasible however.
             To have a fair situation for everyone, we created the shop system where location of your lot does not matter.
