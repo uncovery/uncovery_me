@@ -507,9 +507,12 @@ function umc_web_sphere_generator() {
  * @param type $presel_uuid
  * @return string
  */
-function umc_web_dropdown($data, $fieldname, $presel_key = false) {
-
-    $out = "<select name=\"$fieldname\">\n";
+function umc_web_dropdown($data, $fieldname, $presel_key = false, $submit_on_change = false) {
+    $submit_js = '';
+    if ($submit_on_change) {
+        $submit_js = ' onchange="this.form.submit()"';
+    }
+    $out = "<select name=\"$fieldname\"$submit_js>\n";
     foreach ($data as $key => $value) {
         $sel = '';
         if ($key == $presel_key) {
