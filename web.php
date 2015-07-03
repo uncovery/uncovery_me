@@ -507,16 +507,15 @@ function umc_web_sphere_generator() {
  * @param type $presel_uuid
  * @return string
  */
-function umc_web_active_users_dropdown($fieldname, $presel_uuid = false) {
-    $users = umc_get_active_members();
+function umc_web_dropdown($data, $fieldname, $presel_key = false) {
+
     $out = "<select name=\"$fieldname\">\n";
-    foreach ($users as $uuid => $username) {
+    foreach ($data as $key => $value) {
         $sel = '';
-        if ($uuid == $presel_uuid) {
+        if ($key == $presel_key) {
             $sel = ' selected="selected"';
-            $username .= " (yourself)";
         }
-        $out .= "    <option value=\"$uuid\"$sel>$username</option>\n";
+        $out .= "    <option value=\"$key\"$sel>$value</option>\n";
     }
     $out .= "</select>\n";
     return $out;

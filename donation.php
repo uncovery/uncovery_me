@@ -62,6 +62,7 @@ function umc_donation_chart() {
     $chart = $chart_data['chart'];
     $donation_avg = umc_donation_calc_average();
     $table = umc_donation_top_table($outstanding);
+    $active_users = umc_get_active_members();
 
     $out = "<div style=\"float:right; width:440px; margin-left: 30px;\">\n$chart\n$table</div>\n"
         . "<div style=\"width:auto; overflow:hidden; \">Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\"
@@ -92,7 +93,7 @@ function umc_donation_chart() {
             <option value="48">4 years: $50.00 USD</option>
         </select>
         <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '"><br>
-        <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_active_users_dropdown('on2', $uuid)
+        <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_dropdown($active_users, 'on2', $uuid)
         . '<input type="hidden" name="currency_code" value="USD"><br>
             <strong>Important:</strong> If you want the amount split between several users, please do not make several donations.<br>
             Make the donation for yourself and then send me a message with the details.<br>
