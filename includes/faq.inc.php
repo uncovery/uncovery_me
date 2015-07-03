@@ -185,6 +185,13 @@ $UMC_FAQ = array(
     ),
 );
 
+/**
+ * Create a jQuery accordion
+ *
+ * @global array $UMC_FAQ
+ * @param type $id
+ * @return string
+ */
 function umc_faq_web($id = 'accordion') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_FAQ;
@@ -222,7 +229,7 @@ function umc_faq_web($id = 'accordion') {
             $out .= "    <h3>$faq_id: {$F['question']}</h3>
             <div>
                 <p class=\"answer\">{$F['answer']}</p>
-                <p class=\"categories\">Categories: $cat_text</p>
+                <p class=\"categories\"><a href=\"?id=$faq_id\">Direct link</a> | Categories: $cat_text</p>
             </div>";
         }
 
