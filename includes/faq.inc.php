@@ -14,7 +14,7 @@ $UMC_FAQ = array(
         'answer' => 'Do not build something because you think the city needs it. Do not ask me to copy things because “you built it for the city”.
             Specially not if it took you 30 minutes to build it. If you want your stuff to be seen, post it on the forum.
             If I think the city needs it, I will copy it.',
-        'categories' => array('worlds'),
+        'categories' => array('worlds', 'in-game'),
     ),
     2 => array(
         'question' => 'I want to change my Minecraft Username. What do I have to do?',
@@ -57,22 +57,22 @@ $UMC_FAQ = array(
         'answer' => 'No. If I start doing this, I will have people migrating from one lot to the other and I have all the work.
             You select a lot, you keep it. I allow people to switch from Flatlands to Empire as an exception, but only in one way – once.
             I cannot keep track of people switching forward and backward. Every switch is work for me, and I have better things to do than to deal with your indecisiveness.',
-        'categories' => array('lots', 'worlds'),
+        'categories' => array('lots', 'worlds', 'in-game'),
     ),
     8 => array(
         'question' => 'Can you enable the /item command for certain people? Can you give out free items/blocks etc?',
         'answer' => 'No. You chose to build in a survival map, then you build with survival tools. People mine, and build from what they mine.
             If you are not fine with that, You should have picked a flatlanbds lot.',
-        'categories' => array('blocks', 'commands'),
+        'categories' => array('blocks', 'commands', 'in-game'),
     ),
     9 => array(
         'question' => 'Can you give us Worldedit Commands?',
         'answer' => 'No. Worldedit is unable to respect lot protection and  it is VERY easy to crash a server abusing worldedit.
             The only exception are for Elders in the draftlands.',
-        'categories' => array('commands'),
+        'categories' => array('commands', 'in-game'),
     ),
     10 => array(
-        'question' => 'How long until you make a new/ reset the map of world X?',
+        'question' => 'How long until you reset the map of world X?',
         'answer' => 'Well if all goes well, never. We only reset maps if the biomes change dramatically.
             But even then. we only reset empty lots and allow people to reset their lots on demand. This excludes the kingdom.
             If there are new blocks, we just reset the darklands so you can mine them there',
@@ -94,14 +94,14 @@ $UMC_FAQ = array(
     13 => array(
         'question' => 'Can I allow others to build inside my lot?',
         'answer' => 'Yes, you can do so yourself. Please see the <a href="http://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
-        'categories' => array('commands', 'lots'),
+        'categories' => array('commands', 'lots', 'in-game'),
     ),
     14 => array(
-        'question' => 'Can the admin give me items / do something larger for me / convert blocks / remove stuff?',
+        'question' => 'Can an admin give me items / do something larger for me / convert blocks / remove stuff?',
         'answer' => 'No, sorry, not possible. If I start doing that its first of all not fair towards others and second of all, I have better things to do.
             I spend enough time with admin tasks for you guys. Also the server motto is "build your dream" and not "have someone else build your dream.
             If you want to build crazy stuff without the work, you better go to a creative world instead of a survival world.',
-        'categories' => array('commands'),
+        'categories' => array('commands', 'in-game'),
     ),
     15 => array(
         'question' => 'I have chosen the wrong lot! It’s all in the water! Can I change?',
@@ -110,17 +110,17 @@ $UMC_FAQ = array(
         'categories' => array('lots'),
     ),
     16 => array(
-        'question' => 'How long does it take to get to higher level such as “Architect” or “Master”?',
+        'question' => 'How long does it take to get to higher level such as "Architect" or "Master"?',
         'answer' => 'This depends only on you. Those levels are voted on by other users. Make sure people see you and like what you do, and you will get a higher level in no time.',
         'categories' => array('userlevels'),
     ),
     17 => array(
-        'question' => 'I have this client mod “x” that I want to install. Is that OK?',
+        'question' => 'I have this client mod "x" that I want to install. Is that OK?',
         'answer' => 'The rule is: If it gives you an advantage over others who do not use it, it\'s forbidden.
             The only client side mods that are allowed are normal texture packs, stuff like optifine and a minimap that shows you your immediate surroundings.
             Texture packs that show you things that the normal texture does not show are not allowed.
             All other modifications are not allowed either. No flying, speeding, no-clip (walking through walls), whatever it is – it is not allowed.',
-        'categories' => array('rules', 'commands'),
+        'categories' => array('rules', 'commands', 'in-game'),
     ),
     18 => array(
         'question' => 'I want to start my own server! Can you help me?',
@@ -132,12 +132,12 @@ $UMC_FAQ = array(
         'question' => 'Are there limitations on breeding mobs?',
         'answer' => 'Yes.  Use the /headcount command to see the limit in the region where you are standing in-game, or the chunk if you are in a world without defined regions.
             If you attempt to breed more mobs than are allowed, the mobs simply will not spawn.',
-        'categories' => array('mobs', 'rules'),
+        'categories' => array('mobs', 'rules', 'in-game'),
     ),
     20 => array(
         'question' => 'Why aren\'t Iron Golems spawning?',
         'answer' => 'Natural spawning of Iron Golems has been disabled due to issues with golem farms causing lag.',
-        'categories' => array('mobs'),
+        'categories' => array('mobs', 'in-game'),
     ),
     21 => array(
         'question' => 'Can I help other players with the Settler quiz if they are having trouble?',
@@ -152,7 +152,7 @@ $UMC_FAQ = array(
         'answer' => 'The kingdom was created a long time ago. Since then, biome definitions have changed. The snow might be still around from the time when the old biome had snow on it.
             The new one might not have snow at all. Please go to the location in question and press F3.
             Check what the name of the biome is and then check if it’s on the list of Snowy Biomes.',
-        'categories' => array('lots', 'worlds'),
+        'categories' => array('lots', 'worlds', 'in-game'),
     ),
     23 => array(
         'question' => 'I will be on holiday, will my lot reset?',
@@ -170,7 +170,7 @@ $UMC_FAQ = array(
         'categories' => array('lots'),
     ),
     26 => array(
-        'question' => 'Can you install McMMo?',
+        'question' => 'Can you install McMMo (or any other plugin/mod)?',
         'answer' => 'McMMo is a huge plugin with a lot of work to configure it an make it balanced. We can make a world that works with McMMo, but I would neeed to be convinced that
             people actually use it. If you think it\'s that great, I would invite you to make a forum post and ask people if they want it. IF you get enough people to support it, I might install it',
         'categories' => array('misc', 'worlds'),
@@ -178,6 +178,7 @@ $UMC_FAQ = array(
 );
 
 function umc_faq_web($id = 'accordion') {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_FAQ;
 
     $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
@@ -186,24 +187,44 @@ function umc_faq_web($id = 'accordion') {
     } else {
         $active = 0;
     }
-    
+    if (isset($s_get['cat'])) {
+        $presel_cat = $s_get['cat'];
+    } else {
+        $presel_cat = 'all';
+    }
+
     $out = "<script>
     jQuery(document).ready(function($) {
         $( \"#$id\" ).accordion({
             collapsible: true, heightStyle: \"content\", active: $active
         });
     });
-</script>";
+</script>"
+    . "<div id=\"$id\">\n";
 
-    $out .= "<div id=\"$id\">\n";
+    $cat_arr = array('all' => 'All');
 
     foreach ($UMC_FAQ as $faq_id => $F) {
-        $out .= "    <h3>$faq_id: {$F['question']}</h3>
-        <div>
-            <p>{$F['answer']}</p>
-        </div>";
+        // we cannot do array_merge since we need to set the keys for the dropdown
+        foreach ($F['categories'] as $cat) {
+            $cat_arr[$cat] = ucwords($cat);
+        }
+        $cat_text = implode(", ", $F['categories']);
+        if (($presel_cat == 'all') || in_array($presel_cat, $F['categories'])) {
+            $out .= "    <h3>$faq_id: {$F['question']}</h3>
+            <div>
+                <p>{$F['answer']}</p>
+                <p>Categories: $cat_text</p>
+            </div>";
+        }
+
     }
     $out .= "</div>";
 
+    $drop = "Categories: <form style=\"display:inline;\" action=\"\" method=\"get\">\n"
+        . umc_web_dropdown($cat_arr, 'cat', $presel_cat, true)
+        . "</form>";
+
+    $out = $drop . $out;
     return $out;
 }
