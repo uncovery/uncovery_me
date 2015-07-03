@@ -60,6 +60,11 @@ function umc_wp_template_picker($template) {
 function umc_wp_add_css_and_js() {
     wp_enqueue_style( 'dataTables', 'http://uncovery.me/admin/dataTables.css' );
     wp_enqueue_style( 'uncovery', 'http://uncovery.me/admin/global.css' );
+    // execute floored's CSS only on his page
+    $postid = get_the_ID();
+    if ($postid == 15523) {
+        wp_enqueue_style( 'floored_css', 'http://uncovery.me/admin/floored.css' );
+    }
     wp_enqueue_script('jquery-ui-accordion');
 }
 
