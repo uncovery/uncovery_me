@@ -229,7 +229,9 @@ div.ts3_viewer {
 
 /* JQUERY Accordion styles used in FAQ */
 #accordion .ui-accordion-header {
-    background-color: #ccc;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    cursor: pointer;
     margin: 0px;
     text-transform: none;
     line-height:normal;
@@ -237,9 +239,15 @@ div.ts3_viewer {
     padding: 5px;
     margin-top: 3px;
 }
+#accordion .ui-accordion-header:hover {
+    background-color: #ddd;
+}
 
 #accordion .ui-accordion-content {
     background-color: #f3f3f3;
+    border-radius: 15px;
+    margin-bottom: 7px;
+    margin-top: 7px;
     color: #777;
     font-size: 10pt;
     padding: 10px;
