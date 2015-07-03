@@ -508,6 +508,7 @@ function umc_web_sphere_generator() {
  * @return string
  */
 function umc_web_dropdown($data, $fieldname, $presel_key = false, $submit_on_change = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $submit_js = '';
     if ($submit_on_change) {
         $submit_js = ' onchange="this.form.submit()"';
@@ -530,6 +531,7 @@ function umc_web_dropdown($data, $fieldname, $presel_key = false, $submit_on_cha
  * @param type $tablist
  */
 function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "/n<div class=\"umc_tabs\">\n    <ul>\n";
     foreach ($tabs_menu as $tab_code => $tab_title) {
         if ($tab_code == $current_page) {
