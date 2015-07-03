@@ -127,15 +127,70 @@ $FAQ = array(
         'categories' => array('misc'),
     ),
     19 => array(
-
-
+        'question' => 'Are there limitations on breeding mobs?',
+        'answer' => 'Yes.  Use the /headcount command to see the limit in the region where you are standing in-game, or the chunk if you are in a world without defined regions.
+            If you attempt to breed more mobs than are allowed, the mobs simply will not spawn.',
+        'categories' => array('mobs', 'rules'),
     ),
-
-
+    20 => array(
+        'question' => 'Why aren\'t Iron Golems spawning?',
+        'answer' => 'Natural spawning of Iron Golems has been disabled due to issues with golem farms causing lag.',
+        'categories' => array('mobs'),
+    ),
+    21 => array(
+        'question' => 'Can I help other players with the Settler quiz if they are having trouble?',
+        'answer' => 'No, you should not. Players are informed on the quiz page that asking for the answers can get them banned.
+            In turn, nobody should be assisting guests with the Settler quiz. The intent is that players should pass the quiz without assistance.
+            Of course, this is difficult to enforce in reality, with people in the same house, on the phone, or whatever,
+            but to the extent we can do anything about it, helping with the quiz is prohibited.',
+        'categories' => array('website', 'rules'),
+    ),
+    22 => array(
+        'question' => 'My kingdom lot has snow on the ground, but it never snows! How can I make it snow?',
+        'answer' => 'The kingdom was created a long time ago. Since then, biome definitions have changed. The snow might be still around from the time when the old biome had snow on it.
+            The new one might not have snow at all. Please go to the location in question and press F3.
+            Check what the name of the biome is and then check if it’s on the list of Snowy Biomes.',
+        'categories' => array('lots', 'worlds'),
+    ),
+    23 => array(
+        'question' => 'I will be on holiday, will my lot reset?',
+        'answer' => 'YES. If you do not login within the reset time, it will reset and I will not do anyhting about it.',
+        'categories' => array('lots'),
+    ),
+    24 => array(
+        'question' => 'Can I keep my lot even if I do not login for a month?',
+        'answer' => 'Yes. Become DonatorPlus. You will keep your lot for the duration of your donation status',
+        'categories' => array('userlevels', 'lots'),
+    ),
+    25 => array(
+        'question' => 'My friends lot will be reset, but all my stuff is there and we built the lot together, what can I do?',
+        'answer' => 'Go there and take what is yours before it resets. I will NOT stop the lot from resetting. If anything o your stuff is gone during a reset, it is your problem.',
+        'categories' => array('lots'),
+    ),
+    26 => array(
+        'question' => 'Can you install McMMo?',
+        'answer' => 'McMMo is a huge plugin with a lot of work to configure it an make it balanced. We can make a world that works with McMMo, but I would neeed to be convinced that
+            people actually use it. If you think it\'s that great, I would invite you to make a forum post and ask people if they want it. IF you get enough people to support it, I might install it',
+        'categories' => array('misc', 'worlds'),
+    ),
 );
 
-function umc_faq_web() {
+function umc_faq_web($id = 'accordion') {
+    global $FAQ;
+    $out = '<script>
+  $(function() {
+    $( "#accordion" ).accordion();
+  });
+  </script>';
 
+    $out .= "<div id=\"$id\">\n";
+    foreach ($FAQ as $id => $F) {
+        $out .= "    <h3></h3>
+        <div>
+            <p>{$F['answer']}</p>
+        </div>";
+    }
+    $out .= "</div>";
 
-
+    return $out;
 }
