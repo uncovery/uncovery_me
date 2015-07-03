@@ -36,7 +36,7 @@ $UMC_FAQ = array(
         'categories' => array('userlevels', 'lots', 'account'),
     ),
     4 => array(
-        'question' => 'I would like to have a notice/sign board in spawn or elsewhere in-game with rules, ads, information, whatever.',
+        'question' => 'I would like to have a notice/sign board in spawn with rules, ads, information, whatever.',
         'answer' => 'Sorry, this will not happen. I have enough to do keeping the website up to date with stuff. Also, writing/editing the in-game signs is a really big pain.
             I do not want to do that. Also, I do not want that people rely on several places to find info. If you have one watch, you know the time.
             If you have two, you never know which one is correct.',
@@ -174,6 +174,14 @@ $UMC_FAQ = array(
         'answer' => 'McMMo is a huge plugin with a lot of work to configure it an make it balanced. We can make a world that works with McMMo, but I would neeed to be convinced that
             people actually use it. If you think it\'s that great, I would invite you to make a forum post and ask people if they want it. IF you get enough people to support it, I might install it',
         'categories' => array('misc', 'worlds'),
+    ),
+    27 => array(
+        'questions' => 'Can we install chest shops?',
+        'answer' => 'No. We have hundreds of users and people need to walk to most of the places. Having chest shops is good for people near spawn but not for people further away.
+            In order to get a fair system, we would need shops somewhere in the center. Having hundreds of shops in spawn is not feasible however.
+            To have a fair situation for everyone, we created the shop system where location of your lot does not matter.
+            Installing shops in chests is only additional plugins to maintain and load on the server without any significant benefit for game-play',
+        'categories' => array('blocks', 'in-game'),
     ),
 );
 
