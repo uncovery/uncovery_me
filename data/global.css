@@ -227,9 +227,10 @@ div.ts3_viewer {
     border:1px solid black;
 }
 
+
 /* JQUERY Accordion styles used in FAQ */
 #accordion .ui-accordion-header {
-    background-color: #f3f3f3;
+    background-color: #d3d3d3;
     border-radius: 5px;
     cursor: pointer;
     margin: 0px;
@@ -237,10 +238,10 @@ div.ts3_viewer {
     line-height:normal;
     font-size: 15px;
     padding: 5px;
-    margin-top: 3px;
+    margin-bottom: 3px;    
 }
 #accordion .ui-accordion-header:hover {
-    background-color: #ddd;
+    background-color: #eee;
 }
 
 #accordion .ui-accordion-content {
@@ -254,7 +255,6 @@ div.ts3_viewer {
     padding-right: 20px;
     margin-left: 15px;
     padding-left: 15px;
-    margin-right: 10px;
 }
 
 #accordion {
