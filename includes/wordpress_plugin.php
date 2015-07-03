@@ -60,7 +60,7 @@ function umc_wp_template_picker($template) {
 function umc_wp_add_css_and_js() {
     wp_enqueue_style( 'dataTables', 'http://uncovery.me/admin/dataTables.css' );
     wp_enqueue_style( 'uncovery', 'http://uncovery.me/admin/global.css' );
-	//wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
+    wp_enqueue_script( 'jquery_ui', 'http://uncovery.me/admin/js/jquery-ui.min.js');
 }
 
 /**
