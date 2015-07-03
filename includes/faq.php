@@ -13,7 +13,7 @@ $FAQ = array(
         'answer' => 'Do not build something because you think the city needs it. Do not ask me to copy things because “you built it for the city”.
             Specially not if it took you 30 minutes to build it. If you want your stuff to be seen, post it on the forum.
             If I think the city needs it, I will copy it.',
-        'categories' => array('building', 'worlds'),
+        'categories' => array('worlds'),
     ),
     2 => array(
         'question' => 'I want to change my Minecraft Username. What do I have to do?',
@@ -83,8 +83,55 @@ $FAQ = array(
         'categories' => array('worlds'),
     ),
     12 => array(
+        'question' => 'I lost something during a crash/death/theft/bug/whatever, can you give it back to me?',
+        'answer' => 'In most cases no, I cannot. If I cannot verify what you had before and how much you exactly lost, there is no way.
+            If you had bad luck, that’s what you will have to live with. If someone tricked you, same. If there was lag, a crash even.
+            I only refund if there is a bug in the system that I can 1:1 trace and know what you had before, what you lost and why.',
+        'categories' => array('blocks', 'problems'),
+    ),
+    13 => array(
+        'questions' => 'Can I allow others to build inside my lot?',
+        'answer' => 'Yes, you can do so yourself. Please see the <a href="http://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
+        'categories' => array('commands', 'lots'),
+    ),
+    14 => array(
+        'questions' => 'Can the admin give me items / do something larger for me / convert blocks / remove stuff?',
+        'answer' => 'No, sorry, not possible. If I start doing that its first of all not fair towards others and second of all, I have better things to do.
+            I spend enough time with admin tasks for you guys. Also the server motto is "build your dream" and not "have someone else build your dream.
+            If you want to build crazy stuff without the work, you better go to a creative world instead of a survival world.',
+        'categories' => array('commands'),
+    ),
+    15 => array(
+        'questions' => 'I have chosen the wrong lot! It’s all in the water! Can I change?',
+        'answers' => 'No. You cannot. You are supposed to go there first and check it out. I am not working extra to reward your laziness.
+            Take it as a challenge and build something on the water.',
+        'categories' => array('lots'),
+    ),
+    16 => array(
+        'questions' => 'How long does it take to get to higher level such as “Architect” or “Master”?',
+        'answer' => 'This depends only on you. Those levels are voted on by other users. Make sure people see you and like what you do, and you will get a higher level in no time.',
+        'categories' => array('userlevels'),
+    ),
+    17 => array(
+        'question' => 'I have this client mod “x” that I want to install. Is that OK?',
+        'answer' => 'The rule is: If it gives you an advantage over others who do not use it, it\'s forbidden.
+            The only client side mods that are allowed are normal texture packs, stuff like optifine and a minimap that shows you your immediate surroundings.
+            Texture packs that show you things that the normal texture does not show are not allowed.
+            All other modifications are not allowed either. No flying, speeding, no-clip (walking through walls), whatever it is – it is not allowed.',
+        'categories' => array('rules', 'commands'),
+    ),
+    18 => array(
+        'question' => 'I want to start my own server! Can you help me?',
+        'answer' => 'No. I am busy enough working on my server, I do not need additional work on yours.
+            Please do not ask questions how I got stuff done, how to install things or how I configured whatever.',
+        'categories' => array('misc'),
+    ),
+    19 => array(
+
 
     ),
+
+
 );
 
 function umc_faq_web() {
