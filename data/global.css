@@ -226,3 +226,25 @@ div.ts3_viewer {
 .umc_tab_content {
     border:1px solid black;
 }
+
+/* JQUERY Accordion styles used in FAQ */
+#accordion .ui-accordion-header {
+    background-color: #ccc;
+    margin: 0px;
+    text-transform: none;
+    line-height:normal;
+    font-size: 15px;
+    padding: 5px;
+    margin-bottom: 3px;    
+}
+
+#accordion .ui-accordion-content {
+    width: 100%;
+    background-color: #f3f3f3;
+    color: #777;
+    font-size: 10pt;
+    margin-right: 20px;
+    padding: 10px;
+    padding-right: 0px;
+
+}
