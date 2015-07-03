@@ -235,7 +235,7 @@ div.ts3_viewer {
     line-height:normal;
     font-size: 15px;
     padding: 5px;
-    margin-bottom: 3px;    
+    margin-top: 3px;
 }
 
 #accordion .ui-accordion-content {
@@ -246,6 +246,7 @@ div.ts3_viewer {
     padding-right: 20px;
     margin-left: 15px;
     padding-left: 15px;
+    margin-right: 10px;
 }
 
 #accordion {
