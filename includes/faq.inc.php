@@ -213,8 +213,8 @@ function umc_faq_web($id = 'accordion') {
         if (($presel_cat == 'all') || in_array($presel_cat, $F['categories'])) {
             $out .= "    <h3>$faq_id: {$F['question']}</h3>
             <div>
-                <p>{$F['answer']}</p>
-                <p>Categories: $cat_text</p>
+                <p class=\"answer\">{$F['answer']}</p>
+                <p class=\"categories\">Categories: $cat_text</p>
             </div>";
         }
 
