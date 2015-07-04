@@ -148,7 +148,7 @@ function umc_wp_register_addFields(){
     // echo "Due to technical reasons, we cannot accept any new users right now. Please check back later";
     // die('umc_wp_register_addFields');
 
-    $out = '<p><strong>GMail is currently blocking our emails. If you are registering a new account, please use an alternative email if possible. We are working to fix the issue.</strong>
+    $out = '<p>
         <label for="email_confirm">Confirm E-mail<br />
         <input type="text" name="email_confirm" id="email_confirm" class="input" value="" size="25" /></label>
     </p>';
