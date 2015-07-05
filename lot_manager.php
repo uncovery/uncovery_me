@@ -1286,8 +1286,8 @@ function umc_lot_reset_process() {
             continue;
         }
 
-        // we do not reset active donators
-        if (isset($donators[$owner_uuid])) {
+        // we do not reset active donators, except those who are banned
+        if (isset($donators[$owner_uuid]) && !isset($banned_users[$owner_uuid])) {
             continue;
         }
 
