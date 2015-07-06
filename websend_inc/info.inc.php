@@ -54,7 +54,84 @@ $WS_INIT['info'] = array(  // the name of the plugin
         'function' => 'umc_info_whereami',
         'top' => true,
     ),
+    'setpass' => array(
+        'help' => array (
+            'short' => 'Set a new website password',
+            'long' => "In case you have trouble getting your website password, you can set a new password with this command. You need to give the password twice, separated by spaces.",
+        ),
+        'args' => '[password] [password]',
+        'function' => 'umc_info_setpass',
+        'top' => false,
+    ),
 );
+
+function umc_info_setpass() {
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    $wp_id = umc_user_get_wordpress_id($uuid);
+
+    $args = $UMC_USER['args'];
+    if (isset($args[2]) && isset($args[3]) && ($args[2] == $args[3])) {
+        $password = $args[2];
+        $strength = umc_info_checkpass_strength($password);
+    } else {
+        umc_error("You need to enter the new password 2x! Such as /info password XXXXX XXXXX");
+    }
+
+    if ($strength < 50) {
+        umc_error("Your password strength is too low! Please chose a longer password, include numbers and mixed case letters");
+    } else {
+        wp_set_password($password, $wp_id);
+    }
+    umc_echo("You new website password has been set!");
+}
+
+function umc_info_checkpass_strength($password) {
+    if (strlen($password) == 0) {
+        return 1;
+    }
+
+    $strength = 0;
+
+    $length = strlen($password); /*** get the length of the password ***/
+
+
+    if (strtolower($password) != $password) { /*** check if password is not all lower case ***/
+        $strength += 1;
+    }
+
+
+    if (strtoupper($password) == $password) { /*** check if password is not all upper case ***/
+        $strength += 1;
+    }
+
+    if ($length >= 8 && $length <= 15) { /*** check string length is 8 -15 chars ***/
+        $strength += 1;
+    } else if ($length >= 16 && $length <=35) { /*** check if lenth is 16 - 35 chars ***/
+        $strength += 2;
+    } else if ($length > 35) { /*** check if length greater than 35 chars ***/
+        $strength += 3;
+    }
+
+    $numbers = false; /*** get the numbers in the password ***/
+    preg_match_all('/[0-9]/', $password, $numbers);
+    $strength += count($numbers[0]);
+
+    $specialchars = false; /*** check for special chars ***/
+    preg_match_all('/[|!@#$%&*\/=?,;.:\-_+~^\\\]/', $password, $specialchars);
+    $strength += sizeof($specialchars[0]);
+
+    /*** get the number of unique chars ***/
+    $chars = str_split($password);
+    $num_unique_chars = sizeof( array_unique($chars) );
+    $strength += $num_unique_chars * 2;
+
+    /*** strength is a number 1-10; ***/
+    $top_strength = $strength > 99 ? 99 : $strength;
+    $round_strength = floor($top_strength / 10 + 1);
+
+    return $round_strength;
+}
 
 function umc_info_whereami() {
     global $UMC_USER, $UMC_SETTING;
