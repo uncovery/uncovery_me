@@ -852,7 +852,7 @@ function umc_get_lot_owner_age($format = 'string', $oneuser = false, $debug  = f
         $uuid = umc_uuid_getone($oneuser, 'uuid');
         $playerfilter = " AND UUID.uuid = '$uuid'";
     }
-    
+
     //temp fix for wrong userlogin
     umc_uuid_firstlogin_update($uuid);
 
