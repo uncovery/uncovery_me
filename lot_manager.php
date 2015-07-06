@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 global $UMC_USER;
 /**
@@ -1837,3 +1838,4 @@ function umc_check_lot_exists($world_id, $lot) {
 
 
 ?>
+>>>>>>> 4a5af83e5e1c00c4ab0e6db52a761538ec35107a
