@@ -66,6 +66,7 @@ function umc_wp_add_css_and_js() {
         wp_enqueue_style( 'floored_css', 'http://uncovery.me/admin/floored.css' );
     }
     wp_enqueue_script('jquery-ui-accordion');
+    wp_enqueue_script('jquery-ui-tabs');
 }
 
 /**
