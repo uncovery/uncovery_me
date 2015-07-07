@@ -1,2 +1,4 @@
-/includes/github-uncovery_me-uncovery.token
+/includes/*.token
 /nbproject
+floored
+*.swp

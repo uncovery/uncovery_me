@@ -1,5 +1,20 @@
 /* This file defines styles for dynamic pages */
 
+/* jquery-webui-popover */
+.popover {
+  cursor: pointer;
+}
+.popover-content {
+  display: none;
+}
+.webui-popover {
+  padding-bottom: 20px;
+}
+
+.umc_fade_in {
+  display: none;
+}
+
 .donation td{
    padding-right:4px; 
 }

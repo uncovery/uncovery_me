@@ -485,6 +485,51 @@ function umc_web_table_format_column($name, $value) {
     return $value;
 }
 
+/**
+ * @param array $data: An associative array in the following format:
+ *      Tab Title (String) => Tab Content (String - HTML OK)
+ * @return string
+ *
+ * **NOTE: This function also supports popovers in the following format:
+ *      <div class='popover'>
+ *              Doesn't have to be <div>, can be any element: tr, span, etc. The
+ *              important part is the class.  This will make the mouse cursor a pointer
+ *              on hover, and when it is clicked the popover-content will appear
+ *          <div class='popover-content'>
+ *              This is the HTML inside the popover.  It MUST be inside the parent,
+ *              but other than that there should be no restrictions.
+ *          </div>
+ *      </div>
+ */
+function umc_jquery_tabs($data) {
+    # External JS and Stylesheets -- These should _not_
+    # be needed after everything is properly configured
+    $out = "<link rel=\"stylesheet\" href=\"http://www.f85.net/jquery.webui-popover.min.css\">\n"
+        . "<script src=\"http://www.f85.net/jquery.webui-popover.min.js\"></script>\n"
+        . "<link rel=\"stylesheet\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css\">\n";
+
+    $out .= "<div class='umc_jquery_tabs umc_fade_in'>\n"
+        . "<ul>\n";
+
+    # Set up tab titles
+    $i = 0;
+    foreach ($data as $tab => $tab_html) {
+            $out .= "<li><a href='#tab$i'><span>$tab</span></a></li>";
+            $i += 1;
+    }
+    $out .= "</ul>\n";
+
+    # Set up tab content <div>s
+    $i = 0;
+    foreach ($data as $tab => $tab_html) {
+            $out .= "<div id='tab$i'>\n$tab_html\n</div>";
+            $i += 1;
+    }
+    $out .= "</div>\n";
+
+    return $out;
+}
+
 function umc_web_sphere_generator() {
     $out = '
     <script type=\'text/javascript\' src=\'http://uncovery.me/admin/js/sphere.js\'></script>
