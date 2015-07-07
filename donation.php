@@ -82,27 +82,27 @@ function umc_donation_chart() {
         . '<br><br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">'
         . '<input type="hidden" name="cmd" value="_s-xclick">'
         . '<input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
-        . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
+        . '<p style="text-align:center;"><input type="hidden" name="on0" value="DonatorPlus Status">'
         . "The average donation amount is <strong>$donation_avg USD</strong><br>
         Buy DonatorPlus Status as user <strong>$username<br>
             (UUID: $uuid)" . '</strong><br> Duration <select style="font-size:12px" name="os0">
-            <option value="1">1 month: $2.00 USD</option>
-            <option value="6">6 months: $7.00 USD</option>
-            <option value="12" selected>1 year: $13.00 USD</option>
-            <option value="24">2 years: $25.00 USD</option>
-            <option value="48">4 years: $50.00 USD</option>
+            <option value="1 Month">1 Month $2.00 USD</option>
+            <option value="6 Months">6 Months $7.00 USD</option>
+            <option value="1 Year">1 Year $13.00 USD</option>
+            <option value="2 Years">2 Years $25.00 USD</option>
+            <option value="4 Years">4 Years $50.00 USD</option>
         </select>
         <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><br>
         <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_dropdown($active_users, 'os2', $uuid)
         . '<input type="hidden" name="currency_code" value="USD"><br>
             <strong>Important:</strong> If you want the amount split between several users, please do not make several donations.<br>
             Make the donation for yourself and then send me a message with the details.<br>
-        <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+        <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" name="submit" alt="PayPal — The safer, easier way to pay online.">
         <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
         </p>
         </form>';
     return $out;
-}
+}s
 
 function umc_donation_java_chart() {
     global $UMC_SETTING;
