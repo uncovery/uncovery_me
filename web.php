@@ -508,7 +508,7 @@ function umc_jquery_tabs($data) {
         . "<script src=\"http://www.f85.net/jquery.webui-popover.min.js\"></script>\n"
         . "<link rel=\"stylesheet\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css\">\n";
 
-    $out .= "<div class='umc_jquery_tabs'>\n"
+    $out .= "<div class='umc_jquery_tabs umc_fade_in'>\n"
         . "<ul>\n";
 
     # Set up tab titles

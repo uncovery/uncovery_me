@@ -13,4 +13,7 @@ jQuery(document).ready(function(jQuery) {
 
     // Initialize jquery-ui tabs
     jQuery( '.umc_jquery_tabs' ).tabs();
+
+    // Fade in sections that we wanted to pre-render
+    jQuery('.umc_fade_in').fadeIn('fast');
 });

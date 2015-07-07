@@ -11,6 +11,10 @@
   padding-bottom: 20px;
 }
 
+.umc_fade_in {
+  display: none;
+}
+
 .donation td{
    padding-right:4px; 
 }
