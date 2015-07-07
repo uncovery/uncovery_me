@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 global $UMC_USER;
 /**
@@ -587,12 +586,12 @@ function umc_get_new_lot_form($world, $dibs = false) {
         // check if the user has a main lot already, if not, hide street lots.
         $mainlot = umc_check_if_world_mainlot($world);
     }
-    
+
     $intro_text = '';
     if ($world == 'kingdom' && $dibs == false) {
         $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"http://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
     }
-    
+
     $username = $UMC_USER['username'];
     $account = umc_money_check($username);
 
@@ -1418,7 +1417,7 @@ function umc_lot_reset_process() {
                 'user_shop_clean' => false,
                 'dibs' => false,
                 'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$choice' WHERE lot='$lot' LIMIT 1;",
-            );            
+            );
         } else { // other non-default options to reset to, usually lot names on the same world
             // assume that we always copy from the same world, but mint version
             $A[$lot] = array(
@@ -1468,16 +1467,16 @@ function umc_lot_manager_reset_lot($lot, $a) {
         $debug .= "Lot $lot has dibs! ";
         // we iterate the people who asked for the lot, and
         // once we found a valid one, execute the actions
-        // 
+        //
         // this can only be done AFTER current owners have been removed
         // since the check_before_assign fails if the lot is owned by someone
         umc_lot_remove_all($lot);
         $a['remove_users'] = false;
-        
+
         foreach ($a['dibs'] as $dibs_info) {
             $dibs_uuid = $dibs_info['uuid'];
             $debug .= " user $dibs_uuid: ";
-            
+
             $dibs_check = umc_lot_manager_check_before_assign($dibs_uuid, $lot);
             XMPP_ERROR_trace('umc_lot_manager_check_before_assign result', $dibs_check);
             if ($dibs_check['result']) {
@@ -1838,4 +1837,3 @@ function umc_check_lot_exists($world_id, $lot) {
 
 
 ?>
->>>>>>> 4a5af83e5e1c00c4ab0e6db52a761538ec35107a
