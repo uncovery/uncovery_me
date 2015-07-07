@@ -79,7 +79,7 @@ function umc_donation_chart() {
         . '<h2 style="clear:both;">Donate now!</h2>'
         . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
         . "This can take up to 24 hours. Once you received a confirmation email from the server, your userlevel will be updated once you (re-) login to the minecraft server.\n"
-        . '<br><br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post">'
+        . '<br><br><form style="display:inline;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">'
         . '<input type="hidden" name="cmd" value="_s-xclick">'
         . '<input type="hidden" name="hosted_button_id" value="39TSUWZ9XPW5G">'
         . '<p style="text-align:center;><input type="hidden" name="on0" value="DonatorPlus Status">'
@@ -92,8 +92,8 @@ function umc_donation_chart() {
             <option value="24">2 years: $25.00 USD</option>
             <option value="48">4 years: $50.00 USD</option>
         </select>
-        <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><input type="hidden" name="os2" value="'. $username . '"><br>
-        <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_dropdown($active_users, 'on2', $uuid)
+        <input type="hidden" name="on1" value="Your Username"><input type="hidden" name="os1" value="'. $uuid . '"><br>
+        <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_dropdown($active_users, 'os2', $uuid)
         . '<input type="hidden" name="currency_code" value="USD"><br>
             <strong>Important:</strong> If you want the amount split between several users, please do not make several donations.<br>
             Make the donation for yourself and then send me a message with the details.<br>
