@@ -1834,6 +1834,3 @@ function umc_check_lot_exists($world_id, $lot) {
     }
     return true;
 }
-
-
-?>
