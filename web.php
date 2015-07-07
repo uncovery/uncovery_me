@@ -527,23 +527,6 @@ function umc_jquery_tabs($data) {
     }
     $out .= "</div>\n";
 
-    # Initialize popovers
-    $out .= "<script> jQuery('.popover').each(function() {\n"
-        . "     element = jQuery(this);\n"
-        . "     datacontent = element.find('.popover-content:first').html();\n"
-        . "     element.webuiPopover({\n"
-        . "         content:datacontent,\n"
-        . "         width: element.data('popover-width')\n"
-        . "     });\n"
-        . "}); </script>\n";
-
-    # Initialize tabs
-    $out .= "<script>"
-        . " jQuery(document).ready(function(jQuery) { "
-        . "     jQuery( '.umc_jquery_tabs' ).tabs(); "
-        . " });"
-        . "</script>";
-
     return $out;
 }
 
