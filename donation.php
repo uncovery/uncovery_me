@@ -102,7 +102,7 @@ function umc_donation_chart() {
         </p>
         </form>';
     return $out;
-}s
+}
 
 function umc_donation_java_chart() {
     global $UMC_SETTING;
