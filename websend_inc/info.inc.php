@@ -288,8 +288,8 @@ function umc_info_who() {
             $new_lvl = $level;
             $new_player = $player;
         }
+        $lower_username = strtolower($player);
         if ($user_worlds && isset($user_worlds[$lower_username])) {
-            $lower_username = strtolower($player);
             $new_player .= " {grey}({$user_worlds[$lower_username]['world']}){white}";
         }
         $out_arr[$new_lvl][] = $new_player;
