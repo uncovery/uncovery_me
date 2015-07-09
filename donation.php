@@ -518,39 +518,39 @@ function umc_donation_parser() {
     } else if (isset($_POST['donation_text']) || isset($_POST['new_uuid'])) {
         $email = strip_tags($_POST['donation_text']);
         if (isset($_POST['new_uuid'])) {
-            $username = $_POST['username'];
             $uuid = umc_user2uuid($username);
             $value = $_POST['amount'];
             $emailaddress = $_POST['email'];
             $id = $_POST['transaction_id'];
         } else {
-            $pattern = '/Your Username: (.*)\r/';
-            preg_match($pattern, $email, $result);
-            $uuid = $result[1];
-            $username = umc_user2uuid($uuid);
+            $patterns = array(
+                'sender_uuid' => '/Your Username: (.*) , /',
+                'recipient_uuid' => ' , for Recipient\(s\): .*\n',
+                'id' => '/Transaction ID: ([0-9A-Za-z]*)\r/',
+                'USD' => '/Unit price: \$([0-9]*).00 USD/',
+                'emailaddress' => '/You received a payment of .* \((.*)\)/',
+            );
 
-            // Transaction ID:
-            $pattern = '/Transaction ID: ([0-9A-Za-z]*)\r/';
-            preg_match($pattern, $email, $result);
-            $id = $result[1];
+            $matches = false;
+            $sender_uuid = false;
+            $recipient_uuid = false;
+            $USD = false;
+            foreach ($patterns as $variable_name => $pattern) {
+                preg_match($pattern, $email, $matches);
+                $$variable_name = $matches[1];
+            }
 
-            // You received a payment of $2.00 USD from Thomas Westrich (twestrich15@yahoo.com)
-            // You received a payment of 13.00 USD from (lucky_eddy@hotmail.com).
-            $pattern = '/You received a payment of .* \((.*)\)/';
-            preg_match($pattern, $email, $result);
-            $emailaddress = $result[1];
-
-            $pattern = '/Unit price: \$([0-9]*).00 USD/';
-            preg_match($pattern, $email, $result);
-            $USD = $result[1];
+            $sender_username = umc_user2uuid($sender_uuid);
+            $recipient_username = umc_user2uuid($recipient_uuid);
             $value = $amount_arr[$USD];
         }
         $out =  '<form style="text-align:left" method="post">'
             . '<p>Trasaction ID: <input type="text" name="transaction_id" value="' . $id . '"><br>'
             . 'Amount (' . $USD . '): <input type="text" name="amount" value="'. $value . '"><br>'
             . 'Email: <input type="text" name="email"  size="35" value="'. $emailaddress . '"><br>'
-            . 'UUID: <input type="text" name="uuid" size="35" value="'. $uuid . '"><br>'
-            . 'Username: <input type="text" name="username" value="'. $username . '"> <input type="submit" value="Find UUID" name="new_uuid"><br>'
+            . 'Sender UUID: <input type="text" name="uuid" size="35" value="'. $sender_uuid . '"> (' . $sender_username . ')<br>'
+            . 'Recipient UUID: <input type="text" name="uuid" size="35" value="'. $recipient_uuid . '"> (' . $recipient_username . ')<br>'
+            . '<input type="submit" value="Find UUID" name="new_uuid"><br>'
             . '<input name="submit_donation" type="submit"></form>';
 
         // You received a payment of $2.00 USD from Thomas Westrich (twestrich15@yahoo.com)
