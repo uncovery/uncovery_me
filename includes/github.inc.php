@@ -69,17 +69,18 @@ function umc_github_link() {
     $paginator  = new Github\ResultPager($client);
 
     $items = array(
-        'open_issues' => array('state' => 'open', 'fetch' => 'all'),
-        'closed_issues' => array('state' => 'open', 'fetch' => 'all'),
-        'comments' => array('state' => 'open', 'fetch' => 'show'),
+        'open_issues' => array('state' => array('state' => 'open'), 'fetch' => 'all'),
+        'closed_issues' => array('state' => array('state' => 'closed'), 'fetch' => 'all'),
+        'comments' => array('state' => 'comments', 'fetch' => 'show'),
     );
     foreach ($items as $item => $I) {
         $api = $client->api('issue');
-        $parameters = array($owner, $repo, array('state' => $I['state']));
+        $parameters = array($owner, $repo, $I['state']);
         $$item = $paginator->fetchAll($api, $I['fetch'], $parameters);
     }
-
-    $commits = $client->api('repo')->commits()->all($owner, $repo, array('sha' => 'master', 'per_page' => 100));
+    
+    $parameters = array('sha' => 'master', 'per_page' => 100);
+    $commits = $client->api('repo')->commits()->all($owner, $repo, $parameters);
 
     $out .= '<script type="text/javascript" src="/admin/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
