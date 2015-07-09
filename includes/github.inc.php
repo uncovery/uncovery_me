@@ -25,16 +25,16 @@ function umc_github_issue_body($issues, $comments) {
     $table_body = '';
     foreach ($issues as $issue) {
         if (!isset($issue['pull_request'])) {
-            $table_body .= "<tr class='popover' data-popover-width=700 data-placement='bottom' data-animation='pop' data-issueid='{$issue['number']}'>"
-                . "<td class='dt-center'>{$issue['number']}</td>"
-                . "<td>{$issue['title']}</td>"
-                . "<td class='popover-content'>" . umc_github_issue_details($issue, $comments) . '</td>'
-                . "<td>";
+            $table_body .= "<tr class='popover' data-popover-width=700 data-placement='bottom' data-animation='pop' data-issueid='{$issue['number']}'>\n"
+                . "    <td class='dt-center'>{$issue['number']}</td>\n"
+                . "    <td>{$issue['title']}</td>\n"
+                . "    <td class='popover-content'>\n" . umc_github_issue_details($issue, $comments) . '</td>' . "\n"
+                . "    <td>";
             foreach ($issue['labels'] as $label) {
-                $table_body .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
+                $table_body .= "<span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
             }
-            $updated = substr($issue['updated_at'], 0, 10);
-            $table_body .= "</td><td>$updated</td></tr>\n";
+            $updated = trim(substr($issue['updated_at'], 0, 10));
+            $table_body .= "</td>\n    <td>$updated</td>\n</tr>\n";
         }
     }
     return $table_body;
@@ -81,24 +81,24 @@ function umc_github_link() {
 
     $out .= "<script type=\"text/javascript\" src=\"/admin/js/jquery.dataTables.min.js\"></script>\n"
         . "<script type=\"text/javascript\">\n"
-        . "     jQuery(document).ready(function() {jQuery('#shoptable_open').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
-        . "     jQuery(document).ready(function() {jQuery('#shoptable_closed').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_open').dataTable( {\"order\": [[ 4 ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_closed').dataTable( {\"order\": [[ 4 ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
         . "     jQuery(document).ready(function() {jQuery('#shoptable_commits').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
         . "</script>";
 
-    $tab1 = "<table id='shoptable_open'>
+    $tab1 = "<table id='unc_datatables shoptable_open'>
                 <thead>
                     <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
                 </thead>
                 <tbody>" . umc_github_issue_body($open_issues, $comments) . "</tbody>
             </table>";
-    $tab2 = "<table id='shoptable_closed'>
+    $tab2 = "<table id='unc_datatables shoptable_closed'>
                 <thead>
                     <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
                 </thead>
                 <tbody>" . umc_github_issue_body($closed_issues, $comments) . "</tbody>
             </table>";
-    $tab3 = "<table id='shoptable_commits'>
+    $tab3 = "<table id='unc_datatables shoptable_commits'>
                 <thead>
                     <tr><th>Date</th><th>User</th><th>Message</th></tr>
                 </thead>
@@ -121,7 +121,7 @@ function umc_github_issue_details($issue, $comments) {
 
     $comments_html = '';
     if ($issue['comments'] > 0) {
-        $comments_html = "<tr><td colspan=5 style='text-align:center'><strong>Comments</strong></td></tr>\n";
+        $comments_html = "<tr>\n    <td colspan=5 style='text-align:center'><strong>Comments</strong></td>\n        </tr>\n";
         foreach ($comments as $comment) {
             // Skip this comment if it's not related to our issue
             if ($comment['issue_url'] != $issue['url']) {
@@ -129,26 +129,29 @@ function umc_github_issue_details($issue, $comments) {
             }
             $comment_body = nl2br($comment['body']);
             $updated = substr($comment['updated_at'], 0, 10);
-            $comments_html .= "<tr><td colspan='2' nowrap class='dt-right'><strong>{$comment['user']['login']} @ $updated:</strong></td><td colspan=3>$comment_body</td></tr>\n";
+            $comments_html .= "        <tr>"
+                . "            <td colspan='2' nowrap class='dt-right'><strong>{$comment['user']['login']} @ $updated:</strong></td>"
+                . "            <td colspan=3>$comment_body</td>"
+                . "        </tr>\n";
         }
     }
 
-    $out = "<table class='dataTable'>\n
-    <tr>
-        <td><strong>ID:</strong> {$issue['number']}</td>
-        <td colspan=4><strong>Title:</strong> {$issue['title']}</td>
-    </tr>
-    <tr>
-        <td><strong>Labels:</strong></td><td>$labels</td>
-        <td><strong>Created by:</strong> {$issue['user']['login']}</td>
-        <td><strong>Created at:</strong> $created</td>
-        <td><strong>Updated at:</strong> $updated</td>
-    </tr>
-    <tr>
-        <td><strong>Description:</strong></td>
-        <td colspan=4>$body</td>
-    </tr>
-    $comments_html
+    $out = "    <table class='dataTable'>
+        <tr>
+            <td><strong>ID:</strong> {$issue['number']}</td>
+            <td colspan=4><strong>Title:</strong> {$issue['title']}</td>
+        </tr>
+        <tr>
+            <td><strong>Labels:</strong></td><td>$labels</td>
+            <td><strong>Created by:</strong> {$issue['user']['login']}</td>
+            <td><strong>Created at:</strong> $created</td>
+            <td><strong>Updated at:</strong> $updated</td>
+        </tr>
+        <tr>
+            <td><strong>Description:</strong></td>
+            <td colspan=4>$body</td>
+        </tr>
+        $comments_html
     </table>\n";
 
     return $out;
