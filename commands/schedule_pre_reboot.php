@@ -6,5 +6,3 @@ include('/home/minecraft/server/bin/index_wp.php');
 umc_lot_reset_process();
 
 umc_hardcore_resetworld();
-
-umc_github_wordpress_update();
