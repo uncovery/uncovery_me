@@ -7,7 +7,6 @@ $GITHUB['page'] = 'http://uncovery.me/server-features/development-status/';
 
 // https://github.com/KnpLabs/php-github-api
 
-
 function umc_github_client_connect($owner, $repo) {
     require_once '/home/includes/composer/vendor/autoload.php';
     $cache_dir = "/tmp/github-$repo-$owner-cache";
@@ -22,6 +21,37 @@ function umc_github_client_connect($owner, $repo) {
     return $client;
 }
 
+function umc_github_issue_body($issues, $comments) {
+    $table_body = '';
+    foreach ($issues as $issue) {
+        if (!isset($issue['pull_request'])) {
+            $table_body .= "<tr class='popover' data-popover-width=700 data-placement='bottom' data-animation='pop' data-issueid='{$issue['number']}'>"
+                . "<td class='dt-center'>{$issue['number']}</td>"
+                . "<td>{$issue['title']}</td>"
+                . "<td class='popover-content'>" . umc_github_issue_details($issue, $comments) . '</td>'
+                . "<td>";
+            foreach ($issue['labels'] as $label) {
+                $table_body .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
+            }
+            $updated = substr($issue['updated_at'], 0, 10);
+            $table_body .= "</td><td>$updated</td></tr>\n";
+        }
+    }
+    return $table_body;
+}
+
+function umc_github_commit_body($commits) {
+    $table_body = '';
+    foreach ($commits as $commit) {
+        $updated = substr($commit['commit']['committer']['date'], 0, 10);
+        $table_body .= "<tr>"
+            . "<td>$updated</td>"
+            . "<td>{$commit['author']['login']}</td>"
+            . "<td>{$commit['commit']['message']}</td>"
+            . "</tr>";
+    }
+    return $table_body;
+}
 
 function umc_github_link() {
     global $GITHUB;
@@ -31,110 +61,56 @@ function umc_github_link() {
     $sort_column = 0;
     $client = umc_github_client_connect($owner, $repo);
 
-    $menu_arr = array(
-        'open_issues' => true,
-        'closed_issues' => true,
-        'issue_detail' => false,
-        'commits' => true,
-    );
+    $out = '';
 
-    $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
-    if (!isset($s_get['action']) || !isset($menu_arr[$s_get['action']])) {
-        $action = 'open_issues';
-    } else {
-        $action = $s_get['action'];
-        if ($action == 'issue_detail') {
-            if (isset($s_get['id']) && is_numeric($s_get['id'])) {
-                $get_issue = intval($s_get['id']);
-            } else {
-                $action = 'open_issues';
-            }
-        }
-    }
+    $paginator  = new Github\ResultPager($client);
 
-    $menu = "<br><ul>\n";
-    foreach ($menu_arr as $code => $show_flag) {
-        if ($show_flag) {
-            $menu_nice = str_replace("_", " ", ucwords($code));
-            if ($code == $action) {
-                $link = $menu_nice;
-            } else {
-                $link = "<a href=\"?action=$code\">$menu_nice</a>";
-            }
-            $menu .= "<li>$link</li>\n";
-        }
-    }
-    $menu .= "</ul>";
+    $api = $client->api('issue');
+    $parameters = array($owner, $repo, array('state' => 'open'));
+    $open_issues = $paginator->fetchAll($api, 'all', $parameters);
 
-    $out = $menu;
+    $api = $client->api('issue');
+    $parameters = array($owner, $repo, array('state' => 'closed'));
+    $closed_issues = $paginator->fetchAll($api, 'all', $parameters);
 
-    // {$issue['pull_request']}
-    switch ($action) {
-        case 'open_issues':
-            $issues = $client->api('issue')->all($owner, $repo, array('state' => 'open', 'per_page' => 100));
-            break;
-        case 'closed_issues':
-            $issues = $client->api('issue')->all($owner, $repo, array('state' => 'closed', 'per_page' => 100));
-            break;
-        case 'issue_detail':
-            $out .= umc_github_issue_details($client, $owner, $repo, $get_issue);
-            return $out;
-        case 'commits':
-            $commits = $client->api('repo')->commits()->all($owner, $repo, array('sha' => 'master', 'per_page' => 100));
-            break;
-    }
+    $api = $client->api('issue');
+    $parameters = array($owner, $repo, 'comments');
+    $comments = $paginator->fetchAll($api, 'show', $parameters);
 
-    $out .= "<script type=\"text/javascript\">
-           var table_name = \"$repo\";
-           var numeric_columns = [];
-           var sort_columns = [[$sort_column]];
-           var strnum_columns = [];
-       </script>";
+    $commits = $client->api('repo')->commits()->all($owner, $repo, array('sha' => 'master', 'per_page' => 100));
 
     $out .= "<script type=\"text/javascript\" src=\"/admin/js/jquery.dataTables.min.js\"></script>\n"
-          . "<script type=\"text/javascript\">"
-          .'jQuery(document).ready(function() {jQuery'. "('#shoptable_$repo').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );"
-          . "</script>";
+        . "<script type=\"text/javascript\">\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_open').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_closed').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_commits').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "</script>";
 
-    $data_out = '';
-    if ($action == 'commits') {
-        $th_row = '<th>Date</th><th>Message</th>';
-        foreach ($commits as $commit) {
-            $updated = substr($commit['commit']['committer']['date'], 0, 10);
-            $data_out .= "<tr><td>$updated</td><td>{$commit['commit']['message']}</td><td></tr>";
-        }
-    } else {
-        $th_row = '<th>#</th><th>Title</th><th>Labels</th><th>Updated</th>';
-        foreach ($issues as $issue) {
-            if (!isset($issue['pull_request'])) {
-                $data_out .= "<tr><td>{$issue['number']}</td><td><a href=\"?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a></td><td>";
-                foreach ($issue['labels'] as $label) {
-                    $data_out .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
-                }
-                $updated = substr($issue['updated_at'], 0, 10);
-                $data_out .= "</td><td>$updated</td></tr>\n";
-            }
-        }
-    }
+    $tab1 = "<table id='shoptable_open'>
+                <thead>
+                    <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
+                </thead>
+                <tbody>" . umc_github_issue_body($open_issues, $comments) . "</tbody>
+            </table>";
+    $tab2 = "<table id='shoptable_closed'>
+                <thead>
+                    <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
+                </thead>
+                <tbody>" . umc_github_issue_body($closed_issues, $comments) . "</tbody>
+            </table>";
+    $tab3 = "<table id='shoptable_commits'>
+                <thead>
+                    <tr><th>Date</th><th>User</th><th>Message</th></tr>
+                </thead>
+                <tbody>" . umc_github_commit_body($commits) . "</tbody>
+             </table>";
 
-    $out .= "
-       <table id='shoptable_$repo'>
-         <thead>
-           <tr>
-             $th_row
-           </tr>
-         </thead>
-         <tbody>
-           $data_out
-         </tbody>
-       </table>";
+    $out .= umc_jquery_tabs(array('Open Issues'=>$tab1, 'Closed Issues'=>$tab2, 'Commits'=>$tab3));
+
     return $out;
 }
 
-function umc_github_issue_details($client, $owner, $repo, $get_issue) {
-    $issue = $client->api('issue')->show($owner, $repo, $get_issue);
-    $comments = $client->api('issue')->comments()->all($owner, $repo, $get_issue);
-
+function umc_github_issue_details($issue, $comments) {
     $labels = '';
     foreach ($issue['labels'] as $label) {
         $labels .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
@@ -147,12 +123,15 @@ function umc_github_issue_details($client, $owner, $repo, $get_issue) {
     if ($issue['comments'] > 0) {
         $comments_html = "<tr><td colspan=5 style='text-align:center'><strong>Comments</strong></td></tr>\n";
         foreach ($comments as $comment) {
+            // Skip this comment if it's not related to our issue
+            if ($comment['issue_url'] != $issue['url']) {
+                continue;
+            }
             $comment_body = nl2br($comment['body']);
             $updated = substr($comment['updated_at'], 0, 10);
-            $comments_html .= "<tr><td><strong>{$comment['user']['login']}</strong></td><td>$updated</td><td colspan=3>$comment_body</td></tr>\n";
+            $comments_html .= "<tr><td colspan='2' nowrap class='dt-right'><strong>{$comment['user']['login']} @ $updated:</strong></td><td colspan=3>$comment_body</td></tr>\n";
         }
     }
-
 
     $out = "<table class='dataTable'>\n
     <tr>
