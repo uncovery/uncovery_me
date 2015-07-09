@@ -68,17 +68,16 @@ function umc_github_link() {
 
     $paginator  = new Github\ResultPager($client);
 
-    $api = $client->api('issue');
-    $parameters = array($owner, $repo, array('state' => 'open'));
-    $open_issues = $paginator->fetchAll($api, 'all', $parameters);
-
-    $api = $client->api('issue');
-    $parameters = array($owner, $repo, array('state' => 'closed'));
-    $closed_issues = $paginator->fetchAll($api, 'all', $parameters);
-
-    $api = $client->api('issue');
-    $parameters = array($owner, $repo, 'comments');
-    $comments = $paginator->fetchAll($api, 'show', $parameters);
+    $items = array(
+        'open_issues' => array('state' => 'open', 'fetch' => 'all'),
+        'closed_issues' => array('state' => 'open', 'fetch' => 'all'),
+        'comments' => array('state' => 'open', 'fetch' => 'show'),
+    );
+    foreach ($items as $item => $I) {
+        $api = $client->api('issue');
+        $parameters = array($owner, $repo, array('state' => $I['state']));
+        $$item = $paginator->fetchAll($api, $I['fetch'], $parameters);
+    }
 
     $commits = $client->api('repo')->commits()->all($owner, $repo, array('sha' => 'master', 'per_page' => 100));
 
@@ -176,8 +175,7 @@ function umc_github_wordpress_update() {
     // $date_new->setTimezone(new DateTimeZone('Asia/Hong_Kong'));    
     $today_str = $today_obj->format('Y-m-d\T00:00:00\Z');
     
-    $issue_arr = array(
-    );
+    $issue_arr = array();
     
     $issues = $client->api('issue')->all($owner, $repo, array('state' => 'all', 'since' => $today_str));
     if (count($issues) == 0) {
