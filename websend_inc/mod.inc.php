@@ -95,7 +95,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
 );
 
 function umc_mod_error_message() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());  
     XMPP_ERROR_trigger("test");
 }
 
