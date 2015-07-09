@@ -66,6 +66,8 @@ $WS_INIT['info'] = array(  // the name of the plugin
 );
 
 function umc_info_setpass() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args()); 
+    
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $wp_id = umc_user_get_wordpress_id($uuid);
@@ -78,8 +80,8 @@ function umc_info_setpass() {
         umc_error("You need to enter the new password 2x! Such as /info password XXXXX XXXXX");
     }
 
-    if ($strength < 50) {
-        umc_error("Your password strength is too low! Please chose a longer password, include numbers and mixed case letters");
+    if ($strength < 5) {
+        umc_error("Your password strength is too low ($strength)! Please chose a longer password, include numbers and mixed case letters");
     } else {
         wp_set_password($password, $wp_id);
     }
@@ -94,12 +96,11 @@ function umc_info_checkpass_strength($password) {
     $strength = 0;
 
     $length = strlen($password); /*** get the length of the password ***/
-
+    $strength = $length;
 
     if (strtolower($password) != $password) { /*** check if password is not all lower case ***/
         $strength += 1;
     }
-
 
     if (strtoupper($password) == $password) { /*** check if password is not all upper case ***/
         $strength += 1;
