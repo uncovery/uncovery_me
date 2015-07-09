@@ -369,7 +369,7 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
 
     $out .= "<script type=\"text/javascript\" src=\"/admin/js/jquery.dataTables.min.js\"></script>\n"
           . "<script type=\"text/javascript\">"
-          .'jQuery(document).ready(function() {jQuery'. "('#shoptable_$table_name').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );"
+          .'jQuery(document).ready(function() {jQuery'. "('#shoptable_$table_name').dataTable( {\"autoWidth\": false, \"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );"
           . "</script>";
 
     $out .= "$pre_table
