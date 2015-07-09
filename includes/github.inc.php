@@ -44,9 +44,13 @@ function umc_github_commit_body($commits) {
     $table_body = '';
     foreach ($commits as $commit) {
         $updated = substr($commit['commit']['committer']['date'], 0, 10);
+        $author = 'uncovery';
+        if (isset($commit['author']['login'])) {
+            $author = $commit['author']['login'];
+        }
         $table_body .= "    <tr>
         <td>$updated</td>
-        <td>{$commit['author']['login']}</td>
+        <td>$author</td>
         <td>{$commit['commit']['message']}</td>
     </tr>\n";
     }
