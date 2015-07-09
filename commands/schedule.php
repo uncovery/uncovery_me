@@ -110,6 +110,7 @@ function run_umc_scheduler() {
         umc_exec_command($cmd);
     }
 
+    umc_github_wordpress_update();
     umc_lottery_log_import();
     umc_ban_to_database();
     umc_update_usericons();
