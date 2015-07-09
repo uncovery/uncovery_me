@@ -276,12 +276,16 @@ div.ts3_viewer {
     margin-top: 15px;
 }
 
-#accordion .categories{
+#accordion .categories {
     text-align: right;
     font-family: monospace; 
 }
 
 /* This prevents the github lables from wrapping */
-.unc_datatables span{
+.unc_datatables span {
     white-space: nowrap;
+}
+
+table.unc_datatables tbody td {
+    padding-left: 10px;
 }
