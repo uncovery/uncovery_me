@@ -57,8 +57,7 @@ function umc_github_link() {
     global $GITHUB;
     $repo = $GITHUB['repo'];
     $owner = $GITHUB['owner'];
-            
-    $sort_column = 0;
+
     $client = umc_github_client_connect($owner, $repo);
 
     $out = '';
@@ -83,22 +82,22 @@ function umc_github_link() {
         . "<script type=\"text/javascript\">\n"
         . "     jQuery(document).ready(function() {jQuery('#shoptable_open').dataTable( {\"order\": [[ 4 ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
         . "     jQuery(document).ready(function() {jQuery('#shoptable_closed').dataTable( {\"order\": [[ 4 ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
-        . "     jQuery(document).ready(function() {jQuery('#shoptable_commits').dataTable( {\"order\": [[ $sort_column ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
+        . "     jQuery(document).ready(function() {jQuery('#shoptable_commits').dataTable( {\"order\": [[ 1 ]],\"paging\": false,\"ordering\": true,\"info\": false} );;} );\n"
         . "</script>";
 
-    $tab1 = "<table id='unc_datatables shoptable_open'>
+    $tab1 = "<table class='unc_datatables' id='shoptable_open'>
                 <thead>
                     <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
                 </thead>
                 <tbody>" . umc_github_issue_body($open_issues, $comments) . "</tbody>
             </table>";
-    $tab2 = "<table id='unc_datatables shoptable_closed'>
+    $tab2 = "<table class='unc_datatables' id='shoptable_closed'>
                 <thead>
                     <tr><th>#</th><th>Title</th><th style='display:none;'>hidden data</th><th>Labels</th><th>Updated</th></tr>
                 </thead>
                 <tbody>" . umc_github_issue_body($closed_issues, $comments) . "</tbody>
             </table>";
-    $tab3 = "<table id='unc_datatables shoptable_commits'>
+    $tab3 = "<table class='unc_datatables' id='shoptable_commits'>
                 <thead>
                     <tr><th>Date</th><th>User</th><th>Message</th></tr>
                 </thead>
@@ -117,7 +116,7 @@ function umc_github_issue_details($issue, $comments) {
     }
     $created = substr($issue['created_at'], 0, 10);
     $updated = substr($issue['updated_at'], 0, 10);
-    $body = nl2br($issue['body']);
+    $body = htmlentities(nl2br($issue['body']));
 
     $comments_html = '';
     if ($issue['comments'] > 0) {
@@ -127,10 +126,10 @@ function umc_github_issue_details($issue, $comments) {
             if ($comment['issue_url'] != $issue['url']) {
                 continue;
             }
-            $comment_body = nl2br($comment['body']);
+            $comment_body = htmlentities(nl2br($comment['body']));
             $updated = substr($comment['updated_at'], 0, 10);
             $comments_html .= "        <tr>"
-                . "            <td colspan='2' nowrap class='dt-right'><strong>{$comment['user']['login']} @ $updated:</strong></td>"
+                . "            <td colspan='2' class='dt-right'><strong>{$comment['user']['login']} @ $updated:</strong></td>"
                 . "            <td colspan=3>$comment_body</td>"
                 . "        </tr>\n";
         }

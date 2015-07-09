@@ -280,3 +280,8 @@ div.ts3_viewer {
     text-align: right;
     font-family: monospace; 
 }
+
+/* This prevents the github lables from wrapping */
+.unc_datatables span{
+    white-space: nowrap;
+}

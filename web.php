@@ -504,9 +504,9 @@ function umc_web_table_format_column($name, $value) {
 function umc_jquery_tabs($data) {
     # External JS and Stylesheets -- These should _not_
     # be needed after everything is properly configured
-    $out = "<link rel=\"stylesheet\" href=\"http://www.f85.net/jquery.webui-popover.min.css\">\n"
+    $out = "<link id=\"webui-popover\" rel=\"stylesheet\" href=\"http://www.f85.net/jquery.webui-popover.min.css\">\n"
         . "<script src=\"http://www.f85.net/jquery.webui-popover.min.js\"></script>\n"
-        . "<link rel=\"stylesheet\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css\">\n";
+        . "<link id=\"jqueryui\" rel=\"stylesheet\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css\">\n";
 
     $out .= "<div class='umc_jquery_tabs umc_fade_in'>\n"
         . "<ul>\n";
