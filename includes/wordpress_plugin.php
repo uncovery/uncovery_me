@@ -31,8 +31,23 @@ function umc_wp_init_plugins() {
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     new Minecraft_Icons();
-}
+    
+    global $pagenow; 
+    if ($pagenow==='wp-login.php') { 
+        add_filter( 'gettext', 'user_email_login_text', 20, 3 );
+        function user_email_login_text( $translated_text, $text, $domain ) {
+            $texts = array(
+                'Please enter your username or email address. You will receive a link to create a new password via email.',
+                'A password will be e-mailed to you.',
+            );            
+            if (in_array($translated_text, $texts)) {
+                $translated_text .= '<br><br><strong>Attention: </strong> If you have trouble getting emails, please use the following command in-game: <strong>/info setpass</strong>';
+            }
+            return $translated_text;
+      }
 
+    }    
+}
 
 /**
  * pick specific templates based on POST variables
@@ -69,6 +84,12 @@ function umc_wp_add_css_and_js() {
     wp_enqueue_script('jquery-ui-tabs');
     wp_enqueue_script( 'uncovery_global_js', 'http://uncovery.me/admin/js/global.js');
 }
+
+function umc_wp_login_stylesheet() {
+    wp_enqueue_style( 'custom-login',  'http://uncovery.me/admin/global.css' );
+}
+add_action('login_enqueue_scripts', 'umc_wp_login_stylesheet');
+
 
 /**
  * Notify in-game when there is a new comment posted to the blog
