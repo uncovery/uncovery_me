@@ -118,7 +118,7 @@ function umc_mail_new($recipient = false) {
         array_unshift($args, "[Ticket]");
     }
     $recipient_uuid = umc_user2uuid($recipient);
-    
+
     // check recipient
     if (!umc_check_user($recipient_uuid)) {
         umc_error("The user $recipient does not exist!");
@@ -138,8 +138,8 @@ function umc_mail_new($recipient = false) {
     $mysql_title = trim(mysql_real_escape_string($title));
     $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
             VALUES ('$uuid','$recipient_uuid','$mysql_title','','draft', NOW());";
-    mysql_query($sql);
-    $id = mysql_insert_id();
+    umc_mysql_query($sql);
+    $id = umc_mysql_insert_id();
     umc_mail_display($id);
 }
 
@@ -163,9 +163,9 @@ function umc_mail_text() {
     for ($i=2; $i<count($args); $i++) {
         $message .= " " . $args[$i];
     }
-    $sql_message = mysql_real_escape_string(trim($message));
-    $sql = "UPDATE minecraft_srvr.user_mail SET `message` = CONCAT(`message`,'$sql_message '), date_time=NOW() WHERE msg_id=$id LIMIT 1";
-    mysql_query($sql);
+    $sql_message = umc_mysql_real_escape_string(trim($message));
+    $sql = "UPDATE minecraft_srvr.user_mail SET `message` = CONCAT(`message`, $sql_message), date_time=NOW() WHERE msg_id=$id LIMIT 1";
+    umc_mysql_query($sql, true);
     umc_mail_display($id);
 }
 
@@ -200,14 +200,14 @@ function umc_mail_display($id) {
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $sql = "SELECT * FROM minecraft_srvr.`user_mail` WHERE msg_id=$id AND (recipient_uuid='$uuid' OR sender_uuid='$uuid');";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     umc_header("Uncovery Mail Services");
-    if (mysql_num_rows($rst) == 0){
+    if (count($D) == 0){
         umc_echo("No mail found");
         umc_footer();
         return;
     }
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $row = $D[0];
 
     $recipient_uuid = $row['recipient_uuid'];
     $recipient = umc_user2uuid($recipient_uuid);
@@ -250,9 +250,9 @@ function umc_mail_check($uuid = false) {
         $user_filter = " AND recipient_uuid='$uuid'";
     }
     $sql = "SELECT * FROM minecraft_srvr.user_mail WHERE status='sent'$user_filter;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $mails = array();
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $user_uuid = $row['recipient_uuid'];
         $id = $row['msg_id'];
         $title = $row['title'];
@@ -285,11 +285,11 @@ function umc_mail_draft_existing() {
     $uuid = $UMC_USER['uuid'];
 
     $sql = "SELECT * FROM minecraft_srvr.`user_mail` WHERE sender_uuid='$uuid' AND status='draft'";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         return false;
     } else {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = $D[0];
         $id = $row['msg_id'];
         return $id;
     }
@@ -312,11 +312,11 @@ function umc_mail_read() {
         $error = "There is no mail with that ID!";
     }
 
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         umc_echo($error);
     } else {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = $D[0];
         $id = $row['msg_id'];
         umc_mail_display($id);
     }
@@ -340,12 +340,11 @@ function umc_mail_delete() {
     }
 
     $sql = "SELECT * FROM minecraft_srvr.`user_mail` WHERE (recipient_uuid='$uuid' OR sender_uuid='$uuid') $filter";
-    $rst = mysql_query($sql);
-    $count = mysql_num_rows($rst);
-    if ($count == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         umc_error("Could not find any email to delete!");
     }
-    while ($row = mysql_fetch_array($rst)) {
+    foreach ($D as $row) {
         if ($row['sender_uuid'] == $uuid) {
             $role = 'sender';
         } else if ($row['recipient_uuid'] == $uuid) {
@@ -358,7 +357,6 @@ function umc_mail_delete() {
 
 function umc_mail_list() {
     global $UMC_USER;
-    $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
 
@@ -387,15 +385,15 @@ function umc_mail_list() {
 
     $sql_filter = $status_arr[$filter];
     $sql = "SELECT * FROM minecraft_srvr.`user_mail` WHERE $sql_filter ORDER BY date_time ASC;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
-    if (mysql_num_rows($rst) == 0) {
+    if (count($D) == 0) {
         umc_echo("No emails in this mailbox");
         umc_footer();
         return;
     }
 
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         if ($row['sender_uuid'] == $uuid) {
             $recipient = umc_user2uuid($row['recipient_uuid']);
             $wholine = "{red}->{white}$recipient";
@@ -562,7 +560,7 @@ function umc_mail_web() {
         $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
         $recipient = strtolower(filter_input(INPUT_POST, 'recipient', FILTER_SANITIZE_STRING));
         $recipient_uuid = umc_user2uuid($recipient);
-        
+
         $check = umc_check_user($recipient_uuid);
         if ($recipient == $username) {
             $check = false;
@@ -571,7 +569,7 @@ function umc_mail_web() {
             $error = "ERROR: Recipient '$recipient' could not be found!";
             $recipient = '';
         }
-        
+
         $msg_id = filter_input(INPUT_GET, 'msg_id', FILTER_SANITIZE_NUMBER_INT);
         if (strlen($message) < 5 ) {
             $error = "Your message is too short!";
@@ -724,12 +722,12 @@ function umc_mail_web() {
         if ($post_folder == 'outbox') {
             $status_header = '<th>Status</th>';
         }
-        $rst = mysql_query($sql);
+        $D = umc_mysql_fetch_all($sql);
 
         $non_numeric = array('date_time', 'sender', 'recipient', 'title');
         $formats = array('sender' => 'umc_mail_web_formats','status'=>'umc_mail_web_formats','recipient' => 'umc_mail_web_formats', 'title' => 'umc_mail_web_formats');
         $hide_cols = array('msg_id');
-        $check = umc_web_table("mail", "0, 'desc'", $rst, '', $hide_cols, $non_numeric, $formats);
+        $check = umc_web_table("mail", "0, 'desc'", $D, '', $hide_cols, $non_numeric, $formats);
         if (!$check) {
             XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
             $out .= "Error creating data table. Admin was notified, please wait until it is fixed";

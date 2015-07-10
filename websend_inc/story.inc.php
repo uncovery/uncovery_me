@@ -44,15 +44,15 @@ function umc_story_admin() {
 
 
     if (isset($_POST['delete'])) {
-        $code = mysql_real_escape_string(strip_tags($_POST['storycode']));
-        $sql = "DELETE FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code='$code';";
-        $rst = mysql_query($sql);
+        $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
+        $sql = "DELETE FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code=$code;";
+        $rst = umc_mysql_query($sql);
     } else if (isset($_POST['add'])) {
-        $code = mysql_real_escape_string(strip_tags($_POST['storycode']));
-        $warp = mysql_real_escape_string(strip_tags($_POST['warp']));
-        $save_story = mysql_real_escape_string(strip_tags($_POST['story']));
-        $save_title = mysql_real_escape_string(strip_tags($_POST['storyline']));
-        $save_items =  mysql_real_escape_string(strip_tags($_POST['items']));
+        $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
+        $warp = umc_mysql_real_escape_string(strip_tags($_POST['warp']));
+        $save_story = umc_mysql_real_escape_string(strip_tags($_POST['story']));
+        $save_title = umc_mysql_real_escape_string(strip_tags($_POST['storyline']));
+        $save_items =  umc_mysql_real_escape_string(strip_tags($_POST['items']));
         $save_survival = 0;
         if (isset($_POST['survival'])) {
             $save_survival = -1;
@@ -62,17 +62,17 @@ function umc_story_admin() {
             $save_clear_inv = -1;
         }
         if ($save_story != 'Please enter text here') {
-            $sql = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `forcesurvival`, `items`, `clear_inv`, `warp`)
-                VALUES ('$uuid', '$save_story', '$code', '$save_title', '$save_survival', '$items', '$save_clear_inv', '$warp')";
-            $sql = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
-            $rst = mysql_query($sql);
+            $sql2_raw = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `forcesurvival`, `items`, `clear_inv`, `warp`)
+                VALUES ('$uuid', $save_story, $code, $save_title, '$save_survival', $save_items, '$save_clear_inv', $warp)";
+            $sql2 = str_replace('&','_', $sql2_raw); // this removes strings that can be abused by the minimap
+            umc_mysql_query($sql2);
         }
     } else if (isset($_POST['edit'])) {
-        $code = mysql_real_escape_string(strip_tags($_POST['storycode']));
-        $sql = "SELECT * FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code='$code';";
-        $rst = mysql_query($sql);
-        if (mysql_num_rows($rst) > 0) {
-            $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
+        $sql = "SELECT * FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code=$code;";
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) > 0) {
+            $row = $D[0];
             $story = stripslashes(strip_tags($row['story']));
             $pass = $row['code'];
             $warp = $row['warp'];
@@ -84,45 +84,45 @@ function umc_story_admin() {
             $clear_inv = $row['clear_inv'];
         }
     } else if (isset($_POST['update'])) {
-        $code = mysql_real_escape_string(strip_tags($_POST['storycode']));
+        $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
 
-        $save_story = mysql_real_escape_string(strip_tags($_POST['story']));
-        $save_title = mysql_real_escape_string(strip_tags($_POST['storyline']));
-        $save_items =  mysql_real_escape_string(strip_tags($_POST['items']));
+        $save_story = umc_mysql_real_escape_string(strip_tags($_POST['story']));
+        $save_title = umc_mysql_real_escape_string(strip_tags($_POST['storyline']));
+        $save_items =  umc_mysql_real_escape_string(strip_tags($_POST['items']));
         $save_survival = 0;
         if (isset($_POST['survival'])) {
             $save_survival = -1;
         }
         $warp = '';
         if (isset($_POST['warp'])) {
-            $warp = mysql_real_escape_string(strip_tags($_POST['warp']));
+            $warp = umc_mysql_real_escape_string(strip_tags($_POST['warp']));
         }
         $save_clear_inv = 0;
         if (isset($_POST['clear_inv'])) {
             $save_clear_inv = -1;
         }
         $sql = "UPDATE minecraft_iconomy.story
-	    SET story= '$save_story',
-		storyline='$save_title',
-		warp='$warp',
+	    SET story= $save_story,
+		storyline=$save_title,
+		warp=$warp,
 		forcesurvival='$save_survival',
-            	`items`='$save_items',
+            	`items`=$save_items,
 		`clear_inv`='$save_clear_inv'
-            WHERE uuid='$uuid' and code='$code';";
+            WHERE uuid='$uuid' and code=$code;";
         $sql = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
-        $rst = mysql_query($sql);
+        umc_mysql_query($sql, true);
     }
 
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE uuid='$uuid' ORDER BY storyline, id;";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
         echo "<table><tr><td style=\"padding:3px;\"><strong>Storyline</strong></td><td style=\"padding:3px;\"><strong>Survival?<br>Clear Inv?</strong></td><td style=\"padding:3px;\"><strong>Code</strong></td>"
             . "<td style=\"padding:3px;\"><strong>Hits</strong></td>"
             . "<td style=\"padding:3px;\"><strong>Story & items</strong></td><td style=\"padding:3px;\"><strong>Actions</strong></td></tr>\n";
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $count_sql = "SELECT count(uuid) as counter FROM minecraft_iconomy.story_users WHERE story_id='{$row['id']} GROUP BY story_id';";
-            $count_rst = mysql_query($count_sql);
-            $count_row = mysql_fetch_array($count_rst, MYSQL_ASSOC);
+            $D = umc_mysql_fetch_all($count_sql);
+            $count_row = $D[0];
             $hitcount = $count_row['counter'];
             $story_short = substr($row['story'], 0 , 50) . '...';
             $txt_survival = 'No';
@@ -188,11 +188,11 @@ function umc_story_show() {
     }
 
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code='$code';";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $disallowed_items = array(0,8,9,10,11,34,36,43,51,52,55,26,59,60,63,64,68,71,75,78,83,90,92,93,94,95,97,99,100,104,105,115,117,118,119,120,122);
     $out = '';
-    if (mysql_num_rows($rst) > 0) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    if (count($D) > 0) {
+        $row = $D[0];
         $story = stripslashes($row['story']);
         $title = stripslashes($row['storyline']);
         $warp = stripslashes($row['warp']);
@@ -226,10 +226,10 @@ function umc_story_show() {
 
         // check for duplicate entries
         $sql = "SELECT * FROM minecraft_iconomy.story_users WHERE `uuid`='$uuid' and `story_id`='{$row['id']}';";
-        $rst = mysql_query($sql);
-        if (mysql_num_rows($rst) == 0) {
+        $count = umc_mysql_count_rows($sql);
+        if ($count == 0) {
             $sql = "INSERT INTO minecraft_iconomy.story_users (`uuid`, `story_id`) VALUES ('$uuid', '{$row['id']}');";
-            $rst = mysql_query($sql);
+            umc_mysql_query($sql, true);
         }
 
         $pages = explode("[BR]", $story);
@@ -284,13 +284,9 @@ function umc_get_code() {
         $i++;
     }
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code='$pass';";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
+    $count = umc_mysql_count_rows($sql);
+    if ($count > 0) {
         umc_get_code();
     }
     return $pass;
 }
-
-
-
-?>

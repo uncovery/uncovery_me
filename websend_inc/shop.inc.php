@@ -190,8 +190,8 @@ function umc_shop_list() {
         $uuid = umc_user2uuid($player);
     }
     $sql = "SELECT * FROM minecraft_iconomy.$table WHERE uuid='$uuid' ORDER BY id, damage, amount DESC;";
-    $rst = mysql_query($sql);
-    $num_rows = mysql_num_rows($rst);
+    $D = umc_mysql_fetch_all($sql);
+    $num_rows = count($D);
     if ($num_rows == 0) {
         if ($table == 'request') {
             umc_error("{gold}$player{white} has no current requests!;");
@@ -205,7 +205,7 @@ function umc_shop_list() {
         }
         umc_header();
         umc_echo("Shop-Id  {gold} $player{gray} is $verb");
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $item = umc_goods_get_text($row["item_name"], $row["damage"], $row['meta']);
             $item_name = $item['full'];
             if ($row['amount'] == -1) {
@@ -307,7 +307,6 @@ function umc_do_find() {
     $MAX_RESULTS = 50;
 
     $qualifier = '1';
-    $item_data = 0;
     $sort = 'price asc';
     $find_item = null;
     $no_item_ok = false;
@@ -349,7 +348,7 @@ function umc_do_find() {
                 break;
             default:
                 if (is_numeric($arg)) {
-                    $arg = $UMC_DATA_ID2NAME[$arg];;
+                    $arg = $UMC_DATA_ID2NAME[$arg];
                 }
 
                 $find_item = umc_sanitize_input($arg, 'item');
@@ -540,8 +539,7 @@ function umc_do_offer_internal($deposit) {
 	    AND damage='$item_type'
 	    AND meta='$meta'
 	    AND price<'$excess_price';";
-    $rst_pcheck = mysql_query($sql_pcheck);
-    $excess_count = mysql_num_rows($rst_pcheck);
+    $excess_count = umc_mysql_count_rows($sql_pcheck);
 
     // sell item at same price, check if exists
     if ($excess_count > 0) {
@@ -788,11 +786,11 @@ function umc_do_sell_internal($from_deposit=false) {
     	$depot_id = $args[3];
 	array_splice($args, 3, 1);
 	$sql = "SELECT * from minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' and id='$depot_id'";
-	$rst = mysql_query($sql);
-	if (mysql_num_rows($rst) < 1) {
-		umc_error("You have no such deposit ID");
+	$D = umc_mysql_fetch_all($sql);
+	if (count($D) < 1) {
+            umc_error("You have no such deposit ID");
 	}
-    	$depot_row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    	$depot_row = $D[0];
 	$inv = $depot_row['amount'];
         $depot_item = umc_goods_get_text($depot_row['item_name'],  $depot_row['damage'],  $depot_row['meta']);
 	if ($depot_item != $request_item) {
@@ -863,11 +861,11 @@ function umc_do_sell_internal($from_deposit=false) {
             AND damage='{$request_item['type']}'
 	    AND meta='{$request_item['meta']}'
 	    AND sender_uuid='shop0000-0000-0000-0000-000000000000';";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     // check first if item already is in the recipient's deposit
-    if (mysql_num_rows($rst) > 0) {
-        $update_row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    if (count($D) > 0) {
+        $update_row = $D[0];
         umc_echo("{green}[+]{gray} There is already {$request_item['full']}{gray} in the deposit for {gold}$recipient{gray}, adding {yellow}$amount{gray}.");
         $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$update_row['id']} LIMIT 1;";
     } else {

@@ -102,9 +102,9 @@ function umc_skyblock_warp(){
         LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
         WHERE world.name='skyblock' AND region.id = '$lot' ";
 
-    $rst = mysql_query($sql);
-    $check = mysql_num_rows($rst);
-    $lots = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $check = count($D);
+    $lots = $D[0];
 
     $c_x = $lots['min_x'] + 64;
     $c_z = $lots['min_z'] + 64;
@@ -139,8 +139,8 @@ function umc_skyblock_abandon(){
     //check if the user abandoned already
     $abandon_id = umc_get_worldguard_id('user', '_abandoned_');
     $abandon_sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND Owner=1 AND user_id=$abandon_id;";
-    $abandon_rst = mysql_query($abandon_sql);
-    if  (mysql_num_rows($abandon_rst) > 0) {
+    $count = umc_mysql_count_rows($abandon_sql);
+    if  ($count > 0) {
         umc_error("You abandoned the entry $lot already!");
     }
 
@@ -152,17 +152,17 @@ function umc_skyblock_abandon(){
         LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
         LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
         WHERE region.id LIKE '$lot' AND Owner=1 AND user.id=$user_id";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) != 1) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) != 1) {
         umc_error("You do not own the lot $lot in skyblock!");
     } else {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = $D[0];
     }
 
     $world_id = $row['world_id'];
     $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner)
         VALUES ('$lot', $world_id, $abandon_id, 1);";
-    mysql_query($ins_user_sql);
+    umc_mysql_query($ins_user_sql, true);
     umc_ws_cmd('region load -w skyblock', 'asConsole');
     umc_echo("You have succcessfully abandoned the lot $lot! It will be reset with the next reboot. You can then register a new one!");
 }
@@ -186,12 +186,12 @@ function umc_skyblock_challenge_select() {
 		AND min_z<-768
 		AND min_x>=-1152
 		AND max_x<1024;";
-        $lot_rst = mysql_query($lot_sql);
-        if (mysql_num_rows($lot_rst) == 0) {
+        $D = umc_mysql_fetch_all($lot_sql);
+        if (count($D) == 0) {
             XMPP_ERROR_trigger("We ran out of challenge lots!");
             umc_error("Sorry, there are currently no challenge lots free!");
         } else {
-            $lot_row = mysql_fetch_array($lot_rst, MYSQL_ASSOC);
+            $lot_row = $D[0];
             $challenge_lot = $lot;
         }
 
@@ -245,7 +245,7 @@ function umc_skyblock_challenge_select() {
  */
 function umc_skyblock_challenge_cancel() {
     $sql = "UPDATE `minecraft_quiz`.`block_games` SET status='cancelled' WHERE status IN ('selected','started') AND username='$player';";
-    mysql_query($sql);
+    umc_mysql_query($sql);
     umc_echo("Your unfinished challenges have been cancelled");
 }
 
@@ -305,9 +305,9 @@ function umc_skyblock_web_display() {
  */
 function umc_skyblock_web_display_table($sub_id) {
     $sql = "SELECT * FROM minecraft_quiz.block_challenges WHERE sub_challenge=$sub_id ORDER BY challenge_id";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out = '';
-    if (mysql_num_rows($rst) == 0) {
+    if (count($D) == 0) {
         return false;
     }
     $padding = ' colspan=2';
@@ -317,7 +317,7 @@ function umc_skyblock_web_display_table($sub_id) {
         $tab = '<td style="width:50px"></td>';
     }
 
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         if ($row['win_conditions'] == NULL) {
             $winning = 'No Winning conditions, open game';
         } else {
