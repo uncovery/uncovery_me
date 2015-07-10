@@ -108,8 +108,8 @@ function umc_trivia_new() {
 
     // create the quiz
     $sql = "INSERT INTO minecraft_quiz.quizzes (`master`, `start`, `questions`, `price`) VALUES ('$player', NOW(),'$questions','$price');";
-    $rst = mysql_query($sql);
-    $id = mysql_insert_id();
+    umc_mysql_query($sql);
+    $id = umc_mysql_insert_id();
     // announce quiz and send first question
     umc_footer();
 
@@ -159,13 +159,13 @@ function umc_trivia_ask_users() {
 
     $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET status='asked'
         WHERE quiz_id=$quiz_id AND status='preparing';";
-    mysql_query($upd_sql);
+    umc_mysql_query($upd_sql, true);
 
     $question_no = $quiz_arr['question_no'];
 
     // update counter
     $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id = $question_id";
-    mysql_query($question_sql);
+    umc_mysql_query($question_sql, true);
 
     umc_ws_cmd("ch qm o &3[Trivia]&f Quiz No $quiz_id Question $question_no:&4");
     umc_ws_cmd("ch qm o &3[Trivia]&f Question: $question&4");
@@ -210,10 +210,10 @@ function umc_trivia_answer() {
     umc_footer(true);
     // register answer
     umc_money($player, false, $price);
-    $answer_str = mysql_real_escape_string($answer);
+    $answer_str = umc_mysql_real_escape_string($answer);
     $sql = "INSERT INTO minecraft_quiz.quiz_answers (quiz_id, question_id, answer_text, username, time, result)
-        VALUES ({$quiz_arr['id']}, {$quiz_arr['question_id']}, '$answer_str', '$player', NOW(), 'wrong');";
-    mysql_query($sql);
+        VALUES ({$quiz_arr['id']}, {$quiz_arr['question_id']}, $answer_str, '$player', NOW(), 'wrong');";
+    umc_mysql_query($sql);
 
     // message the quizmaster
     umc_exec_command("----------------- New Trivia Answer -----------------", 'toPlayer', $master);
@@ -273,12 +273,10 @@ function umc_trivia_skip() {
     // set all questions wrong
     $id = $quiz_arr['id'];
     $update_sql = "UPDATE minecraft_quiz.quiz_answers SET result='wrong' WHERE quiz_id=$id and question_id={$quiz_arr['question_id']};";
-    mysql_query($update_sql);
-
-
+    umc_mysql_query($update_sql);
 
     $close_sql = "UPDATE minecraft_quiz.quiz_questions SET status='solved' WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']};";
-    mysql_query($close_sql);
+    umc_mysql_query($close_sql);
     umc_ws_cmd("ch qm o &3[Trivia]&f &4 Quiz No $quiz_id Question $question_no&4");
     umc_ws_cmd("ch qm o &3[Trivia]&f &2No correct answers, this question has been skipped!&4");
     umc_ws_cmd("ch qm o &3[Trivia]&f &2Correct answer would have been $answer&4");
@@ -311,15 +309,15 @@ function umc_trivia_solve() {
     $answer_id = $args[2];
 
     $update_sql = "UPDATE minecraft_quiz.quiz_answers SET result='right' WHERE answer_id=$answer_id;";
-    mysql_query($update_sql);
+    umc_mysql_query($update_sql);
     $close_sql = "UPDATE minecraft_quiz.quiz_questions SET status='solved' WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']};";
     //umc_echo($close_aql);
-    mysql_query($close_sql);
+    umc_mysql_query($close_sql);
 
     // get answer user
     $sql = "SELECT * FROM minecraft_quiz.quiz_answers wHERE answer_id=$answer_id;";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $row = $D[0];
     $username = $row['username'];
     $answer = $row['answer_text'];
     umc_ws_cmd("ch qm o &3[Trivia]&f Quiz No $quiz_id Question $question_no");
@@ -337,10 +335,10 @@ function umc_trivia_solve() {
 function umc_trivia_get_current_quiz() {
         // check if there is a quiz running
     $sql = "SELECT * FROM minecraft_quiz.quizzes WHERE end IS NULL LIMIT 1;";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 1) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 1) {
         // check if master is still online
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = $D[0];
         $quiz_arr = array(
             'id' => $row['quiz_id'],
             'master' => $row['master'],
@@ -353,9 +351,9 @@ function umc_trivia_get_current_quiz() {
         $question_sql = "SELECT quiz_questions.question_id, question, status, question_no, answer FROM minecraft_quiz.quiz_questions
             LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id=catalogue.question_id
             WHERE quiz_id={$row['quiz_id']} ORDER BY question_no DESC LIMIT 1";
-        $question_rst = mysql_query($question_sql);
-        if (mysql_num_rows($question_rst) > 0) {
-            $question_row = mysql_fetch_array($question_rst, MYSQL_ASSOC);
+        $Q = umc_mysql_fetch_all($question_sql);
+        if (count($Q) > 0) {
+            $question_row = $Q[0];
             $quiz_arr['question_no'] = $question_row['question_no'];
             $quiz_arr['status'] = $question_row['status'];
             $quiz_arr['question'] = $question_row['question'];
@@ -369,9 +367,9 @@ function umc_trivia_get_current_quiz() {
         if ($quiz_arr['question_no']) {
             $answers_sql = "SELECT * FROM minecraft_quiz.quiz_answers
                     WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']} ORDER BY answer_id;";
-            $answers_rst = mysql_query($answers_sql);
-            if (mysql_num_rows($answers_rst) > 0) {
-                while ($answer_row = mysql_fetch_array($answers_rst, MYSQL_ASSOC)) {
+            $A = umc_mysql_fetch_all($anwers_sql);
+            if (count($A) > 0) {
+                foreach ($A as $answers_row) {
                     $id = $answer_row['answer_id'];
                     $quiz_arr['answers'][$id] = $answer_row['answer_text'];
                     $quiz_arr['users'][] = $answer_row['username'];
@@ -391,11 +389,11 @@ function umc_trivia_call_question() {
     $question_sql = "SELECT * FROM minecraft_quiz.catalogue
         WHERE asked=0 AND category NOT IN ('Hard','History','Business')
 	LIMIT $luck, 1;";
-    $question_rst = mysql_query($question_sql);
-    if (mysql_num_rows($question_rst) == 0) {
-        $question_rst = umc_trivia_call_question();
+    $D = umc_mysql_fetch_all($question_sql);
+    if (count($D) == 0) {
+        $D = umc_trivia_call_question();
     }
-    return $question_rst;
+    return $D;
 }
 
 /*
@@ -404,8 +402,8 @@ function umc_trivia_call_question() {
 function umc_trivia_pick_question($quiz_id) {
     // Get a new question
 
-    $question_rst = umc_trivia_call_question();
-    $question_row = mysql_fetch_array($question_rst, MYSQL_ASSOC);
+    $D = umc_trivia_call_question();
+    $question_row = $D[0];
     $question_arr = array(
         'id' => $question_row['question_id'],
         'question' => $question_row['question'],
@@ -417,11 +415,11 @@ function umc_trivia_pick_question($quiz_id) {
         WHERE quiz_id=$quiz_id
 	ORDER BY question_no DESC
 	LIMIT 1";
-    $rst = mysql_query($sql);
-    $num_rows = mysql_num_rows($rst);
+    $D = umc_mysql_fetch_all($sql);
+    $num_rows = count($D);
 
     if ($num_rows == 1) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = $D[0];
         $status = $row['status'];
         $question_id = $row['question_id'];
         $next_question_no = $row['question_no'] + 1;
@@ -435,15 +433,15 @@ function umc_trivia_pick_question($quiz_id) {
         // insert new question
         $ins_sql = "INSERT INTO minecraft_quiz.quiz_questions (`question_id`, `question_no`, `quiz_id`, `status`)
             VALUES ({$question_arr['id']}, $next_question_no, $quiz_id, 'preparing');";
-        mysql_query($ins_sql);
+        umc_mysql_query($ins_sql, true);
     } else {
         // update existing question
         $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET question_id={$question_arr['id']}
             WHERE quiz_id=$quiz_id AND question_no=$question_no;";
-        mysql_query($upd_sql);
+        umc_mysql_query($upd_sql, true);
         // mark question as skipped
         $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id=$question_id";
-        mysql_query($question_sql);
+        umc_mysql_query($question_sql, true);
     }
     $question_arr['question_no'] = $next_question_no;
     return $question_arr;
@@ -459,12 +457,11 @@ function umc_trivia_close_quiz($quiz_arr = false) {
 
     // get best user and points
     $sql = "SELECT username, count(result) as points FROM minecraft_quiz.quiz_answers WHERE quiz_id=$quiz_id AND result='right' GROUP BY username ORDER BY count(result) DESC;";
-    $rst = mysql_query($sql);
-    $count = mysql_num_rows($rst);
+    $D = umc_mysql_fetch_all($sql);
     $data = array();
 
     $prev_points = 0;
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $username = $row['username'];
         $points = $row['points'];
 
@@ -481,8 +478,8 @@ function umc_trivia_close_quiz($quiz_arr = false) {
 
         // how many answers have been given?
         $answer_sql = "SELECT count(answer_id) as counter FROM minecraft_quiz.quiz_answers WHERE quiz_id=$quiz_id;";
-        $answer_rst = mysql_query($answer_sql);
-        $answer_row = mysql_fetch_array($answer_rst, MYSQL_ASSOC);
+        $A = umc_mysql_fetch_all($answer_sql);
+        $answer_row =  $A[0];
         $answer_count = $answer_row['counter'];
 
         $prize = ($answer_count * $quiz_arr['price']) / $winner_count;
