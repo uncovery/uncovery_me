@@ -95,14 +95,14 @@ $WS_INIT['mod'] = array(  // the name of the plugin
 );
 
 function umc_mod_error_message() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());  
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     XMPP_ERROR_trigger("test");
 }
 
 function umc_mod_banrequest() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     if (!isset($args[2])) {
         umc_show_help($args);
@@ -135,9 +135,9 @@ function umc_mod_banrequest() {
 }
 
 function umc_mod_ban() {
-    global $WSEND, $UMC_USER;
+    global $UMC_USER;
     $player = $UMC_USER['username'];
-    $args = $WSEND['args'];
+    $args = $UMC_USER['args'];
 
     if ($player == 'riedi73') {
         echo "Sorry Riedi, rerouting to ban request :)";
@@ -226,10 +226,10 @@ function umc_mod_record_lag() {
 
 
 function umc_mod_mute() {
-    global $WSEND;
+    global $UMC_USER;
 
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $timelist = array('1h' => 3600, '30m' => 1800, '15m' => 900, '10m' => 600, '5m' => 300, '1m' => 60);
 
@@ -274,10 +274,10 @@ Install by doing:
 
 */
 function umc_mod_unmute() {
-    global $WSEND, $UMC_PATH_MC;
+    global $UMC_USER, $UMC_PATH_MC;
     // umc_echo('Unmuting...');
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     if (!isset($args[2])) {
         umc_show_help($args);

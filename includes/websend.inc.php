@@ -40,7 +40,6 @@ function umc_websend_main() {
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $main = $UMC_USER['args'][0];
-    // $player = $WSEND['player'];
     switch ($main) {
         case 'event':
             $event = $UMC_USER['args'][1];
@@ -126,7 +125,7 @@ function umc_ws_get_vars() {
     $json = json_decode(stripslashes($_POST["jsonData"]), true);
     if (!isset($json['Invoker']['Name'])) {
         XMPP_ERROR_trigger("No invoker name in " . var_export($json,true));
-    }    
+    }
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
@@ -205,7 +204,7 @@ function umc_ws_get_vars() {
     $current_user->set_uuid($UMC_USER['uuid']);         // give it a uuid
     $UMC_USERS['current_user'] = $UMC_USER['uuid'];     // remember that this is the current user
     $UMC_USERS[$UMC_USER['uuid']] = $current_user;      // add the object to the list of all users
-     * 
+     *
      */
 }
 
@@ -213,7 +212,6 @@ function umc_ws_get_vars() {
 /**
  * DEPRECATED
  *
- * @global type $WSEND
  * @global type $UMC_USER
  */
 function umc_bukkit_to_websend() {
@@ -292,7 +290,6 @@ function umc_bukkit_to_websend() {
         umc_log('websend', 'incoming', $str_args);
     }
     $WSEND['json_raw'] = $json_data;
-    umc_ws_sanitize_inv();
 }
 
 /**
@@ -361,12 +358,12 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
  * @return boolean true or false. false if the $how param was wrong
  */
 function umc_ws_cmd($cmd, $how = 'asConsole', $player = false, $silent = false) {
-    global $WSEND;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (isset($_POST["player"])) {
         $fromplayer = $_POST['player'];
     } else {
-        $fromplayer = $WSEND['player'];
+        $fromplayer = $UMC_USER['username'];
     }
     $return = true;
     // if a command is executed by console, return messages back to console instead
@@ -465,7 +462,13 @@ function umc_ws_get_inv($inv_data) {
                 $inv[$slot]['id'] = $item['Type'];
             } else if ($name == 'Durability') {
                 $name = 'data';
-                $inv[$slot][$name] = $value;
+                if ($value == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
+                    umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
+                    umc_echo("{red}You had a bugged item in your inventory, it had to be removed!");
+                    XMPP_ERROR_trigger("Invalid item with -1 damage found!");
+                } else {
+                    $inv[$slot][$name] = $value;
+                }
             } else if ($name == 'Meta') {
                 foreach ($value as $meta_type => $meta_value) {
                     // enchantments
@@ -488,24 +491,6 @@ function umc_ws_get_inv($inv_data) {
     return $inv;
 }
 
-
-/**
- * Sanitize the inventory, remove all items that are not allowed
- */
-function umc_ws_sanitize_inv() {
-    global $WSEND;
-    $inv = $WSEND['inv'];
-    foreach ($inv as $data) { // iterate the slots
-        if ($data['data'] == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
-            umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
-            umc_error_msg("Invalid item found!");
-            umc_echo("{red}You had a bugged item in your inventory, it had to be removed!");
-            XMPP_ERROR_trigger("Invalid item with -1 damage found!");
-        }
-    }
-}
-
-
 /**
  *
  * @param type $string string to type. Automatically includes linebreak. Execute for each line individually please!
@@ -524,9 +509,9 @@ function umc_echo($string, $silent = false) {
  * will return false in case the user does not exist or is not online
  */
 function umc_msg_user($username, $message) {
-    global $WSEND;
+    global $UMC_USER;
     $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
-    if (!in_array($username, $WSEND['players'])) {
+    if (!in_array($username, $UMC_USER['online_players'])) {
         return false;
     } else {
         umc_ws_cmd("msg $username $str", 'asConsole');
@@ -598,5 +583,3 @@ function umc_ws_vardump($var) {
     $line = str_replace($search, " ", $exoport_var);
     return $line;
 }
-
-?>

@@ -67,9 +67,9 @@ $WS_INIT['trivia'] = array(  // the name of the plugin
 );
 
 function umc_trivia_new() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['uncovery'];
+    $args = $UMC_USER['args'];
 
     if ($player != 'uncovery') {
         // umc_error('under maintenance');
@@ -95,7 +95,7 @@ function umc_trivia_new() {
     } else {
         $master = $quiz_arr['master'];
         if ($player != $master) {
-            if (!in_array($master, $WSEND['players'])) {
+            if (!in_array($master, $UMC_USER['online_players'])) {
                 umc_echo("$master has been running a quiz, but he is not online anymore, so closing it now...");
                 umc_trivia_close_quiz($quiz_arr);
             } else {
@@ -121,9 +121,6 @@ function umc_trivia_new() {
 }
 
 function umc_trivia_find_question() {
-    global $WSEND;
-    $player = $WSEND['player'];
-
     // get the current question number
     $quiz_arr = umc_trivia_get_current_quiz();
     if (!$quiz_arr) {
@@ -141,9 +138,8 @@ function umc_trivia_find_question() {
 }
 
 function umc_trivia_ask_users() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
 
     $quiz_arr = umc_trivia_get_current_quiz();
     $master = $quiz_arr['master'];
@@ -178,9 +174,9 @@ function umc_trivia_ask_users() {
 }
 
 function umc_trivia_answer() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $quiz_arr = umc_trivia_get_current_quiz();
     $quiz_id = $quiz_arr['id'];
@@ -203,11 +199,11 @@ function umc_trivia_answer() {
     } else if (count($quiz_arr['users']) > 0  && in_array($player, $quiz_arr['users'])) {
         umc_error("You have already answered that question!");
     }
-    $answer = '';
+    $answer_raw = '';
     for ($i=2; $i<count($args); $i++) {
-        $answer .= " " . $args[$i];
+        $answer_raw .= " " . $args[$i];
     }
-    $answer = trim($answer);
+    $answer = trim($answer_raw);
     umc_header("Trivia Quiz No.$quiz_id Question No.$question_no");
     umc_echo("You answer: $answer");
     umc_echo("Thanks for answering! Your account was debited $price Uncs!");
@@ -228,9 +224,9 @@ function umc_trivia_answer() {
 }
 
 function umc_trivia_check(){
-    global $WSEND;
-    $player = $WSEND['player'];
-    // $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    // $args = $UMC_USER['args'];
 
     $quiz_arr = umc_trivia_get_current_quiz();
     $master = $quiz_arr['master'];
@@ -258,8 +254,8 @@ function umc_trivia_check(){
 }
 
 function umc_trivia_skip() {
-    global $WSEND;
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
 
     $quiz_arr = umc_trivia_get_current_quiz();
     $master = $quiz_arr['master'];
@@ -295,9 +291,9 @@ function umc_trivia_skip() {
 }
 
 function umc_trivia_solve() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $quiz_arr = umc_trivia_get_current_quiz();
     $quiz_id = $quiz_arr['id'];
@@ -454,8 +450,8 @@ function umc_trivia_pick_question($quiz_id) {
 }
 
 function umc_trivia_close_quiz($quiz_arr = false) {
-    global $WSEND;
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
     if (!$quiz_arr) {
         $quiz_arr = umc_trivia_get_current_quiz();
     }

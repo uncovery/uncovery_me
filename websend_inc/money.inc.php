@@ -30,19 +30,19 @@ $WS_INIT['money'] = array(  // the name of the plugin
 );
 
 function umc_money_status() {
-    global $WSEND;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $player = $WSEND['player'];
+    $player = $UMC_USER['username'];
 
     $balance = umc_money_check($player);
     umc_echo("Your bank account balance is $balance Uncs!");
 }
 
 function umc_money_give() {
-    global $WSEND;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     if (!isset($args[2])) {
         umc_error('You need to enter the user to give money to!');

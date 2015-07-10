@@ -38,12 +38,10 @@ function umc_error_log() {
 }
 
 function umc_log($plugin, $action, $text) {
-    global $UMC_USER, $WSEND;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    if (isset($WSEND['player'])) {
-        $player = $WSEND['player'];
-    } else if (isset($UMC_USER['username'])) {
+    if (isset($UMC_USER['username'])) {
         $player = $UMC_USER['username'];
     } else {
         $player = 'system';
@@ -662,7 +660,7 @@ function umc_log_kill_display() {
         $max_limit = min(($line + $line_limit - 1), $num_rows);
         $lines[$line] = $max_limit;
     }
-    
+
     $badmobs = '(33,138,1114,1115,1117,1123,1126,1128,1129,1131,1136,1930)';
 
     if (isset($_POST['today'])) {

@@ -1,11 +1,11 @@
 <?php
 /*
  * this file only contains in-game help for all other functions that are not in the system
- * 
+ *
  */
 
 // enumerate and set help along with the plugins that are installed
-global $WSEND, $WS_INIT;
+global $UMC_USER, $WS_INIT;
 
 /*
  * RegionBreedLimit, LogBlock, Hats, Herochat, Essentials, EssentialsSpawn, PurpleIRC, DisguiseCraft, hats
@@ -47,7 +47,7 @@ $ws_all_plugins['Essentials'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'essentials.spawn',
-    ),   
+    ),
     'tp' => array (
         'help' => array (
             'short' => 'Teleport to another user',
@@ -65,7 +65,7 @@ $ws_all_plugins['Essentials'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'essentials.tpa',
-    ),        
+    ),
     'tpaccept' => array (
         'help' => array (
             'short' => 'Accept a /tpa request.',
@@ -73,7 +73,7 @@ $ws_all_plugins['Essentials'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'essentials.tpaccept',
-    ),       
+    ),
     'tpahere' => array (
         'help' => array (
             'short' => 'Asks the specified player to accept transport to your location.',
@@ -82,7 +82,7 @@ $ws_all_plugins['Essentials'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'essentials.tpahere',
-    ),       
+    ),
     'warp' => array (
         'help' => array (
             'short' => 'Warps you to a warp-point',
@@ -91,8 +91,8 @@ $ws_all_plugins['Essentials'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'essentials.warp',
-    ),        
-    
+    ),
+
 );
 
 $ws_all_plugins['disguisecraft'] = array(  // the name of the plugin
@@ -121,13 +121,13 @@ $ws_all_plugins['disguisecraft'] = array(  // the name of the plugin
         ),
         'top' => true,
         'permission' => 'disguisecraft.mob',
-    ),    
+    ),
 );
 
 // this only adds the help for plugins that are actually installed
-// go through all installed plugins 
+// go through all installed plugins
 // add the help files from this page to the websend help system
-foreach ($WSEND['plugins'] as $plugin) {
+foreach ($UMC_USER['plugins'] as $plugin) {
     if (isset($ws_all_plugins[$plugin])) {
         $WS_INIT[$plugin] = $ws_all_plugins[$plugin];
     }

@@ -70,9 +70,9 @@ $WS_INIT['contest'] = array(
 );
 
 function umc_wsplg_contest() {
-    global $WSEND, $WS_INIT;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER, $WS_INIT;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $level = umc_get_userlevel($player);
     if ($level == 'Guest') {
@@ -139,8 +139,8 @@ function umc_contests_list() {
 }
 
 function umc_contests_info() {
-    global $WSEND;
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $args = $UMC_USER['args'];
     $id = $args[2];
     if (!is_numeric($id)) {
         umc_show_help($args);
@@ -186,9 +186,9 @@ function umc_contests_info() {
 }
 
 function umc_contests_abandon(){
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $id = $args[2];
     if (!isset($args[2])){
@@ -242,9 +242,9 @@ function umc_contests_abandon(){
 }
 
 function umc_contests_close() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
     if ($player != 'uncovery' && $player != 'console') {
         umc_error("Nice try, $player. Think I am stupid? Want to get banned?");
     }
@@ -274,9 +274,9 @@ function umc_contests_close() {
 }
 
 function umc_contests_delete() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
     if ($player != 'uncovery' && $player != 'console') {
         umc_error("Nice try, $player. Think I am stupid? Want to get banned?");
     }
@@ -298,9 +298,9 @@ function umc_contests_delete() {
 
 
 function umc_contests_refund_all() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
     $max = 1;
     $contest_id = $args[2];
     if (!isset($args[2])){
@@ -383,16 +383,16 @@ function umc_region_check_Owners($world_id, $lot) {
 
 /**
  *
- * @global type $WSEND
+ * @global type $UMC_USER
  * @param type $contest_id contest number to choose from
  * @param type $lot_name contest entry to refund
  * @param type $reset if true, the lot will be reset
  */
 
 function umc_contests_refund($contest_id, $lot_name, $reset) {
-    global $WSEND, $UMC_PATH_MC;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER, $UMC_PATH_MC;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     umc_echo("Processing Contest lot $lot_name:");
 
@@ -530,9 +530,9 @@ function umc_contests_refund($contest_id, $lot_name, $reset) {
 
 
 function umc_contests_warp(){
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     $id = $args[2];
     if (!isset($args[2])){
@@ -559,7 +559,7 @@ function umc_contests_warp(){
        $world = 'flatlands';
     }
 
-    if ($WSEND['world'] != $world) {
+    if ($UMC_USER['world'] != $world) {
         umc_error("You have to be in the $world world to do this!");
     }
 
@@ -588,9 +588,9 @@ function umc_contests_warp(){
 }
 
 function umc_contests_join() {
-    global $WSEND;
-    $args = $WSEND['args'];
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $args = $UMC_USER['args'];
+    $player = $UMC_USER['username'];
 
     $debug = true;
 

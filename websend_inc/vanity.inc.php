@@ -53,9 +53,9 @@ $WS_INIT['vanity'] = array(  // the name of the plugin
 );
 
 function umc_vanity_quote() {
-    global $WSEND, $VANITY_PRICES;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER, $VANITY_PRICES;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     if (!isset($args[2]) || !is_numeric($args[2]) || ($args[2] < 1)) {
         umc_error("{red}You need to specify a number of days");
@@ -117,8 +117,8 @@ function umc_vanity_quote() {
  */
 function umc_vanity_check($report = true) {
     // check remaining days
-    global $WSEND;
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
 
     $current_title = umc_vanity_get_title();
     $uuid = umc_user2uuid($player);
@@ -142,8 +142,8 @@ function umc_vanity_check($report = true) {
  * This cancels the timer, then refunds, and then calles the check to have the check cancel the title
  */
 function umc_vanity_cancel() {
-    global $WSEND;
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
     umc_header("Vanity Title Cancellation");
     $date_out = umc_timer_cancel($player, 'custom_title');
     if ($date_out) {
@@ -199,9 +199,9 @@ function umc_vanity_sanitize($vanity) {
 }
 
 function umc_vanity_set() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
     $userlevel = umc_get_userlevel($player);
     // umc_echo("$userlevel");
     if (!isset($args[2]) || !is_numeric($args[2]) || ($args[2] < 1)) {
@@ -313,8 +313,8 @@ function umc_vanity_quote_title($title) {
  * if there is no title, return false
  */
 function umc_vanity_get_title() {
-    global $WSEND;
-    $player = $WSEND['player'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
     $uuid = umc_user2uuid($player);
     $sql = "SELECT value FROM minecraft_srvr.permissions WHERE name='$uuid' AND permission='suffix';";
     $rst = mysql_query($sql);

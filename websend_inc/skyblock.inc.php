@@ -77,10 +77,10 @@ $WS_INIT['skyblock'] = array(
 );
 
 function umc_skyblock_warp(){
-    global $WSEND;
-    $player = $WSEND['player'];
-    $world = $WSEND['world'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $world = $UMC_USER['world'];
+    $args = $UMC_USER['args'];
 
     if (!isset($args[2])){
         umc_show_help($args);
@@ -118,11 +118,10 @@ function umc_skyblock_warp(){
 }
 
 function umc_skyblock_abandon(){
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
-    $id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
         die();
@@ -173,10 +172,9 @@ function umc_skyblock_abandon(){
  * but it will only copy in the biome etc after the next restart so the user has to wait for that
  */
 function umc_skyblock_challenge_select() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $world = $WSEND['world'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     if (!is_numeric($args[2])) {
         umc_error("Your challenge ID needs to be a number!");
@@ -266,8 +264,8 @@ function umc_skyblock_challenge_start() {
  * otherwise challenge will stay open
  */
 function umc_skyblock_challenge_submit() {
-    global $WSEND;
-    $inv = $WSEND['inv'];
+    global $UMC_USER;
+    $inv = $UMC_USER['inv'];
 
 }
 
@@ -285,8 +283,8 @@ function umc_skyblock_challenge_win_check(){
  * so that it can be added to the database
  */
 function umc_skyblock_challenge_serialize_inv() {
-    global $WSEND;
-    $inv = $WSEND['inv'];
+    global $UMC_USER;
+    $inv = $UMC_USER['inv'];
     umc_echo("Done!");
 }
 

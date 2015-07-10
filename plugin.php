@@ -20,13 +20,13 @@ function umc_plg_include() {
 }
 
 function umc_wsplg_find_command($name) {
-    global $WSEND, $WS_INIT, $UMC_USER;
+    global $WS_INIT, $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $args = $WSEND['args'];
+    $args = $UMC_USER['args'];
 
     $command = false;
-    if (isset($WSEND['args'][1]) && isset($WS_INIT[$name][$WSEND['args'][1]])) { // Get command configuration for given command
-        $command = $WS_INIT[$name][$WSEND['args'][1]];
+    if (isset($UMC_USER['args'][1]) && isset($WS_INIT[$name][$UMC_USER['args'][1]])) { // Get command configuration for given command
+        $command = $WS_INIT[$name][$UMC_USER['args'][1]];
     } else if (isset($WS_INIT[$name])) {
         $command = $WS_INIT[$name]['default'];
     } else { // Go through plugins looking for top-level commands
@@ -34,9 +34,8 @@ function umc_wsplg_find_command($name) {
             foreach ($plugin_data as $cmd_name => $cmd_data) {
                 if (isset($cmd_data['top']) && $cmd_data['top'] === true && $cmd_name == $name) {
                     $name = $plugin_name;
-                    array_splice($WSEND['args'],0,0,$plugin_name); // Pretend they invoked it with the plugin name
                     array_splice($UMC_USER['args'],0,0,$plugin_name);
-                    $args = $WSEND['args'];
+                    $args = $UMC_USER['args'];
                     $command = $cmd_data;
                 }
             }
@@ -47,17 +46,17 @@ function umc_wsplg_find_command($name) {
 
 
 function umc_wsplg_dispatch($module) {
-    global $WSEND, $WS_INIT, $UMC_SETTING;
+    global $UMC_USER, $WS_INIT, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $admins = $UMC_SETTING['admins'];
-    $player  = $WSEND['player'];
+    $player  = $UMC_USER['username'];
 
     $command = umc_wsplg_find_command($module);
     if (!$command) {
-        return umc_show_help($WSEND['args']);
+        return umc_show_help($UMC_USER['args']);
     }
-    // we call this here since $WSEND was changes in the line above
-    $args = $WSEND['args'];
+    // we call this here since $UMC_USER was changes in the line above
+    $args = $UMC_USER['args'];
     if (!in_array($player, $admins) && isset($WS_INIT[$args[0]]['disabled']) && $WS_INIT[$args[0]]['disabled'] == true) {
         umc_error("{yellow}Sorry $player, {red}{$args[0]}{yellow} is currently down for maintenance.");
     }
@@ -66,7 +65,7 @@ function umc_wsplg_dispatch($module) {
         if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
             // This command is restricted to the named worlds
             if(isset($command['security']['worlds'])) {
-                if(!in_array($WSEND['world'], $command['security']['worlds'])) {
+                if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
                     umc_error("{red}That command is restricted to the following worlds: {yellow}".join(", ",$command['security']['worlds']));
                 }
             }
@@ -88,14 +87,14 @@ function umc_wsplg_dispatch($module) {
 
 function umc_show_help($args = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $WSEND, $WS_INIT;
-    $player = $WSEND['player'];
+    global $UMC_USER, $WS_INIT;
+    $player = $UMC_USER['username'];
     $userlevel = umc_get_userlevel($player);
 
     if ($args) { // if show_help is called from another program, we simulate a /help command being issued.
-        $args = array_merge(array('call'), $WSEND['args']);
+        $args = array_merge(array('call'), $UMC_USER['args']);
     } else {
-        $args = $WSEND['args'];
+        $args = $UMC_USER['args'];
     }
 
     $command = false;

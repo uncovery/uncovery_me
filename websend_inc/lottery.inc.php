@@ -203,13 +203,12 @@ $lottery = array(
 );
 
 function umc_lottery_reminder() {
-    global $WSEND, $UMC_DOMAIN;
-    $player = $WSEND['player'];
+    global $UMC_USER, $UMC_DOMAIN;
+    $player = $UMC_USER['username'];
 
     $sql = "SELECT count(vote_id) as counter FROM minecraft_log.votes_log WHERE `username`='$player' AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24 ORDER BY `vote_id` DESC  ";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-    $counter = $row['counter'];
+    $D = umc_mysql_fetch_all($sql);
+    $counter = $D[0]['counter'];
     if ($counter < 5) {
         umc_echo ("NOTE: You have voted only $counter times in the 24 hours before the last restart. "
             . "Please vote: $UMC_DOMAIN/vote-for-us/");
@@ -220,7 +219,7 @@ function umc_lottery_show_chances() {
     global $lottery;
     $sum = 1;
     echo "<table>\n<tr><th>Prize</th><th>Chance</th><th>Numbers</th></tr>\n";
-    foreach ($lottery as $item => $data) {
+    foreach ($lottery as $data) {
         $temp = $sum + $data['chance'] - 1;
         if ($sum == $temp) {
             $num_txt = $sum;
@@ -239,7 +238,7 @@ function umc_lottery_show_chances() {
         }
 */
     }
-    $sum = $sum - 1;
+    $sum--;
     echo "<tr><td>Sum:</td><td>$sum%</td><td></td></tr>";
     echo "</table>";
 
@@ -247,9 +246,9 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     //  umc_error_notify("User $user, $chance (umc_lottery)");
-    global $WSEND, $lottery, $ENCH_ITEMS;
+    global $UMC_USER, $lottery, $ENCH_ITEMS;
 
-    $user_input = $WSEND['args'][2];
+    $user_input = $UMC_USER['args'][2];
     $user = umc_check_user($user_input);
     if (!$user) {
         umc_log("lottery", "voting", "user $user does not exist");
@@ -257,8 +256,8 @@ function umc_lottery() {
     }
     $uuid = umc_user2uuid($user);
     $chance = false;
-    if (($user == 'uncovery') && (isset($WSEND['args'][3]))) {
-        $chance = $WSEND['args'][3];
+    if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
+        $chance = $UMC_USER['args'][3];
     }
 
     $roll = umc_lottery_roll_dice($chance);
