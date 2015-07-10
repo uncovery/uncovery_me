@@ -58,10 +58,9 @@ $WS_INIT['ticket'] = array(
 
 function umc_ticket_options() {
     $sql = "SELECT * FROM minecraft.wp_options WHERE option_name='wpscSupportTicketsAdminOptions';";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-    if ($row) {
-        return unserialize($row['option_value']);
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
+        return unserialize($D[0]['option_value']);
     } else {
         return false;
     }
@@ -83,15 +82,14 @@ function umc_ticket_close() {
         umc_error("Invalid ticket ID");
     }
 
-    $user = mysql_real_escape_string($user);
     $sql = "SELECT * FROM minecraft.wp_wpscst_tickets WHERE user_id=$player_id AND resolution LIKE 'Open' AND primkey='$key';";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         umc_error("Ticket ID $key not found!");
     }
 
-    $sql = "UPDATE minecraft.`wp_wpscst_tickets` SET `resolution` = 'Closed' WHERE `primkey`=$key;";
-    $rst = mysql_query($sql);
+    $sql2 = "UPDATE minecraft.`wp_wpscst_tickets` SET `resolution` = 'Closed' WHERE `primkey`=$key;";
+    umc_mysql_fetch_all($sql2);
     umc_echo("Ticket ID $key was successfully closed!");
 }
 
@@ -111,7 +109,6 @@ function umc_ticket_read() {
         umc_error("Invalid ticket ID");
     }
 
-    $user = mysql_real_escape_string($user);
     $sql = "SELECT * FROM minecraft.wp_wpscst_tickets WHERE user_id=$player_id AND primkey='$key';";
     $rst = mysql_query($sql);
     if (mysql_num_rows($rst) == 0) {

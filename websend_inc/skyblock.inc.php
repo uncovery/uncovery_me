@@ -198,8 +198,8 @@ function umc_skyblock_challenge_select() {
 
         $id = $args[2];
         $sql = "SELECT * FROM minecraft_quiz.block_challenges WHERE challenge_id=$id;";
-        $rst = mysql_query($sql);
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $rst = umc_mysql_query($sql);
+        $row = umc_mysql_fetch_array($rst, MYSQL_ASSOC);
         $lot = $row['lot'];
         $biome = $row['biome'];
         $inventory = $row['inventory'];
@@ -233,7 +233,7 @@ function umc_skyblock_challenge_select() {
         }
         $sql = "INSERT INTO `minecraft_quiz`.`block_games` (`game_id`, `username`, `start`, `end`, `status`, `challenge_id`, `sub_challenge_id`, `lot`)
             VALUES (NULL, '$player', NOW(), NULL, 'selected', '$challenge', '$sub_challenge', '$challenge_lot');";
-        mysql_query($sql);
+        umc_mysql_query($sql, true);
         umc_echo("Please type {green}/skyblock start{white} or {green}/skyblock cancel");
         umc_footer();
     }

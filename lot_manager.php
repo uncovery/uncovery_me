@@ -1031,36 +1031,7 @@ function umc_get_available_lots($world = false) {
             $empty_lots[$lot] = $distance;
         }
     }
-    // get all lots people move out from
-    /*
-    $sql = "SELECT lot, world.name as world FROM minecraft_srvr.lot_version "
-            . "LEFT JOIN minecraft_worldguard.region_players ON lot=region_id "
-            . "LEFT JOIN minecraft_worldguard.world ON world_id=world.id "
-            . "WHERE version<>mint_version AND choice NOT IN ('keep', NULL, '')$world_str;";
-    // echo $sql;
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $empty_lots[] = $row['lot'];
-        }
-    }
 
-    // get all lots that are reserverd now and remove from before list
-    $sql = "SELECT choice, world.name as world FROM minecraft_srvr.lot_version "
-            . "LEFT JOIN minecraft_worldguard.region_cuboid ON choice=region_id "
-            . "LEFT JOIN minecraft_worldguard.world ON world_id=id "
-            . "WHERE choice NOT IN ('refund', 'abandon', 'keep', 'reset', NULL, '') $world_str;";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $choice = $row['choice'];
-            if (isset($empty_lots[$choice])) {
-                unset($empty_lots[$choice]);
-            }
-        }
-    }
-     *
-     */
     return $empty_lots;
 }
 

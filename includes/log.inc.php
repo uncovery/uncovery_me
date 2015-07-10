@@ -555,20 +555,6 @@ function umc_universal_web_stats() {
         });
         //]]></script>';
 
-    // count top voters
-    /*
-    $top_sql = "SELECT count(vote_id) as counter, username FROM minecraft_log.votes_log GROUP BY username ORDER BY count(vote_id) DESC LIMIT 10;";
-    $top_rst = mysql_query($top_sql);
-
-    $out .= "Top Ten voters:\n<table style=\"width=50%\">\n"
-        . "<tr><td>Rank</td><td>Username</td><td>Votes</td></tr>\n";
-    $rank = 1;
-    while ($row = mysql_fetch_array($top_rst)) {
-        $out .="<tr><td>$rank</td><td>{$row['username']}</td><td>{$row['counter']}</td></tr>\n";
-        $rank++;
-    }
-    $out .= "</table>\n";
-    */
     return $out;
 }
 
