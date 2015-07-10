@@ -53,9 +53,9 @@ function umc_check_inventory($item_name, $data, $meta) {
  */
 function umc_clear_inv($id, $data, $amount, $meta = '') {
     // umc_echo("trying to remove id $id, data $data, amount $amount, Enchantment $meta");
-    global $WSEND;
-    $inv = $WSEND['inv'];
-    $player = $WSEND["player"];
+    global $UMC_USER;
+    $inv = $UMC_USER['inv'];
+    $player = $UMC_USER["username"];
     if ($meta == '') {
         $meta = serialize(false);
     }
