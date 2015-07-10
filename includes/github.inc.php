@@ -108,8 +108,10 @@ function umc_github_link() {
                 </thead>
                 <tbody>" . umc_github_commit_body($commits) . "</tbody>
              </table>";
-
-    $out .= umc_jquery_tabs(array('Open Issues'=>$tab1, 'Closed Issues'=>$tab2, 'Commits'=>$tab3));
+    $o_count = count($open_issues);
+    $c_count = count($closed_issues);
+    
+    $out .= umc_jquery_tabs(array("Open Issues ($o_count)" =>$tab1, "Closed Issues ($c_count)"=>$tab2, 'Commits'=>$tab3));
 
     return $out;
 }
