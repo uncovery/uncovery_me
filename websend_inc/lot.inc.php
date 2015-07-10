@@ -65,9 +65,9 @@ $WS_INIT['lot'] = array(
 );
 
 function umc_lot_mod() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     /// /lotmember lot world add target
 
@@ -100,19 +100,19 @@ function umc_lot_mod() {
     }
 
     if ($addrem == 'add') {
-        $sql = "INSERT INTO minecraft_worldguard.region_players (`region_id`, `world_id`, `user_id`, `Owner`)
+        $sql_ins = "INSERT INTO minecraft_worldguard.region_players (`region_id`, `world_id`, `user_id`, `Owner`)
             VALUES ('$lot', '$world_id', $user_id, 0);";
-        $rst = mysql_query($sql);
+        umc_mysql_query($sql_ins, true);
         umc_echo("Added you to $lot in the $world!");
     } else if ($addrem == 'rem') {
         // check if target is there at all
         $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id AND Owner=0 LIMIT 1;";
-        $rst = mysql_query($sql);
-        if (mysql_num_rows($rst) !== 1) {
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) !== 1) {
             umc_error("It appears you are not a member of lot $lot in world $world!");
         }
-        $sql = "DELETE FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND world_id = $world_id AND user_id = $user_id AND Owner=0;";
-        $rst = mysql_query($sql);
+        $sql_del = "DELETE FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND world_id = $world_id AND user_id = $user_id AND Owner=0;";
+        umc_mysql_query($sql_del, true);
         umc_echo("Removed you from $lot in the $world!");
     } else {
         umc_error("You can only use [add] or [rem], not {$args[1]}!");
@@ -124,9 +124,9 @@ function umc_lot_mod() {
 
 
 function umc_lot_addrem() {
-    global $WSEND;
-    $player = $WSEND['player'];
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
 
     /// /lotmember lot world add target
 
@@ -301,8 +301,8 @@ function umc_lot_addrem() {
 
 
 function umc_warp_lot() {
-    global $WSEND;
-    $args = $WSEND['args'];
+    global $UMC_USER;
+    $args = $UMC_USER['args'];
     if (!isset($args[2])) {
         umc_show_help($args);
         die();
@@ -310,7 +310,7 @@ function umc_warp_lot() {
     $lot = strtolower($args[2]);
     $world = umc_get_lot_world($lot);
 
-    $playerworld = $WSEND['world'];
+    $playerworld = $UMC_USER['world'];
     if ($world != $playerworld) {
         umc_ws_cmd("mv tp $world", 'asPlayer');
     }
