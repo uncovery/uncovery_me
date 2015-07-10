@@ -67,11 +67,11 @@ function umc_vote_get_votable($username = false, $web = false) {
         LEFT JOIN minecraft_srvr.proposals_votes ON proposals.pr_id=proposals_votes.pr_id AND voter_uuid='$uuid'
         LEFT JOIN minecraft_srvr.UUID ON proposals.uuid=UUID.UUID
         WHERE proposals_votes.pr_id IS NULL AND status='voting' ORDER BY proposals.`date` ASC";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $no_votes = array();
     // echo $sql;
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $proposal = $row['uuid'];
         $proposal_username = $row['username'];
         $prop_lvl = umc_get_uuid_level($proposal);
@@ -108,16 +108,16 @@ function umc_vote_stats() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $pr_stats = array('success' => 0, 'voting' => 0, 'closed' => 0);
     $sql = "SELECT count(pr_id) as counter, `status` FROM minecraft_srvr.proposals GROUP BY `status`;";
-    $rst = mysql_query($sql);
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $P = umc_mysql_fetch_all($sql);
+    foreach ($P as $row) {
         $status = $row['status'];
         $pr_stats[$status] = $row['counter'];
     }
 
     $vote_stats = array();
-    $sql = "SELECT count(vote_id) as counter, vote FROM minecraft_srvr.proposals_votes GROUP BY vote;";
-    $rst = mysql_query($sql);
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $v_sql = "SELECT count(vote_id) as counter, vote FROM minecraft_srvr.proposals_votes GROUP BY vote;";
+    $V = umc_mysql_fetch_all($v_sql);
+    foreach ($V as $row) { 
         $status = $row['vote'];
         $vote_stats[$status] = $row['counter'];
     }
@@ -127,21 +127,21 @@ function umc_vote_stats() {
         FROM minecraft_srvr.proposals
         LEFT JOIN minecraft_srvr.proposals_votes ON proposals.pr_id = proposals_votes.pr_id
         WHERE STATUS = 'success'";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $row = $D[0];
     $max = $row['maximum'];
     $avg = $row['average'];
 
     // how many proposals per day
     $sql = "SELECT count( `pr_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals` ";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $row = $D[0];
     $prop_freq = $row['counter'];
 
     // how many proposals per day
     $sql = "SELECT count( `vote_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals_votes` ";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $row = $D[0];
     $vote_freq = $row['counter'];
 
     $good_votes = 0;
@@ -240,10 +240,10 @@ function umc_vote_web() {
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             // check if the user was recently promoted
             $sql = "SELECT UNIX_TIMESTAMP(`date`) as mysql_ts FROM minecraft_srvr.proposals  WHERE `uuid` LIKE '$proposed_uuid' ORDER BY `date` DESC;";
-            $rst = mysql_query($sql);
+            $D = umc_mysql_fetch_all($sql);
             $row = array();
-            if (mysql_num_rows($rst) > 0) {
-                $row = mysql_fetch_array($rst, MYSQL_ASSOC); // get the first (latest) entry
+            if (count($D) > 0) {
+                $row = $D[0]; // get the first (latest) entry
             } else {
                 $row['mysql_ts'] = 0;
             }
@@ -263,10 +263,10 @@ function umc_vote_web() {
                 // ok to be promoted
                 $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`)
                     VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting');";
-                mysql_query($ins_proposal_sql);
-                $pr_id = mysql_insert_id();
+                umc_mysql_query($ins_proposal_sql);
+                $pr_id = umc_mysql_insert_id();
                 $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) VALUES ($pr_id, '$uuid', NOW(), 1);";
-                $rst = umc_mysql_query($sql, true);
+                umc_mysql_query($sql, true);
                 $out .= "Thanks $username, $proposed_username as been submitted for voting, and your vote has been set, too!";
 
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
@@ -305,13 +305,13 @@ function umc_vote_web() {
 
     // close old proposals
     $upd_sql = "UPDATE minecraft_srvr.proposals SET `status`='failed' WHERE status = 'voting' AND date < NOW() - INTERVAL 2 month";
-    mysql_query($upd_sql);
+    umc_mysql_query($upd_sql, true);
 
     // list proposed people
     $sql = "SELECT UUID.username, status, pr_id, date, proposals.uuid FROM minecraft_srvr.proposals
         LEFT JOIN minecraft_srvr.UUID ON proposals.uuid=UUID.UUID
         WHERE status IN ('voting','closed') ORDER BY `date` ASC;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $header = '';
     if ($username == 'uncovery') {
         $header = '<th>Score</th>';
@@ -321,7 +321,7 @@ function umc_vote_web() {
     $proposals = 0;
     $upgraded_users = array();
 
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $prop_lvl =  umc_get_userlevel($row['username']);
         $prop_status = $row['status'];
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
@@ -344,7 +344,7 @@ function umc_vote_web() {
                 $new_vote = filter_input(INPUT_POST, 'CL_' . $pr_id, FILTER_SANITIZE_STRING);
                 // var_dump($_POST);
                 $sql = "UPDATE minecraft_srvr.`proposals` SET `status` = '$new_vote' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1;";
-                mysql_query($sql);
+                umc_mysql_query($sql);
                 // echo $sql;
                 if ($new_vote == 'success') {
                     $cmd = "pex promote $proposed";
@@ -360,22 +360,22 @@ function umc_vote_web() {
                 $sel_support = $sel_veto = $sel_none = '';
                 // find existing votes
                 $sql = "SELECT * FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
-                $rst_check = mysql_query($sql);
-                if (mysql_num_rows($rst_check) > 0) {
-                    $row_check = mysql_fetch_array($rst_check, MYSQL_ASSOC);
+                $C = umc_mysql_fetch_all($sql);
+                if (count($C) > 0) {
+                    $row_check = $D[0];
                     $vote_id = $row_check['vote_id'];
                     if ($new_vote == 0) {
                         $sql = "DELETE FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
-                        $rst_insert = mysql_query($sql);
+                        umc_mysql_query($sql, true);
                     } else if ($row_check['vote'] != $new_vote) {
                         $sql = "REPLACE INTO minecraft_srvr.`proposals_votes` (`vote_id`, `pr_id`, `voter_uuid`, `date`, `vote`)
 			    VALUES ($vote_id, $pr_id, '$uuid', NOW(), $new_vote);";
-                        $rst_insert = mysql_query($sql);
+                        umc_mysql_query($sql, true);
                     }
                 } else if ($new_vote != 0) {
                     $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`)
                         VALUES ($pr_id, '$uuid', NOW(), $new_vote);";
-                    $rst_insert = mysql_query($sql);
+                    umc_mysql_query($sql, true);
                 }
             } else if ($prop_status == 'closed') {
                 // a user tried to vote on a closed vote... what to do?
@@ -387,9 +387,9 @@ function umc_vote_web() {
         $sql = "SELECT date, voter_uuid, UUID.username, vote, date FROM minecraft_srvr.proposals_votes
                 LEFT JOIN minecraft_srvr.UUID ON voter_uuid=UUID.UUID
                 WHERE pr_id=$pr_id AND vote <> 0 ORDER BY date DESC;";
-        $rst_calc = mysql_query($sql);
+        $R = umc_mysql_fetch_all($sql);
         $email_close = "$UMC_DOMAIN/vote-for-users/\n";
-        while ($row_calc = mysql_fetch_array($rst_calc, MYSQL_ASSOC)) {
+        foreach ($R as $row_calc) {
             $vote_date = $row_calc['date'];
             $voter_lvl = umc_get_uuid_level($row_calc['voter_uuid']);
             $voter_weight = $vote_ranks[$voter_lvl]['vote'];
@@ -408,7 +408,7 @@ function umc_vote_web() {
         if (abs($total_score) >= $min_req && $prop_status == 'voting') {
             // close vote
             $sql = "UPDATE minecraft_srvr.`proposals` SET `status` = 'closed' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1 ";
-            mysql_query($sql);
+            umc_mysql_query($sql, true);
             // send email with status report
             $email_text = $email_close . "Total Score: $total_score\n\rRequired: " . abs($lvl_min_req[$lvl_code]);
             $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
@@ -426,10 +426,10 @@ function umc_vote_web() {
 
         // load your own score
         $sql = "SELECT * FROM minecraft_srvr.proposals_votes WHERE voter_uuid = '$uuid' AND pr_id=$pr_id";
-        $rst_votes = mysql_query($sql);
+        $D = umc_mysql_fetch_all($sql);
         $vote_date = "n/a";
-        if (@mysql_num_rows($rst_votes) > 0) {
-            $row_votes = mysql_fetch_array($rst_votes, MYSQL_ASSOC);
+        if (count($D) > 0) {
+            $row_votes = $D[0];
             $vote_id = $row_votes['vote_id'];
             $your_vote = $row_votes['vote'];
             $vote_date = $row_votes['date'];

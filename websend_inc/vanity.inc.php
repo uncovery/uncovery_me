@@ -317,9 +317,9 @@ function umc_vanity_get_title() {
     $player = $UMC_USER['username'];
     $uuid = umc_user2uuid($player);
     $sql = "SELECT value FROM minecraft_srvr.permissions WHERE name='$uuid' AND permission='suffix';";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
+        $row = $D[0];
         if (strlen($row['value']) > 0) {
             return $row['value'];
         }
@@ -333,10 +333,10 @@ function umc_vanity_web() {
             LEFT JOIN minecraft_srvr.UUID ON name=UUID
             WHERE permission='suffix' AND value NOT LIKE \"\" AND type=1
             ORDER BY name;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out = "<table>\n<tr><th>No.</th><th>Username</th><th>Title</th></tr>\n";
     $count = 0;
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $user = $row['username'];
         $count++;
         $title = $row['value'];

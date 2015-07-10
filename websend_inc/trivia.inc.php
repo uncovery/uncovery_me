@@ -490,7 +490,7 @@ function umc_trivia_close_quiz($quiz_arr = false) {
     } else {
          $sql = "UPDATE minecraft_quiz.quizzes SET end=NOW(), winner='', points=0 WHERE quiz_id=$quiz_id;";
     }
-    $rst = mysql_query($sql);
+    umc_mysql_query($sql, true);
     umc_ws_cmd("ch qm o &3[Trivia]&f Thanks for participating. Create your own quiz with /trivia new!");
     umc_log('trivia', 'close', "$player closed trivia $quiz_id and gave $prize to $winner_str each");
 }
@@ -499,9 +499,9 @@ function umc_trivia_webstats() {
     $out = '<table>';
 
     $quiz_sql = "SELECT * FROM minecraft_quiz.quizzes WHERE end <> '' ORDER BY start DESC;";
-    $quiz_rst = mysql_query($quiz_sql);
+    $D = umc_mysql_fetch_all($quiz_sql);
 
-    while ($quiz_row = mysql_fetch_array($quiz_rst, MYSQL_ASSOC)) {
+    foreach ($D as $quiz_row) {
         $quiz_id = $quiz_row['quiz_id'];
         $master = $quiz_row['master'];
         $quiz_start = $quiz_row['start'];
@@ -522,17 +522,17 @@ function umc_trivia_webstats() {
         $question_sql = "SELECT question_no, question, answer, quiz_questions.question_id FROM minecraft_quiz.quiz_questions
             LEFT JOIN minecraft_quiz.catalogue ON quiz_questions.question_id = catalogue.question_id
             WHERE quiz_id = $quiz_id ORDER BY question_no;";
-        $question_rst = mysql_query($question_sql);
-        while ($question_row = mysql_fetch_array($question_rst, MYSQL_ASSOC)) {
+        $Q = umc_mysql_fetch_all($question_sql);
+        foreach ($Q as $question_row) {
             $question_no = $question_row['question_no'];
             $question_id = $question_row['question_id'];
             $question = $question_row['question'];
             $answer = $question_row['answer'];
             $out .= "<tr style=\"font-size:70%; background-color:#99FFCC;\"><td style=\"padding-left:40px\">Q. No.$question_no: $question</td><td>A.: $answer</td></tr>";
             $answer_sql = "SELECT * FROM minecraft_quiz.quiz_answers WHERE quiz_id=$quiz_id AND question_id=$question_id ORDER BY answer_id;";
-            $answer_rst = mysql_query($answer_sql);
+            $A = umc_mysql_fetch_all($answer_sql);
             $out .= "<tr style=\"font-size:70%;\"><td style=\"padding-left:80px\" colspan=2>";
-            while ($answer_row = mysql_fetch_array($answer_rst, MYSQL_ASSOC)) {
+            foreach ($A as $answer_row) {
                 $answer_id = $answer_row['answer_id'];
                 $user_answer = $answer_row['answer_text'];
                 $username = $answer_row['username'];

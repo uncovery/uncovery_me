@@ -199,7 +199,7 @@ function umc_skyblock_challenge_select() {
         $id = $args[2];
         $sql = "SELECT * FROM minecraft_quiz.block_challenges WHERE challenge_id=$id;";
         $rst = umc_mysql_query($sql);
-        $row = umc_mysql_fetch_array($rst, MYSQL_ASSOC);
+        $row = umc_mysql_fetch_array($rst);
         $lot = $row['lot'];
         $biome = $row['biome'];
         $inventory = $row['inventory'];
