@@ -684,7 +684,7 @@ function umc_user_directory() {
             ORDER BY comment_date DESC";
         $D2 = umc_mysql_fetch_all($sql2);
         echo "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
-        foreach ($D as $row) {
+        foreach ($D2 as $row) {
             echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
         }
         echo "</ul>\n";
