@@ -401,7 +401,7 @@ function umc_lottery_log_import() {
             // echo $matches[4] . " => $date_time <br>";
             $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
                 VALUES ('{$matches[2]}', '$date_time', '{$matches[1]}', '{$matches[3]}');";
-            mysql_query($sql);
+            umc_mysql_query($sql, true);
             $count++;
         }
         if (!feof($handle)) {
@@ -457,7 +457,7 @@ function umc_lottery_web_stats() {
         GROUP BY website, DAY( `datetime` ),MONTH( `datetime` ), YEAR( `datetime` )
         ORDER BY YEAR( `datetime` ) , MONTH( `datetime` ), DAY( `datetime` ) ";
 
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out = '';
     $maxval = 0;
     $minval = 0;
@@ -472,7 +472,7 @@ function umc_lottery_web_stats() {
         . "var chart;\n"
         . "var chartData = [\n";
     //
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $maxval = max($maxval, $row['vote_count']);
         $minval = min($minval, $row['vote_count']);
         $date = $row['date'];

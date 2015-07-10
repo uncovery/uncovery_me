@@ -76,17 +76,17 @@ function umc_get_uuid_level($uuid) {
     $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
         LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
         WHERE `name` IN ('$uuid_str') AND permissions.permission='name'";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all(sql);
     $uuid_levels = array();
     // user not found, so he's guest
-    if (mysql_num_rows($rst) == 0)  {
+    if (count($D) == 0)  {
         return "Guest";
     }
     //parent 	value 	name
     // Owner 	uncovery	ab3bc877-4434-45a9-93bd-bab6df41eabf
 
     // otherwise get results
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $uuid = $row['uuid'];
         $level = $row['userlevel'];
         if ($level == 'NULL') {
@@ -294,8 +294,8 @@ function umc_get_userlevel($username) {
     $user_arr_ok = array();
     foreach ($user_arr as $name) {
         $sql_search = "SELECT value FROM minecraft_srvr.permissions WHERE value LIKE '$name' LIMIT 1;";
-        $rst_search = mysql_query($sql_search);
-        $row = mysql_fetch_array($rst_search, MYSQL_ASSOC);
+        $D = umc_mysql_fetch_all($sql_search);
+        $row = $D[0];
         $user_arr_ok[] = $row['value'];
     }
     $username_str = implode("','", $user_arr_ok);
@@ -526,9 +526,9 @@ function umc_get_banned_users() {
 function umc_get_recent_bans($limit = 5) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT `ban_id`, `username`, `reason`, `admin`, `date` FROM minecraft_srvr.`banned_users` ORDER BY date DESC LIMIT $limit;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out = array();
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $out[$row['username']] = $row['reason'];
     }
     return $out;
@@ -670,27 +670,27 @@ function umc_user_directory() {
         $sql = "SELECT meta_value FROM minecraft.wp_users
             LEFT JOIN minecraft.wp_usermeta ON wp_users.ID = wp_usermeta.user_id
             WHERE display_name='$username' AND meta_key='description';";
-        $rst = mysql_query($sql);
-        if (mysql_num_rows($rst) > 0) {
-            $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) > 0) {
+            $row = $D[0];
             echo "<strong>Bio:</strong> " . $row['meta_value'] . "<br>";
         }
 
 
         // comments
-        $sql = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
+        $sql2 = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
             LEFT JOIN minecraft.wp_posts ON comment_post_id=id
             WHERE comment_author = '$username' AND comment_approved='1' AND id <> 'NULL'
             ORDER BY comment_date DESC";
-        $rst = mysql_query($sql);
-        echo "<strong>Comments:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        $D2 = umc_mysql_fetch_all($sql2);
+        echo "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
+        foreach ($D as $row) {
             echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
         }
         echo "</ul>\n";
 
         //forum posts
-        $sql = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
+        $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
 		wpp.post_parent AS parent, wpp.post_type AS type, parent.post_title AS parent_title
             FROM minecraft.wp_posts AS wpp
 	    LEFT JOIN minecraft.wp_users ON wpp.post_author=wp_users.id
@@ -699,10 +699,10 @@ function umc_user_directory() {
 		AND (wpp.post_type='reply' OR wpp.post_type='topic')
 		AND wpp.post_status='publish'
 	    ORDER BY wpp.post_date DESC";
-        $rst = mysql_query($sql);
+        $D3 = umc_mysql_fetch_all($sql3);
         // echo $sql;
-        echo "<strong>Forum Posts:</strong> (". mysql_num_rows($rst) . ")\n<ul>\n";
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        echo "<strong>Forum Posts:</strong> (". count($D3) . ")\n<ul>\n";
+        foreach ($D3 as $row) {
             $date = $row['date'];
             if ($row['type'] == 'reply') {
                 $link = $row['parent'] . "#post-" . $row['id'];
@@ -823,7 +823,7 @@ function umc_ban_to_database() {
         if (!in_array($uuid, $banned_db)) {
             $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `date`, `uuid`, `source`)
                 VALUES ('$name','$reason', '$admin', '$date', '$uuid', '$source');";
-            mysql_query($sql);
+            umc_mysql_query($sql, true);
         }
     }
     /* format:

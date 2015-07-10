@@ -39,8 +39,8 @@ function umc_timer_set($user, $type, $days = 0, $hours = 0, $minutes = 0) {
         umc_log('timer', 'update', "$type timer from $today to $timeout for $user");
     }
     // umc_echo($sql);
-    $rst = mysql_query($sql);
-    $count = mysql_affected_rows();
+    $rst = umc_mysql_query($sql);
+    $count = umc_mysql_affected_rows(true);
     return $count;
 }
 /*
@@ -52,7 +52,7 @@ function umc_timer_cancel($user, $type) {
     $existing_timer = umc_timer_get($user, $type);
     if ($existing_timer) {
         $sql = "DELETE FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
-        $rst = mysql_query($sql);
+        umc_mysql_query($sql, true);
         umc_log('timer', 'cancel', "$type timer for $user");
         return $existing_timer;
     } else {
@@ -66,23 +66,22 @@ function umc_timer_cancel($user, $type) {
 function umc_timer_get($user, $type) {
     // check if a timer is set
     $sql = "SELECT time_out FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
-    if (mysql_num_rows($rst) > 0) {
+    if (count($D) > 0) {
         // no, check if timed out
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
 
         $date_now = umc_datetime(); // substract the current day
-        $date_row = umc_datetime($row['time_out']);
+        $date_row = umc_datetime($D[0]['time_out']);
         // difference in seconds ofr check
         $diff = $date_row->getTimestamp() - $date_now->getTimestamp();
 
         if ($diff > 0) {
             return $date_row;
         } else {
-            $sql = "DELETE FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
+            $sql_del = "DELETE FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
             umc_log('timer', 'removed', "$type timer for $user");
-            $rst = mysql_query($sql);
+            umc_mysql_query($sql_del, true);
             return false;
         }
     } else {

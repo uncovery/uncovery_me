@@ -8,7 +8,7 @@ function umc_shopmgr_main() {
     if (!$UMC_USER) {
         return "You have to be logged in to see this!";
     }
-    
+
     if (!isset($s_get['page'])) {
         $sel_page = 'deposit';
     } else {
@@ -74,11 +74,11 @@ function umc_shopmgr_show_deposit() {
         LEFT JOIN minecraft_srvr.UUID as r_link ON recipient_uuid=r_link.UUID
         WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid'
         ORDER BY id, damage, amount DESC;";
-    $data_rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $non_numeric_columns = array('item', 'sender', 'recipient');
     $sort_column = "1, 'desc'";
-    $check = umc_web_table('deposit', $sort_column, $data_rst, $pre_table = '', array(), $non_numeric_columns);
+    $check = umc_web_table('deposit', $sort_column, $D, $pre_table = '', array(), $non_numeric_columns);
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
@@ -314,10 +314,10 @@ function umc_shopmgr_offers($where = false) {
 	    AND stock.meta=transactions.meta
         WHERE $where
         GROUP BY stock.id, transactions.cost, transactions.damage, transactions.meta";
-    $data_rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $sort_column = '0, "desc"';
-    $check = umc_web_table('shopstock', $sort_column, $data_rst);
+    $check = umc_web_table('shopstock', $sort_column, $D);
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
@@ -351,10 +351,10 @@ function umc_shopmgr_requests($where = false) {
 	    AND request.meta=transactions.meta
         WHERE $where
         GROUP BY request.id, transactions.cost, transactions.damage, transactions.meta";
-    $data_rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $sort_column = '0, "desc"';
-    $check = umc_web_table('shoprequests', $sort_column, $data_rst);
+    $check = umc_web_table('shoprequests', $sort_column, $D);
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
@@ -375,10 +375,10 @@ function umc_shopmgr_buyers() {
         GROUP BY buyer_uuid
         ORDER BY date DESC
         LIMIT 100";
-    $buyer_rst = mysql_query($sql_buyer);
+    $D = umc_mysql_fetch_all($sql_buyer);
 
     $sort_buyer = '2, "desc"';
-    $check = umc_web_table('shopplayers_buyers', $sort_buyer, $buyer_rst);
+    $check = umc_web_table('shopplayers_buyers', $sort_buyer, $D);
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql_buyer");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
@@ -399,10 +399,10 @@ function umc_shopmgr_sellers() {
         GROUP BY seller_uuid
         ORDER BY date DESC
         LIMIT 100";
-    $data_rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $sort_column = '2, "desc"';
-    $check = umc_web_table('shopplayers_sellers', $sort_column, $data_rst);
+    $check = umc_web_table('shopplayers_sellers', $sort_column, $D);
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
         return "Error creating data table. Admin was notified, please wait until it is fixed";
@@ -437,10 +437,10 @@ function umc_shopmgr_transactions() {
         ORDER BY date DESC
         LIMIT 100";
 
-    $data_rst = mysql_query($sql);
+    $D1 = umc_mysql_fetch_all($sql);
 
     $sort_column = '4, "desc"';
-    $out .= umc_web_table('shopusers_soldbyplayer', $sort_column, $data_rst);
+    $out .= umc_web_table('shopusers_soldbyplayer', $sort_column, $D1);
 
     $out .= "<h2>Items bought by $username</h2>";
     $sql2 = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS expense, amount, username AS seller, date
@@ -449,10 +449,10 @@ function umc_shopmgr_transactions() {
         WHERE date > '$lastmonth' AND cost > 0 AND $buyer_str seller_uuid <> 'cancel00-sell-0000-0000-000000000000'
         ORDER BY date DESC
         LIMIT 100";
-    $data_rst2 = mysql_query($sql2);
+    $D2 = umc_mysql_fetch_all($sql2);
 
     $sort_column2 = '4, "desc"';
-    $check = umc_web_table('shopplayers_sellers', $sort_column2, $data_rst2);
+    $check = umc_web_table('shopplayers_sellers', $sort_column2, $D2);
 
     if (!$check) {
         XMPP_ERROR_trigger("Error creating web_table with SQL $sql");
@@ -533,7 +533,7 @@ function umc_shopmgr_stats() {
 	    AND seller_uuid NOT LIKE 'cancel%'
 	    AND buyer_uuid NOT LIKE 'cancel%'
 	GROUP BY week;";
-    $rst = umc_mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     //$maxval_amount = 0;
     //$maxval_value = 0;
     //$minval = 0;
@@ -547,7 +547,7 @@ function umc_shopmgr_stats() {
         . "var chart;\n"
         . "var chartData = [\n";
     //
-    while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach (D as $row) {
         //$maxval_amount = max($maxval_amount, $row['amount']);
         //$maxval_value = max($maxval_value, $row['value']);
         $date = $row['week'];

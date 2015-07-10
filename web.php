@@ -318,14 +318,8 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
         }
         $keys = array_keys(current($data));
     } else {
-        if (!$data) {
-            return false;
-        }
-        if (mysql_num_rows($data) == 0) {
-            return "No data found<hr>";
-        }
-        $row = mysql_fetch_array($data, MYSQL_ASSOC);
-        $keys = array_keys($row);
+        XMPP_ERROR_trigger("Data type passed to umc_web_table is not array!");
+        return '';
     }
 
     $counter = 0;
@@ -347,15 +341,9 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
 
 
     $data_out = '';
-    if (is_array($data)) {
-        foreach($data as $row) {
-            $data_out .= umc_web_table_create_line($row, $numeric_columns, $formats, $hide_cols);
-        }
-    } else {
-        mysql_data_seek($data, 0);
-        while ($row = mysql_fetch_array($data, MYSQL_ASSOC)) {
-            $data_out .= umc_web_table_create_line($row, $numeric_columns, $formats, $hide_cols);
-        }
+
+    foreach($data as $row) {
+        $data_out .= umc_web_table_create_line($row, $numeric_columns, $formats, $hide_cols);
     }
 
     $numeric_columns_str = implode(",", $numeric_columns);

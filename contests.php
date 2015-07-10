@@ -1,16 +1,16 @@
 <?php
 
 function umc_contest_index() {
-    
+
     return "this feature is under construction";
 }
 
 function umc_new_listcontests($status = 'active') {
     $sql = "SELECT title, id from minecraft_srvr.contest_contests WHERE status='$status' ORDER by id ASC;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $out = "<ul>";
-    while ($row = mysql_fetch_array($rst)) {
+    foreach ($D as $row) {
         $out .= "<li>" . $row['title'] . "</li>";
     }
     $out .= "</ul>";
@@ -24,13 +24,13 @@ function umc_contests_status() {
 
     foreach ($status_arr as $status) {
         $sql = "SELECT title, id from 'minecraft_srvr.contest_contests WHERE status='$status' ORDER by id ASC;";
-        $rst = mysql_query($sql);
-        
-        if (mysql_num_rows($rst) > 0) {
+        $D = umc_mysql_fetch_all($sql);
+
+        if (count($D) > 0) {
             $title = ucfirst("$status:") ;
             $out .= "<li><strong>$title</strong>";
             $out .= "<ul>";
-            while ($row = mysql_fetch_array($rst)) {
+            foreach ($D as $row) {
                 $link = $UMC_SETTING['path']['url'] . "/contestsmanager/?action=show_contest&type=" . $row['id'];
                 $out .= "<li><a href=\"$link\">{$row['title']}</a></li>";
             }

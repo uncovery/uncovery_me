@@ -2,16 +2,14 @@
     require_once('includes/mysql.inc.php');
 
     $sql = "SELECT id FROM minecraft_srvr.`contest_contests` WHERE `status` = 'active';";
-    $rst = mysql_query($sql);
-    $data = mysql_fetch_array($rst);
-    $contest_id = $data['id'];
+    $D = umc_mysql_fetch_all($sql);
+    $contest_id = $D[0]['id'];
     echo "Making inventory of Contest $contest_id:\n";
 
     $lot_name = "con_" . $contest_id . "_%";
-    $sql = "SELECT * FROM minecraft_worldguard.region_cuboid LEFT JOIN world ON region_cuboid.world_id=world.id WHERE region_id LIKE '$lot_name';";
-    $rst = mysql_query($sql);
-
-    while ($entry = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $sql2 = "SELECT * FROM minecraft_worldguard.region_cuboid LEFT JOIN world ON region_cuboid.world_id=world.id WHERE region_id LIKE '$lot_name';";
+    $D = $entry = umc_mysql_fetch_all($sql2);
+    foreach ($D as $entry) {
         $world_name = $entry['name'];
         $lot_name = $entry['region_id'];
         echo"Processing lot $lot_name in $world_name...";

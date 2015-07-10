@@ -12,8 +12,8 @@
 function umc_db_take_item($table, $id, $amount, $player) {
     // $uuid = umc_uuid_getone($player, 'uuid');
 
-    $amount_rst = mysql_query("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
-    $amount_row = mysql_fetch_array($amount_rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
+    $amount_row = $D[0];
     $newstock = $amount_row['amount'] - $amount;
     if ($table == 'stock') {
         if ($newstock == 0) {
@@ -37,11 +37,9 @@ function umc_db_take_item($table, $id, $amount, $player) {
     // check stock levels
 
     $sql = "SELECT * FROM minecraft_iconomy.$table WHERE id=$id;";
-    $rst = mysql_query($sql);
-    $num_rows = mysql_num_rows($rst);
-    if($num_rows) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-        return $row['amount'];
+    $D2 = umc_mysql_fetch_all($sql);
+    if (count($D2)) {
+        return $D2[0]['amount'];
     } else {
         return 0;
     }

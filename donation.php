@@ -189,12 +189,9 @@ function umc_donation_calc_average() {
     $donator_count = $row_count['count'];
 
     $sql_sum = "SELECT sum(amount) as sum from minecraft_srvr.donations;";
-    $rst_sum = umc_mysql_query($sql_sum);
-    $row_sum = umc_mysql_fetch_array($rst_sum, MYSQL_ASSOC);
-    umc_mysql_free_result($rst_sum);
-    $donation_sum = $row_sum['sum'];
+    $row_sum = umc_mysql_fetch_all($sql_sum);
+    $donation_sum = $row_sum[0]['sum'];
     $donation_avg = round($donation_sum / $donator_count, 2);
-
     return $donation_avg;
 }
 
@@ -205,10 +202,10 @@ function umc_donation_top_table($outstanding) {
     $uuid = $UMC_USER['uuid'];
 
     $sql = "SELECT SUM(amount) as sum, uuid FROM minecraft_srvr.`donations` GROUP BY uuid ORDER by sum DESC LIMIT 25;";
-    $rst = umc_mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out = "<h2>Top 25 Donators</h2>If you are on this list and would like to be named, please tell me.\n<table>";
     $out .= "\n    <tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td></tr>\n";
-    while ($row = umc_mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         if ((isset($show_users[$row['uuid']])) && ($uuid == $row['uuid'])) {
             $user = $username . " (You)";
         } else if ($uuid == $row['uuid']) {
@@ -220,7 +217,6 @@ function umc_donation_top_table($outstanding) {
         }
         $out .= "    <tr><td style=\"text-align:right\">". $row['sum'] . " USD</td><td style=\"text-align:right\">$user</td></tr>\n";
     }
-    umc_mysql_free_result($rst);
     $out .= "</table>\n";
     return $out;
 }
@@ -387,9 +383,8 @@ function umc_donation_stats() {
     $cost_html = money_format('%i', $cost); // add the overlap costs of 2012-08
 
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
-    $rst = umc_mysql_query($sql);
-    $row = umc_mysql_fetch_array($rst, MYSQL_ASSOC);
-    $donated = $row['donated'];
+    $D = umc_mysql_fetch_all($sql);
+    $donated = $D[0]['donated'];
     $donated_html = money_format('%i', $donated);
     $balance = $cost + $donated;
     $balance_format = money_format('%i', $balance);
@@ -426,9 +421,8 @@ function umc_donation_monthly_target() {
     $monthly_costs = 135;
 
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations WHERE date >= '$this_year_month_first';";
-    $rst = umc_mysql_query($sql);
-    $row = umc_mysql_fetch_array($rst, MYSQL_ASSOC);
-    $donated = $row['donated'];
+    $D = umc_mysql_fetch_all($sql);
+    $donated = $D[0]['donated'];
     $percent = floor($donated / ($monthly_costs / 100));
     $percent_css = $percent;
     // since 0% also shows a green bar, we just color it red.
@@ -445,9 +439,8 @@ function umc_donation_monthly_target() {
 
     $overall_costs = $months_since_founding * $monthly_costs;
     $overall_sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
-    $overall_rst = umc_mysql_query($overall_sql);
-    $overall_row = umc_mysql_fetch_array($overall_rst, MYSQL_ASSOC);
-    $overall_donated = $overall_row['donated'];
+    $D = umc_mysql_fetch_all($overall_sql);
+    $overall_donated = $D[0]['donated'];
     $overall_percent = floor($overall_donated / ($overall_costs / 100));
     $overall_percent_css = $overall_percent;
     // since 0% also shows a green bar, we just color it red.
@@ -489,8 +482,8 @@ function umc_donation_parser() {
         // Check if transaction exists
         $id = $_POST['transaction_id'];
         $sql = "SELECT * FROM minecraft_srvr.donations WHERE txn_id = '$id';";
-        $rst = mysql_query($sql);
-        if ((mysql_num_rows($rst)) > 0) {
+        $D = umc_mysql_fetch_all($sql);
+        if ((count($D)) > 0) {
             $out = 'This transaction ID already exists: ' . $id;
         } else {
             $amount = $_POST['amount'];
@@ -500,7 +493,7 @@ function umc_donation_parser() {
             $out = "Processing a new transaction (ID: $id)<br>";
             $sql = "INSERT INTO minecraft_srvr.donations SET `txn_id`='$id', `amount`='$amount', `uuid`='$uuid', `email`='$email', `date`='$date';";
             $out .= $sql . "<br>" . 'DONE!';
-            mysql_query($sql);
+            umc_mysql_query($sql, true);
             $out .= "<br>Sending email...";
             // send email to user
             $subject = "[Uncovery Minecraft] Donation activated!";

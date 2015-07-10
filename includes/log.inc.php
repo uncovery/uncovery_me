@@ -61,16 +61,16 @@ function umc_log($plugin, $action, $text) {
      */
     $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
         VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', '$action', '$text');";
-    mysql_query($sql);
+    umc_mysql_query($sql, true);
 }
 
 // this returns the different types of plugin data in the log database
 function umc_log_get_plugin_types() {
     $sql = "SELECT plugin FROM `minecraft_log`.`universal_log` GROUP BY plugin;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $plugins = array();
-    while($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $plugins[] = $row['plugin'];
     }
     return $plugins;
@@ -79,10 +79,10 @@ function umc_log_get_plugin_types() {
 // this returns the different users of plugin data in the log database
 function umc_log_get_usernames() {
     $sql = "SELECT username FROM `minecraft_log`.`universal_log` GROUP BY username;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     $usernames = array();
-    while($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $usernames[] = $row['username'];
     }
     return $usernames;
@@ -145,10 +145,10 @@ function umc_log_web_display() {
     }
 
     // $out .= "$sql";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th><th>Plugin</th><th>Action</th><th>Text</th></tr>\n";
     $yesterday = '';
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $row_style = '';
         if ($yesterday != $row['date']) {
             $row_style = ' style="background-color:#CCCCCC;"';
@@ -207,12 +207,11 @@ function umc_display_logores() {
         $sql = "SELECT * FROM minecraft_log.logores_log WHERE username='$player' AND world NOT LIKE 'flatlands' ORDER BY `ID` DESC LIMIT 1000;";
     }
 
-    // $out .= "$sql";
-    $rst = mysql_query($sql);
     $out .= "<table style=\"font-size:80%\">\n<tr><th>Day</th><th>User</th><th>Ore</th><th>World</th><th>Location</th><th>Ratio</th><th>Light</th><th>Time</th><th>Flags</th></tr>\n";
     $lastuser = '';
     $yesterday = '';
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         // do not list banned users in the nolight section
         $username = $row['username'];
         $lower_user = strtolower($username);
@@ -246,10 +245,10 @@ function umc_display_logores() {
 // this returns the different users of plugin data in the log database
 function umc_logblock_get_usernames() {
     $sql = "SELECT playername FROM `minecraft_log`.`lb-players` ORDER BY playername;";
-    $rst = mysql_query($sql);
 
     $usernames = array();
-    while($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         $usernames[] = $row['playername'];
     }
     return $usernames;
@@ -257,9 +256,9 @@ function umc_logblock_get_usernames() {
 
 function umc_logblock_get_lots($world) {
     $sql = "SELECT * FROM minecraft_worldguard.region_cuboid LEFT JOIN minecraft_worldguard.world ON world_id=id WHERE name='$world'";
-    $rst = mysql_query($sql);
     $lots = array();
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         $lots[] = $row['region_id'];
     }
     return $lots;
@@ -273,20 +272,18 @@ function umc_logblock_get_lot_from_coord($world, $x, $z) {
 	    AND min_x<=$x
 	    AND max_z>=$z
 	    AND min_z<=$z";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         return 'n/a';
     }
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-    return $row['region_id'];
+    return $row[0]['region_id'];
 }
 
 function umc_logblock_get_coord_filter_from_lot($lot) {
     $sql = "SELECT * FROM minecraft_worldguard.region_cuboid
         WHERE region_id='$lot' LIMIT 1";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-    $filter = "AND x < {$row['max_x']} AND z < {$row['max_z']} AND x > {$row['min_x']} AND z > {$row['min_z']} ";
+    $row = umc_mysql_fetch_all($sql);
+    $filter = "AND x < {$row[0]['max_x']} AND z < {$row[0]['max_z']} AND x > {$row[0]['min_x']} AND z > {$row[0]['min_z']} ";
     return $filter;
 }
 
@@ -361,9 +358,8 @@ function umc_display_logblock() {
             LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
             WHERE 1 $username_filter $lot_filter;";
     }
-    $count_rst = mysql_query($count_sql);
-    $count_row = mysql_fetch_array($count_rst, MYSQL_ASSOC);
-    $num_rows = $count_row['counter'];
+    $D = umc_mysql_fetch_all($count_sql);
+    $num_rows = $D[0]['counter'];
 
     // make a dropdown for the line to start in for pagination
     $lines = array();
@@ -384,7 +380,6 @@ function umc_display_logblock() {
             WHERE 1 $username_filter $lot_filter
 	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     }
-    $rst = mysql_query($sql);
 
     $out .= "<form action=\"\" method=\"post\">\n"
         . "World: <select name=\"world\">";
@@ -410,7 +405,8 @@ function umc_display_logblock() {
 
     $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th><th>Removed</th><th>Placed</th><th>Lot</th><th>Coordinates</th></tr>\n";
     $yesterday = '';
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         $row_style = '';
         $date_arr = explode(" ", $row['date']);
         if ($yesterday != $date_arr[0]) {
@@ -466,7 +462,6 @@ function umc_universal_web_stats() {
         GROUP BY `date`
         ORDER BY `date`;";
 
-    $rst = mysql_query($sql);
     $out = '<h2>Unique user logins per day</h2>';
     $maxval = 0;
     $minval = 0;
@@ -487,7 +482,8 @@ function umc_universal_web_stats() {
         . "var chart;\n"
         . "var chartData = [\n";
     //
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         $maxval = max($maxval, $row['users']);
         $minval = min($minval, $row['users']);
         $date = $row['date'];
@@ -648,9 +644,9 @@ function umc_log_kill_display() {
             WHERE 1 $killer_filter $lot_filter;";
     }
     // echo $count_sql;
-    $count_rst = mysql_query($count_sql);
-    $count_row = mysql_fetch_array($count_rst, MYSQL_ASSOC);
-    $num_rows = $count_row['counter'];
+
+    $D = umc_mysql_fetch_all($count_sql);
+    $num_rows = $D[0]['counter'];
 
     // make a dropdown for the line to start in for pagination
     $lines = array();
@@ -676,8 +672,6 @@ function umc_log_kill_display() {
             WHERE killers.playerid NOT IN $badmobs AND victims.playerid NOT IN $badmobs $killer_filter $lot_filter
             ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     }
-    // echo $sql;
-    $rst = mysql_query($sql);
 
     $out .= "<form action=\"\" method=\"post\">\n"
         . "World: <select name=\"world\">";
@@ -725,7 +719,8 @@ function umc_log_kill_display() {
 
     $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Killer</th><th>Weapon</th><th>Victim</th><th>Lot</th><th>Coordinates</th></tr>\n";
     $yesterday = '';
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
         $row_style = '';
         $date_arr = explode(" ", $row['date']);
         if ($yesterday != $date_arr[0]) {
@@ -763,7 +758,7 @@ function umc_log_chat_import() {
         }
         foreach ($text_arr as $line) {
             $match= array();
-            $raw = mysql_real_escape_string(trim($line));
+            $raw = umc_mysql_real_escape_string(trim($line));
             preg_match($pattern_line, $line, $match);
             // $raw = bzcompress($match[0]);
             $time = $match[1];
@@ -775,9 +770,9 @@ function umc_log_chat_import() {
                 $target = trim($match[5]);
             }
             $text = trim($match[7]);
-            $text_sql = mysql_real_escape_string($text);
+            $text_sql = umc_mysql_real_escape_string($text);
             if (strlen($time) > 0) {
-                $sql .= "('$time', '$source', '$target', '$text_sql', '$raw'),";
+                $sql .= "('$time', '$source', '$target', $text_sql, $raw),";
             }
         }
         $ins = substr($sql, 0, -1). ";";
@@ -789,7 +784,7 @@ function umc_log_chat_import() {
         $day = $date_parts[2];
         $hour = $date_parts[3];
         $min = $date_parts[3];
-        mysql_query($ins);
+        umc_mysql_query($ins, true);
         $file = "$year-$month-{$day}_{$hour}_{$min}_chat_log.tar.bz2";
         rename($file, "$target_path/$year/$month/$file");
     }

@@ -293,8 +293,8 @@ function umc_settler_new() {
                 FROM minecraft_worldguard.world
                 LEFT JOIN minecraft_worldguard.region_cuboid ON world.id=region_cuboid.world_id
                 WHERE region_cuboid.region_id='$lower_lot';";
-            $lot_rst = mysql_query($lot_sql);
-            $lot_data = mysql_fetch_array($lot_rst, MYSQL_ASSOC);
+            $D = umc_mysql_fetch_all($lot_sql);
+            $lot_data = $D[0];
 
             // north/south difference
             if ($lot_data['max_x'] < 0) {

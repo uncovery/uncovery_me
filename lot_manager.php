@@ -270,12 +270,11 @@ function umc_lot_get_from_coords($x, $z, $world) {
 		AND max_z>=$floot_z
 		AND name='$world'
 	    LIMIT 1;";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
         return false;
     } else {
-        $row = mysql_fetch_array($rst);
-        $region = $row['region_id'];
+        $region = $D[0]['region_id'];
     }
     return $region;
 }
@@ -387,9 +386,8 @@ function umc_get_lot_change_form($lot, $form = false) {
     $options = umc_get_lot_options($lot, $form);
     // get current option
     $sql = "SELECT choice FROM minecraft_srvr.lot_version WHERE lot='$lot'";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-    $choice = $row['choice'];
+    $D = umc_mysql_fetch_all($sql);
+    $choice = $D[0]['choice'];
 
     If ($choice != null) {
         $out = "<strong>Lot action on next server restart:</strong> ";
@@ -451,7 +449,7 @@ function umc_lot_do_action($lot, $choice) {
             break;
         case 'reset':
             $sql = "UPDATE minecraft_srvr.lot_version SET `choice`='reset' WHERE lot='$lot';";
-            $rst = mysql_query($sql);
+            umc_mysql_query($sql, true);
             $message = 'Your lot $lot will be reset on the next server restart. Please get all your goods from it ASAP.';
             umc_log('lot_manager', 'RESET', "$username asked for reset of $lot in $world. Reset on restart pending.");
             break;
@@ -468,7 +466,7 @@ function umc_lot_do_action($lot, $choice) {
             break;
         case 'none':
             $sql = "UPDATE minecraft_srvr.lot_version SET `choice`=NULL WHERE lot='$lot';";
-            $rst = mysql_query($sql);
+            umc_mysql_query($sql, true);
             break;
         default:
             if ($world == 'kingdom') { // gifting choices for kingdom
@@ -778,10 +776,9 @@ function umc_lot_set_flag($lot, $flag, $value) {
     }
     // first, find out if the flag is set
     $sql = "SELECT value FROM minecraft_worldguard.region_flag WHERE world_id=$world_id AND region_id='$lot' AND flag='$flag';";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) > 0) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
-        $old_value = $row['value'];
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
+        $old_value = $D[0]['value'];
     } else {
         $old_value = false;
     }
@@ -797,7 +794,7 @@ function umc_lot_set_flag($lot, $flag, $value) {
     } else { // nothing to do
         return;
     }
-    mysql_query($sql);
+    umc_mysql_query($sql, true);
 }
 
 /**
@@ -998,7 +995,7 @@ function umc_lot_rem_player($player, $lot, $owner) {
     }
     $sql = "DELETE FROM minecraft_worldguard.region_players
         WHERE region_id='$lot' AND world_id='$world_id' AND user_id=$user_id AND owner=$owner;";
-    mysql_query($sql);
+    umc_mysql_query($sql, true);
     umc_log('lot_manager', 'remove player', "$player was removed from lot $lot; Owner: $owner");
     if (mysql_affected_rows() == 1) {
         return true;
@@ -1025,10 +1022,10 @@ function umc_get_available_lots($world = false) {
             LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
             WHERE user_id IS NULL AND SUBSTR(region_cuboid.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str;";
     // echo $empty_sql;
-    $empty_rst = mysql_query($empty_sql);
+    $D = umc_mysql_fetch_all($empty_sql);
     $empty_lots = array();
-    if (mysql_num_rows($empty_rst) > 0) {
-        while ($empty_row = mysql_fetch_array($empty_rst, MYSQL_ASSOC)) {
+    if (count($D) > 0) {
+        foreach ($D as $empty_row) {
             $distance = $empty_row['distance'];
             $lot = $empty_row['lot'];
             $empty_lots[$lot] = $distance;
@@ -1270,13 +1267,13 @@ function umc_lot_reset_process() {
             LEFT JOIN minecraft_worldguard.world ON world_id=world.id
             LEFT JOIN minecraft_srvr.UUID ON user.UUID=UUID.UUID
             WHERE owner=1 AND LEFT(region_id, 4) IN {$UMC_SETTING['lot_worlds_sql']}";
-    $list_rst = mysql_query($list_sql);
+    $D = umc_mysql_fetch_all($list_sql);
 
     /**
      * Actions to be taken, with reasons
      */
     $A = array();
-    while ($row = mysql_fetch_array($list_rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $owner_username = strtolower($row['username']);
         $owner_uuid = $row['uuid'];
         $owner_lastlogin = $row['lastlogin'];
@@ -1369,10 +1366,10 @@ function umc_lot_reset_process() {
         LEFT JOIN minecraft_worldguard.region ON lot=id
         LEFT JOIN minecraft_worldguard.world ON world_id=world.id
         WHERE SUBSTR(lot_version.lot, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']} AND choice IS NOT NULL;";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
     // fixed choices:
-    while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+    foreach ($D as $row) {
         $lot = $row['lot'];
         $version = $row['version'];
         $mint_version = $row['mint_version'];
@@ -1590,12 +1587,12 @@ function umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, $ec
 
     // get coordinates
     $sql = "SELECT * FROM minecraft_worldguard.region_cuboid WHERE region_id = '$source_lot' LIMIT 1;";
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) != 1) {
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) != 1) {
         XMPP_ERROR_trigger("Tried to reset $source_lot from $source_world to $dest_lot on $dest_world but $source_lot could not be found");
         return false;
     }
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $row = $D[0];
 
     $min_x = floor($row['min_x'] / 16);
     $max_x = floor($row['max_x'] / 16);
@@ -1604,12 +1601,12 @@ function umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, $ec
 
     if ($source_lot != $dest_lot) {
         $sql_dest = "SELECT * FROM minecraft_worldguard.region_cuboid WHERE region_id = '$dest_lot' LIMIT 1;";
-        $rst_dest = mysql_query($sql_dest);
-        if (mysql_num_rows($rst) != 1) {
+        $D_dest = umc_mysql_fetch_all($sql_dest);
+        if (count($D_dest) != 1) {
             XMPP_ERROR_trigger("Tried to reset $source_lot from $source_world to $dest_lot on $dest_world but $dest_lot could not be found");
             return false;
         }
-        $row_dest = mysql_fetch_array($rst_dest, MYSQL_ASSOC);
+        $row_dest = $D_dest[0];
         $min_x_dest = floor($row_dest['min_x'] / 16);
         $max_x_dest = floor($row_dest['max_x'] / 16);
         $min_z_dest = floor($row_dest['min_z'] / 16);
@@ -1761,9 +1758,9 @@ function umc_get_lot_number($user, $world = 'empire') {
             LEFT JOIN minecraft_srvr.UUID ON UUID.UUID = user.uuid
             WHERE UUID.username=\"$username\" AND world.name = \"$world\" AND Owner=1;";
 
-        $rst = mysql_query($sql);
+        $D = umc_mysql_fetch_all($sql);
         //echo $sql;
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             if (substr($row['region_id'], 0, 3) !== 'con') {
                 $lot = $row['region_id'];
                 $lot_list[$lot] = array('tile' => umc_user_get_lot_tile($lot));
@@ -1827,8 +1824,8 @@ function umc_check_lot_exists($world_id, $lot) {
     //  Make sure the region exists
     $sql = "SELECT id FROM minecraft_worldguard.region WHERE world_id = $world_id AND id = '$lot'";
     //echo $sql;
-    $rst = mysql_query($sql);
-    if (mysql_num_rows($rst) < 1) {
+    $C = umc_mysql_count_rows($sql);
+    if ($C < 1) {
          // echo("No such region '$lot' found in world '$world_id'");
         return false;
     }

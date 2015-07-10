@@ -189,8 +189,8 @@ function umc_lot_addrem() {
             $owner_switch = 0;
             // check if player is Owner of lot
             $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
-            $rst = mysql_query($sql);
-            if (mysql_num_rows($rst) != 1) {
+            $num = umc_mysql_count_rows($sql);
+            if ($num != 1) {
                 umc_error("It appears you $player ($user_id) are not Owner of lot $lot in world $world!");
             }
         }
@@ -211,16 +211,15 @@ function umc_lot_addrem() {
         }
         // does flag exist?
         $check_sql = "SELECT * FROM minecraft_worldguard.region_flag WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-        $check_rst = mysql_query($check_sql);
-        $count = mysql_num_rows($check_rst);
+        $count = umc_mysql_count_rows($check_sql);
         if ($count == 0) {
             // insert
             $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES ('$lot', $world_id, '$flagname', '$flag');";
-            $ins_rst = mysql_query($ins_sql);
+            $ins_rst = umc_mysql_query($ins_sql, true);
         } else {
             // update
             $upd_sql = "UPDATE minecraft_worldguard.region_flag SET value='$flag' WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-            $upd_rst = mysql_query($upd_sql);
+            $upd_rst = umc_mysql_query($upd_sql, true);
         }
         umc_echo("done!");
         umc_log('lot', 'addrem', "$player changed $action property of $lot");
@@ -239,8 +238,8 @@ function umc_lot_addrem() {
             // check if player is Owner of lot
             if ($player_group !== 'Owner') {
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
-                $rst = mysql_query($sql);
-                if (mysql_num_rows($rst) != 1) {
+                $num = umc_mysql_count_rows($sql);
+                if ($num != 1) {
                     umc_error("It appears you ($player $user_id) are not Owner of lot $lot in world $world!");
                 }
             }
@@ -268,8 +267,8 @@ function umc_lot_addrem() {
             if ($addrem == 'add') {
                 // make sure target is not already there
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$target_id;";
-                $rst = mysql_query($sql);
-                if (mysql_num_rows($rst) == 1) {
+                $num = umc_mysql_count_rows($sql);
+                if ($num == 1) {
                     umc_error("It appears $target is already member of lot $lot in world $world!");
                 }
                 // add to the lot
@@ -278,8 +277,8 @@ function umc_lot_addrem() {
             } else if ($addrem == 'rem') {
                 // check if target is there at all
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$target_id AND Owner=$owner_switch LIMIT 1;";
-                $rst = mysql_query($sql);
-                if (mysql_num_rows($rst) !== 1) {
+                $num = umc_mysql_count_rows($sql);
+                if ($num !== 1) {
                     umc_error("It appears user $target is not a member of lot $lot in world $world!");
                 }
                 umc_lot_rem_player($target, $lot, 0);
@@ -315,8 +314,8 @@ function umc_warp_lot() {
         umc_ws_cmd("mv tp $world", 'asPlayer');
     }
     $sql = "SELECT min_x, min_z FROM minecraft_worldguard.`region_cuboid` WHERE region_id='$lot';";
-    $rst = mysql_query($sql);
-    $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    $D = umc_mysql_fetch_all($sql);
+    $row - $D[0];
     $x = $row['min_x'];
     $z = $row['min_z'];
     $y = 70;

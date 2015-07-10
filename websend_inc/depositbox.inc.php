@@ -202,8 +202,8 @@ function umc_do_withdraw() {
         // make list of possible senders to avoid SQL injection
         $checklist = array('@lottery');
         $check_sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' OR sender_uuid='$uuid';";
-        $check_rst = mysql_query($check_sql);
-        while ($check_row = mysql_fetch_array($check_rst, MYSQL_ASSOC)) {
+        $D = umc_mysql_fetch_all($check_sql);
+        foreach ($D as $check_row) {
             $checklist[] = '@' . $check_row['sender_uuid'];
         }
         if (in_array($id, $checklist)) { // withdrawing all items from specific sender
@@ -228,10 +228,10 @@ function umc_do_withdraw() {
             umc_log('deposit', 'withdraw', "$player tried to {$find_item['item_name']}:0");
         }
 
-        $rst = mysql_query($sql);
-        if (mysql_num_rows($rst) > 0) {
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) > 0) {
             $all_items = array();
-            while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+            foreach ($D as $row) {
                 $id = $row['id'];
                 $item_name = $row['item_name'];
                 if($amount == 'max') {
@@ -302,11 +302,11 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     $sql = "SELECT * FROM minecraft_iconomy.deposit
         WHERE item_name='$item_name' AND recipient_uuid='$recipient_uuid'
         AND damage='$data' AND meta='$meta' AND sender_uuid='$sender_uuid';";
-    $rst = mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
 
         // check first if item already is being sold
-    if (mysql_num_rows($rst) > 0) {
-        $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+    if (count($D) > 0) {
+        $row = $D[0];
         $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+$amount WHERE `id`={$row['id']} LIMIT 1;";
     } else {
         // create a new deposit box
@@ -395,14 +395,14 @@ function umc_do_deposit_internal($all = false) {
         $sql = "SELECT * FROM minecraft_iconomy.deposit
             WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid'
             AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
-        $rst = mysql_query($sql);
+        $D = umc_mysql_fetch_all($sql);
 
         // create the seen entry so we do not do this again
         $seen[$item['full']] = 1;
 
         // check first if item already is being sold
-        if (mysql_num_rows($rst) > 0) {
-            $row = mysql_fetch_array($rst, MYSQL_ASSOC);
+        if (count($D) > 0) {
+            $row = $D[0];
             umc_echo("{green}[+]{gray} You already have {$item['full']}{gray} in the deposit for {gold}$recipient{gray}, adding {yellow}$amount{gray}.");
             $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
         } else {

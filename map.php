@@ -446,7 +446,7 @@ if ($find_lot) {
 }
 
 function umc_assemble_maps() {
-    global $UMC_SETTING, $UMC_PATH_MC;
+    global $UMC_SETTING;
     // create lots
     $worlds = $UMC_SETTING['world_data'];
     // $worlds = array('empire'    => array('lot_size' => 128, 'lot_number' => 32));
@@ -467,7 +467,6 @@ function umc_assemble_maps() {
     );
 
     foreach ($worlds as $world => $dim) {
-        mysql_connect('localhost', 'minecraft', '9sd6ncC9vEcTD55Z');
         // make chunk files
         // clean up data files
         $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
@@ -533,19 +532,16 @@ function umc_disassemble_map($world = 'empire') {
 	FROM minecraft_worldguard.region_cuboid
         LEFT JOIN minecraft_worldguard.world ON world_id = id
 	WHERE name='$world';";
-    $rst = mysql_query($sql);
-    if (!$rst) {
-        $error = mysql_errno($rst) . ": " . mysql_error($rst). "\n";
-        XMPP_ERROR_trigger("disassemble_map failed: $error $sql");
-    }
-    if (mysql_num_rows($rst) == 0) {
+    $D = umc_mysql_fetch_all($sql);
+
+    if (count($D) == 0) {
         return;
     }
 
     if ($world == 'kingdom' || $world == 'draftlands') {
         $map = $UMC_SETTING['world_img_dim'][$world];
         $source = "$UMC_PATH_MC/server/maps";
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $lot = $row['lot'];
             if ($lot == "__global__") {
                 continue;
@@ -586,7 +582,7 @@ function umc_disassemble_map($world = 'empire') {
             $lot_array[$letter] = $i;
         }
         // var_dump($lot_array);
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $lot = $row['lot'];
             if ($lot == "__global__") {
                 continue;
@@ -646,9 +642,9 @@ function umc_region_data($world_name) {
         LEFT JOIN minecraft_srvr.lot_version ON id=lot
         WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
     //echo $reg_sql;
-    $reg_rst = mysql_query($reg_sql);
+    $D = umc_mysql_fetch_all($req_sql);
     $region_list = array();
-    while ($reg_row = mysql_fetch_array($reg_rst, MYSQL_ASSOC)) {
+    foreach ($D as $reg_row) {
         $region_id = $reg_row['id'];
         $region_list[$region_id]['min'] = array('x' => $reg_row['min_x'], 'y' => $reg_row['min_y'], 'z' => $reg_row['min_z']);
         $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
@@ -666,10 +662,10 @@ function umc_region_data($world_name) {
             WHERE region.world_id = $world_id
             AND region.id= '$region_id';";
         // echo $sql;
-        $rst = mysql_query($sql);
+        $D = umc_mysql_fetch_all($sql);
         $region_list[$region_id]['owners'] = false;
         $region_list[$region_id]['members'] = false;
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
+        foreach ($D as $row) {
             $player = $row['user_name'];
             $uuid = $row['uuid'];
             $group = $row['group_name'];
@@ -701,40 +697,6 @@ function umc_region_data($world_name) {
         }
     }
     return $region_list;
-}
-
-function umc_heatmap($world) {
-    return;
-    include_once('/home/minecraft/server/bin/includes/tempest/Tempest.php');
-    global $UMC_SETTING, $UMC_PATH_MC;
-    if ($world == 'empire_new') {
-        return;
-    }
-    // echo "Heatmap $world: ";
-    $file = "$UMC_PATH_MC/server/maps/$world.jpg";
-    $sql = "SELECT * FROM minecraft_srvr.lag_location WHERE world='$world';";
-    $rst = mysql_query($sql);
-    if (!$rst) {
-        $error = mysql_errno() . ": " . mysql_error(). "\n";
-        XMPP_ERROR_trigger("umc_heatmap failed: $error $sql");
-    }
-    $data = array();
-    $map = $UMC_SETTING['world_img_dim'][$world];
-    if (mysql_num_rows($rst) > 0) {
-        while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
-            $x = conv_x($row['x_coord'], $map);
-            $z = conv_z($row['z_coord'], $map);
-            $data[] = array($x, $z);
-            // get max coordinates
-        }
-        $heatmap = new Tempest(array(
-            'input_file' => "$UMC_PATH_MC/server/maps/$world.jpg",
-            'output_file' => "$UMC_PATH_MC/server/maps/$world" . '_heatmap.jpg',
-            'coordinates' => $data //array( array(0,10), array(2,14), array(2,14) ),
-        ));
-        $heatmap->set_image_lib('imagick');
-        $heatmap->render();
-    }
 }
 
 function umc_map_menu($worlds, $current_world, $freeswitch) {
@@ -974,8 +936,8 @@ function umc_create_cuboids() {
         $region_sql = "SELECT * FROM minecraft_worldguard.region
                 LEFT JOIN minecraft_worldguard.region_cuboid ON id=region_id
                 WHERE id LIKE '$lot_prefix%';";
-        $region_rst = mysql_query($region_sql);
-        while ($region_row = mysql_fetch_array($region_rst, MYSQL_ASSOC)) {
+        $D = umc_mysql_fetch_all($region_sql);
+        foreach ($D as $region_row) {
             $lot = $region_row['id'];
             $old_regions[$lot]['coords'] = array(
                 'min_x' => $region_row['min_x'],
@@ -987,16 +949,16 @@ function umc_create_cuboids() {
             );
             $old_regions[$lot]['users'] = array();
             $user_sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id LIKE '$lot';";
-            $user_rst = mysql_query($user_sql);
-            while ($user_row = mysql_fetch_array($user_rst, MYSQL_ASSOC)) {
+            $D_user = umc_mysql_fetch_all($user_sql);
+            foreach ($D_user as $user_row) {
                 $user_id = $user_row['user_id'];
                 $old_regions[$lot]['users'][$user_id] = $user_row['owner'];
             }
             $old_regions[$lot]['flags'] = array();
             $flags_sql = "SELECT * FROM minecraft_worldguard.region_flag WHERE region_id LIKE '$lot';";
-            $flags_rst = mysql_query($flags_sql);
-            if (mysql_num_rows($flags_rst) > 0){
-                while ($flags_row = mysql_fetch_array($flags_rst, MYSQL_ASSOC)) {
+            $D_flags = umc_mysql_fetch_all($flags_sql);
+            if (count($D_flags) > 0){
+                foreach ($D_flags as $flags_row) {
                     $flag = $flags_row['flag'];
                     $old_regions[$lot]['flags'][$flag] = $flags_row['value'];
                 }
@@ -1114,5 +1076,3 @@ function umc_create_cuboids() {
     echo rtrim($flags_sql, ", "). ";\n";
     echo rtrim($version_sql, ", "). ";\n";
 }
-
-?>

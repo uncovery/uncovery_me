@@ -706,7 +706,7 @@ function umc_hunger_addplayer() {
     umc_hunger_find_current_game();
     $player_uuid = $UMC_USER['uuid'];
     $player = $UMC_USER['username'];
-    
+
     if (isset($HUNGER['current_game'])) {
         $game = $HUNGER['current_game'];
         if ($game['status'] == 'preparing') {
@@ -767,8 +767,8 @@ function umc_hunger_removeplayer($died = true) {
         $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='dead', death=NOW()
             WHERE game_id=$game_id AND uuid='$uuid';";
     }
-    $rst = mysql_query($sql);
-    if (mysql_affected_rows() == 0) {
+    $rst = umc_mysql_query($sql);
+    if (umc_mysql_affected_rows($rst, true) == 0) {
         return;
     }
 
@@ -796,8 +796,7 @@ function umc_hunger_removeplayer($died = true) {
     } else if ($status == 'preparing') {
         // did we remove the last player of a game being prepared?
         $sql = "SELECT * FROM minecraft_iconomy.`hunger_players` WHERE status='preparing' AND game_id=$game_id;";
-        $rst = mysql_query($sql);
-        $num = mysql_num_rows($rst);
+        $num = umc_mysql_count_rows($sql);
         if ($num == 0) {
             // last player has quit, end the game
             umc_hunger_abort();
