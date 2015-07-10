@@ -486,5 +486,3 @@ function umc_vote_web() {
     }
     return $out;
 }
-
-?>
