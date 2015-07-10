@@ -642,7 +642,7 @@ function umc_region_data($world_name) {
         LEFT JOIN minecraft_srvr.lot_version ON id=lot
         WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
     //echo $reg_sql;
-    $D = umc_mysql_fetch_all($req_sql);
+    $D = umc_mysql_fetch_all($reg_sql);
     $region_list = array();
     foreach ($D as $reg_row) {
         $region_id = $reg_row['id'];
