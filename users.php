@@ -76,7 +76,7 @@ function umc_get_uuid_level($uuid) {
     $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
         LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
         WHERE `name` IN ('$uuid_str') AND permissions.permission='name'";
-    $D = umc_mysql_fetch_all(sql);
+    $D = umc_mysql_fetch_all($sql);
     $uuid_levels = array();
     // user not found, so he's guest
     if (count($D) == 0)  {
