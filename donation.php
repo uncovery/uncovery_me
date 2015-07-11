@@ -663,3 +663,22 @@ function umc_donation_level($user, $debug = false) {
     }
     return $donation_level_rounded; // . "($donation_level $current - $future - $change)";
 }
+
+/**
+ * 
+ CREATE TABLE IF NOT EXISTS `donations` (
+  `id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `username` varchar(60) NOT NULL,
+  `uuid` varchar(36) NOT NULL,
+  `email` varchar(256) NOT NULL,
+  `date` date NOT NULL,
+  `txn_id` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `donations`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `donations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ */

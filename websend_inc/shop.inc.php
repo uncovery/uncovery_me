@@ -539,7 +539,8 @@ function umc_do_offer_internal($deposit) {
 	    AND damage='$item_type'
 	    AND meta='$meta'
 	    AND price<'$excess_price';";
-    $excess_count = umc_mysql_count_rows($sql_pcheck);
+    $D3 = umc_mysql_fetch_all($sql_pcheck);
+    $excess_count = count($D3);
 
     // sell item at same price, check if exists
     if ($excess_count > 0) {

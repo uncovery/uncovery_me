@@ -189,7 +189,8 @@ function umc_lot_addrem() {
             $owner_switch = 0;
             // check if player is Owner of lot
             $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
-            $num = umc_mysql_count_rows($sql);
+            $D = umc_mysql_fetch_all($sql);
+            $num = count($D);
             if ($num != 1) {
                 umc_error("It appears you $player ($user_id) are not Owner of lot $lot in world $world!");
             }
@@ -211,7 +212,8 @@ function umc_lot_addrem() {
         }
         // does flag exist?
         $check_sql = "SELECT * FROM minecraft_worldguard.region_flag WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-        $count = umc_mysql_count_rows($check_sql);
+        $D2 = umc_mysql_fetch_all($sql);
+        $count = count($D2);
         if ($count == 0) {
             // insert
             $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES ('$lot', $world_id, '$flagname', '$flag');";
@@ -238,7 +240,8 @@ function umc_lot_addrem() {
             // check if player is Owner of lot
             if ($player_group !== 'Owner') {
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
-                $num = umc_mysql_count_rows($sql);
+                $D3 = umc_mysql_fetch_all($sql);
+                $count = count($D3);
                 if ($num != 1) {
                     umc_error("It appears you ($player $user_id) are not Owner of lot $lot in world $world!");
                 }
@@ -267,7 +270,8 @@ function umc_lot_addrem() {
             if ($addrem == 'add') {
                 // make sure target is not already there
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$target_id;";
-                $num = umc_mysql_count_rows($sql);
+                $D3 = umc_mysql_fetch_all($sql);
+                $num = count($D3);
                 if ($num == 1) {
                     umc_error("It appears $target is already member of lot $lot in world $world!");
                 }
@@ -277,7 +281,8 @@ function umc_lot_addrem() {
             } else if ($addrem == 'rem') {
                 // check if target is there at all
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$target_id AND Owner=$owner_switch LIMIT 1;";
-                $num = umc_mysql_count_rows($sql);
+                $D3 = umc_mysql_fetch_all($sql);
+                $num = count($D3);
                 if ($num !== 1) {
                     umc_error("It appears user $target is not a member of lot $lot in world $world!");
                 }

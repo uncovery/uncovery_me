@@ -1795,8 +1795,8 @@ function umc_check_lot_exists($world_id, $lot) {
     //  Make sure the region exists
     $sql = "SELECT id FROM minecraft_worldguard.region WHERE world_id = $world_id AND id = '$lot'";
     //echo $sql;
-    $C = umc_mysql_count_rows($sql);
-    if ($C < 1) {
+    $C = umc_mysql_fetch_all($sql);
+    if (count($C) < 1) {
          // echo("No such region '$lot' found in world '$world_id'");
         return false;
     }

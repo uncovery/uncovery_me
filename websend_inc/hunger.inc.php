@@ -796,7 +796,8 @@ function umc_hunger_removeplayer($died = true) {
     } else if ($status == 'preparing') {
         // did we remove the last player of a game being prepared?
         $sql = "SELECT * FROM minecraft_iconomy.`hunger_players` WHERE status='preparing' AND game_id=$game_id;";
-        $num = umc_mysql_count_rows($sql);
+        $D3 = umc_mysql_fetch_all($sql);
+        $num = count($D3);
         if ($num == 0) {
             // last player has quit, end the game
             umc_hunger_abort();

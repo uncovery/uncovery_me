@@ -226,7 +226,8 @@ function umc_story_show() {
 
         // check for duplicate entries
         $sql = "SELECT * FROM minecraft_iconomy.story_users WHERE `uuid`='$uuid' and `story_id`='{$row['id']}';";
-        $count = umc_mysql_count_rows($sql);
+        $D3 = umc_mysql_fetch_all($sql);
+        $count = count($D3);
         if ($count == 0) {
             $sql = "INSERT INTO minecraft_iconomy.story_users (`uuid`, `story_id`) VALUES ('$uuid', '{$row['id']}');";
             umc_mysql_query($sql, true);
@@ -284,7 +285,8 @@ function umc_get_code() {
         $i++;
     }
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code='$pass';";
-    $count = umc_mysql_count_rows($sql);
+    $D3 = umc_mysql_fetch_all($sql);
+    $count = count($D3);
     if ($count > 0) {
         umc_get_code();
     }

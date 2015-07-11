@@ -103,7 +103,6 @@ function umc_skyblock_warp(){
         WHERE world.name='skyblock' AND region.id = '$lot' ";
 
     $D = umc_mysql_fetch_all($sql);
-    $check = count($D);
     $lots = $D[0];
 
     $c_x = $lots['min_x'] + 64;
@@ -139,8 +138,9 @@ function umc_skyblock_abandon(){
     //check if the user abandoned already
     $abandon_id = umc_get_worldguard_id('user', '_abandoned_');
     $abandon_sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND Owner=1 AND user_id=$abandon_id;";
-    $count = umc_mysql_count_rows($abandon_sql);
-    if  ($count > 0) {
+    $D3 = umc_mysql_fetch_all($abandon_sql);
+    $num = count($D3);
+    if  ($num > 0) {
         umc_error("You abandoned the entry $lot already!");
     }
 
