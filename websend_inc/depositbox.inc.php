@@ -426,11 +426,12 @@ function umc_do_deposit_internal($all = false) {
                 XMPP_ERROR_trigger("Error depositing, item name too short!");
                 umc_error("There was an error with the deposit. Please send a ticket to the admin so this can be fixed.");
             }
-            umc_echo("{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient");
+            $text = "{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient";
+            umc_echo($text);
             $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
                     VALUES ('$data', '$uuid', '{$item['item_name']}', '$recipient_uuid', '$amount', '$meta');";
             $count++;
-            umc_log("Deposit","do_deposit", $sql);
+            umc_log("Deposit","do_deposit", $text);
         }
         umc_mysql_query($sql, true);
         umc_clear_inv($item['item_name'], $data, $amount, $meta);
