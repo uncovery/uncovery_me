@@ -2,7 +2,7 @@
 
 global $UMC_USERS; // this should contain all users that are set as an object
 
-class User extends Users {
+class User {
 
     // base items
     private $username;     // the current minecraft username
@@ -42,6 +42,7 @@ class User extends Users {
     }
     
     public function set_uuid($uuid) {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         // we assume that this is a valid UUID
         $this->uuid = $uuid;
     }
@@ -80,11 +81,13 @@ class User extends Users {
     }
 
     public function set_username($username) {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         $this->username = $username;
     }
     
     // requires the UUID to be set
     public function get_username() {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         
     }
     
@@ -107,13 +110,8 @@ class User extends Users {
         // remove from teamspeak
         umc_ts_clear_rights($this->uuid);
 
-        umc_log('mod', 'ban', "$admin banned $this->username/$this->uuid because of $reason");
-        XMPP_ERROR_send_msg("$admin banned $username because of $reason");
+        $text = "$admin banned $$this->username ($this->uuid) because of $reason";
+        umc_log('mod', 'ban', $text);
+        XMPP_ERROR_send_msg($text);
     }
-}
-
-// This is currently not implemented. We need a way to add user objects as an element of all users
-// currently we simply create a global array that has all user objects in it ($UMC_USERS)
-class Users {
-
 }
