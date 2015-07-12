@@ -30,7 +30,7 @@ $WS_INIT['lot'] = array(
     ),
     'give' => array(
         'help' => array(
-            'short' => 'Remove all members and owners from a lot and give it to someone;',
+            'short' => 'Remove all members and owners from a lot and give it to someone',
             'args' => '<lot> give [user]',
             'long' => '',
         ),
@@ -41,7 +41,7 @@ $WS_INIT['lot'] = array(
     ),
     'mod' => array(
         'help' => array(
-            'short' => 'Add/Remove yourself from a flatlands lot for emergency fixes;',
+            'short' => 'Add/Remove yourself from a flatlands lot for emergency fixes',
             'args' => '<lot> <add|rem>',
             'long' => '',
         ),
@@ -51,6 +51,14 @@ $WS_INIT['lot'] = array(
             // 'level'=>'ElderDonator', 'level'=>'ElderDonatorPlus',
          ),
     ),
+    'warp' => array(
+        'help' => array(
+            'short' => 'Teleport yourself to a lot - only usable by guests for the settler test',
+            'args' => '<lot>',
+            'long' => 'Teleport yourself to a lot - only usable by guests for the settler test',
+        ),
+        'function' => 'umc_lot_warp',
+    ),    
 );
 
 function umc_lot_mod() {
