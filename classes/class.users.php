@@ -7,6 +7,7 @@ class User extends Users {
     // base items
     private $username;     // the current minecraft username
     private $uuid;         // the mojang uuid
+    private $wordpress_id; // the numerical user id of the user
     private $is_current;   // is the user causing the code to run also this user?
 
     private $is_banned;
@@ -14,9 +15,7 @@ class User extends Users {
     private $avatar;
     private $context;
 
-    // if the user registerd on the blog
     private $registered_date;
-    private $wordpress_id; // the numerical user id of the user
     private $userlevel;
 
     // donators
@@ -36,10 +35,16 @@ class User extends Users {
     private $inventory;
     private $current_item;
 
-    public function __construct($unkonwn_id_type) {
+    /**
+     * Creating a user always requires a UUID
+     * @param type $uuid
+     */
+    public function __construct($uuid) {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         // determine the ID type and then get the other one
-        $type = determine_id_type($unkonwn_id_type);
+        // we need to have users before we have a user
+        parent::__construct();
+        $this->$uuid = $uuid;
     }
     
     public function set_uuid($uuid) {
@@ -115,27 +120,12 @@ class User extends Users {
         umc_log('mod', 'ban', $text);
         XMPP_ERROR_send_msg($text);
     }
-    
-    private function determine_id_type($unknown_id_type) {
-        if (is_int($unknown_id_type)) { // wordpress ID
-            return 'wp_id';
-        } else if (strlen($unknown_id_type) == 36) { // UUID
-            // 4bb4ff2c-a75e-4ad0-9ff1-caed3cf1c5aa
-            // 123456789012345678901234567890123456           
-            // 0         1         2         3
-            return 'uuid';
-        } else { // wp_logon
-            return 'wp_login';
-        }
-    }
 }
 
 class Users {
     public $users;
     
-    public function __construct($unkonwn_id_type) {
+    public function __construct() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        $this->$users = new User($unkonwn_id_type);
-        return $this->$users;
     }
 }
