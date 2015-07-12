@@ -51,17 +51,6 @@ $WS_INIT['lot'] = array(
             // 'level'=>'ElderDonator', 'level'=>'ElderDonatorPlus',
          ),
     ),
-    'warp' => array (
-        'help' => array (
-            'short' => 'Warps you to a lot',
-            'long' => "Warps you to a lot",
-            'args' => '<lot>',
-        ),
-        'function' => 'umc_warp_lot',
-        'security' => array(
-            'level'=>'Owner',
-         ),
-    ),
 );
 
 function umc_lot_mod() {
@@ -302,26 +291,46 @@ function umc_lot_addrem() {
     umc_ws_cmd("region load -w $world", 'asConsole');
 }
 
-
-function umc_warp_lot() {
+function umc_lot_warp() {
     global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $userlevel = $UMC_USER['userlevel'];
+    $world = $UMC_USER['world'];
     $args = $UMC_USER['args'];
-    if (!isset($args[2])) {
-        umc_show_help($args);
-        die();
-    }
-    $lot = strtolower($args[2]);
-    $world = umc_get_lot_world($lot);
 
-    $playerworld = $UMC_USER['world'];
-    if ($world != $playerworld) {
-        umc_ws_cmd("mv tp $world", 'asPlayer');
+    if ($userlevel != 'Guest') {
+        umc_error("Sorry, this command is only for Guests!");
     }
-    $sql = "SELECT min_x, min_z FROM minecraft_worldguard.`region_cuboid` WHERE region_id='$lot';";
+    
+    $allowed_worlds = array('empire', 'flatlands');
+    
+    if (!in_array($world, $allowed_worlds)) {
+        umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
+    } else {
+        $lot = umc_sanitize_input($args[2], 'lot');
+        $check = umc_check_lot_exists('skyblock', $lot);
+        if (!$check) {
+            umc_error("The lot you entered does not exist!");
+        }
+        if ($lot == 'block_k11') {
+            umc_error('You cannot warp to that lot!');
+        }
+    }
+
+    $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
+        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
+        WHERE world.name='skyblock' AND region.id = '$lot' ";
+
     $D = umc_mysql_fetch_all($sql);
-    $row - $D[0];
-    $x = $row['min_x'];
-    $z = $row['min_z'];
-    $y = 70;
-    umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
+    $lots = $D[0];
+
+    $c_x = $lots['min_x'] + 64;
+    $c_z = $lots['min_z'] + 64;
+    $c_y = 256;
+
+    $cmd = "tppos $player $c_x $c_y $c_z 0";
+    umc_ws_cmd($cmd, 'asConsole');
+    umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to skyblock");
+    umc_echo("You are now on skyblock $lot!");
+    umc_footer();
 }
