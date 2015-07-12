@@ -315,7 +315,7 @@ function umc_settler_new() {
                 . "You can find out which direction you are looking with the <strong>/compass</strong> command.<br>"
                 . "As a Guest level player, you cannot be killed by mobs until you finished this here.<br>"
                 . "So you have to leave the spawn lot either through the $direction1 or the $direction2 exit.<br>"
-                . "To know where you are, you can follow your icon $user_icon on the map while you walk.<br>"
+                . "To know where you are, you can follow your icon $user_icon on the map while you get around.<br>"
                 . "Please click NEXT to open the map, there you find your icon click the button next to it!<br><br>"
                 . "<input type=\"submit\" name=\"next\" value=\"Next\">\n"
                 . "<input type=\"hidden\" name=\"track_player\" value=\"$player\">\n"
@@ -349,7 +349,8 @@ function umc_settler_new() {
             $lower_lot = strtolower($lot);
             $out .=  "<form action=\"$UMC_DOMAIN/admin/index.php\" method=\"post\">\n"
                 . "<h1>Step 9: Walk to your lot $lot!</h1>"
-                . "Now you have everything you need to walk to your lot!<br>You should follow your steps on the 2D map.<br>"
+                . "Now you have everything you need to get to your lot!<br>You should follow your steps on the 2D map.<br>"
+                . "You can either walk there, or use the command <pre>/lot warp $lot</pre> to get there. Please note that this command is only available while you are Guest.<br>" 
                 . "Press 'Next' to open the 2D map and follow your icon to lot $lot!<br>"
                 . "<input type=\"submit\" name=\"next\" value=\"Next\">\n"
                 . "<input type=\"hidden\" name=\"guide_lot\" value=\"$player\">\n"
