@@ -92,6 +92,17 @@ $WS_INIT['mod'] = array(  // the name of the plugin
            'level' => 'Owner'
         ),
     ),
+    'warp' => array (
+        'help' => array (
+            'short' => 'Warps you to a lot',
+            'long' => "Warps you to a lot",
+            'args' => '<lot>',
+        ),
+        'function' => 'umc_mod_warp_lot',
+        'security' => array(
+            'level'=>'Owner',
+         ),
+    ),    
 );
 
 function umc_mod_error_message() {
@@ -391,4 +402,28 @@ function umc_mod_blockcheck_fill_inv($start) {
             }
         }
     }
+}
+
+
+function umc_mod_warp_lot() {
+    global $UMC_USER;
+    $args = $UMC_USER['args'];
+    if (!isset($args[2])) {
+        umc_show_help($args);
+        die();
+    }
+    $lot = strtolower($args[2]);
+    $world = umc_get_lot_world($lot);
+
+    $playerworld = $UMC_USER['world'];
+    if ($world != $playerworld) {
+        umc_ws_cmd("mv tp $world", 'asPlayer');
+    }
+    $sql = "SELECT min_x, min_z FROM minecraft_worldguard.`region_cuboid` WHERE region_id='$lot';";
+    $D = umc_mysql_fetch_all($sql);
+    $row - $D[0];
+    $x = $row['min_x'];
+    $z = $row['min_z'];
+    $y = 70;
+    umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
 }
