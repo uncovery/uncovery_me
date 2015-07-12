@@ -312,14 +312,18 @@ function umc_lot_warp() {
         if (!$check) {
             umc_error("The lot you entered does not exist!");
         }
-        if ($lot == 'block_k11') {
-            umc_error('You cannot warp to that lot!');
+        $target_world = umc_get_lot_world($lot);
+        if (!in_array($target_world, $allowed_worlds)) {
+            umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
+        }
+        if ($target_world != $world) {
+            umc_error("Sorry, you need to be in $target_world to warp to $lot!");
         }
     }
 
     $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
         LEFT JOIN minecraft_worldguard.region_cuboid ON region.id=region_cuboid.region_id
-        WHERE world.name='skyblock' AND region.id = '$lot' ";
+        WHERE world.name='$target_world' AND region.id = '$lot' ";
 
     $D = umc_mysql_fetch_all($sql);
     $lots = $D[0];
@@ -330,7 +334,7 @@ function umc_lot_warp() {
 
     $cmd = "tppos $player $c_x $c_y $c_z 0";
     umc_ws_cmd($cmd, 'asConsole');
-    umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to skyblock");
-    umc_echo("You are now on skyblock $lot!");
+    umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to lot $lot");
+    umc_echo("You are now in the center of lot $lot!");
     umc_footer();
 }
