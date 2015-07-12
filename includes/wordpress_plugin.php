@@ -45,7 +45,7 @@ function umc_wp_init_plugins() {
             }
             return $translated_text;
       }
-
+      
     }    
 }
 
