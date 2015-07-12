@@ -439,6 +439,7 @@ function umc_test_mail() {
  * @param type $mail_id
  */
 function umc_mail_send_alert($mail_id = 3886) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DOMAIN;
     $sql = "SELECT user_mail.*, user_email FROM minecraft_srvr.user_mail
         LEFT JOIN minecraft_srvr.UUID ON recipient_uuid=UUID
@@ -468,6 +469,7 @@ function umc_mail_send_alert($mail_id = 3886) {
 }
 
 function umc_mail_delete_update_status($oldstatus, $role, $msg_id) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sender_array = array(
         'draft'=>'deleted_both',
         'sent' =>'deleted_both',
@@ -488,6 +490,8 @@ function umc_mail_delete_update_status($oldstatus, $role, $msg_id) {
         $newstatus = $sender_array[$oldstatus];
     } else if ($role == 'recipient') {
         $newstatus = $receiver_array[$oldstatus];
+    } else {
+        XMPP_ERROR_trigger("Invalid delete status");
     }
     $update_sql = "UPDATE `minecraft_srvr`.`user_mail` SET `status` = '$newstatus' WHERE `user_mail`.`msg_id` = $msg_id;";
     umc_mysql_query($update_sql, true);
@@ -500,6 +504,7 @@ function umc_mail_delete_update_status($oldstatus, $role, $msg_id) {
  * @return string
  */
 function umc_mail_web() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_DOMAIN;
     if (!$UMC_USER) {
         return "You have to be logged in to use this!";
