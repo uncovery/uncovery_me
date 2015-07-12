@@ -59,8 +59,10 @@ function umc_log($plugin, $action, $text) {
     /*
      * database log
      */
+    $sqlaction = umc_mysql_real_escape_string($action);
+    $sqltext = umc_mysql_real_escape_string($text);
     $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
-        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', '$action', '$text');";
+        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', $sqlaction, $sqltext);";
     umc_mysql_query($sql, true);
 }
 
