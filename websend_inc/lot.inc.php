@@ -200,16 +200,16 @@ function umc_lot_addrem() {
         }
         // does flag exist?
         $check_sql = "SELECT * FROM minecraft_worldguard.region_flag WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-        $D2 = umc_mysql_fetch_all($sql);
+        $D2 = umc_mysql_fetch_all($check_sql);
         $count = count($D2);
         if ($count == 0) {
             // insert
             $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES ('$lot', $world_id, '$flagname', '$flag');";
-            $ins_rst = umc_mysql_query($ins_sql, true);
+            umc_mysql_query($ins_sql, true);
         } else {
             // update
             $upd_sql = "UPDATE minecraft_worldguard.region_flag SET value='$flag' WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-            $upd_rst = umc_mysql_query($upd_sql, true);
+            umc_mysql_query($upd_sql, true);
         }
         umc_echo("done!");
         umc_log('lot', 'addrem', "$player changed $action property of $lot");
