@@ -2,7 +2,7 @@
 
 global $UMC_USERS; // this should contain all users that are set as an object
 
-class User {
+class User extends Users {
 
     // base items
     private $username;     // the current minecraft username
@@ -36,9 +36,10 @@ class User {
     private $inventory;
     private $current_item;
 
-    // question: Should we only construct if we have either UUID or wordpress id?
-    public function __construct() {
+    public function __construct($unkonwn_id_type) {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
+        // determine the ID type and then get the other one
+        $type = determine_id_type($unkonwn_id_type);
     }
     
     public function set_uuid($uuid) {
@@ -113,5 +114,28 @@ class User {
         $text = "$admin banned $$this->username ($this->uuid) because of $reason";
         umc_log('mod', 'ban', $text);
         XMPP_ERROR_send_msg($text);
+    }
+    
+    private function determine_id_type($unknown_id_type) {
+        if (is_int($unknown_id_type)) { // wordpress ID
+            return 'wp_id';
+        } else if (strlen($unknown_id_type) == 36) { // UUID
+            // 4bb4ff2c-a75e-4ad0-9ff1-caed3cf1c5aa
+            // 123456789012345678901234567890123456           
+            // 0         1         2         3
+            return 'uuid';
+        } else { // wp_logon
+            return 'wp_login';
+        }
+    }
+}
+
+class Users {
+    public $users;
+    
+    public function __construct($unkonwn_id_type) {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
+        $this->$users = new User($unkonwn_id_type);
+        return $this->$users;
     }
 }
