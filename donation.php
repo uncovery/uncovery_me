@@ -518,7 +518,7 @@ function umc_donation_parser() {
         } else {
             $patterns = array(
                 'sender_uuid' => '/Your Username: (.*) , /',
-                'recipient_uuid' => ' , for Recipient\(s\): .*\n',
+                'recipient_uuid' => '/ , for Recipient\(s\): ([a-z0-9-]*)/',
                 'id' => '/Transaction ID: ([0-9A-Za-z]*)\r/',
                 'USD' => '/Unit price: \$([0-9]*).00 USD/',
                 'emailaddress' => '/You received a payment of .* \((.*)\)/',
