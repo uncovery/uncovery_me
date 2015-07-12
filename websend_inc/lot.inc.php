@@ -129,16 +129,15 @@ function umc_lot_addrem() {
     $args = $UMC_USER['args'];
 
     /// /lotmember lot world add target
-
-    $addrem = $args[1];
-    $lot = strtolower($args[2]);
-    $action = $args[3];
-
     if ((count($args) <= 3)) {
         umc_echo("{red}Not enough arguments given");
         umc_show_help($args);
         return;
     }
+    
+    $addrem = $args[1];
+    $lot = strtolower($args[2]);
+    $action = $args[3];    
 
     $worlds = array(
         'emp' => 'empire',
