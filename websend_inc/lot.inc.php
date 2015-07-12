@@ -242,7 +242,7 @@ function umc_lot_addrem() {
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
                 $D3 = umc_mysql_fetch_all($sql);
                 $count = count($D3);
-                if ($num != 1) {
+                if ($count != 1) {
                     umc_error("It appears you ($player $user_id) are not Owner of lot $lot in world $world!");
                 }
             }
