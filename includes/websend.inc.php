@@ -30,7 +30,6 @@ function umc_ws_auth() {
         return false;
     }
 
-    umc_bukkit_to_websend();
     return true;
 }
 
@@ -206,90 +205,6 @@ function umc_ws_get_vars() {
     $UMC_USERS[$UMC_USER['uuid']] = $current_user;      // add the object to the list of all users
      *
      */
-}
-
-// collect a command from the server
-/**
- * DEPRECATED
- *
- * @global type $UMC_USER
- */
-function umc_bukkit_to_websend() {
-    global $WSEND;
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $s_post = $_POST;
-    $args = $s_post['args'];
-
-    if ((!isset($args[0]) || $args[0] == "")) {
-        umc_error('{white}Please use {green}/helpme;');
-    }
-
-    if ($s_post['isCompressed'] == "true" && isset($_FILES['jsonData']['tmp_name'])) {
-        $json_data = json_decode(gzdecode(file_get_contents($_FILES['jsonData']['tmp_name'])));
-    } else {
-        $json_data = json_decode($s_post["jsonData"]);
-    }
-
-    $json_data = $s_post['jsonData'];
-    $arr_data = stripslashes($json_data);
-    $data = json_decode($arr_data, true);
-    // umc_echo($arr_data);
-
-    if ($data == '') {
-        $test = var_export($data, true);
-        XMPP_ERROR_trigger("Error: Json data invalid: $test");
-        //If compressed is enabled PHP probably refused the binary data: check upload_max_filesize, post_max_size and file_uploads
-    }
-
-    $player = $data['Invoker']['Name'];
-
-    $players = array();
-    $playerlist = $data['ServerStatus']['OnlinePlayers'];
-    foreach ($playerlist as $player_data) {
-        $players[] = $player_data['Name'];
-    }
-
-    if ($player !== 'uncovery') {
-        // umc_error('shop closed for maintenance');
-    }
-
-    if ($data['Invoker']['Name'] == '@Console') {
-        $WSEND = array(
-            'args' => $s_post["args"],
-            'players' => $players,
-            'plugins' => $data['Plugins'],
-            'player' => $data['Invoker']['Name'], // we need to know that it's @Console
-        );
-    } else {
-        $WSEND = array();
-        $WSEND['args'] = $s_post["args"];
-        $WSEND['player'] = $data['Invoker']['Name'];
-        // only happens when the user is already online
-        if (isset($data['Invoker']['Location'])) {
-            $WSEND['current'] = $data['Invoker']['CurrentItemIndex'];
-            $WSEND['mode'] = $data['Invoker']['GameMode'];
-            $WSEND['world'] = $data['Invoker']['Location']['World'];
-            $WSEND['coords'] = array(
-                    'x' => $data['Invoker']['Location']['X'],
-                    'y' => $data['Invoker']['Location']['Y'],
-                    'z' => $data['Invoker']['Location']['Z'],
-                    'yaw' => $data['Invoker']['Location']['Yaw'],
-            );
-        }
-        $WSEND['players'] = $players;
-        $WSEND['plugins'] = $data['Plugins'];
-    }
-
-    $WSEND['inv'] = array();
-    if (isset($data['Invoker']['Inventory'])) {
-        $WSEND['inv'] = umc_ws_get_inv($data['Invoker']['Inventory']);
-    }
-
-    $str_args = implode(" ", $args);
-    if ($args[0] != 'event') { // exclude 'event' from WSEvents
-        umc_log('websend', 'incoming', $str_args);
-    }
-    $WSEND['json_raw'] = $json_data;
 }
 
 /**
