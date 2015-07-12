@@ -386,8 +386,8 @@ function umc_settler_new() {
                 umc_exec_command("ch qm u Congrats $player for becoming Settler!");
                 XMPP_ERROR_send_msg("$userlevel $player got promoted with command " . $cmd);
                 umc_log('settler_test', 'promotion', "$player ({$UMC_USER['uuid']})was promoted to settler (new test)");
-                $headers = 'From:' . $email . "\r\n" .
-                    'Reply-To:' . $email . "\r\n" .
+                $headers = "From: minecraft@uncovery.me\r\n" .
+                    "Reply-To: minecraft@uncovery.me\r\n" .
                     'X-Mailer: PHP/' . phpversion();
                 $subject = "[Uncovery Minecraft] Settler applicaton";
                 $mailtext = "The user: $player (email: $email) was promoted to Settler and got lot $lot.\n\n";
