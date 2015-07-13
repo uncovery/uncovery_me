@@ -31,22 +31,22 @@ function umc_wp_init_plugins() {
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     new Minecraft_Icons();
-    
-    global $pagenow; 
-    if ($pagenow==='wp-login.php') { 
+
+    global $pagenow;
+    if ($pagenow==='wp-login.php') {
         add_filter( 'gettext', 'user_email_login_text', 20, 3 );
         function user_email_login_text( $translated_text, $text, $domain ) {
             $texts = array(
                 'Please enter your username or email address. You will receive a link to create a new password via email.',
                 'A password will be e-mailed to you.',
-            );            
+            );
             if (in_array($translated_text, $texts)) {
                 $translated_text .= '<br><br><strong>Attention: </strong> If you have trouble getting emails, please use the following command in-game: <strong>/info setpass</strong>';
             }
             return $translated_text;
       }
-      
-    }    
+
+    }
 }
 
 /**
@@ -119,7 +119,6 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
  * @param type $post
  */
 function umc_wp_notify_new_post($new_status, $old_status, $post) {
-
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($old_status != 'publish' && $new_status == 'publish' ) {
         $post_title = $post->post_title;
@@ -127,7 +126,7 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
         if ($post->post_type == 'post' && $post->post_parent == 0) {
             $cmd = "ch qm u New Blog Post: &a$post_title&f";
         } else {
-                $type = ucwords($post->post_type);
+            $type = ucwords($post->post_type);
             if ($type == 'Reply') {
                 $parent = get_post($post->post_parent);
                 $post_title = $parent->post_title;
@@ -189,6 +188,62 @@ function umc_wp_register_addFields(){
     echo $out;
 }
 
+
+function umc_wp_forum_widget($items = 20) {
+    $args1 = array(
+	'posts_per_page'   => $items,
+	'orderby'          => 'date',
+	'order'            => 'DESC',
+	'post_type'        => 'topic',
+	'post_status'      => 'publish',
+	'suppress_filters' => true
+    );
+    $topic_array = get_posts($args1);
+
+    $args2 = array(
+	'posts_per_page'   => $items,
+	'orderby'          => 'date',
+	'order'            => 'DESC',
+	'post_type'        => 'reply',
+	'post_status'      => 'publish',
+	'suppress_filters' => true
+    );
+    $replies_array = get_posts($args2);
+
+    $all_array = array_merge($topic_array, $replies_array);
+
+    $new_arr = array();
+    foreach ($all_array as $P) {
+        $user = get_userdata($P->post_author);
+        $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
+        $icon_url = umc_user_get_icon_url($uuid);
+        if ($P->post_type == 'reply') {
+            $verb = "replied";
+            $parent = get_post($P->post_parent);
+            $post_title = $parent->post_title;
+        } else {
+            $verb = "posted";
+            $post_title = $P->post_title;
+        }
+        $new_arr[$P->post_date] = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+            class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
+            <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+            $user->user_login</a> $verb on <a class=\"bbp-reply-topic-title\" href=\"$P->guid\" title=\"$post_title\">$post_title</a>";
+    }
+    ksort($new_arr);
+    $rev_new_arr = array_reverse($new_arr, true);
+
+    $out = "<ul>\n";
+    $i = 1;
+    foreach ($rev_new_arr as $text) {
+        $out .= "<li>\n$text\n</li>\n";
+        $i++;
+        if ($i > $items) {
+            break;
+        }
+    }
+    return $out;
+}
 
 /**
  * Checks registration fields to make sure they are filled out (although that is the extent of the checking).
