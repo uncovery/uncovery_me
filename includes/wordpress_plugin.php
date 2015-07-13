@@ -424,10 +424,10 @@ class Minecraft_Icons {
             } else { // by displayname
                 $username = $id_or_email;
             }
-            require_once('/home/minecraft/server/bin/includes/wordpress.inc.php');
+            require_once('/home/minecraft/server/bin/index_wp.php');
             $uuid = umc_wp_get_uuid_from_userlogin($username);
-            $uncovery = 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
-            $avatar = "<img alt='".$safe_alt."' src='".$uncovery."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
+            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
+            $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
         }
         return $avatar;
     }
