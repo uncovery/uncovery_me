@@ -287,7 +287,7 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
         curl_setopt_array($channels[$key], array(
             CURLOPT_USERAGENT => $user_agent,
             CURLOPT_URL => $url_fixed,
-            CURLOPT_HEADER  => true,
+            CURLOPT_HEADER  => false,
             CURLOPT_COOKIEJAR => $cookie,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_ENCODING => "UTF-8",
