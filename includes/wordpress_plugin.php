@@ -188,7 +188,14 @@ function umc_wp_register_addFields(){
     echo $out;
 }
 
-
+/**
+ * custom forum widget that shows replies and topics together instead of separated.
+ * This should be one day converted into a proper widget. Rigth now the widget is
+ * displayed directly via calling this function in an PHP-enabled widget.
+ *
+ * @param type $items
+ * @return type
+ */
 function umc_wp_forum_widget($items = 20) {
     $args1 = array(
 	'posts_per_page'   => $items,
