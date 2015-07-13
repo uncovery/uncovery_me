@@ -14,47 +14,6 @@ function umc_web_curr_url() {
 }
 
 /**
- * Place Ajax JS, used in Footer.php template
- * @return string
- */
-function umc_web_ajax_js() {
-    $out = "<script type=\"text/javascript\">
-    function umcAjaxFormProcess(destination, event) {
-        jQuery('#umc_ajax_container').slideUp();
-        jQuery('#umc_ajax_loading').slideDown();
-        var formData = jQuery('#' + event.target.id).serialize() + '&ajax_form_submit=true';
-        var action = jQuery('input[type=submit][clicked=true]').val();
-	var append = \"&action=\" + action;
-	var formData = formData + append;
-        jQuery.post(destination, formData,
-            function (data) {
-                jQuery('#umc_ajax_container').html(data);
-                jQuery('#umc_ajax_loading').delay(500).slideUp();
-                jQuery('#umc_ajax_container').delay(500).slideDown();
-            }
-        );
-        return false;
-    }
-    jQuery(\"form input[type=submit]\").click(function() {
-            jQuery(\"input[type=submit]\", $(this).parents(\"form\")).removeAttr(\"clicked\");
-            jQuery(this).attr(\"clicked\", \"true\");
-    });
-</script>
-";
-    return $out;
-    /**
-
-    $id = "TestForm";
-    $def_form = "<div id=\"umc_ajax_container\">"
-        . "<form onsubmit=\"return umcAjaxFormProcess('" . umc_web_curr_url() . "', event)\" id=\"newmailform\" method=\"post\">\n"
-        . "<div>First form"
-        . "<textarea name=\"message1\" value=\"\" rows=\"2\" style=\"width:100%;\"></textarea>"
-        . "<input type=\"submit\" name=\"action\" value=\"Send\"></div>"
-        . "</form></div>";
-    **/
-}
-
-/**
  * show a text when content is loading through ajax
  */
 function umc_web_loading_div() {
