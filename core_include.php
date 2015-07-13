@@ -269,23 +269,25 @@ function umc_print_truefalse($query) {
  * @param type $timeout
  * @return type
  */
-function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 5) {
+function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
     if (!is_array($url_raw)) {
         $urls = array($url_raw);
+    } else {
+        $urls = $url_raw;
     }
 
     $channels = array();
+    $mh = curl_multi_init();
     foreach ($urls as $key => $url) {
-        $mh = curl_multi_init();
         $url_fixed = str_replace( "&amp;", "&", urldecode(trim($url)));
-
         $user_agent = "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0";
 
         $cookie = tempnam("/tmp", "CURLCOOKIE");
         $channels[$key] = curl_init();
         curl_setopt_array($channels[$key], array(
-            // CURLOPT_USERAGENT => $user_agent,
+            CURLOPT_USERAGENT => $user_agent,
             CURLOPT_URL => $url_fixed,
+            CURLOPT_HEADER  => true,
             CURLOPT_COOKIEJAR => $cookie,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_ENCODING => "UTF-8",
@@ -297,17 +299,21 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 5) {
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_MAXREDIRS => 10,
         ));
-        curl_multi_add_handle($mh, $channels[$key]);
+        $check = curl_multi_add_handle($mh, $channels[$key]);
+        if ($check !== 0) {
+            XMPP_ERROR_trigger("Failed to add curl options for URL $url_fixed");
+        }
     }
 
+    // repeat curl as long as it takes to process
     $active = null;
-    while ($active && $status == CURLM_OK) {
+    do {
         $status = curl_multi_exec($mh, $active);
-    }
+    } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
 
     $output = array();
-    foreach ($channels as $channel) {
-        $output[] = umc_get_fcontent_response_process($channel, $user_agent, $javascript_loop);
+    foreach ($channels as $key => $channel) {
+        $output[$key] = umc_get_fcontent_response_process($channel, $user_agent, $javascript_loop);
         curl_multi_remove_handle($mh, $channel);
         curl_close($channel);
     }
