@@ -31,7 +31,7 @@ function umc_update_usericons($users = false, $retry = false, $size = 20) {
         // umc_error_msg("Downloading user icon $lower_user from Minotar");
 
         $img = file_get_contents($url);
-        if ($http_response_header[0] != 'HTTP/1.1 200 OK') {
+        if (!isset($http_response_header[0]) || $http_response_header[0] != 'HTTP/1.1 200 OK') {
             XMPP_ERROR_trace("HTTP Response codes:", $http_response_header);
             XMPP_ERROR_trigger("Error downloading icon!");
             $img = false;
@@ -78,7 +78,7 @@ function umc_user_get_icon_url($uuid_requested, $size = 20) {
     }
     // make sure it's a uuid
     $uuid = umc_uuid_getone($uuid_requested, 'uuid');
-    
+
     $path = "$UMC_PATH_MC/server/bin/data/user_icons/";
     if (!file_exists($path . $uuid . ".$size.png")) {
         // this tries to download the latest version, otherwise falls back to steve icon
