@@ -197,6 +197,7 @@ function umc_wp_register_addFields(){
  * @return type
  */
 function umc_wp_forum_widget($items = 20) {
+    // get all topics
     $args1 = array(
 	'posts_per_page'   => $items,
 	'orderby'          => 'date',
@@ -207,6 +208,7 @@ function umc_wp_forum_widget($items = 20) {
     );
     $topic_array = get_posts($args1);
 
+    // get all replies
     $args2 = array(
 	'posts_per_page'   => $items,
 	'orderby'          => 'date',
@@ -217,10 +219,12 @@ function umc_wp_forum_widget($items = 20) {
     );
     $replies_array = get_posts($args2);
 
+    // combine both
     $all_array = array_merge($topic_array, $replies_array);
 
     $new_arr = array();
     foreach ($all_array as $P) {
+        // get all text fields
         $user = get_userdata($P->post_author);
         $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
         $icon_url = umc_user_get_icon_url($uuid);
@@ -232,23 +236,29 @@ function umc_wp_forum_widget($items = 20) {
             $verb = "posted";
             $post_title = $P->post_title;
         }
+        // assemble all into an array so it can be sorted
         $new_arr[$P->post_date] = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
             class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
             <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
             $user->user_login</a> $verb on <a class=\"bbp-reply-topic-title\" href=\"$P->guid\" title=\"$post_title\">$post_title</a>";
     }
+    // sort the array
     ksort($new_arr);
+    // reverse the sorting since it's old -> new otherwise
     $rev_new_arr = array_reverse($new_arr, true);
 
+    // assemble the HTML
     $out = "<ul>\n";
     $i = 1;
     foreach ($rev_new_arr as $text) {
         $out .= "<li>\n$text\n</li>\n";
         $i++;
+        // bail once we have the required number of items
         if ($i > $items) {
             break;
         }
     }
+    // return output
     return $out;
 }
 
