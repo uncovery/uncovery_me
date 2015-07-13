@@ -58,7 +58,7 @@ $WS_INIT['lot'] = array(
             'long' => 'Teleport yourself to a lot - only usable by guests for the settler test',
         ),
         'function' => 'umc_lot_warp',
-    ),    
+    ),
 );
 
 function umc_lot_mod() {
@@ -131,10 +131,10 @@ function umc_lot_addrem() {
         umc_show_help($args);
         return;
     }
-    
+
     $addrem = $args[1];
     $lot = strtolower($args[2]);
-    $action = $args[3];    
+    $action = $args[3];
 
     $worlds = array(
         'emp' => 'empire',
@@ -309,13 +309,13 @@ function umc_lot_warp() {
     if ($userlevel != 'Guest') {
         umc_error("Sorry, this command is only for Guests!");
     }
-    
+
     $allowed_worlds = array('empire', 'flatlands');
-    
+
     if (!in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
     } else {
-        $lot = umc_sanitize_input($args[2], 'lot');
+        $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
         if (!in_array($target_world, $allowed_worlds)) {
@@ -331,6 +331,9 @@ function umc_lot_warp() {
         WHERE world.name='$target_world' AND region.id = '$lot' ";
 
     $D = umc_mysql_fetch_all($sql);
+    if (count($D) != 1) {
+        umc_error("There was an error teleporting you to your lot, the admin was notified, please wait for it to be fixed!");
+    }
     $lots = $D[0];
 
     $c_x = $lots['min_x'] + 64;
