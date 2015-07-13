@@ -293,8 +293,10 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
             CURLOPT_ENCODING => "UTF-8",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_AUTOREFERER => true,
+            // we need to add a check for the SSL certificate
+            // currently it seems that this system cannot handle SSL requests
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_SSL_VERIFYPEER => true, # required for https urls
+            CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_CONNECTTIMEOUT => $timeout,
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_MAXREDIRS => 10,
