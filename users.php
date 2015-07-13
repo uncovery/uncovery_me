@@ -271,8 +271,6 @@ function umc_get_latest_settlers($limit = 5) {
     return $settlers;
 }
 
-
-
 /**
  * returns the userlevel for a username
  *
@@ -295,6 +293,9 @@ function umc_get_userlevel($username) {
     foreach ($user_arr as $name) {
         $sql_search = "SELECT value FROM minecraft_srvr.permissions WHERE value LIKE '$name' LIMIT 1;";
         $D = umc_mysql_fetch_all($sql_search);
+        if (count($D) == 0){
+            return 'Guest';
+        }
         $row = $D[0];
         $user_arr_ok[] = $row['value'];
     }
