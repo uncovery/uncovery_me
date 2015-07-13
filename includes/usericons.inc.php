@@ -39,7 +39,11 @@ function umc_update_usericons($users = false, $size = 20) {
         $file = $path . $uuid . ".$size.png";
 
         if ($R['response']['content_type'] !== 'image/png' && $R['response']['http_code'] !== 200) {
-            $failed_users[] = $uuid;
+            $failed_users[] = array(
+                'uuid' => $uuid, 
+                'url' => $R['response']['url'],
+                'reason' => 'Could not download file',
+            );
             // get standard steve face
             if (!file_exists($steve_head)) {
                 XMPP_ERROR_trigger("Steve head icon not available");
@@ -54,14 +58,18 @@ function umc_update_usericons($users = false, $size = 20) {
         } else {
             $written = file_put_contents($file, $R['content']);
             if (!$written) {
-                XMPP_ERROR_send_msg("User icon could not be saved to $file!");
+                $failed_users[] = array(
+                    'uuid' => $uuid, 
+                    'url' => $R['response']['url'],
+                    'reason' => "Could not save file to $file",
+                );
             }
         }
     }
 
     if (count($failed_users) > 0) {
         XMPP_ERROR_trace("failed users:", $failed_users);
-        XMPP_ERROR_trigger("Users failed to get icon, see errpr report for details");
+        XMPP_ERROR_trigger("Users failed to get icon, see error report for details");
     }
 }
 
