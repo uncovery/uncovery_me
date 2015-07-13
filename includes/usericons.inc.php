@@ -85,7 +85,7 @@ function umc_user_get_icon_url($uuid_requested, $size = 20) {
     $path = "$UMC_PATH_MC/server/bin/data/user_icons/";
     if (!file_exists($path . $uuid . ".$size.png")) {
         // this tries to download the latest version, otherwise falls back to steve icon
-        umc_update_usericons(array($uuid));
+        umc_update_usericons($uuid);
     }
     $url = "$UMC_DOMAIN/websend/user_icons/$uuid.$size.png";
     return $url;
