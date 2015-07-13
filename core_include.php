@@ -295,6 +295,7 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
             CURLOPT_AUTOREFERER => true,
             // we need to add a check for the SSL certificate
             // currently it seems that this system cannot handle SSL requests
+            // see http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/
             CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_CONNECTTIMEOUT => $timeout,
