@@ -264,7 +264,7 @@ function umc_print_truefalse($query) {
 /**
  * Replacement function for file_get_contents
  *
- * @param type $url_raw
+ * @param array $url_raw ('key' => 'url')
  * @param type $javascript_loop
  * @param type $timeout
  * @return type
@@ -321,6 +321,15 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
     return $output;
 }
 
+/**
+ * Extension function of umc_get_fcontent to parse output and re-run the function
+ * if necessary
+ *
+ * @param type $channel
+ * @param type $user_agent
+ * @param type $javascript_loop
+ * @return type
+ */
 function umc_get_fcontent_response_process($channel, $user_agent, $javascript_loop) {
     $content = curl_multi_getcontent($channel);
     $response = curl_getinfo($channel);
