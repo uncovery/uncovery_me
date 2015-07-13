@@ -269,7 +269,7 @@ function umc_print_truefalse($query) {
  * @param type $timeout
  * @return type
  */
-function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
+function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50, $header = false) {
     if (!is_array($url_raw)) {
         $urls = array($url_raw);
     } else {
@@ -287,7 +287,7 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50) {
         curl_setopt_array($channels[$key], array(
             CURLOPT_USERAGENT => $user_agent,
             CURLOPT_URL => $url_fixed,
-            CURLOPT_HEADER  => false, // this needs to be disabled otherwise the images are corrupted
+            CURLOPT_HEADER  => $header, // this needs to be disabled otherwise images are corrupted
             CURLOPT_COOKIEJAR => $cookie,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_ENCODING => "UTF-8",
