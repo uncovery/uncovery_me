@@ -99,33 +99,54 @@ function umc_get_icons() {
     foreach ($UMC_DATA as $item => $D) {
         if (isset($D['subtypes'])) {
             foreach ($D['subtypes'] as $id => $S) {
-                $img_arr[$S['name']] = $S['icon_url'];
+                if ($S['icon_url'] != '?') {
+                    $img_arr[$S['name']] = $base_url . $S['icon_url'];
+                }
             }
         }
         if ($D['icon_url'] === '?') {
             continue;
         } else {
-            $img_arr[$item] = $D['icon_url'];
+            $img_arr[$item] = $base_url . $D['icon_url'];
         }
     }
-    foreach ($img_arr as $img => $url) {
-        $full_url = $base_url . $url;
-        $path_info = pathinfo($full_url);
-        $ext = $path_info['extension'];
-        $target_path = $base_path . "$img.$ext";
-        echo "$img";
-        $file = file_get_contents($full_url);
-        if (!$file) {
-            echo " File read ERROR $full_url";
-        }
-        $written = file_put_contents($target_path, $file);
-        if ($written) {
-            echo " Write OK!";
+    // pass all arrays to mass-downloader
+    $complete_count = count($img_arr);
+    $D = umc_get_fcontent($img_arr);
+
+    $failed_icons = array();
+    foreach ($D as $img => $R) {
+        if ($R['response']['http_code'] !== 200) {
+            $failed_icons[] = array(
+                'img' => $img, 
+                'url' => $R['response']['url'],
+                'reason' => "failed to get file from source",
+            );
         } else {
-            echo " Write ERROR to $target_path";
+            // assemble target path
+            $full_url = $R['response']['url'];
+            $path_info = pathinfo($full_url);
+            if (!isset($path_info['extension'])) {
+                XMPP_ERROR_trace("Extension missning for $img", $full_url);
+            }
+            $ext = $path_info['extension'];
+            $target_path = $base_path . "$img.$ext";
+            // write target file
+            $written = file_put_contents($target_path, $R['content']);
+            if (!$written) {
+                $failed_icons[] = array(
+                    'img' => $img, 
+                    'url' => $R['response']['url'],
+                    'reason' => 'failed to write file to $target_path',
+                );
+            }
         }
-        echo "<br>";
     }
+    $count = count($failed_icons);
+    if ($count > 0) {
+        XMPP_ERROR_trace("failed users:", $failed_icons);
+        XMPP_ERROR_trigger("Failed to get $count of $complete_count Block icons, see error report for details");
+    }    
 }
 
 /**
