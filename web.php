@@ -118,7 +118,7 @@ function umc_get_todays_users() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $online_users = umc_read_markers_file('array');
-    $sql = "SELECT username, lastlogin FROM minecraft_srvr.UUID "
+    $sql = "SELECT username, lastlogin, uuid FROM minecraft_srvr.UUID "
         . "WHERE lastlogin >= now() - INTERVAL 1 DAY ORDER BY lastlogin DESC";
     $data = umc_mysql_fetch_all($sql);
     $json = false;
@@ -132,7 +132,7 @@ function umc_get_todays_users() {
     $opacity_step = 1 / $count;
     $opacity = 1;
     foreach ($data as $user) {
-        $url = umc_user_get_icon_url($user['username']);
+        $url = umc_user_get_icon_url($user['uuid']);
         $time = $user['lastlogin'];
         $datetime = umc_datetime($time);
         $timestamp = $datetime->getTimestamp();
