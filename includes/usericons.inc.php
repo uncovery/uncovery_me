@@ -3,7 +3,7 @@
 /**
  * downloads all user icons from uncovery
 */
-function umc_update_usericons($users = false, $retry = false, $size = 20) {
+function umc_update_usericons($users = false, $size = 20) {
     global $UMC_PATH_MC;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $path = "$UMC_PATH_MC/server/bin/data/user_icons/";
@@ -11,62 +11,56 @@ function umc_update_usericons($users = false, $retry = false, $size = 20) {
 
     $failed_users = array();
     if (!$users) {
-        $oneuser = false;
         $users = umc_get_active_members();
-    } else if (count($users) == 0) {
+    } else if (is_array($users) && count($users) == 0) {
         XMPP_ERROR_send_msg("umc_update_usericons got zero users!");
-    } else {
-        $oneuser = true;
+    } else if (!is_array($users)) {
+        $U = umc_uuid_getboth($users);
+        $users = array(
+            $U['uuid'] => $U['username'],
+        );
     }
 
-    foreach ($users as $uuid) {
-        if ($uuid == '_abandoned_') {
+    // queue all requests and then perform them in a batch
+    $requests = array();
+    foreach ($users as $uuid => $username) {
+        if ($uuid == 'abandone-0000-0000-0000-000000000000') {
             continue;
         }
-        $url = "https://crafatar.com/avatars/$uuid?size=$size";
-        XMPP_ERROR_trace('url', $url);
+        $requests[$uuid] = "http://crafatar.com/avatars/$uuid?size=$size";
+    }
+
+    // get data of all requests
+    $D = umc_get_fcontent($requests);
+    // parse data replies
+    foreach ($D as $uuid => $R) {
+        XMPP_ERROR_trace('uuid', $uuid);
         $file = $path . $uuid . ".$size.png";
-        // check if we need to update
 
-        // umc_error_msg("Downloading user icon $lower_user from Minotar");
-
-        $img = file_get_contents($url);
-        if (!isset($http_response_header[0]) || $http_response_header[0] != 'HTTP/1.1 200 OK') {
-            XMPP_ERROR_trace("HTTP Response codes:", $http_response_header);
-            XMPP_ERROR_trigger("Error downloading icon!");
-            $img = false;
-        }
-
-        if (!$img) {
-            if ($retry) {
-                XMPP_ERROR_trace("Icon download failed on retry, using std. steve-face", $url);
-                if (!file_exists($file)) {
-                    // get standard steve face
-                    if (!file_exists($steve_head)) {
-                        XMPP_ERROR_trace("Steve head icon not available");
-                    } else {
-                        $check = copy('/home/minecraft/server/bin/data/steve.png', $file);
-                        if (!$check || !file_exists($file)) {
-                            XMPP_ERROR_trace("Could not create steve head for file $file");
-                        } else {
-                            XMPP_ERROR_trace("used steve head for $file");
-                        }
-                    }
-                }
+        if ($R['response']['content_type'] !== 'image/png' && $R['response']['http_code'] !== 200) {
+            $failed_users[$uuid] = $username;
+            // get standard steve face
+            if (!file_exists($steve_head)) {
+                XMPP_ERROR_trigger("Steve head icon not available");
             } else {
-                $failed_users[] = $uuid;
+                $check = copy($steve_head, $file);
+                if (!$check || !file_exists($file)) {
+                    XMPP_ERROR_trigger("Could not create steve head for file $file");
+                } else {
+                    XMPP_ERROR_trace("used steve head for $file");
+                }
             }
         } else {
-            $written = file_put_contents($file, $img);
+            $written = file_put_contents($file, $R['content']);
             if (!$written) {
                 XMPP_ERROR_send_msg("User icon could not be saved to $file!");
             }
         }
     }
-    // retry the failed users, only once:
-    if (!$retry && count($failed_users) > 0) {
-        XMPP_ERROR_trace(count($failed_users) . " failed usericons, triggering retry");
-        umc_update_usericons($failed_users, true);
+
+    if (count($failed_users) > 0) {
+        XMPP_ERROR_trace("failed users:", $failed_users);
+        XMPP_ERROR_trigger("Users failed to get icon, see errpr report for details");
     }
 }
 
