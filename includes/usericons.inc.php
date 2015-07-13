@@ -9,7 +9,7 @@ function umc_update_usericons($users = false, $size = 20) {
     $path = "$UMC_PATH_MC/server/bin/data/user_icons/";
     $steve_head = '/home/minecraft/server/bin/data/steve.png';
 
-    $failed_users = array();
+
     if (!$users) {
         $users = umc_get_active_members();
     } else if (is_array($users) && count($users) == 0) {
@@ -33,12 +33,13 @@ function umc_update_usericons($users = false, $size = 20) {
     // get data of all requests
     $D = umc_get_fcontent($requests);
     // parse data replies
+    $failed_users = array();
     foreach ($D as $uuid => $R) {
         XMPP_ERROR_trace('uuid', $uuid);
         $file = $path . $uuid . ".$size.png";
 
         if ($R['response']['content_type'] !== 'image/png' && $R['response']['http_code'] !== 200) {
-            $failed_users[$uuid] = $username;
+            $failed_users[] = $uuid;
             // get standard steve face
             if (!file_exists($steve_head)) {
                 XMPP_ERROR_trigger("Steve head icon not available");
