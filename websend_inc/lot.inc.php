@@ -306,7 +306,8 @@ function umc_lot_warp() {
     $world = $UMC_USER['world'];
     $args = $UMC_USER['args'];
 
-    if ($userlevel != 'Guest') {
+    $allowed_ranks = array('Owner', 'Guest');
+    if (!in_array($userlevel, $allowed_ranks)) {
         umc_error("Sorry, this command is only for Guests!");
     }
 
