@@ -8,7 +8,7 @@
     cfg.first_time = 1;
 
     var get = function () {
-            $.get('/admin/index.php?function=get_todays_users&json=1', init);
+        $.get('/admin/index.php?function=get_todays_users&json=1', init);
     };
 
     var getByPseudo = function (pseudo, list) {
