@@ -546,7 +546,7 @@ function umc_mail_web() {
     if ($action == 'Reply') {
         $recipient = filter_input(INPUT_POST, 'sender', FILTER_SANITIZE_STRING);
 
-        $subject = "Re: ". filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
+        $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
         $action = "New Mail";
     } else if ($action == 'Delete' || $action == 'Undelete') {
         $msg_id = filter_input(INPUT_POST, 'msg_id', FILTER_SANITIZE_NUMBER_INT);
@@ -607,8 +607,8 @@ function umc_mail_web() {
         } else {
             $mail = $mail_data[0];
             $recipient = $mail['username'];
-            $subject = $mail['title'];
-            $message = $mail['message'];
+            $subject = htmlentities($mail['title']);
+            $message = htmlentities($mail['message']);
             $msg_id = $mail['msg_id'];
             $action = "New Mail";
         }
@@ -633,7 +633,7 @@ function umc_mail_web() {
             $out .= "<form  id=\"newmailform\" method=\"post\">\n<div>";
             $mail = array();
             foreach ($mail_data[0] as $field => $value) {
-                $mail[$field] = stripslashes($value);
+                $mail[$field] = htmlentities(stripslashes($value));
             }
             $buttons = "<div style=\"float:right\">";
             if (in_array($mail['status'], array('deleted_receiver','deleted_both'))) {
