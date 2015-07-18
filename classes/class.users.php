@@ -2,7 +2,7 @@
 
 global $UMC_USERS; // this should contain all users that are set as an object
 
-class User extends Users {
+class UMC_User {
 
     // base items
     private $username;     // the current minecraft username
@@ -41,49 +41,13 @@ class User extends Users {
      */
     public function __construct($uuid) {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        // determine the ID type and then get the other one
-        // we need to have users before we have a user
-        parent::__construct();
         $this->$uuid = $uuid;
-    }
-    
-    public function set_uuid($uuid) {
-        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        // we assume that this is a valid UUID
-        $this->uuid = $uuid;
     }
     
     // get the uuid, either from the set value, wordpress_id or username
     public function get_uuid() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        
-        if (isset($this->uuid)) { // we have a uuid already
-            return $this->uuid;
-        } else if (isset($this->wordpress_id)) {
-            // get uuid from wordpress_id
-            $sql = "SELECT meta_value as output FROM minecraft.wp_usermeta
-                WHERE user_id=$this->wordpress_id AND meta_key ='minecraft_uuid' LIMIT 1;";
-            $D = umc_mysql_fetch_all($sql);
-            if (count($D) !== 1) {
-                XMPP_ERROR_trigger("Wordpress ID $this->wordpress_id is invalid!");
-                return false;
-            }
-            $this->uuid = $D[0]['output'];
-            return $this->uuid;
-        } else if (isset($this->username)) {
-            $sql = "SELECT meta_value as output FROM minecraft.wp_users
-                LEFT JOIN minecraft.wp_usermeta ON ID=user_id
-                WHERE display_name=$this->username AND meta_key ='minecraft_uuid' LIMIT 1;";
-            $D = umc_mysql_fetch_all($sql);
-            $this->uuid = $D[0]['output'];
-            if (count($D) !== 1) {
-                XMPP_ERROR_trigger("Username $this->username is invalid!");
-                return false;
-            }
-        } else {
-            XMPP_ERROR_trigger("No unique ID for user found!");
-            return false;
-        }
+        return $this->uuid;
     }
 
     public function set_username($username) {
@@ -94,9 +58,18 @@ class User extends Users {
     // requires the UUID to be set
     public function get_username() {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        
+        return $this->username;
+    }
+     public function set_userlevel($userlevel) {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
+        $this->userlevel = $userlevel;
     }
     
+    // requires the UUID to be set
+    public function get_userlevel() {
+        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
+        return $this->userlevel;
+    }
     public function ban($reason) {
         XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
         global $UMC_USERS;
@@ -119,13 +92,7 @@ class User extends Users {
         $text = "$admin banned $$this->username ($this->uuid) because of $reason";
         umc_log('mod', 'ban', $text);
         XMPP_ERROR_send_msg($text);
-    }
-}
-
-class Users {
-    public $users;
-    
-    public function __construct() {
-        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
+        
+        // iterate plugins to check for plugin relared post ban processes
     }
 }
