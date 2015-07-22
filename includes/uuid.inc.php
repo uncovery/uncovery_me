@@ -477,19 +477,46 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
         return umc_uuid_format($json_data[0]["id"]); // add "-" dashes if needed
     } else {
         $uuid = $username;
-        $uuid_raw = str_replace("-", "", $uuid);
-        // https://api.mojang.com/user/profiles/a0130adc42ad4e619da2f90a5bc310d3/names
-        $url = "https://api.mojang.com/user/profiles/$uuid_raw/names";
-        $json_result = file_get_contents($url, false);
-        $json_data = json_decode($json_result, true);
-        if (count($json_data) == 0) {
-            $text = var_export($json_data, true);
-            XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url ($text)");
-            return false; // invalid uuid or too long username
-        } else {
+        $json_data = umc_uuid_mojang_usernames($uuid);
+        if ($json_data) {
             $id = count($json_data) - 1;
             return $json_data[$id]['name'];
         }
+    }
+}
+
+function umc_uuid_mojang_usernames($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $uuid_raw = str_replace("-", "", $uuid);
+    // https://api.mojang.com/user/profiles/a0130adc42ad4e619da2f90a5bc310d3/names
+    $url = "https://api.mojang.com/user/profiles/$uuid_raw/names";
+    $json_result = file_get_contents($url, false);
+    $json_data = json_decode($json_result, true);
+    if (count($json_data) == 0) {
+        $text = var_export($json_data, true);
+        XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url ($text)");
+        return false; // invalid uuid or too long username
+    }
+    return $json_data;
+}
+
+function umc_uuid_username_history($uuid) {
+    $previous_names = umc_uuid_mojang_usernames($uuid);
+
+    if (count($previous_names) > 1) {
+        $names = array();
+        foreach ($previous_names as $name_data) {
+            $name = $name_data['name'];
+            if (isset($name_data['changedToAt'])) {
+                $date_obj = umc_timer_from_json($name_data['changedToAt']);
+                $date_str = $date_obj->format('Y-m-d');
+                $name .= " (since $date_str)";
+            }
+            $names[] = $name;
+        }
+        return implode(", ", $names);
+    } else {
+        return false;
     }
 }
 
