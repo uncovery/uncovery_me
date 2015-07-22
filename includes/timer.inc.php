@@ -12,6 +12,40 @@ function umc_datetime($date = NULL) {
     return $date_new;
 }
 
+/**
+ * Converts a JSON date to a DateTime Object
+ * 
+ * @param string $json_date
+ * @return DateTimeObj or false
+ */
+function umc_timer_from_json($json_date) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    // do we have a timezone string or not?
+    if (strlen($json_date) == 13) {
+        $json_date .= "-0000";
+    }
+    //1433044095000 <- No timezone
+    //1365004652303-0500 <- timezone
+    
+    $pattern = '/(\d{10})(\d{3})([\+\-]\d{4})/';
+    $format  = "U.u.O";
+    $mask    = '%2$s.%3$s.%4$s';
+
+    $matches = false;
+    $r = preg_match($pattern, $json_date, $matches);
+    if (!$r) {
+        XMPP_ERROR_trigger("Failed to match date in $json_date");
+    }
+    $buffer = vsprintf($mask, $matches);
+    $result = DateTime::createFromFormat($format, $buffer);
+    if (!$result) {
+        XMPP_ERROR_trigger(sprintf('Failed To Create from Format "%s" for "%s".', $format, $buffer));
+    }
+    return $result;
+
+}
+
 // sets a timer
 // if timer exists, it will add the days to the existing timer
 // if existing timer is expired, new timer is form today
