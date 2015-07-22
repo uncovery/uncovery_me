@@ -622,6 +622,11 @@ function umc_user_directory() {
         $uuid = umc_user2uuid($username);
         echo "<br><strong>UUID:</strong> $uuid<br>";
 
+        $previous_names = umc_uuid_username_history($uuid);
+        if ($previous_names) {
+            echo "<strong>Usernames History:</strong> $previous_names<br>";
+        }
+        
         // is user banned?
         if (umc_user_is_banned($uuid)) {
             echo "<strong>User is BANNED!</strong><br>";
@@ -1014,6 +1019,11 @@ function umc_promote_citizen($username, $userlevel = false) {
     } else {
         $level = $d['userlevel'];
     }
+    $username_history = umc_uuid_username_history($uuid);
+    if ($username_history) {
+        $user['Username History'] = $username_history;
+    }
+    
     $user['Level'] = $level;
     $user['Last Seen'] = $d['lastlogin'];
 
