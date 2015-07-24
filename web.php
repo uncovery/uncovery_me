@@ -40,7 +40,7 @@ function umc_display_guestinfo(){
 
     $notice = '';
 
-    $content = "<ul>\n";
+    $content = "";
 
     # If not logged in
     if (!$UMC_USER) {
@@ -49,12 +49,13 @@ function umc_display_guestinfo(){
             . "To know more about how to join us, please <a href=\"$UMC_DOMAIN/server-access/whitelist/\">continue here</a>.<br>"
             . "If you are a member already, don\'t be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
-            . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" frameborder="0" allowfullscreen></iframe><br><br>';
+            . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" allowfullscreen></iframe><br><br>';
     } else if ($userlevel == 'Guest') {
         $title = "Welcome, $username!";
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
                 . "<a href=\"$UMC_DOMAIN/server-access/buildingrights/\">Get builder rights now</a>!";
     } else {
+        $content = "<ul>\n";
         $title = "Welcome, <span class='" . strtolower($userlevel) . "'>$username</span>";
 	if (strpos($userlevel, 'Donator')) {
 	    $title .= "<span class='pluscolor'>+</span>";
@@ -109,8 +110,9 @@ function umc_display_guestinfo(){
             }
             $content .= "</ul></li>";
         }
+        $content .= "</ul>\n";
     }
-    $content .= "</ul>\n";
+
     echo "<div class=\"welcome-block\"><h1 class=\"entry-title\">$title</h1>$notice\n$content\n</div>\n";
 }
 
