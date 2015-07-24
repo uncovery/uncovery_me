@@ -208,6 +208,15 @@ function umc_wp_forum_widget($items = 20) {
     );
     $topic_array = get_posts($args1);
 
+    // iterate the posts
+    $posts = array();
+    foreach ($topic_array as $P) {
+        // get all text fields
+        $html = umc_wp_forum_get_postlink($P);
+        $posts[$P->ID]['latest'] = $P->post_date;
+        $posts[$P->ID]['link'] = $html;
+    }
+
     // get all replies
     $args2 = array(
 	'posts_per_page'   => $items,
@@ -219,47 +228,69 @@ function umc_wp_forum_widget($items = 20) {
     );
     $replies_array = get_posts($args2);
 
-    // combine both
-    $all_array = array_merge($topic_array, $replies_array);
-
-    $new_arr = array();
-    foreach ($all_array as $P) {
+    foreach ($replies_array as $P) {
         // get all text fields
         $user = get_userdata($P->post_author);
         $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
         $icon_url = umc_user_get_icon_url($uuid);
-        if ($P->post_type == 'reply') {
-            $verb = "replied";
-            $parent = get_post($P->post_parent);
-            $post_title = $parent->post_title;
-        } else {
-            $verb = "posted";
-            $post_title = $P->post_title;
-        }
-        // assemble all into an array so it can be sorted
-        $new_arr[$P->post_date] = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        $verb = "replied";
+        $parent = get_post($P->post_parent);
+        $post_title = $parent->post_title;
+        $date_obj = umc_datetime($P->post_date);
+        $time_ago = umc_timer_format_diff($date_obj);
+        $link = $parent->guid . "#post-" . $P->ID;
+        $html = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
             class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
             <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
-            $user->user_login</a> $verb on <a class=\"bbp-reply-topic-title\" href=\"$P->guid\" title=\"$post_title\">$post_title</a>";
+            $user->user_login</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
+        if (!isset($posts[$P->post_parent])) {
+            $parent_post = get_post($P->post_parent);
+            $posts[$P->post_parent]['link'] = umc_wp_forum_get_postlink($parent_post);
+            $posts[$P->post_parent]['latest'] = $P->post_date;
+        }
+        $posts[$P->post_parent]['replies'][$P->post_date] = $html;
+        $posts[$P->post_parent]['latest'] = min($P->post_date, $posts[$P->post_parent]['latest']);
     }
     // sort the array
-    ksort($new_arr);
+    usort($posts, "umc_wp_forum_sort");
     // reverse the sorting since it's old -> new otherwise
-    $rev_new_arr = array_reverse($new_arr, true);
+    //$rev_new_arr = array_reverse($new_arr, true);
 
     // assemble the HTML
     $out = "<ul>\n";
-    $i = 1;
-    foreach ($rev_new_arr as $text) {
-        $out .= "<li>\n$text\n</li>\n";
-        $i++;
-        // bail once we have the required number of items
-        if ($i > $items) {
-            break;
+    foreach ($posts as $P) {
+        $out .= "<li>\n{$P['link']}\n";
+        if (isset($P['replies']) && count($P['replies']) > 0) {
+            $out .= "<ul>\n";
+            foreach ($P['replies'] as $reply) {
+                $out .= "<li>\n$reply\n</li>\n";
+            }
+            $out .= "</ul>\n";
         }
+        $out .="</li>\n";
     }
     // return output
     return $out;
+}
+
+function umc_wp_forum_sort($a, $b) {
+    return strcmp($b["latest"], $a["latest"]);
+}
+
+function umc_wp_forum_get_postlink($P) {
+    $user = get_userdata($P->post_author);
+    $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
+    $icon_url = umc_user_get_icon_url($uuid);
+    $date_obj = umc_datetime($P->post_date);
+    $time_ago = umc_timer_format_diff($date_obj);
+    $link = $P->guid;
+    $post_title = $P->post_title;
+    $html = "<a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$post_title</a><br>by
+        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
+        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+        $user->user_login</a><br>$time_ago ago";
+    return $html;
 }
 
 /**
