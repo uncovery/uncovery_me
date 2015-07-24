@@ -269,6 +269,7 @@ function umc_wp_forum_widget($items = 20) {
         }
         $out .="</li>\n";
     }
+    $out .= "</ul>\n";
     // return output
     return $out;
 }
