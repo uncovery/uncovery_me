@@ -137,7 +137,6 @@ display:none;
 }
 .today_user_icon:hover .today_user_label{
   opacity:0.75;
-  filter: alpha(opacity = 100);
   transition:opacity 0.25s;
   -moz-transition:opacity 0.25s;
   -webkit-transition:opacity 0.25s;
@@ -151,7 +150,7 @@ display:none;
             border-collapse: collapse;
             border: 2px solid;
             display:block;
-    };
+    }
     #sphere td {
             display: block;
             background-color: #FFFFFF;
@@ -288,4 +287,9 @@ div.ts3_viewer {
 
 table.unc_datatables tbody td {
     padding-left: 10px;
+}
+
+/* BBPRESS changes */
+a .widget .bbp-author-name {
+    font-weight: normal;
 }
