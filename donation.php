@@ -337,7 +337,7 @@ function umc_process_donation() {
         'payment_gross' => false, // '25.00'
         'payment_fee' => false, //'1.40'
         'txn_id' => false, // 4TT776949B495984P
-        'btn_id' => '52930807',
+        // 'btn_id' => '52930807',
         'option_selection3' => false,
     );
 
@@ -357,6 +357,9 @@ function umc_process_donation() {
         $sql = "INSERT INTO `donations`(`amount`, `uuid`, `email`, `date`, `txn_id`)
             VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
         umc_mysql_query($sql, true);
+        XMPP_ERROR_trigger("Donation SQL executed!");
+    } else {
+        XMPP_ERROR_trigger("Not all values correct for donation!");
     }
 }
 
