@@ -354,7 +354,7 @@ function umc_process_donation() {
     if ($is_ok) {
         $date = umc_mysql_real_escape_string(date('Y-m-d'));
         $final_value = umc_mysql_real_escape_string($keyarray['payment_gross'] - $keyarray['payment_fee']);
-        $sql = "INSERT INTO `donations`(`amount`, `uuid`, `email`, `date`, `txn_id`)
+        $sql = "INSERT INTO minecraft_srvr.donations (`amount`, `uuid`, `email`, `date`, `txn_id`)
             VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
         umc_mysql_query($sql, true);
         XMPP_ERROR_trigger("Donation SQL executed!");
