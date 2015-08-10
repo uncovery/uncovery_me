@@ -1,5 +1,9 @@
 <?php
 
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['update_usericons'] = 'umc_update_usericons';
+
+
 /**
  * downloads all user icons from uncovery
 */
@@ -31,7 +35,7 @@ function umc_update_usericons($users = false, $size = 20) {
     }
 
     // get data of all requests
-    $D = umc_get_fcontent($requests);
+    $D = unc_serial_curl($requests);
     // parse data replies
     $failed_users = array();
     foreach ($D as $uuid => $R) {
@@ -71,6 +75,7 @@ function umc_update_usericons($users = false, $size = 20) {
         XMPP_ERROR_trace("failed users:", $failed_users);
         XMPP_ERROR_trigger("Users failed to get icon, see error report for details");
     }
+    // XMPP_ERROR_trigger("test");
 }
 
 function umc_user_get_icon_url($uuid_requested, $size = 20) {
