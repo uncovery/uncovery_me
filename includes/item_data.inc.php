@@ -1,5 +1,8 @@
 <?php
 
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['get_icons'] = 'umc_get_icons';
+
 /**
  * 1) take all item_names from pasted wiki-code
  * 2) take all item_names from the data table UMC_DATA
@@ -112,7 +115,7 @@ function umc_get_icons() {
     }
     // pass all arrays to mass-downloader
     $complete_count = count($img_arr);
-    $D = umc_get_fcontent($img_arr);
+    $D = unc_serial_curl($img_arr);
 
     $failed_icons = array();
     foreach ($D as $img => $R) {
