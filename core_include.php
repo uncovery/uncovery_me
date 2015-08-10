@@ -22,6 +22,9 @@ $UNC_DB = array('database' => 'minecraft', 'username' => 'minecraft', 'server' =
 mysql_connect($UNC_DB['server'], $UNC_DB['username'], $UNC_DB['password']);
 require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
 
+// include serial_curl
+require_once('/home/includes/unc_serial_curl/unc_serial_curl.php');
+
 // include everything else
 require_once($UMC_PATH_MC . '/server/bin/classes/class.users.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
@@ -270,6 +273,7 @@ function umc_print_truefalse($query) {
  * @return type
  */
 function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50, $header = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (!is_array($url_raw)) {
         $urls = array($url_raw);
     } else {
@@ -282,7 +286,7 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50, $header
         $url_fixed = str_replace( "&amp;", "&", urldecode(trim($url)));
         $user_agent = "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0";
 
-        $cookie = tempnam("/tmp", "CURLCOOKIE");
+        $cookie = tempnam("/tmp/serial_curl", "CURLCOOKIE");
         $channels[$key] = curl_init();
         curl_setopt_array($channels[$key], array(
             CURLOPT_USERAGENT => $user_agent,
@@ -321,6 +325,7 @@ function umc_get_fcontent($url_raw, $javascript_loop = 0, $timeout = 50, $header
         curl_close($channel);
     }
     curl_multi_close($mh);
+    XMPP_ERROR_trace(__FUNCTION__, $output);
     return $output;
 }
 
