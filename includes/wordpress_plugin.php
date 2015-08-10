@@ -479,8 +479,10 @@ class Minecraft_Icons {
             }
             
             $user = get_user_by('login', $username);
-            $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);    
-            require_once('/home/minecraft/server/bin/index_wp.php');
+            $uuid = get_user_meta($user->ID, 'minecraft_uuid', true); 
+            if (!(include_once '/home/minecraft/server/bin/index_wp.php')) {
+                XMPP_ERROR_trigger("Failed to include index!");
+            }
             $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
             $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
         }
