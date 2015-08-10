@@ -33,8 +33,10 @@ function umc_wp_init_plugins() {
 
     // check if we allow password resets in case user is banned
     add_action( 'validate_password_reset', 'umc_wp_password_reset_check',  10, 2 );
-
-    new Minecraft_Icons();
+    
+    // avatars
+    add_filter('avatar_defaults', 'umc_wp_add_uncovery_avatar');
+    add_filter('get_avatar', 'umc_wp_get_uncovery_avatar', 1, 5);
 
     global $pagenow;
     if ($pagenow==='wp-login.php') {
@@ -400,48 +402,19 @@ function umc_wp_register_addWhitelist($user_id){
     umc_uuid_record_usertimes('firstlogin');
 }
 
-
-class Minecraft_Icons {
-    // Initializes the plugin by setting filters and administration functions.
-    public function __construct() {
-        add_filter('avatar_defaults', array($this, 'add_uncovery_avatar' ));
-        add_filter('get_avatar', array($this, 'get_uncovery_avatar'), 1, 5);
-        // If BuddyPress is enabled and uncovery is chosen as avatar
-        /*if(is_plugin_active('buddypress/bp-loader.php')) { // && get_option( 'avatar_default' ) == 'uncovery' )
-            add_filter('bp_core_fetch_avatar_no_grav', array($this, 'bp_core_fetch_avatar_no_grav'));
-            add_filter('bp_core_default_avatar_user', array($this, 'bp_core_default_avatar_user'), 10, 2);
-        }*/
-    } // end constructor
-
-    // BuddyPress support
-    public function bp_core_fetch_avatar_no_grav() {
-        return true;
-    } // end bp_core_fetch_avatar_no_grav
-
-    public function bp_core_default_avatar_user($url, $params) {
-        require_once('/home/minecraft/server/bin/includes/wordpress.inc.php');
-        // http://uncovery.me/websend/user_icons/b330abbd-355c-4c31-97bc-74c14cbd690c.20.png
-        $user_info = get_userdata($params['item_id']);
-        $uuid = umc_wp_get_uuid_from_userlogin($user_info->user_login);
-        $uncovery_url = "http://uncovery.me/websend/user_icons/$uuid.20.png";
-        return $uncovery_url;
-    } // end bp_core_default_avatar_user
-
-    /**
-    * Apply a filter to the default avatar list and add Minotars
-    */
-    public function add_uncovery_avatar( $avatar_defaults ) {
+function umc_wp_add_uncovery_avatar( $avatar_defaults ) {
         $avatar_defaults['uncovery'] = 'Minecraft Avatar';
         return $avatar_defaults;
-    } // end add_uncovery_avatar
+}
 
-    /**
-    * Apply a filter to the default get_avatar function to add
-    * Minotar functionality
-    */
-    public function get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
-        XMPP_ERROR_trace(__CLASS__ . " // " .  __FUNCTION__, func_get_args());
-        if($default == 'uncovery') {
+function umc_wp_get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
+        XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+        if ($default == 'uncovery') {
+            $filename = '/home/minecraft/server/bin/core_include.php';
+            require_once($filename);
+            if (!function_exists('umc_user_ban')) {
+                XMPP_ERROR_trigger("Failed to include $filename!");
+            } 
             //Alternative text
             if (false === $alt) {
                 $safe_alt = '';
@@ -477,15 +450,10 @@ class Minecraft_Icons {
             } else { // by displayname
                 $username = $id_or_email;
             }
-            
-            $user = get_user_by('login', $username);
-            $uuid = get_user_meta($user->ID, 'minecraft_uuid', true); 
-            if (!(include_once '/home/minecraft/server/bin/index_wp.php')) {
-                XMPP_ERROR_trigger("Failed to include index!");
-            }
-            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
+
+            $uuid = umc_wp_get_uuid_from_userlogin($username);
+            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;    
             $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
         }
         return $avatar;
     }
-} // end class
