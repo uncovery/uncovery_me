@@ -48,9 +48,9 @@ function umc_wp_get_vars() {
             $UMC_USER['userlevel'] = 'Guest';
         }
     }
-    $UMC_USERS[$uuid] = new UMC_User($uuid);
-    $UMC_USERS[$uuid]->set_username($username);
-    $UMC_USERS[$uuid]->set_userlevel($userlevel);
+    //$UMC_USERS[$uuid] = new UMC_User($uuid);
+    //$UMC_USERS[$uuid]->set_username($username);
+    //$UMC_USERS[$uuid]->set_userlevel($userlevel);
 }
 
 /**
@@ -60,14 +60,20 @@ function umc_wp_get_vars() {
  * @param type $uuid
  */
 function umc_wp_ban_user($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // get wordpress ID
     $wp_id = umc_user_get_wordpress_id($uuid);
-    $password = wp_generate_password(20, true, true );
+    XMPP_ERROR_trace("User ID", $wp_id);
+    $password = wp_generate_password(20, true, true);
+    XMPP_ERROR_trace("New random Password", $wp_id);
     wp_set_password($password, $wp_id);
     // get all sessions for user with ID $user_id
     $sessions = WP_Session_Tokens::get_instance($wp_id);
+    XMPP_ERROR_trace("sessions incoming", $sessions);
     // we have got the sessions, destroy them all!
     $sessions->destroy_all();
+    XMPP_ERROR_trace("sessions outgoing", $sessions);
+    XMPP_ERROR_trigger("User $uuid banned");
 }
 
 
