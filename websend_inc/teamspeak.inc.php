@@ -132,11 +132,13 @@ function umc_ts_authorize() {
  * @return boolean
  */
 function umc_ts_clear_rights($uuid, $echo = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
     
     if (!$UMC_TEAMSPEAK['server']) {
         $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }    
+    }
     
     // find out the TS id the user has been using from the database
     $check_sql = "SELECT ts_uuid FROM minecraft_srvr.UUID WHERE UUID='$uuid';";
