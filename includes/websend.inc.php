@@ -283,9 +283,9 @@ function umc_ws_cmd($cmd, $how = 'asConsole', $player = false, $silent = false) 
     $return = true;
     // if a command is executed by console, return messages back to console instead
     // of trying to echo to player
-    if ($fromplayer == '@Console' && $how == 'toPlayer') {
+    if (strtolower($fromplayer) == '@console' && $how == 'toPlayer') {
         $how = 'toConsole';
-    } else if ($fromplayer == '@Console' && $how == 'asPlayer') {
+    } else if (strtolower($fromplayer) == '@console' && $how == 'asPlayer') {
         $how = 'asConsole';
     }
     // remove colons, just in case
