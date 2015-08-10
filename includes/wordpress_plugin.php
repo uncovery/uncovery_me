@@ -406,7 +406,6 @@ class Minecraft_Icons {
     public function __construct() {
         add_filter('avatar_defaults', array($this, 'add_uncovery_avatar' ));
         add_filter('get_avatar', array($this, 'get_uncovery_avatar'), 1, 5);
-
         // If BuddyPress is enabled and uncovery is chosen as avatar
         /*if(is_plugin_active('buddypress/bp-loader.php')) { // && get_option( 'avatar_default' ) == 'uncovery' )
             add_filter('bp_core_fetch_avatar_no_grav', array($this, 'bp_core_fetch_avatar_no_grav'));
@@ -478,8 +477,10 @@ class Minecraft_Icons {
             } else { // by displayname
                 $username = $id_or_email;
             }
+            
+            $user = get_user_by('login', $username);
+            $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);    
             require_once('/home/minecraft/server/bin/index_wp.php');
-            $uuid = umc_wp_get_uuid_from_userlogin($username);
             $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
             $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
         }
