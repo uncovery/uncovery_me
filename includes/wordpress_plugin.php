@@ -30,6 +30,10 @@ function umc_wp_init_plugins() {
     add_action( 'wp_enqueue_scripts', 'umc_wp_add_css_and_js' );
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
+
+    // check if we allow password resets in case user is banned
+    add_action( 'validate_password_reset', 'umc_wp_password_reset_check',  10, 2 );
+
     new Minecraft_Icons();
 
     global $pagenow;
@@ -48,6 +52,24 @@ function umc_wp_init_plugins() {
 
     }
 }
+
+/**
+ * Validate password resets for banned users
+ *
+ * @param type $errors
+ * @param type $user_obj
+ */
+function umc_wp_password_reset_check($errors, $user_obj) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    require_once('/home/minecraft/server/bin/index_wp.php');
+    $check = umc_user_is_banned($user_obj->user_login);
+    if ($check) {
+        // user is banned
+        $errors->add( 'user_is_banned', 'ERROR: You are banned from this server. Password request denied.' );
+    }
+    XMPP_ERROR_send_msg("Banned User " . $user_obj->user_login . " attempted password reset");
+}
+
 
 /**
  * pick specific templates based on POST variables
