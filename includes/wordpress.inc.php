@@ -5,7 +5,7 @@
  */
 function umc_wp_get_vars() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $UMC_ENV, $user_email, $user_login;
+    global $UMC_USERS, $UMC_USER, $UMC_ENV, $user_email, $user_login;
 
     if ($UMC_ENV !== 'wordpress') {
         XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
@@ -48,8 +48,27 @@ function umc_wp_get_vars() {
             $UMC_USER['userlevel'] = 'Guest';
         }
     }
+    $UMC_USERS[$uuid] = new UMC_User($uuid);
+    $UMC_USERS[$uuid]->set_username($username);
+    $UMC_USERS[$uuid]->set_userlevel($userlevel);
 }
 
+/**
+ * When banning a users, reset the users password in the WP database to something
+ * random and log the user out of the system
+ * 
+ * @param type $uuid
+ */
+function umc_wp_ban_user($uuid) {
+    // get wordpress ID
+    $wp_id = umc_user_get_wordpress_id($uuid);
+    $password = wp_generate_password(20, true, true );
+    wp_set_password($password, $wp_id);
+    // get all sessions for user with ID $user_id
+    $sessions = WP_Session_Tokens::get_instance($wp_id);
+    // we have got the sessions, destroy them all!
+    $sessions->destroy_all();
+}
 
 
 
