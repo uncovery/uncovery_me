@@ -598,7 +598,8 @@ function umc_user_ban($user, $reason) {
     umc_shop_cleanout_olduser($uuid);
     // remove from teamspeak
     umc_ts_clear_rights($uuid);
-
+    umc_wp_ban_user($uuid);
+    
     umc_log('mod', 'ban', "$admin banned $username/$uuid because of $reason");
     XMPP_ERROR_send_msg("$admin banned $username because of $reason");
 }
