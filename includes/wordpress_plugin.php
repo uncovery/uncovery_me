@@ -66,8 +66,8 @@ function umc_wp_password_reset_check($errors, $user_obj) {
     if ($check) {
         // user is banned
         $errors->add( 'user_is_banned', 'ERROR: You are banned from this server. Password request denied.' );
+        XMPP_ERROR_send_msg("Banned User " . $user_obj->user_login . " attempted password reset");
     }
-    XMPP_ERROR_send_msg("Banned User " . $user_obj->user_login . " attempted password reset");
 }
 
 
