@@ -32,8 +32,8 @@ function umc_wp_init_plugins() {
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
 
     // check if we allow password resets in case user is banned
-    add_action( 'validate_password_reset', 'umc_wp_password_reset_check',  10, 2 );
-    
+    add_action('validate_password_reset', 'umc_wp_password_reset_check',  10, 2 );
+
     // avatars
     add_filter('avatar_defaults', 'umc_wp_add_uncovery_avatar');
     add_filter('get_avatar', 'umc_wp_get_uncovery_avatar', 1, 5);
@@ -414,7 +414,7 @@ function umc_wp_get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt
             require_once($filename);
             if (!function_exists('umc_user_ban')) {
                 XMPP_ERROR_trigger("Failed to include $filename!");
-            } 
+            }
             //Alternative text
             if (false === $alt) {
                 $safe_alt = '';
@@ -452,7 +452,7 @@ function umc_wp_get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt
             }
 
             $uuid = umc_wp_get_uuid_from_userlogin($username);
-            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;    
+            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
             $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
         }
         return $avatar;
