@@ -39,12 +39,11 @@ function umc_update_usericons($users = false, $size = 20) {
     // parse data replies
     $failed_users = array();
     foreach ($D as $uuid => $R) {
-        XMPP_ERROR_trace('uuid', $uuid);
         $file = $path . $uuid . ".$size.png";
 
         if ($R['response']['content_type'] !== 'image/png' && $R['response']['http_code'] !== 200) {
             $failed_users[] = array(
-                'uuid' => $uuid, 
+                'uuid' => $uuid,
                 'url' => $R['response']['url'],
                 'reason' => 'Could not download file',
             );
@@ -63,7 +62,7 @@ function umc_update_usericons($users = false, $size = 20) {
             $written = file_put_contents($file, $R['content']);
             if (!$written) {
                 $failed_users[] = array(
-                    'uuid' => $uuid, 
+                    'uuid' => $uuid,
                     'url' => $R['response']['url'],
                     'reason' => "Could not save file to $file",
                 );
