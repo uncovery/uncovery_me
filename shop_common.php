@@ -107,12 +107,12 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
         $item_name = $UMC_DATA_ID2NAME[$item_name];
         // conversion failed, item does not exist
         if (!$item_name) {
-            XMPP_ERROR_send_msg("Could not identify $item_name umc_goods_get_text");
+            XMPP_ERROR_trigger("Could not identify $item_name umc_goods_get_text");
             return false;
         }
     }
     if (!isset($UMC_DATA[$item_name])) {
-        XMPP_ERROR_send_msg("Could not identify $item_name umc_goods_get_text");
+        XMPP_ERROR_trigger("Could not identify $item_name umc_goods_get_text");
         return false;
     } else {
         $item_arr = $UMC_DATA[$item_name];
