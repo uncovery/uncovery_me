@@ -278,7 +278,7 @@ function umc_logblock_get_lot_from_coord($world, $x, $z) {
     if (count($D) == 0) {
         return 'n/a';
     }
-    return $row[0]['region_id'];
+    return $D[0]['region_id'];
 }
 
 function umc_logblock_get_coord_filter_from_lot($lot) {
