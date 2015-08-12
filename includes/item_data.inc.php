@@ -121,7 +121,7 @@ function umc_get_icons() {
     foreach ($D as $img => $R) {
         if ($R['response']['http_code'] !== 200) {
             $failed_icons[] = array(
-                'img' => $img, 
+                'img' => $img,
                 'url' => $R['response']['url'],
                 'reason' => "failed to get file from source",
             );
@@ -138,7 +138,7 @@ function umc_get_icons() {
             $written = file_put_contents($target_path, $R['content']);
             if (!$written) {
                 $failed_icons[] = array(
-                    'img' => $img, 
+                    'img' => $img,
                     'url' => $R['response']['url'],
                     'reason' => 'failed to write file to $target_path',
                 );
@@ -149,7 +149,7 @@ function umc_get_icons() {
     if ($count > 0) {
         XMPP_ERROR_trace("failed users:", $failed_icons);
         XMPP_ERROR_trigger("Failed to get $count of $complete_count Block icons, see error report for details");
-    }    
+    }
 }
 
 /**
@@ -3517,7 +3517,7 @@ $UMC_DATA_ID2NAME = array(
     '360' => 'melonslice',
     '361' => 'pumpkin_seeds',
     '362' => 'melon_seeds',
-    '363' => 'beef',
+    '363' => 'raw_beef',
     '364' => 'cooked_beef',
     '365' => 'chicken',
     '366' => 'cooked_chicken',
