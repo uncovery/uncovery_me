@@ -10,7 +10,8 @@ function run_umc_scheduler() {
     $schedule_arr = array(
         1 => array( // Monday
             'on_cmd' => array(
-                0 => 'ch qm u Today is Monday, nothing special!',
+                0 => 'ch qm u Today bloody is Monday, beware of the mobs!',
+                1 => 'bloodmoon start darklands',
             ),
             'off_cmd' => array(
             ),
@@ -18,6 +19,7 @@ function run_umc_scheduler() {
         2 => array( // Tuesday
             'on_cmd' => array(
                 0 => 'ch qm u Today is Tuesday, nothing special!',
+                1 => 'bloodmoon stop darklands',
             ),
             'off_cmd' => array(
             ),
@@ -110,10 +112,8 @@ function run_umc_scheduler() {
         umc_exec_command($cmd);
     }
 
-    umc_github_wordpress_update();
     umc_lottery_log_import();
     umc_ban_to_database();
-    umc_update_usericons();
     // make a new ID file in case item data has changed
     include_once('/home/minecraft/server/bin/commands/make_id_file.php');
 }
