@@ -449,11 +449,12 @@ function umc_log_dropdown_preselect($value, $text, $presel_value) {
 }
 
 function umc_logores_item_name($type, $data = 0) {
-    $item_arr = umc_goods_get_text($type, $data, true);
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $item_arr = umc_goods_get_text($type, $data);
     if (!$item_arr) {
         return "$type:$data";
     }
-    return $item_arr['item_name'];
+    return $item_arr['name'];
 }
 
 function umc_universal_web_stats() {
