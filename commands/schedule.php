@@ -20,6 +20,7 @@ function run_umc_scheduler() {
             'on_cmd' => array(
                 0 => 'ch qm u Today is Tuesday, nothing special!',
                 1 => 'bloodmoon stop darklands',
+		2 => 'time 00:00 darklands', // set it to midnight^
             ),
             'off_cmd' => array(
             ),
