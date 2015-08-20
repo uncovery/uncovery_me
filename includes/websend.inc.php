@@ -371,7 +371,8 @@ function umc_ws_get_inv($inv_data) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
                     $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
-                    XMPP_ERROR_send_msg("ITEM ISSUE: $item_typename not found in \$UMC_DATA, item {$item['Type']} : {$item['Durability']}, should be {$inv[$slot]['item_name']}");
+     
+                    XMPP_ERROR_trigger("ITEM ISSUE: $item_typename not found in \$UMC_DATA, item {$item['Type']} : {$item['Durability']}, should be {$inv[$slot]['item_name']}");
                 }
             } else if ($name == "Type") {
                 $inv[$slot]['id'] = $item['Type'];
