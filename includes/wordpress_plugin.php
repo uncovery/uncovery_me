@@ -37,6 +37,8 @@ function umc_wp_init_plugins() {
     // avatars
     add_filter('avatar_defaults', 'umc_wp_add_uncovery_avatar');
     add_filter('get_avatar', 'umc_wp_get_uncovery_avatar', 1, 5);
+    
+    add_filter('bbp_subscription_to_email', 'umc_wp_bbp_subscription_to_email');
 
     global $pagenow;
     if ($pagenow==='wp-login.php') {
@@ -54,6 +56,12 @@ function umc_wp_init_plugins() {
 
     }
 }
+
+function umc_wp_bbp_subscription_to_email($test = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    return 'oliver@uncovery.net';
+}
+
 
 /**
  * Validate password resets for banned users
