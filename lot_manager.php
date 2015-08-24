@@ -1253,6 +1253,10 @@ function umc_lot_reset_process() {
         if ($owner_username == 'uncovery') { // we do not reset uncovery's lots
             continue;
         }
+        
+        if ($owner_username == 'riedi77') { // we do not reset uncovery's lots
+            continue;
+        }        
 
         // we do not reset active donators, except those who are banned
         if (isset($donators[$owner_uuid]) && !isset($banned_users[$owner_uuid])) {
@@ -1337,10 +1341,10 @@ function umc_lot_reset_process() {
         LEFT JOIN minecraft_worldguard.region ON lot=id
         LEFT JOIN minecraft_worldguard.world ON world_id=world.id
         WHERE SUBSTR(lot_version.lot, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']} AND choice IS NOT NULL;";
-    $D = umc_mysql_fetch_all($sql);
+    $R = umc_mysql_fetch_all($sql);
 
     // fixed choices:
-    foreach ($D as $row) {
+    foreach ($R as $row) {
         $lot = $row['lot'];
         $version = $row['version'];
         $mint_version = $row['mint_version'];
@@ -1779,8 +1783,12 @@ function umc_lot_manager_dibs_get_all() {
     $dibs_sql = 'SELECT * FROM minecraft_srvr.lot_reservation ORDER BY lot, date;';
     $R = umc_mysql_fetch_all($dibs_sql);
     $dibs = array();
+    $a_user = umc_get_active_members();
     foreach ($R as $r) {
-        $dibs[$r['lot']][$r['date']] = array('uuid' => $r['uuid'], 'action' => $r['action']);
+        // check if the user is active or not
+        if (isset($a_user[$r['uuid']])) {
+            $dibs[$r['lot']][$r['date']] = array('uuid' => $r['uuid'], 'action' => $r['action']);
+        }
     }
     return $dibs;
 }
