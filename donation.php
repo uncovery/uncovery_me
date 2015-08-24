@@ -223,6 +223,9 @@ function umc_donation_top_table($outstanding) {
 
 
 function umc_process_donation() {
+    global $UMC_USER;
+    $username = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
     XMPP_ERROR_trigger("Donation Process form was accessed!");
     $pp_hostname = "www.paypal.com"; // Change to www.sandbox.paypal.com to test against sandbox
 
@@ -358,6 +361,20 @@ function umc_process_donation() {
             VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
         umc_mysql_query($sql, true);
         XMPP_ERROR_trigger("Donation SQL executed!");
+        $subject = "[Uncovery Minecraft] Donation activated!";
+        $headers = "From: minecraft@uncovery.me" . "\r\n" .
+            "Reply-To: minecraft@uncovery.me" . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+        $recipient_text = '';
+        if ($uuid != $keyarray['option_selection3']) {
+            $rec_username = umc_uuid_getone($keyarray['option_selection3']);
+            $recipient_text = "The donation to be in benefot of $rec_username, as you asked.";
+        }
+        $mailtext = "Dear $username, \r\n\r\nWe have just received and activated your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
+            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
+            . "Your userlevel will be updated as soon as you login to the server next time. You can also check it on the frontpage of the website under 'Server Status'.\r\n"
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
+        mail($keyarray['payer_email'], $subject, $mailtext, $headers);
     } else {
         XMPP_ERROR_trigger("Not all values correct for donation!");
     }
