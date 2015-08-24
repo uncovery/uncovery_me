@@ -1788,6 +1788,8 @@ function umc_lot_manager_dibs_get_all() {
         // check if the user is active or not
         if (isset($a_user[$r['uuid']])) {
             $dibs[$r['lot']][$r['date']] = array('uuid' => $r['uuid'], 'action' => $r['action']);
+        } else {
+            umc_lot_manager_dib_delete($r['uuid']);
         }
     }
     return $dibs;
