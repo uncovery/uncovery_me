@@ -117,7 +117,7 @@ function umc_vote_stats() {
     $vote_stats = array();
     $v_sql = "SELECT count(vote_id) as counter, vote FROM minecraft_srvr.proposals_votes GROUP BY vote;";
     $V = umc_mysql_fetch_all($v_sql);
-    foreach ($V as $row) { 
+    foreach ($V as $row) {
         $status = $row['vote'];
         $vote_stats[$status] = $row['counter'];
     }
@@ -288,7 +288,7 @@ function umc_vote_web() {
                     }
                 }
 
-                
+
             }
         }
     }
@@ -362,7 +362,7 @@ function umc_vote_web() {
                 $sql = "SELECT * FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
                 $C = umc_mysql_fetch_all($sql);
                 if (count($C) > 0) {
-                    $row_check = $D[0];
+                    $row_check = $C[0];
                     $vote_id = $row_check['vote_id'];
                     if ($new_vote == 0) {
                         $sql = "DELETE FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
