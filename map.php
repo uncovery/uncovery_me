@@ -494,10 +494,10 @@ function umc_assemble_maps() {
         //echo ", Single file map assembled";
         // create lot maps
         umc_disassemble_map($world);
-        echo ", Lot maps cut";
+        echo ", Lot maps cut, done!";
 
-        umc_heatmap($world);
-        echo ", heat map rendered\n";
+        // umc_heatmap($world);
+        // echo ", heat map rendered\n";
     }
 
     /*
