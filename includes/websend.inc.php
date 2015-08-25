@@ -96,6 +96,7 @@ function umc_ws_eventhandler($event) {
             umc_promote_citizen($player, false);
             umc_log('system', 'login', "$player logged in");
             umc_uuid_record_usertimes('lastlogin');
+            umc_usericon_get($UMC_USER['uuid']);
             break;
         case 'PlayerPreLoginEvent':
             // nothing needed since the fact that websend is called makes it register the UUID already
