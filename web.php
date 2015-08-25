@@ -134,7 +134,10 @@ function umc_get_todays_users() {
     $opacity_step = 1 / $count;
     $opacity = 1;
     foreach ($data as $user) {
-        $url = umc_user_get_icon_url($user['uuid']);
+        $url = umc_user_get_icon_url($user['uuid'], false);
+        if (!$url) { // we do not update here, only when people login
+            continue;
+        }
         $time = $user['lastlogin'];
         $datetime = umc_datetime($time);
         $timestamp = $datetime->getTimestamp();
@@ -155,6 +158,7 @@ function umc_get_todays_users() {
         $opacity = round($opacity - $opacity_step, 4);
     }
     $out .= "</div>";
+
     if ($json) {
         $json_data = json_encode($json_arr);
         return $json_data;
