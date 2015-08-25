@@ -49,7 +49,7 @@ $UMC_FAQ = array(
     ),
     6 => array(
         'question' => 'I won’t be online for some time, will you delete my stuff?',
-        'answer' => 'Yes. If you do not login on the server for some time, your lot will expire. The normal lot expiry time is 1 month after your last login. IF you want to extend your leave, you can donate.',
+        'answer' => 'Yes. If you do not login on the server for some time, your lot will expire. The normal lot expiry time is 1 month after your last login. If you want to extend your leave, you can donate.',
         'categories' => array('account', 'lots'),
     ),
     7 => array(
@@ -172,7 +172,7 @@ $UMC_FAQ = array(
     26 => array(
         'question' => 'Can you install McMMo (or any other plugin/mod)?',
         'answer' => 'McMMo is a huge plugin with a lot of work to configure it an make it balanced. We can make a world that works with McMMo, but I would neeed to be convinced that
-            people actually use it. If you think it\'s that great, I would invite you to make a forum post and ask people if they want it. IF you get enough people to support it, I might install it',
+            people actually use it. If you think it\'s that great, I would invite you to make a forum post and ask people if they want it. If you get enough people to support it, I might install it',
         'categories' => array('misc', 'worlds'),
     ),
     27 => array(
