@@ -700,7 +700,7 @@ function umc_region_data($world_name) {
 }
 
 function umc_map_menu($worlds, $current_world, $freeswitch) {
-    global $UMC_DOMAIN;
+    global $UMC_DOMAIN, $UMC_PATH_MC;
     $freevalue = 'false';
     if ($freeswitch) {
         $freevalue = 'true';
@@ -732,6 +732,13 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     */
 
     $menu .= umc_read_markers_file('scrollto', $current_world);
+
+    // get file date
+    $image = "$UMC_PATH_MC/server/maps/$current_world.jpg";
+    $date_obj = $datetime = DateTime::createFromFormat('U', filemtime($image));
+    $date_diff = umc_timer_format_diff($date_obj);
+
+    $menu .= " <small>($current_world map image was updated $date_diff ago)</small>";
 
     return $menu;
 }
