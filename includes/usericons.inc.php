@@ -4,7 +4,6 @@ global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['usericon_get'] = 'umc_usericon_get';
 
 function umc_usericon_get($users = false, $update = true) {
-    XMPP_ERROR_trigger($users);
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
     $steve_head = '/home/minecraft/server/bin/data/steve.png';
