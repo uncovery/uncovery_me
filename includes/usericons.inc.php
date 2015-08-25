@@ -3,7 +3,8 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['usericon_get'] = 'umc_usericon_get';
 
-function umc_usericon_get($users = false) {
+function umc_usericon_get($users = false, $update = false) {
+    XMPP_ERROR_trigger($users);
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
     $steve_head = '/home/minecraft/server/bin/data/steve.png';
@@ -30,6 +31,11 @@ function umc_usericon_get($users = false) {
     $skin_urls = array();
     $D = unc_serial_curl($users_raw, 0, 50, '/home/includes/unc_serial_curl/google.crt');
     foreach ($D as $uuid => $d) {
+        // we only update the skin if it does not exist
+        if (!$update && file_exists("$UMC_PATH_MC/server/bin/data/full_skins/$uuid.png")) {
+            continue;
+        }
+        
         if ($uuid == 'abandone-0000-0000-0000-000000000000') {
             continue;
         }
@@ -85,10 +91,10 @@ function umc_usericon_get($users = false) {
         $time_stamp = $texture_arr->timestamp;
         // check if the file on the drive is newer
         $current_file = "$UMC_PATH_MC/server/bin/data/full_skins/$uuid.png";
-        if ((!file_exists($current_file)) || filemtime($current_file) < $time_stamp) {
+        if ((!file_exists($current_file)) || filemtime($current_file) > $time_stamp) {
             if (isset($texture_arr->textures->SKIN)) { // user did not set skin
                 $skin_urls[$uuid] = $texture_arr->textures->SKIN->url;
-                echo $texture_arr->textures->SKIN->url . "<br>\n";
+                // echo $texture_arr->textures->SKIN->url . "<br>\n";
             } else {
                 XMPP_ERROR_trace("$uuid does not have a skin: $raw_texture");
                 $no_skin[] = $uuid;
@@ -100,10 +106,10 @@ function umc_usericon_get($users = false) {
     foreach ($S as $uuid => $s) {
         $skin_file = "$UMC_PATH_MC/server/bin/data/full_skins/$uuid.png";
         $head_file = "$UMC_PATH_MC/server/bin/data/user_icons/$uuid.png";
-        if ($R['response']['content_type'] !== 'image/png' && $R['response']['http_code'] !== 200) {
+        if ($s['response']['content_type'] !== 'image/png' && $s['response']['http_code'] !== 200) {
             $failed_users[] = array(
                 'uuid' => $uuid,
-                'url' => $R['response']['url'],
+                'url' => $s['response']['url'],
                 'reason' => 'Could not download image',
             );
             continue;
