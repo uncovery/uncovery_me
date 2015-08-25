@@ -26,7 +26,7 @@ require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
 require_once('/home/includes/unc_serial_curl/unc_serial_curl.php');
 
 // include everything else
-require_once($UMC_PATH_MC . '/server/bin/classes/class.users.php');
+require_once($UMC_PATH_MC . '/server/bin/classes/users.class.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/users.php');
