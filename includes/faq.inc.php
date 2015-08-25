@@ -183,6 +183,13 @@ $UMC_FAQ = array(
             Installing shops in chests is only additional plugins to maintain and load on the server without any significant benefit for game-play',
         'categories' => array('blocks', 'in-game'),
     ),
+    28 => array(
+        'question' => 'Something is not working, what should I do?',
+        'answer' => 'First of all, please check if someone else has the same issue. If that is the case, please check the <a href="http://uncovery.me/server-features/development-status/">
+            Bugs list. If you can find the problem there, then it\'s a known problem. If you want to accelerate the fix for this problem, you can post to the forum. If the problem is not
+            on the list, you can send a mail to uncovery with the /mail command.',
+        'categories' => array('problems'),
+    ),
 );
 
 /**
