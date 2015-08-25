@@ -3,7 +3,7 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['usericon_get'] = 'umc_usericon_get';
 
-function umc_usericon_get($users = false, $update = false) {
+function umc_usericon_get($users = false, $update = true) {
     XMPP_ERROR_trigger($users);
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
