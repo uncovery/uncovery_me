@@ -162,8 +162,6 @@ function umc_lot_addrem() {
     }
     $player_group = umc_get_userlevel($player);
 
-
-
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
         umc_show_help($args);
@@ -247,6 +245,9 @@ function umc_lot_addrem() {
             umc_show_help($args);
             return;
         }
+        // get list of active users
+        $active_users = umc_get_active_members();
+
         for ($i=4; $i<count($args); $i++) {
             $target = $args[$i];
 
@@ -259,6 +260,8 @@ function umc_lot_addrem() {
                 $targ_group = umc_get_userlevel($target);
                 if ($targ_group == 'Guest') {
                     umc_error("You cannnot add Guests to your lot!;");
+                } else if (!in_array($target, $active_users)) {
+                    umc_error("$target is not an active user!");
                 }
             }
 
