@@ -190,6 +190,13 @@ $UMC_FAQ = array(
             on the list, you can send a mail to uncovery with the /mail command.',
         'categories' => array('problems'),
     ),
+    29 => array(
+        'question' => 'What are active/inactive users?',
+        'answer' => 'Active users are users who have their own lot. Inactive users are any other level user who does not have a lot, either because they never got one (e.g. Guests) or 
+            because they lost it due to inactivity. Many thing thats you can do with other users require the other user to be an active user. This includes sending items to their deposit,
+            adding them to your lot and more.',
+        'categories' => array('problems', 'in-game', 'userlevels', 'rules', 'misc'),
+    ),
 );
 
 /**
