@@ -17,6 +17,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file is the entry point for the code when called through Websend
+ */
+
+
 global $UMC_USER, $UMC_ENV, $UMC_SETTING;
 require_once(__DIR__ . '/core_include.php');
 

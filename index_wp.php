@@ -17,6 +17,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file is the entry point for the code when called through wordpress.
+ * It also manages direct functon calls via URL, such as the 2D map and others.s
+ */
+
 global $UMC_USER, $UMC_ENV;
 
 // do not process any functions if we have a 404 error;

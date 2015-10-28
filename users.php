@@ -1,4 +1,27 @@
 <?php
+/*
+ * This file is part of Uncovery Minecraft.
+ * Copyright (C) 2015 uncovery.me
+ *
+ * Uncovery Minecraft is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This file manages several central aspects of users, creates several different 
+ * lists of users and other user information. Some of these functions should be 
+ * relocated to uuid.inc.php
+ */
 
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['update_usericons'] = 'umc_update_usericons';
