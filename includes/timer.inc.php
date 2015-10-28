@@ -1,7 +1,31 @@
 <?php
 /*
+ * This file is part of Uncovery Minecraft.
+ * Copyright (C) 2015 uncovery.me
+ *
+ * Uncovery Minecraft is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This is a central modle to allow time-based events and expiry for statuses as 
+ * well as some general time management tools, time zone conversion etc.
+ */
+
+/*
  * returns a date-time object with todays timezone
  * get a MySQL timestamp with $now = $date_now->format("Y-m-d H:i:s");
+ * The timezone here should be in the config file.
  */
 function umc_datetime($date = NULL) {
     if ($date != NULL) {

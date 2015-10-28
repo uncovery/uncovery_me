@@ -1,5 +1,8 @@
 <?php
     /*
+     *  This is the central websend class that does the actual communication with
+     *  Websend
+     * 
      *  Writted by Waterflames for the Websend project
      *  (Project page: http://dev.bukkit.org/bukkit-plugins/websend/)
      *  See https://github.com/Waterflames/Websend/blob/master/package/Websend.php for commits by other users.

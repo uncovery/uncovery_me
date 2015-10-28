@@ -1,4 +1,22 @@
 <?php
+/*
+ * This file is part of Uncovery Minecraft.
+ * Copyright (C) 2015 uncovery.me
+ *
+ * Uncovery Minecraft is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * This file is called by wordpress to run all the plugins. It does not go through
  * core_include.inc.php so you need to include whatever you need on-demand.
@@ -202,7 +220,8 @@ function umc_wp_register_addFields(){
     // echo "Due to technical reasons, we cannot accept any new users right now. Please check back later";
     // die('umc_wp_register_addFields');
 
-    $out = '<p>
+    $out = '<p>IMPORTANT: Hotmail/Microsoft is rejecting emails from us.
+    If you do not get a password by email within one hour, please use the /info setpass command in-game instead.
         <label for="email_confirm">Confirm E-mail<br />
         <input type="text" name="email_confirm" id="email_confirm" class="input" value="" size="25" /></label>
     </p>';
