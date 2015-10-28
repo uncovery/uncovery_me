@@ -19,6 +19,8 @@
 == Uncovery Minecraft Code Repository ==
 
 This project is the complete back-end of a minecraft server with many automations, features, games etc.
+It integrates with a Minecraft server, a wordpress website frontend and several backend tools such 
+as an IRC server, XMPP notifiations, Teamspeak rights management etc etc.
 The code is as of this moment not ready for installation on a third party server.
 
 ToDo: 
