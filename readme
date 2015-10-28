@@ -1,5 +1,16 @@
-This is the complete code for the uncovery.me server
-Please feel free to contribute
+== Uncovery Minecraft Code Repository ==
+
+This project is the complete back-end of a minecraft server with many automations, features, games etc.
+The code is as of this moment not ready for installation on a third party server.
+
+ToDo: 
+
+- Documentation
+- Inclusion of integrated tools
+- modularization / plugin-creation of all optional functionality
+- configuration usage instead of hard-coded userlevels/admin names etc
+- inclusion of SQL structures in code
+- install-script
 
 To understand the code, please start reading the code in either 
 
