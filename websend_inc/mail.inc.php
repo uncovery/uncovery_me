@@ -1,6 +1,8 @@
 <?php
 
 global $UMC_SETTING, $WS_INIT;
+global $UMC_FUNCTIONS;
+$UMC_FUNCTIONS['test_mail'] = 'umc_test_mail';
 
 /*
  * TODO: when a user receives email alerts, all emails sent to the user should be automatically marked as "read".
@@ -421,14 +423,16 @@ function umc_mail_list() {
 }
 
 function umc_test_mail() {
-    $sender = "vaR1pXv3Z7oPWX@dkimvalidator.com";
+    $recipient = "web-87iyhC@mail-tester.com";
+    $sender = "minecraft@uncovery.me";
     $headers = "From:$sender <$sender>\r\n" .
         "Reply-To: $sender\r\n" .
         "X-Mailer: PHP/" . phpversion();
     $mail_title = "Test mail";
     $body = "This is a test mail";
 
-    $check = mail($sender, $mail_title, $body, $headers);
+    $check = mail($recipient, $mail_title, $body, $headers);
+    $check = mail($recipient, $mail_title, $body, $headers);
     var_dump($check);
 }
 
