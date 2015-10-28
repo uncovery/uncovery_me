@@ -592,6 +592,10 @@ function umc_donation_level($user, $debug = false) {
 
     $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid='$uuid';";
     $level = umc_get_uuid_level($uuid);
+    
+    if ($level == 'Owner') {
+        return false;
+    }
 
     $D = umc_mysql_fetch_all($sql);
 
