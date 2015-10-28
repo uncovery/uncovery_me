@@ -1,5 +1,27 @@
 <?php
+/*
+ * This file is part of Uncovery Minecraft.
+ * Copyright (C) 2015 uncovery.me
+ *
+ * Uncovery Minecraft is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+/*
+ * This interfaces with a teamspeak server an allows users to authorize themselves
+ * in teamspeak to get user rights. This is made to prevent non-game users
+ * or banned users from spamming the teamspeak server.
+ */
 global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
