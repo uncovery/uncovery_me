@@ -1,4 +1,30 @@
 <?php
+/*
+ * This file is part of Uncovery Minecraft.
+ * Copyright (C) 2015 uncovery.me
+ *
+ * Uncovery Minecraft is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * This plugin manages the user commands for the deposit boxes. This plugin is required
+ * for the shop plugin and several others that push items into the deposit.
+ * The only way to find out which functions use this is to do a search for the 
+ * below function names. 
+ * 
+ * ToDo: Rename the "umc_do... " into "umc_deposit_do..." functions throughout the system.
+ */
 
 global $UMC_SETTING, $WS_INIT, $UMC_USER;
 
