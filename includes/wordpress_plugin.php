@@ -293,7 +293,7 @@ function umc_wp_forum_widget($items = 20) {
         $html = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
             class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
             <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
-            $user->user_login</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
+            $user->display_name</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
         if (!isset($posts[$P->post_parent])) {
             $parent_post = get_post($P->post_parent);
             $posts[$P->post_parent]['link'] = umc_wp_forum_get_postlink($parent_post);
