@@ -341,7 +341,7 @@ function umc_wp_forum_get_postlink($P) {
         <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
         class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
         <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
-        $user->user_login</a><br>$time_ago ago";
+        $user->display_name</a><br>$time_ago ago";
     return $html;
 }
 
