@@ -145,8 +145,9 @@ $ws_all_plugins['disguisecraft'] = array(  // the name of the plugin
 // this only adds the help for plugins that are actually installed
 // go through all installed plugins
 // add the help files from this page to the websend help system
-foreach ($UMC_USER['plugins'] as $plugin) {
-    if (isset($ws_all_plugins[$plugin])) {
+foreach ($UMC_USER['plugins'] as $plugin) { // we iterate the plugin list coming from Websend
+    if (isset($ws_all_plugins[$plugin])) { 
+        // if the websend plugin is listed in this file, add its infomations
         $WS_INIT[$plugin] = $ws_all_plugins[$plugin];
     }
 }
