@@ -85,7 +85,23 @@ function umc_money_give() {
     } else {
         umc_echo("You successfully transferred $sum Uncs to $target");
     }
-    umc_msg_user($target, "You just received $sum Uncs from $player!");
+    
+    // get UUID or target player
+    $target_uuid = umc_user2uuid($target);
+    // check if the user is online
+    if (isset($UMC_USER['player_data'][$target_uuid])) {
+        umc_msg_user($target, "You just received $sum Uncs from $player!");
+        umc_echo("The recipient is online, the server sent a notification message.");
+    } else {
+        // otherwise, send an email
+        $title = "You received $sum Uncs from $player!";
+        $message = "Dear $target,\nyou just received $sum Uncs from $player.\n"
+            . "The amount in in your account now.\n"
+            . "Use /money check to see your account balance.\n";
+        umc_mail_quick_send($title, $message, $target_uuid, false);
+        umc_echo("The recipient is currently offline, the server sent a notification email.");
+    }
+    
     umc_log('money', 'give', "$player gave $target $sum Uncs");
     umc_money_status();
 }
