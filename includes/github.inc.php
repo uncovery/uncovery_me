@@ -226,7 +226,8 @@ function umc_github_wordpress_update() {
         }
     }    
 
-    $out = "This is a daily update on the status of the work done behind the scenes. You can see the complete status <a href=\"$page\">here</a>.\n<ul>\n"; 
+    $out = "This is a daily update on the status of the work done behind the scenes. You can see the complete status <a href=\"$page\">here</a>.\n "
+        . "By the way our server code is Open Source. You can help improving it <a href=\"https://github.com/uncovery/uncovery_me\">here</a>.<ul>\n"; 
     foreach ($issue_arr as $section => $lines) {
         $section_str = ucwords($section);
         $out .= "    <li><strong>Issues $section_str:</strong>\n";
