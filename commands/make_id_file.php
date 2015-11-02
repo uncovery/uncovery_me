@@ -3,7 +3,7 @@ require_once('/home/minecraft/server/bin/core_include.php');
 
 // this here creates a new items array file
 $search_arr = umc_item_data_get_namelist();
-if (($handle = fopen("/home/minecraft/server/bin/data/items.csv", "r")) !== FALSE) {
+if (($handle = fopen("/home/minecraft/server/bukkit/plugins/Essentials/items.csv", "r")) !== FALSE) {
     while (($items = fgetcsv($handle, 10000, ",")) !== FALSE) {
         $firstletter = substr($items[0], 0, 1);
         if (count($items) == 3 && $firstletter !== '#' && !isset($search_arr[$items[0]])) {
