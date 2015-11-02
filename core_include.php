@@ -139,7 +139,7 @@ function umc_sanitize_input(&$value, $type) {
     }
 
     if ($type == "item") {
-        //'get a list of all possible item names
+        // get a list of all possible item names. REquires exact match of the searched item
         $all_names = umc_item_data_get_namelist();
         if (isset($all_names[$value])) {
             return $all_names[$value];
