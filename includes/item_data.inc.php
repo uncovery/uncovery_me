@@ -188,8 +188,9 @@ function umc_item_data_get_namelist() {
         $out[$item_name] = array('item_name' => $item_name, 'type' => 0);
         if (isset($data['subtypes'])) {
             foreach ($data['subtypes'] as $sub_id => $subtype) {
-                if (!isset($out[$subtype['name']]))
-                $out[$subtype['name']] = array('item_name' => $item_name, 'type' => $sub_id);
+                if (!isset($out[$subtype['name']])) {
+                    $out[$subtype['name']] = array('item_name' => $item_name, 'type' => $sub_id);
+                }
             }
         }
     }
