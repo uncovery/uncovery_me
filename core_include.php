@@ -47,7 +47,7 @@ require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
 require_once('/home/includes/unc_serial_curl/unc_serial_curl.php');
 
 // include everything else
-require_once($UMC_PATH_MC . '/server/bin/classes/users.class.php');
+// require_once($UMC_PATH_MC . '/server/bin/classes/users.class.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/users.php');
@@ -144,6 +144,12 @@ function umc_sanitize_input(&$value, $type) {
         if (isset($all_names[$value])) {
             return $all_names[$value];
         } else {
+            // we searched only for the EXACT item above. We should be looking for possible matches in the
+            // search database too.
+            global $ITEM_SEARCH;
+            if (isset($ITEM_SEARCH[$value])) {
+                return $ITEM_SEARCH[$value];
+            }
             return false;
         }
     }
