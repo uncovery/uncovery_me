@@ -33,7 +33,7 @@ function umc_github_client_connect($owner, $repo) {
     $cache_dir = "/tmp/github-$repo-$owner-cache";
     $token_file = __DIR__ . "/github-$repo-$owner.token";
     $client = new \Github\Client(
-            new \Github\HttpClient\CachedHttpClient(array('cache_dir' => $cache_dir))
+        new \Github\HttpClient\CachedHttpClient(array('cache_dir' => $cache_dir))
     );
 
     $token = file_get_contents($token_file);
