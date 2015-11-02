@@ -161,9 +161,9 @@ function umc_mail_new($recipient = false) {
         umc_error("The title is too long! (32 letters max)");
     }
 
-    $mysql_title = trim(mysql_real_escape_string($title));
+    $mysql_title = trim(umc_mysql_real_escape_string($title));
     $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
-            VALUES ('$uuid','$recipient_uuid','$mysql_title','','draft', NOW());";
+            VALUES ('$uuid','$recipient_uuid', $mysql_title,'','draft', NOW());";
     umc_mysql_query($sql);
     $id = umc_mysql_insert_id();
     umc_mail_display($id);
@@ -208,6 +208,31 @@ function umc_mail_send() {
     umc_echo("Mail ID $id was sent successfully!");
     umc_mail_check();
     umc_mail_send_alert($id);
+}
+
+/**
+ * Function to send emails to a recipient faster. This is used by other functions
+ * to send status emails through code instead of user interactions. Does not use
+ * the draft function. One has to chose if the user is the system or the initiator
+ * of the calling function. In the latter case the sent mail will appear in the 
+ * outbox of the sender which might be a bit confusing.
+ * 
+ * @param type $message
+ * @param type $recipient
+ * @param type $sender
+ */
+function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = false) {
+    // user "Server" in case none is given
+    if (!$sender_uuid) {
+        $sender_uuid = 'Server00-0000-0000-0000-000000000000';
+    }
+    
+    $title_sql = umc_mysql_real_escape_string($title);
+    $message_sql = umc_mysql_real_escape_string($message);
+    
+    $sql = 'INSERT INTO `user_mail`(`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) '
+        . "VALUES ('$sender_uuid', '$recipient_uuid', $title_sql, $message_sql, 'sent', NOW());";
+    umc_mysql_query($sql, true);
 }
 
 /*
