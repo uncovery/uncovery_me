@@ -259,8 +259,8 @@ function umc_process_donation() {
         return;
     }
     $tx_token = $s_get['tx'];
-    // $auth_token = "GX_sTf5bW3wxRfFEbgofs88nQxvMQ7nsI8m21rzNESnl_79ccFTWj2aPgQ0"; // default
-    $auth_token = "vu9gQ8x6WzmwUTS1NwZM6ulo1paOeY64v9532nFKlyQ_PwC4vrKwzFf2CmS"; // mine
+    $token_file = __DIR__ . "/includes/paypal-Payment_Data_Transfer.token";
+    $auth_token = file_get_contents($token_file);
     $req .= "&tx=$tx_token&at=$auth_token";
 
     $ch = curl_init();
