@@ -274,7 +274,7 @@ function umc_info_who() {
             $data_text = '';
             foreach ($user_info as $desc => $data) {
                 if ($desc == 'Last Seen'){
-                    if (isset($user_info['uuid'], $UMC_USER['player_data'])) {
+                    if (isset($UMC_USER['player_data'][$user_info['uuid']])) {
                         $data_text = "$user is currently online";
                     } else {
                         $datetime = umc_datetime($data);
