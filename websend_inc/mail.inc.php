@@ -231,7 +231,7 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
     $title_sql = umc_mysql_real_escape_string($title);
     $message_sql = umc_mysql_real_escape_string($message);
     
-    $sql = 'INSERT INTO `user_mail`(`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) '
+    $sql = 'INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) '
         . "VALUES ('$sender_uuid', '$recipient_uuid', $title_sql, $message_sql, 'sent', NOW());";
     umc_mysql_query($sql, true);
 }
