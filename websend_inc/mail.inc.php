@@ -225,6 +225,7 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
     // user "Server" in case none is given
     if (!$sender_uuid) {
         $sender_uuid = 'Server00-0000-0000-0000-000000000000';
+        $message .= "\nThis email is system-generated. Do not reply to this email.";
     }
     
     $title_sql = umc_mysql_real_escape_string($title);
