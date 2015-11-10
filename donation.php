@@ -410,8 +410,8 @@ function umc_process_donation() {
             'X-Mailer: PHP/' . phpversion();
         $recipient_text = '';
         if ($uuid != $s_post['option_selection3']) {
-            $rec_username = umc_uuid_getone($s_post['option_selection3']);
-            $recipient_text = "The donation to be in benefot of $rec_username, as you asked.";
+            $rec_username = umc_uuid_getone($s_post['option_selection3'], 'username');
+            $recipient_text = "The donation to be in benefit of $rec_username, as you asked.";
         }
         $mailtext = "Dear $username, \r\n\r\nWe have just received and activated your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
             . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
