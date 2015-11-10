@@ -211,7 +211,7 @@ function umc_github_wordpress_update() {
             $issue_opened_date = substr($issue['created_at'], 0, 10);
             $issue_updated_date = substr($issue['updated_at'], 0, 10);
             foreach ($issue['labels'] as $label) {
-                $labels .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
+                $labels .= "<span style='background-color: #{$label['color']}'>{$label['name']}</span>&nbsp;";
             }            
             if (count($issue['labels']) > 0) {
                 $label_txt = " ($labels)";
