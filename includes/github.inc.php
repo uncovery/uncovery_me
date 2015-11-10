@@ -213,7 +213,10 @@ function umc_github_wordpress_update() {
             foreach ($issue['labels'] as $label) {
                 $labels .= " <span style='background-color: #{$label['color']}'>&nbsp;{$label['name']}&nbsp;</span> ";
             }            
-            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a> ($labels)";
+            if (count($issue['labels']) > 0) {
+                $label_txt = " ($labels)";
+            }
+            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a>$label_txt";
             if ($issue['state'] == 'open') {
                 if ($issue_opened_date == $issue_updated_date) {
                     $issue_arr['opened'][$issue['number']] = $text;
