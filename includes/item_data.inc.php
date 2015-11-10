@@ -1784,33 +1784,86 @@ $UMC_DATA = array(
     'spruce_door' => array(
         'id' => 193,
         'stack' => 1,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/b/be/Grid_Spruce_Door.png',
     ),
     'birch_door' => array(
         'id' => 194,
         'stack' => 1,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/f/f3/Grid_Birch_Door.png',
     ),
     'jungle_door' => array(
         'id' => 195,
         'stack' => 1,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/0/05/Grid_Jungle_Door.png',
     ),
     'acacia_door' => array(
         'id' => 196,
         'stack' => 1,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/d/d3/Grid_Acacia_Door.png',
     ),
     'dark_oak_door' => array(
         'id' => 197,
-        'stack' => 1,
-        'avail' => true,
+        'stack' => 64,
+        'avail' => false,
         'icon_url' => '/e/e2/Grid_Dark_Oak_Door.png',
     ),
+    'chorus_plant' => array(
+        'id' => 199,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/4/4b/Chorus_Tree.png',
+    ),
+    'chorus_flower' => array(
+        'id' => 200,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/73/Chorus_Flower.png',
+    ),
+    'purpur_block' => array(
+        'id' => 201,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/f/fd/Purpur_Block.png',
+    ),
+    'purpur_pillar' => array(
+        'id' => 202,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/e6/Purpur_Pillar.png',
+    ),
+    'purpur_stairs' => array(
+        'id' => 203,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/8/8e/Purpur_Stairs.png',
+    ),    
+    'purpur_double_slab' => array(
+        'id' => 204,
+        'stack' => 64,
+        'avail' => false,
+        'icon_url' => '/c/c3/Purpur_Slab.png',
+    ),
+    'purpur_slab' => array(
+        'id' => 205,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/c/c3/Purpur_Slab.png',
+    ),    
+    'end_bricks' => array(
+        'id' => 206,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/ea/End_Stone_Bricks.png',
+    ),       
+    
+    /*************************************************/
+    /*                ITEMS                          */
+    /*************************************************/
+    
     'iron_shovel' => array(
         'id' => 256,
         'damage' => 251,
