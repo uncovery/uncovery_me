@@ -1858,7 +1858,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/e/ea/End_Stone_Bricks.png',
-    ),       
+    ),   
     
     /*************************************************/
     /*                ITEMS                          */
