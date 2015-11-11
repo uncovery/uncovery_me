@@ -569,7 +569,7 @@ function umc_shopmgr_stats() {
         . "var chart;\n"
         . "var chartData = [\n";
     //
-    foreach (D as $row) {
+    foreach ($D as $row) {
         //$maxval_amount = max($maxval_amount, $row['amount']);
         //$maxval_value = max($maxval_value, $row['value']);
         $date = $row['week'];
