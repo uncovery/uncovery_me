@@ -228,10 +228,10 @@ function umc_process_donation() {
     if (strcmp ($res, "VERIFIED") == 0) {
         // ok, it's verfiied, get the POST variables and then continue.
         $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-        XMPP_ERROR_trace("Verified IPN: $req ". PHP_EOL);
+        XMPP_ERROR_trace("Verified IPN result: $res ". PHP_EOL);
     } else if (strcmp ($res, "INVALID") == 0) {
         // verficiation failed, request assistance
-        XMPP_ERROR_trigger("Invalid IPN: $req");
+        XMPP_ERROR_trigger("Invalid IPN result: $res");
         return "There was an issue verifying your payment. Please contact an admin at minecraft@uncovery.me to resolve this issue";
     }
 
