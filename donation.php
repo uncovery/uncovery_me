@@ -34,7 +34,7 @@ if ($UMC_DONATION['sandbox']) {
     $UMC_DONATION['button_id'] = 'CB6ZLXTFB3XG2';
 } else {
     $UMC_DONATION['paypal_url'] = "https://www.paypal.com/cgi-bin/webscr";
-    $UMC_DONATION['business_email'] = 'paypal_hkd@uncovery.net';  
+    $UMC_DONATION['business_email'] = 'minecraft@uncovery.me';  
     $UMC_DONATION['button_id'] = '39TSUWZ9XPW5G';
 }
         
@@ -300,10 +300,14 @@ function umc_process_donation() {
             . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
             . "Your userlevel will be updated as soon as you login to the server next time. You can also check it on the frontpage of the website.\r\n"
             . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
-        mail($s_post['payer_email'], $subject, $mailtext, $headers);
     } else {
         XMPP_ERROR_trigger("Not all values correct for donation!");
+        $mailtext = "Dear $username, \r\n\r\nWe have just received your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
+            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
+            . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";        
     }
+    mail($s_post['payer_email'], $subject, $mailtext, $headers);
 }
 
 function umc_donation_java_chart() {
