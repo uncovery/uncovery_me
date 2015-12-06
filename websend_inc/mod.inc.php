@@ -53,7 +53,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
             'long' => "This un-mutes a player.",
             'args' => '<player>',
         ),
-        'function' => 'umc__mod_unmute',
+        'function' => 'umc_mod_unmute',
         'security' => array(
             'level' =>'Master',
         ),
@@ -317,15 +317,20 @@ function umc_mod_unmute() {
     } else {
         $user = umc_check_user($args[2]);
         if (!$user) {
+            XMPP_ERROR_trigger("$player tried to un-mute $user, but $user does not exist!");
             umc_error("{red}The user {$args[2]} does not exist! See {yellow}/helpme mod");
         }
     }
     // umc_echo('checks done... ');
+    $user_uuid = umc_uuid_getone($user);
 
-    $file = "$UMC_PATH_MC/server/bukkit/plugins/Essentials/userdata/" . $user . ".yml";
-    $yml = yaml_parse_file($file);
-    // umc_echo('file parsed');
-    if ($yml['muted'] == 'true') {
+    $file = "$UMC_PATH_MC/server/bukkit/plugins/Essentials/userdata/" . $user_uuid . ".yml";
+    $txt = file_get_contents($file);
+    $search = "muted: true";
+    if (strstr($txt, $search)) {
+    // YAML library is not installed, 
+    //$yml = yaml_parse_file($file);
+    //if ($yml['muted'] == 'true') {
         $uuid = umc_user2uuid($user);
         umc_ws_cmd("mute $user", 'asPlayer');
         umc_ws_cmd("pex user $uuid timed remove -herochat.*;", 'asConsole');
@@ -335,6 +340,7 @@ function umc_mod_unmute() {
         umc_echo("The user $user has been un-muted!");
         umc_log('mod', 'un-mute', "$player un-muted $user");
     } else {
+        umc_log('mod', 'un-mute', "$player tried to un-mute $user, but $user was not muted!");
         umc_error("User $user was not muted!");
     }
 }
