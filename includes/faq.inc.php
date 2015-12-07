@@ -215,6 +215,12 @@ $UMC_FAQ = array(
             adding them to your lot and more.',
         'categories' => array('problems', 'in-game', 'userlevels', 'rules', 'misc'),
     ),
+    30 => array(
+        'question' => 'Some item frames disappeared on my lot!',
+        'answer' => 'Unfortunately, this can happen. Item frames seem to be bugged and simply might disappear from time to time. Please do not store your most valuable items in
+            item frames since the item in the frame will disappear along with the frame.',
+        'categories' => array('problems', 'in-game', 'blocks', 'misc'),
+    ),    
 );
 
 /**
