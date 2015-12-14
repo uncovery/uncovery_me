@@ -220,7 +220,16 @@ $UMC_FAQ = array(
         'answer' => 'Unfortunately, this can happen. Item frames seem to be bugged and simply might disappear from time to time. Please do not store your most valuable items in
             item frames since the item in the frame will disappear along with the frame.',
         'categories' => array('problems', 'in-game', 'blocks', 'misc'),
-    ),    
+    ),   
+    31 => array(
+        'question' => 'I have been griefed, what shall I do?',
+        'answer' => 'Generally we want users to settle griefing issues among themselves. So first of all, you should try to find out who griefed you. If it happened on your lot,
+            and only one other person had access to your lot, ask that person if they did it. If this is not the case, or if the person refuses that they griefed you, send a message to the admin
+            with the possibly exact details: What has been done, on what coordinates, in what world and when. You will then get a message back who did it - we log almost everything.
+            You can then go and tell the person that the logfile proves that they have done the damage, and ask them kindly to undo the damage. If they refuse to repair or even to admit the 
+            damage, please contact the admin again. We will then see if a ban is required.',
+        'categories' => array('problems', 'in-game', 'blocks', 'rules'),
+    ),
 );
 
 /**
