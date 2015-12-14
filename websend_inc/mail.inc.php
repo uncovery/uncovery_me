@@ -578,6 +578,7 @@ function umc_mail_web() {
     if (!isset($action)) {
         $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
     }
+    XMPP_ERROR_trigger("test");
     $out = '<div id="umc_ajax_container" class="webmail" style="display:block">' . "\n";
 
     // XMPP_ERROR_trigger("Mail");
@@ -667,6 +668,7 @@ function umc_mail_web() {
             $action = "New Mail";
         }
     }
+    $msg_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
     if ($action == 'New Mail') { //onsubmit=\"return umcAjaxFormProcess('" . umc_web_curr_url() . "', event)\"
         $out .= "<form id=\"newmailform\" method=\"post\"><div>\n"
@@ -675,15 +677,15 @@ function umc_mail_web() {
             . "Message:<br><textarea name=\"message\" value=\"\" rows=\"10\" style=\"width:100%;\">$message</textarea><input type=\"hidden\" name=\"msg_id\" value=\"\">\n"
             . "<input type=\"submit\" name=\"action\" value=\"Send\"><input type=\"submit\" name=\"action\" value=\"Save Draft\"><input type=\"submit\" name=\"action\" value=\"Cancel\">\n"
             . "</div></form>";
-    } else if ($action == 'mail') {
-        $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a>";
-        $msg_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+    } else if ($action == 'mail' && is_numeric($msg_id)) {
         $onemail_sql = "SELECT `msg_id`, `date_time`, `sender_uuid`, `recipient_uuid`, `title`, `message`, `status` FROM minecraft_srvr.`user_mail`
                 WHERE msg_id=$msg_id AND (recipient_uuid='$uuid' OR sender_uuid='$uuid');";
         $mail_data = umc_mysql_fetch_all($onemail_sql);
         if (count($mail_data) == 0) {
-            $out .= "ERROR: The email with ID $msg_id could not be found!";
+            $out .= "ERROR: The email with ID $msg_id could not be found!<br>";
+            $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a>";
         } else { // onsubmit=\"return umcAjaxFormProcess('" . umc_web_curr_url() . "', event)\"
+            $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a><br>";
             $out .= "<form  id=\"newmailform\" method=\"post\">\n<div>";
             $mail = array();
             foreach ($mail_data[0] as $field => $value) {
