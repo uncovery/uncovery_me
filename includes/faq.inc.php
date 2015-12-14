@@ -273,10 +273,10 @@ function umc_faq_web($id = 'accordion') {
         }
         $cat_text = implode(", ", $F['categories']);
         if (($presel_cat == 'all') || in_array($presel_cat, $F['categories'])) {
-            $out .= "    <h3>$faq_id: {$F['question']}</h3>
+            $out .= "    <h3 id=\"FAQ$faq_id\">$faq_id: {$F['question']}</h3>
             <div>
                 <p class=\"answer\">{$F['answer']}</p>
-                <p class=\"categories\"><a href=\"?id=$faq_id\">Direct link</a> | Categories: $cat_text</p>
+                <p class=\"categories\"><a href=\"?id=$faq_id#FAQ$faq_id\">Direct link</a> | Categories: $cat_text</p>
             </div>";
         }
 
