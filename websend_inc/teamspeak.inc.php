@@ -155,12 +155,11 @@ function umc_ts_authorize() {
  */
 function umc_ts_clear_rights($uuid, $echo = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    umc_echo("Trying to remove old permissions:");
     require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
     
-    if (!$UMC_TEAMSPEAK['server']) {
-        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }
+
     
     // find out the TS id the user has been using from the database
     $check_sql = "SELECT ts_uuid FROM minecraft_srvr.UUID WHERE UUID='$uuid';";
@@ -171,16 +170,25 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         }
         return false;
     } else {
+        umc_echo("Found old permissions.");
         $ts_uuid = $D[0]['ts_uuid'];
     }
     
+    umc_echo("Connecting to TS server.");
+    if (!$UMC_TEAMSPEAK['server']) {
+        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
+    }    
+    
     // find the TS user by that TS UUID
+    umc_echo("Searching for you on the TS server.");
     $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
     if (count($ts_Clients_match) > 0) {
+        umc_echo("Found user entries on TS server");
         $client_dbid = $ts_Clients_match[0];
         // enumerate all the groups the user is part of
         $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($client_dbid));
         // remove all servergroups except 8 (Guest)
+        umc_echo("Removing all old usergroups:");
         foreach ($servergroups as $sgid) {
             if ($sgid != 8) {
                 $UMC_TEAMSPEAK['server']->serverGroupClientDel($sgid, $client_dbid);
