@@ -578,7 +578,7 @@ function umc_mail_web() {
     if (!isset($action)) {
         $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
     }
-    XMPP_ERROR_trigger("test");
+
     $out = '<div id="umc_ajax_container" class="webmail" style="display:block">' . "\n";
 
     // XMPP_ERROR_trigger("Mail");
@@ -601,7 +601,7 @@ function umc_mail_web() {
     if ($action == 'Reply') {
         $recipient = filter_input(INPUT_POST, 'sender', FILTER_SANITIZE_STRING);
 
-        $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
+        $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
         $action = "New Mail";
     } else if ($action == 'Delete' || $action == 'Undelete') {
         $msg_id = filter_input(INPUT_POST, 'msg_id', FILTER_SANITIZE_NUMBER_INT);
@@ -662,8 +662,8 @@ function umc_mail_web() {
         } else {
             $mail = $mail_data[0];
             $recipient = $mail['username'];
-            $subject = htmlentities($mail['title']);
-            $message = htmlentities($mail['message']);
+            $subject = htmlentities(trim($mail['subject']));
+            $message = htmlentities(trim($mail['message']));
             $msg_id = $mail['msg_id'];
             $action = "New Mail";
         }
@@ -678,7 +678,7 @@ function umc_mail_web() {
             . "<input type=\"submit\" name=\"action\" value=\"Send\"><input type=\"submit\" name=\"action\" value=\"Save Draft\"><input type=\"submit\" name=\"action\" value=\"Cancel\">\n"
             . "</div></form>";
     } else if ($action == 'mail' && is_numeric($msg_id)) {
-        $onemail_sql = "SELECT `msg_id`, `date_time`, `sender_uuid`, `recipient_uuid`, `title`, `message`, `status` FROM minecraft_srvr.`user_mail`
+        $onemail_sql = "SELECT `msg_id`, `date_time`, `sender_uuid`, `recipient_uuid`, `title` as subject, `message`, `status` FROM minecraft_srvr.`user_mail`
                 WHERE msg_id=$msg_id AND (recipient_uuid='$uuid' OR sender_uuid='$uuid');";
         $mail_data = umc_mysql_fetch_all($onemail_sql);
         if (count($mail_data) == 0) {
@@ -686,10 +686,10 @@ function umc_mail_web() {
             $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a>";
         } else { // onsubmit=\"return umcAjaxFormProcess('" . umc_web_curr_url() . "', event)\"
             $out .= "<a href=\"$UMC_DOMAIN/server-access/mail/\">Back</a><br>";
-            $out .= "<form  id=\"newmailform\" method=\"post\">\n<div>";
+            $out .= "\n<form id=\"newmailform\" method=\"POST\" action=\"$UMC_DOMAIN/server-access/mail/\">\n<div>";
             $mail = array();
             foreach ($mail_data[0] as $field => $value) {
-                $mail[$field] = htmlentities(stripslashes($value));
+                $mail[$field] = htmlentities(stripslashes(trim($value)));
             }
             $buttons = "<div style=\"float:right\">";
             if (in_array($mail['status'], array('deleted_receiver','deleted_both'))) {
@@ -713,13 +713,13 @@ function umc_mail_web() {
                 . "<div style=\"float:left;width:33%;\"><label>To:</label><span class=\"field\">$recipient</span></div>\n"
                 . "<div style=\"float:left;width:33%;\"><label>Date:</label><span class=\"field\">{$mail['date_time']}</span></div>\n"
                 . "<div style=\"clear:both;\"></div>\n</div>"
-                . "$buttons<div class=\"line\" style=\"overflow:hidden\"><label>Subject:</label><span class=\"field\">{$mail['title']}</span></div>\n"
+                . "$buttons<div class=\"line\" style=\"overflow:hidden\"><label>Subject:</label><span class=\"field\">{$mail['subject']}</span></div>\n"
                 . "<div style=\"clear:both;\"></div>\n"
                 . "<div class=\"line\"><label>Message:</label><br>"
                 . "<div class=\"field\">{$mail['message']}</div>\n</div>\n"
                 . "<input type=\"hidden\" name=\"status\" value=\"{$mail['status']}\">"
                 . "<input type=\"hidden\" name=\"sender\" value=\"$sender\">"
-                . "<input type=\"hidden\" name=\"title\" value=\"{$mail['title']}\">"
+                . "<input type=\"hidden\" name=\"subject\" value=\"{$mail['subject']}\">"
                 . "<input type=\"hidden\" name=\"recipient_uuid\" value=\"{$mail['recipient_uuid']}\">"
                 . "<input type=\"hidden\" name=\"msg_id\" value=\"$msg_id\">"
                 . "<input type=\"hidden\" name=\"sender_uuid\" value=\"{$mail['sender_uuid']}\">"
@@ -774,7 +774,7 @@ function umc_mail_web() {
             . "<span style=\"float:right;\"><input type=\"checkbox\" name=\"email_alerts\" value=\"email_alerts\" $checked onchange='this.form.submit()'> Send e-mail alerts</span>"
             . "</div></form>\n";
 
-        $sql = "SELECT `msg_id`, `date_time`, s_ref.username as sender, r_ref.username as recipient, `title`, status
+        $sql = "SELECT `msg_id`, `date_time`, s_ref.username as sender, r_ref.username as recipient, `title` as subject, status
                 FROM minecraft_srvr.`user_mail`
                 LEFT JOIN minecraft_srvr.UUID as s_ref on sender_uuid=s_ref.UUID
                 LEFT JOIN minecraft_srvr.UUID as r_ref on recipient_uuid=r_ref.UUID
@@ -785,8 +785,8 @@ function umc_mail_web() {
         }
         $D = umc_mysql_fetch_all($sql);
 
-        $non_numeric = array('date_time', 'sender', 'recipient', 'title');
-        $formats = array('sender' => 'umc_mail_web_formats','status'=>'umc_mail_web_formats','recipient' => 'umc_mail_web_formats', 'title' => 'umc_mail_web_formats');
+        $non_numeric = array('date_time', 'sender', 'recipient', 'subject');
+        $formats = array('sender' => 'umc_mail_web_formats','status'=>'umc_mail_web_formats','recipient' => 'umc_mail_web_formats', 'subject' => 'umc_mail_web_formats');
         $hide_cols = array('msg_id');
         $check = umc_web_table("mail", "0, 'desc'", $D, '', $hide_cols, $non_numeric, $formats);
         if (!$check) {
@@ -848,7 +848,7 @@ function umc_mail_web_formats($column, $row) {
         case 'recipient':
             $out = $row[$column];
             break;
-        case 'title':
+        case 'subject':
             if ($row['status'] == 'draft') {
                 $action = 'edit';
             } else {
