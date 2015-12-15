@@ -78,9 +78,8 @@ $WS_INIT['info'] = array(  // the name of the plugin
     'setpass' => array(
         'help' => array (
             'short' => 'Set a new website password',
-            'long' => "In case you have trouble getting your website password, you can set a new password with this command. You need to give the password twice, separated by spaces.",
+            'long' => "In case you have trouble getting your website password, you can set a new password with this command. It will return a URL that allows you to enter a new password.",
         ),
-        'args' => '[password] [password]',
         'function' => 'umc_info_setpass',
         'top' => false,
     ),
@@ -91,22 +90,20 @@ function umc_info_setpass() {
     
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
-    $wp_id = umc_user_get_wordpress_id($uuid);
-
-    $args = $UMC_USER['args'];
-    if (isset($args[2]) && isset($args[3]) && ($args[2] == $args[3])) {
-        $password = $args[2];
-        $strength = umc_info_checkpass_strength($password);
-    } else {
-        umc_error("You need to enter the new password 2x! Such as /info password XXXXX XXXXX");
-    }
-
-    if ($strength < 5) {
-        umc_error("Your password strength is too low ($strength)! Please chose a longer password, include numbers and mixed case letters");
-    } else {
-        wp_set_password($password, $wp_id);
-    }
-    umc_echo("You new website password has been set!");
+    $user_login = umc_wp_get_login_from_uuid($uuid);
+    
+    // get userdata
+    // this code is copied from wp-login.php, round line 325, grep for 'get_password_reset_key'
+    $user_data = get_user_by('login', $user_login);
+    $reset_key = get_password_reset_key($user_data);
+    $url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user_login), 'login');
+    // shorten the URL
+    $shortenedurl = file_get_contents('http://uncovery.me/short/shorten.php?longurl=' . urlencode($url));
+    
+    umc_header("Password Reset Link");
+    umc_echo("Please click on the following link to set a new password:");
+    umc_echo($shortenedurl);
+    umc_footer();
 }
 
 function umc_info_checkpass_strength($password) {
