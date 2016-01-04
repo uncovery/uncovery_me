@@ -454,4 +454,3 @@ function umc_mod_warp_lot() {
     $y = 70;
     umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
 }
-
