@@ -90,7 +90,8 @@ function umc_uuid_login_logout_update($type) {
 
     $lots = umc_user_countlots($uuid);
     $userlevel = $UMC_USER['userlevel'];
-    $sql = "UPDATE minecraft_srvr.UUID SET $type=NOW(), lot_count=$lots, userlevel='$userlevel' WHERE UUID='$uuid';";
+    $ip = $UMC_USER['ip'];
+    $sql = "UPDATE minecraft_srvr.UUID SET last_ip=INET_ATON('$ip'), $type=NOW(), lot_count=$lots, userlevel='$userlevel' WHERE UUID='$uuid';";
     umc_mysql_query($sql);
 }
 
