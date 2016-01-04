@@ -448,9 +448,10 @@ function umc_mod_warp_lot() {
     }
     $sql = "SELECT min_x, min_z FROM minecraft_worldguard.`region_cuboid` WHERE region_id='$lot';";
     $D = umc_mysql_fetch_all($sql);
-    $row - $D[0];
+    $row = $D[0];
     $x = $row['min_x'];
     $z = $row['min_z'];
     $y = 70;
     umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
 }
+
