@@ -524,6 +524,7 @@ function umc_mail_send_alert($mail_id = 3886) {
 
 function umc_mail_delete_update_status($oldstatus, $role, $msg_id) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $newstatus = $oldstatus;
     $sender_array = array(
         'draft'=>'deleted_both',
         'sent' =>'deleted_both',
