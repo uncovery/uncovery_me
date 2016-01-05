@@ -401,6 +401,30 @@ function umc_lot_manager_dib_add($uuid, $lot, $action) {
     return $out;
 }
 
+/**
+ * iterates all dibs and kicks out invalid ones (user is not active or owns the lot already
+ */
+function umc_lot_manager_dib_cleanup() {
+    $sql = "SELECT * FROM minecraft_srvr.lot_reservation;";
+    $R = umc_mysql_fetch_all($sql);
+    foreach ($R as $r) {
+        $uuid = $r['uuid'];
+        $lot = $r['lot'];
+        $countlots = umc_user_countlots($uuid);
+        if ($countlots < 1) {
+            XMPP_ERROR_send_msg("User $uuid is not active anymore, remove dibs for $lot!");
+            umc_lot_manager_dib_delete($uuid, $lot);
+        } else {
+            
+            $user_lots = umc_user_getlots($uuid);
+            if (isset($user_lots[$lot])) {
+                XMPP_ERROR_send_msg("User $uuid is owner of $lot already, remove dibs!");
+                umc_lot_manager_dib_delete($uuid, $lot);
+            }
+        }
+    }
+}
+
 
 /*
  * displays a form where you can change the lot
@@ -1227,6 +1251,9 @@ function umc_check_lot_owner($lot, $uuid = false) {
 function umc_lot_reset_process() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_PATH_MC;
+    
+    // first of all, clean up user dibs
+    umc_lot_manager_dib_cleanup();
 
     // get banned users UUID => username
     $banned_users = umc_banned_users();
