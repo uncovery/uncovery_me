@@ -62,14 +62,6 @@ function umc_wp_get_vars() {
             } else {
                 $UMC_USER['donator'] = false;
             }
-            // browser fingerprint
-            $strings = array('HTTP_USER_AGENT', 'HTTP_ACCEPT_ENCODING', 'HTTP_ACCEPT_LANGUAGE');
-            $concat_str = '';
-            foreach ($strings as $string) {
-                $concat_str .= filter_input(INPUT_SERVER, $string, FILTER_SANITIZE_STRING);
-            }
-            $sql = "UPDATE minecraft_srvr.UUID SET browser_id='" . sha1($concat_str) . "' WHERE UUID='$uuid';";
-            umc_mysql_query($sql);
         }
         // if we did not get any UUID
         if (!$uuid) {
@@ -105,8 +97,6 @@ function umc_wp_ban_user($uuid) {
     XMPP_ERROR_trace("sessions outgoing", $sessions);
     XMPP_ERROR_trigger("User $uuid banned");
 }
-
-
 
 /**
  * function being called if we cannot get the UUID from wordpress meta data
