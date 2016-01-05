@@ -372,7 +372,6 @@ function umc_lottery() {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
             umc_msg_user($user, $msg);
         }
-
     } else {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
