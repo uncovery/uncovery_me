@@ -580,7 +580,7 @@ function umc_web_usercheck() {
     $out = '';
     foreach ($tables as $table_name => $crit_field) {
         $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> '' "
-                . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC";
+                . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
         
         $L = umc_mysql_fetch_all($sql);
         $out_arr = array();
