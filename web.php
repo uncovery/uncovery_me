@@ -24,6 +24,7 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_todays_users'] = 'umc_get_todays_users';
 $UMC_FUNCTIONS['web_set_fingerprint'] = 'umc_web_set_fingerprint';
+
 /**
  * returns the current URL, filtered
  * @return string
@@ -576,7 +577,7 @@ function umc_web_usercheck() {
         'Same Browser' => 'browser_id',
         'Same TeamSpeak' => 'ts_uuid',
     );
-          
+    $out = '';
     foreach ($tables as $table_name => $crit_field) {
         $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> '' "
                 . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
@@ -605,11 +606,10 @@ function umc_web_usercheck() {
  * @global type $UMC_USER
  */
 function umc_web_set_fingerprint() {
-    global $UMC_USER;
-    if (isset($UMC_USER['uuid'])) {
-        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
-        $sql = "UPDATE minecraft_srvr.UUID SET browser_id='$id' WHERE UUID='{$UMC_USER['uuid']}';";
-        umc_mysql_query($sql);            
-        XMPP_ERROR_send_msg($id); 
-    }
+    $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
+    $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING);
+    $sql = "UPDATE minecraft_srvr.UUID SET browser_id='$id' WHERE UUID='$uuid';";
+    umc_mysql_query($sql);            
+    XMPP_ERROR_send_msg("Browser ID: " . $id); 
+
 }
