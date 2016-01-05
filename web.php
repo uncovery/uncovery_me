@@ -601,7 +601,7 @@ function umc_web_usercheck() {
 
 /**
  * Update the browser fingerprint.
- * Called by javascript in global.js
+ * Called by javascript from js in umc_wp_fingerprint_call()
  * 
  * @global type $UMC_USER
  */
@@ -609,7 +609,5 @@ function umc_web_set_fingerprint() {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
     $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING);
     $sql = "UPDATE minecraft_srvr.UUID SET browser_id='$id' WHERE UUID='$uuid';";
-    umc_mysql_query($sql);            
-    XMPP_ERROR_send_msg("Browser ID: " . $id); 
-
+    umc_mysql_query($sql);
 }
