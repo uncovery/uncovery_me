@@ -144,7 +144,18 @@ function umc_ts_authorize() {
     umc_footer("Done!");
 }
 
+/*
 
+PHP Fatal error:  Uncaught exception 'TeamSpeak3_Adapter_ServerQuery_Exception' with message 'database empty result set' in /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php:319
+ * Stack trace:
+ * #0 /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php(91): TeamSpeak3_Adapter_ServerQuery_Reply->fetchError(Object(TeamSpeak3_Helper_String))
+ * #1 /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery.php(141): TeamSpeak3_Adapter_ServerQuery_Reply->__construct(Array, 'clientdbfind pa...', Object(TeamSpeak3_Node_Host), true)
+ * #2 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Abstract.php(73): TeamSpeak3_Adapter_ServerQuery->request('clientdbfind pa...', true)
+ * #3 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Server.php(90): TeamSpeak3_Node_Abstract->request('clientdbfind pa...', true)
+ * #4 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Abstract.php(97): TeamSpeak3_Node_Server->request('clientdbfind pa...')
+ * #5 /home/includes/teamspeak_php/libraries/ in /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php on line 319
+
+*/
 /**
  * Reset TS user rights to "Guest" for a specific user
  * This can be done even if the user is not online
@@ -156,7 +167,7 @@ function umc_ts_authorize() {
 function umc_ts_clear_rights($uuid, $echo = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     umc_echo("Trying to remove old permissions:");
-    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
+    require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
     
 
@@ -229,7 +240,7 @@ function umc_ts_viewer() {
     
     
     global $UMC_TEAMSPEAK;
-    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
+    require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     
     if (!$UMC_TEAMSPEAK['server']) {
         $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
