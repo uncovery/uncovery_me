@@ -300,7 +300,7 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
     $numeric_columns = array();
     if (is_array($data)) {
         if (count($data) == 0) {
-            return "No data found<hr>";
+            return "$pre_table<br>No data found<hr>";
         }
         $keys = array_keys(current($data));
     } else {
@@ -570,18 +570,30 @@ function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
  */
 function umc_web_usercheck() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT count(last_ip), last_ip FROM minecraft_srvr.UUID WHERE last_ip <> '' "
-            . "GROUP BY last_ip HAVING count(last_ip) > 1 ORDER BY count(last_ip) DESC";
-    $L = umc_mysql_fetch_all($sql);
-    $out_arr = array();
-    foreach ($L as $l) {
-        $line_sql = "SELECT INET_NTOA(last_ip) as ip, username, UUID, userlevel, lot_count, onlinetime, browser_id "
-            . "FROM minecraft_srvr.UUID WHERE last_ip = '{$l['last_ip']}'";
-        $D = umc_mysql_fetch_all($line_sql);
-        foreach ($D as $d) {
-            $out_arr[] = $d;
+    
+    $tables = array(
+        'Same IP' => 'last_ip',
+        'Same Browser' => 'browser_id',
+        'Same TeamSpeak' => 'ts_uuid',
+    );
+          
+    $out = '';
+    foreach ($tables as $table_name => $crit_field) {
+        $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> '' "
+                . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC";
+        
+        $L = umc_mysql_fetch_all($sql);
+        $out_arr = array();
+        foreach ($L as $l) {
+            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, INET_NTOA(last_ip) as ip, "
+                . "CONCAT(browser_id, '<br>', ts_uuid) AS 'Browser & TS ID' "
+                . "FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'";
+            $D = umc_mysql_fetch_all($line_sql);
+            foreach ($D as $d) {
+                $out_arr[] = $d;
+            }
         }
+        $out .= umc_web_table($table_name, 0, $out_arr, "<h2>$table_name</h2>");
     }
-    $out = umc_web_table("Users", 0, $out_arr);
     return $out;
 }
