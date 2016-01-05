@@ -79,17 +79,19 @@ function umc_wp_init_plugins() {
 function umc_wp_fingerprint_call() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid = umc_wp_get_uuid_for_currentuser();
-    $out = '
-<script>
-    jQuery(document).ready(function(jQuery) {
-        var fp = new Fingerprint2();
-        fp.get(function(result) {
-            var fingerprint_url = "http://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
-            jQuery.ajax(fingerprint_url);
+    if ($uuid) {
+        $out = '
+    <script>
+        jQuery(document).ready(function(jQuery) {
+            var fp = new Fingerprint2();
+            fp.get(function(result) {
+                var fingerprint_url = "http://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
+                jQuery.ajax(fingerprint_url);
+            });
         });
-    });
-</script>';
-    echo $out;
+    </script>';
+        echo $out;
+    }
 }
 
 function umc_wp_bbp_subscription_to_email($test = false) {
