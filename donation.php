@@ -196,7 +196,6 @@ function umc_process_donation() {
     curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
     // curl_setopt($ch, CURLOPT_HEADER, 1);
     // curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-
     // CONFIG: Optional proxy configuration
     //curl_setopt($ch, CURLOPT_PROXY, $proxy);
     //curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
@@ -207,17 +206,16 @@ function umc_process_donation() {
     // CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
     // of the certificate as shown below. Ensure the file is readable by the webserver.
     // This is mandatory for some environments.
-    
     curl_setopt($ch, CURLOPT_CAINFO, $UMC_DONATION['cert_path']);
     
     $res_raw = curl_exec($ch);
     if (curl_errno($ch) != 0) {
-        XMPP_ERROR_trigger("Can't connect to PayPal to validate IPN message: " . curl_error($ch));
+        XMPP_ERROR_trace("Can't connect to PayPal to validate IPN message: ", curl_error($ch));
         curl_close($ch);
         exit;
     } else {
         // Log the entire HTTP response if debug is switched on.
-        XMPP_ERROR_trigger("HTTP request of validation request:". curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: REQuest: $req \n\n RESponse: $res_raw");
+        XMPP_ERROR_trace("HTTP request of validation request:", curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: REQuest: $req \n\n RESponse: $res_raw");
         curl_close($ch);
     }
     
