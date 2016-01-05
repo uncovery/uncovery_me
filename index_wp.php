@@ -38,7 +38,10 @@ if (isset($s_get['function']) && function_exists('umc_'.$s_get['function'])) {
     umc_function_call($s_get['function']);
 } else if (isset($s_post['function']) && function_exists('umc_'.$s_post['function'])) {
     umc_function_call($s_post['function']);
+} /* else if (isset($s_get['function']) && !function_exists('umc_'.$s_get['function'])){
+    XMPP_ERROR_send_msg("Could not load function {$s_get['function']}");
 }
+ */
 
 if (!$UMC_ENV) {
     umc_set_environment();
