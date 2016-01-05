@@ -62,6 +62,14 @@ function umc_wp_get_vars() {
             } else {
                 $UMC_USER['donator'] = false;
             }
+            // browser fingerprint
+            $strings = array('HTTP_USER_AGENT', 'HTTP_ACCEPT_ENCODING', 'HTTP_ACCEPT_LANGUAGE');
+            $concat_str = '';
+            foreach ($strings as $string) {
+                $concat_str .= filter_input(INPUT_SERVER, $string, FILTER_SANITIZE_STRING);
+            }
+            $sql = "UPDATE minecraft_srvr.UUID SET browser_id='" . sha1($concat_str) . "' WHERE UUID='$uuid';";
+            umc_mysql_query($sql);
         }
         // if we did not get any UUID
         if (!$uuid) {
