@@ -48,6 +48,7 @@ function umc_wp_init_plugins() {
     add_action( 'wp_enqueue_scripts', 'umc_wp_add_css_and_js' );
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
+    add_action('wp_footer', 'umc_wp_fingerprint_call');
 
     // check if we allow password resets in case user is banned
     add_action('validate_password_reset', 'umc_wp_password_reset_check',  10, 2 );
@@ -73,6 +74,22 @@ function umc_wp_init_plugins() {
       }
 
     }
+}
+
+function umc_wp_fingerprint_call() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $uuid = umc_wp_get_uuid_for_currentuser();
+    $out = '
+<script>
+    jQuery(document).ready(function(jQuery) {
+        var fp = new Fingerprint2();
+        fp.get(function(result) {
+            var fingerprint_url = "http://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
+            jQuery.ajax(fingerprint_url);
+        });
+    });
+</script>';
+    echo $out;
 }
 
 function umc_wp_bbp_subscription_to_email($test = false) {
