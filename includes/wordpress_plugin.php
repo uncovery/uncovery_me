@@ -132,7 +132,8 @@ function umc_wp_add_css_and_js() {
     }
     wp_enqueue_script('jquery-ui-accordion');
     wp_enqueue_script('jquery-ui-tabs');
-    wp_enqueue_script( 'uncovery_global_js', 'http://uncovery.me/admin/js/global.js');
+    wp_enqueue_script('uncovery_global_js', 'http://uncovery.me/admin/js/global.js');
+    wp_enqueue_script('uncovery_fingerprint', 'http://uncovery.me/admin/js/fingerprint2.min.js');
 }
 
 function umc_wp_login_stylesheet() {
