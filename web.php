@@ -564,3 +564,24 @@ function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
     return $out;
 }
 
+/**
+ * returns likely accounts shared by UUIDs
+ * 
+ */
+function umc_web_usercheck() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql = "SELECT count(last_ip), last_ip FROM minecraft_srvr.UUID WHERE last_ip <> '' "
+            . "GROUP BY last_ip HAVING count(last_ip) > 1 ORDER BY count(last_ip) DESC";
+    $L = umc_mysql_fetch_all($sql);
+    $out_arr = array();
+    foreach ($L as $l) {
+        $line_sql = "SELECT INET_NTOA(last_ip) as ip, username, UUID, userlevel, lot_count, onlinetime, browser_id "
+            . "FROM minecraft_srvr.UUID WHERE last_ip = '{$l['last_ip']}'";
+        $D = umc_mysql_fetch_all($line_sql);
+        foreach ($D as $d) {
+            $out_arr[] = $d;
+        }
+    }
+    $out = umc_web_table("Users", 0, $out_arr);
+    return $out;
+}
