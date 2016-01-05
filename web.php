@@ -588,7 +588,7 @@ function umc_web_usercheck() {
             $line_sql = "SELECT username, userlevel, lot_count, onlinetime, INET_NTOA(last_ip) as ip, "
                 . "CONCAT(browser_id, '<br>', ts_uuid) AS 'Browser & TS ID' "
                 . "FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'"
-                . "ODER BY onlinetime";
+                . "ORDER BY onlinetime DESC";
             $D = umc_mysql_fetch_all($line_sql);
             foreach ($D as $d) {
                 $out_arr[] = $d;
