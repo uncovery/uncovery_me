@@ -199,7 +199,7 @@ function umc_money_check($user) {
         } else {
             // insert row
             $sql3 = "INSERT INTO `minecraft_iconomy`.`mineconomy_accounts` (`uuid`, `account`, `balance`)
-                VALUES ('$uuid', '$user', '0');";
+                VALUES ('$uuid', '$user', '100');";
             umc_mysql_query($sql3, true);
             return 0;
         }
