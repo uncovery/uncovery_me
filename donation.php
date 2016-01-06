@@ -303,7 +303,8 @@ function umc_process_donation() {
         $mailtext = "Dear $username, \r\n\r\nWe have just received your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
             . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
             . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
-            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";        
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";   
+        mail("minecraft@uncovery.me", "Donation failed!", $mailtext, $headers);
     }
     mail($s_post['payer_email'], $subject, $mailtext, $headers);
 }
