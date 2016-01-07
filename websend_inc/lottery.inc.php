@@ -41,14 +41,14 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
             'args' => '<username> <chance>',
         ),
         'security' => array(
-            'level'=>'Owner',
-         ),
+            'level' => 'Owner',
+        ),
         'function' => 'umc_lottery',
     ),
     'disabled' => false,
     'events' => array(
-            'PlayerJoinEvent' => 'umc_lottery_reminder',
-        ),
+        'PlayerJoinEvent' => 'umc_lottery_reminder',
+    ),
 );
 
 global $lottery;
@@ -375,6 +375,12 @@ function umc_lottery() {
     } else {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
+    // add vote to the database
+    $service = umc_mysql_real_escape_string($UMC_USER['args'][3]);
+    $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
+        VALUES ('$uuid', NOW(), $service, $ip);";
+    umc_mysql_query($sql, true);
     // echo "$user voted for the server and got $item_txt!;";
 }
 
@@ -403,37 +409,6 @@ function umc_lottery_roll_dice($chance = false) {
         $lastrank = $rank;
         $last_item = $item;
     }
-}
-
-function umc_lottery_log_import() {
-    global $UMC_PATH_MC;
-    $filename = "$UMC_PATH_MC/server/bukkit/plugins/Votifier/votes.log";
-    $temp_name = "$UMC_PATH_MC/server/bukkit/plugins/Votifier/parsing.log";
-    // move file somewhere else
-    rename($filename, $temp_name);
-    $pattern = '/Vote \(from:(.*) username:(.*) address:(.*) timeStamp:(.*)\)/';
-    $handle = @fopen($temp_name, "r");
-    if ($handle) {
-        $count = 0;
-        while (($line = fgets($handle)) !== false) {
-            // Vote (from:Minecraft-Server-List.com username:SleepyStrangeKid address:108.162.221.10 timeStamp:1383485842)
-            // Vote (from:Minestatus username:A_Silent_Winter address:173.137.154.46 timeStamp:2013-11-03 05:44:00 -0800)
-            preg_match($pattern, $line, $matches);
-
-            $date_time = umc_lottery_lot_fix_time($matches[4]);
-            // echo $matches[4] . " => $date_time <br>";
-            $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
-                VALUES ('{$matches[2]}', '$date_time', '{$matches[1]}', '{$matches[3]}');";
-            umc_mysql_query($sql, true);
-            $count++;
-        }
-        if (!feof($handle)) {
-            XMPP_ERROR_trigger("Error: unexpected fgets() fail (umc_lottery_log_import)");
-        }
-        fclose($handle);
-    }
-    unlink($temp_name);
-    umc_log('lottery', "import", "imported $count lines of votes");
 }
 
 /**
