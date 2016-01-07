@@ -43,7 +43,7 @@ function umc_wp_get_vars() {
         }
         $uuid = umc_wp_get_uuid_for_currentuser();
 
-        $UMC_USER['ip'] = filter_input(INPUT_SERVER, REMOTE_ADDR, FILTER_FLAG_IPV4);
+        $UMC_USER['ip'] = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_FLAG_IPV4);
         if (!$uuid) { // we have a guest who is trying to register
             $UMC_USER['username'] = $user_login;
             $UMC_USER['email'] = $user_email;
