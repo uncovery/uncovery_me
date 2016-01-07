@@ -51,7 +51,7 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
  */
 function umc_do_buyxp() {
     global $UMC_USER;
-    $xp_ratio = 0.1;
+    $xp_ratio = 10;
     $player = $UMC_USER['username'];
     $args = $UMC_USER['args'];
 
