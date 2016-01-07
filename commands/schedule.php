@@ -113,7 +113,6 @@ function run_umc_scheduler() {
         umc_exec_command($cmd);
     }
 
-    umc_lottery_log_import();
     umc_ban_to_database();
     // make a new ID file in case item data has changed
     include_once('/home/minecraft/server/bin/commands/make_id_file.php');
