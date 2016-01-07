@@ -78,6 +78,7 @@ function umc_wp_init_plugins() {
 
 function umc_wp_fingerprint_call() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    require_once('/home/minecraft/server/bin/index_wp.php');
     $uuid = umc_wp_get_uuid_for_currentuser();
     if ($uuid) {
         $out = '
