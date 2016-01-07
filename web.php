@@ -125,8 +125,7 @@ function umc_display_guestinfo(){
 	// Deposit information
         $deposit = umc_show_depotlist(true, $username, true);
         if (is_array($deposit) && count($deposit) > 0) {
-            $content .= "<li><strong>Your Deposit:</strong><ul>";
-
+            $content .= "<li><strong><a href=\"http://uncovery.me/server-access/shop-manager/?page=deposit\">Your Deposit:</a></strong><ul>";
             foreach ($deposit as $depot_content) {
                 $content .=  "<li>" . $depot_content['item'] . "</li>";
             }
