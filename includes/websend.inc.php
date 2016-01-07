@@ -120,6 +120,7 @@ function umc_ws_eventhandler($event) {
             umc_uuid_record_usertimes('lastlogin');
             // check if the user has a skin stored, if not, get it
             umc_usericon_get($UMC_USER['uuid'], false);
+            umc_home_import();
             break;
         case 'PlayerPreLoginEvent':
             // nothing needed since the fact that websend is called makes it register the UUID already
