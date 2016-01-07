@@ -63,7 +63,6 @@ $UMC_SETTING = array(
         'draftlands' => array('max_coord' => 3264, 'chunkborder' => 320),
         'hunger' => array('max_coord' => 125, 'chunkborder' => 256),
     ),
-
     'world_data' => array(
         'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
         'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11'),
