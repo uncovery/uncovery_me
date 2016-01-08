@@ -286,6 +286,9 @@ function umc_home_import() {
     $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $UMC_USER['uuid'] . ".yml";
     $A = Spyc::YAMLLoad($path);
     $H = $A['homes'];
+    if (!isset($A['homes']) || count($A['homes']) == 0) {
+        return;
+    }
     // iterate homes and import them
     foreach ($H as $home_name => $h) {
         $name = umc_mysql_real_escape_string($home_name);
