@@ -289,6 +289,10 @@ table.unc_datatables tbody td {
     padding-left: 10px;
 }
 
+#site-generator {
+    background-image: url("/admin/img/footer.png");
+}
+
 /* BBPRESS changes */
 a .widget .bbp-author-name {
     font-weight: normal;
