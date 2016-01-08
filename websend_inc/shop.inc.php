@@ -737,16 +737,19 @@ function umc_do_search() {
     foreach ($ITEM_SEARCH as $name => $data) {
         if ((strpos($name, $term, 0) !== false) || ($term == $data['item_name'])) { //find partial or full matches
             $finds[$data['item_name']][] = $name; // make sure we don't duplicate stuff by setting key as well
-            $count ++;
-        }
-        // break at 50
-        if ($count == 50) {
-            continue;
         }
     }
     $len = count($finds);
+    if ($len > $max) {
+        umc_error("Too many results ($len)!");
+    }
     foreach ($finds as $item_name => $data) {
-        umc_echo("{green}$item_name {gray}=> {blue}" .  implode("{gray}, {blue}", $data));
+        if (count($data) > 50) {
+            $text = "{red}Too many sub-results";
+        } else {
+            $text =  implode("{gray}, {blue}", $data);
+        }
+        umc_echo("{green}$item_name {gray}=> {blue}" . $text);
     }
     umc_pretty_bar("darkblue", "-", "{blue} $len match(es) found");
 }
