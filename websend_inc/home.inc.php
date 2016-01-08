@@ -275,7 +275,7 @@ function umc_home_count($name = false) {
 // import current homes from the essential plugin
 function umc_home_import() {
     global $UMC_USER;
-    // we automatically import old homes for all players on login
+    // we automatically import old homes for all players on login, but only once
     $existing_count = umc_home_count();
     if ($existing_count > 0) {
         return;
