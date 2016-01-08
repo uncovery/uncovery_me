@@ -741,11 +741,11 @@ function umc_do_search() {
     }
     $len = count($finds);
     if ($len > $max) {
-        umc_error("Too many results ($len)!");
+        umc_error("Too many results ($len)! http://uncovery.me/server-access/shop-manager/?page=goods");
     }
     foreach ($finds as $item_name => $data) {
         if (count($data) > 50) {
-            $text = "{red}Too many sub-results";
+            $text = "{red}Too many sub-results. Please see http://uncovery.me/server-access/shop-manager/?page=goods";
         } else {
             $text =  implode("{gray}, {blue}", $data);
         }
