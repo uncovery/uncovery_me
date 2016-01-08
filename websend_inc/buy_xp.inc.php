@@ -71,36 +71,28 @@ function umc_do_buyxp() {
         // retrieve the players balance to check if they can afford
         $balance = umc_money_check($player);
 
-        // validation checks, can afford, is an actual purchase.
-        $canafford = true;
-        $validvalue = true;
         
         if ( $xp < 1 || $amount < 1 ) {	
-            $validvalue = false;
             umc_error("{red}You need to buy at least 1 XP. For $amount Uncs you get only $xp XP (ratio is $xp_ratio!)");
         }
 
 	if ( $amount > $balance ) {
-	    $canafford = false;
             umc_error("{red}Sorry, you cannot afford this purchase. You currently have $balance uncs.");
         }
 
         // apply purchase
-        if ($canafford && $validvalue) {
+        // send the console command to give the player experience
+        umc_ws_cmd("xp $xp $player", 'asConsole');
+
+        // take the purchase amount from players account.
+        // take from, give to, positive value
+        umc_money($player, false, $amount);
         
-            // send the console command to give the player experience
-            umc_ws_cmd("xp $xp $player", 'asConsole');
-            
-            // take the purchase amount from players account.
-            // take from, give to, positive value
-            umc_money($player, false, $amount);
-            
-            // announce the purchase to encourage players to consider buying xp
-            umc_announce("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $newamount Uncs{gray}!");
-            
-            // log the purchase
-            umc_log('buyxp', 'buy', "$player paid $amount for $xp XP");
-        }
+        // announce the purchase to encourage players to consider buying xp
+        umc_announce("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $amount Uncs{gray}!");
+
+        // log the purchase
+        umc_log('buyxp', 'buy', "$player paid $amount for $xp XP");
     
     } else {
         umc_error("{red}You need to specify the amount of Uncs you want to spend. See {yellow}/helpme buyxp");
