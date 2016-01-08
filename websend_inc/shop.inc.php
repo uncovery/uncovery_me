@@ -718,6 +718,7 @@ function umc_do_buy_internal($to_deposit = false) {
 function umc_do_search() {
     global $UMC_USER, $ITEM_SEARCH;
     $args = $UMC_USER['args'];
+    $max = 50;
 
     if (!isset($args[2]) || strlen($args[2]) < 3) {
         umc_error("{red}You need at least 3 letters to search for!;");
@@ -732,9 +733,15 @@ function umc_do_search() {
     umc_echo("{gray}Searching for {white}$term{gray}...");
     umc_echo("{green}Item name => {blue} Alias{grey},{blue}...");
     $finds = array();
+    $count = 0;
     foreach ($ITEM_SEARCH as $name => $data) {
         if ((strpos($name, $term, 0) !== false) || ($term == $data['item_name'])) { //find partial or full matches
             $finds[$data['item_name']][] = $name; // make sure we don't duplicate stuff by setting key as well
+            $count ++;
+        }
+        // break at 50
+        if ($count == 50) {
+            continue;
         }
     }
     $len = count($finds);
