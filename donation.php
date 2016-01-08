@@ -151,6 +151,11 @@ function umc_donation_chart() {
 function umc_process_donation() {
     global $UMC_USER, $UMC_DONATION;
     
+    // only continue for logged-in users
+    if (!$UMC_USER) {
+        return;
+    }
+    
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     XMPP_ERROR_trigger("Donation Process form was accessed!");
