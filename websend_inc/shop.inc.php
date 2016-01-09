@@ -297,7 +297,7 @@ function umc_do_cancel() {
  * @global type $ENCH_ITEMS
  */
 function umc_do_find() {
-	
+    
     global $UMC_USER, $ENCH_ITEMS, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $args = $UMC_USER['args'];
@@ -323,8 +323,8 @@ function umc_do_find() {
         $match = array();
         
         switch ($arg) {
-        	
-        	// match specific enchantments being searched for
+            
+            // match specific enchantments being searched for
             case (preg_match('/ench:(.+)/',$arg, $match) ? $arg : false):
                 $find_specific_ench = umc_sanitize_input($match[1], 'ench');
                 $qualifier .= " AND meta LIKE '%$find_specific_ench%'";
@@ -351,7 +351,7 @@ function umc_do_find() {
                 $search_label = "{gray}under {cyan}$find_max_price each";
                 break;
 
-			// match only new results
+            // match only new results
             case ('new'):
                 $sort = 'id desc';
                 $search_label = ' {white}New';
@@ -526,9 +526,9 @@ function umc_do_offer_internal($deposit) {
     // this should always return only one row
     $sql = "SELECT * FROM minecraft_iconomy.stock
         WHERE item_name='{$item['item_name']}'
-	    AND damage='$item_type'
-	    AND meta='$meta'
-	    AND uuid='$uuid';";
+        AND damage='$item_type'
+        AND meta='$meta'
+        AND uuid='$uuid';";
     $sql_data = umc_mysql_fetch_all($sql);
     if (count($sql_data) > 1) {
         XMPP_ERROR_trigger("User $player has more than 1 offer for the same item ({$item['full']}) (SQL: $sql");
@@ -738,7 +738,7 @@ function umc_do_search() {
     $args = $UMC_USER['args'];
     $max = 50;
 
-	// check for nonsense queries returning large sets
+    // check for nonsense queries returning large sets
     if (!isset($args[2]) || strlen($args[2]) < 3) {
         umc_error("{red}You need at least 3 letters to search for!;");
     }
@@ -746,19 +746,19 @@ function umc_do_search() {
     $term = $args[2];
     $pageindex = 1;
 
-	// check for multiple search terms, or if it is just a pagination index
+    // check for multiple search terms, or if it is just a pagination index
     if (isset($args[3])) {
-    	if(!is_numeric($args[3])){
-        	umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
-    	} else {
-    		$pageindex = ($args[3])
-    	}
+        if(!is_numeric($args[3])){
+            umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
+        } else {
+            $pageindex = ($args[3])
+        }
     }
     
     // cast to lowercase so case doesn't remove results
     $term = strtolower($term)
 
-	// chat formatting of results
+    // chat formatting of results
     umc_header();
     umc_echo("{gray}Searching for {white}$term{gray}...");
     umc_echo("{green}Item name => {blue} Alias{grey},{blue}...");
@@ -786,13 +786,13 @@ function umc_do_search() {
         if (count($data) > $max) {
             
             // get number of pages of results 
-        	$pagemax = ceil(count($data)/$max);
-        	
-        	// data validation checks
-        	if ($pageindex > $pagemax) {$pageindex = $pagemax}
-        	if ($pageindex < 1) {$pageindex = 1}
-        	
-        	// set the offset based on supplied page
+            $pagemax = ceil(count($data)/$max);
+            
+            // data validation checks
+            if ($pageindex > $pagemax) {$pageindex = $pagemax}
+            if ($pageindex < 1) {$pageindex = 1}
+            
+            // set the offset based on supplied page
             $offset = ($pageindex - 1) * $max
             
             // return the subset array
