@@ -297,15 +297,14 @@ function umc_do_cancel() {
  * @global type $ENCH_ITEMS
  */
 function umc_do_find() {
+	
     global $UMC_USER, $ENCH_ITEMS, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $args = $UMC_USER['args'];
 
     // Check argument 1, request or offer
     $table = umc_sanitize_input($args, 'table');
-
     $MAX_RESULTS = 50;
-
     $qualifier = '1';
     $sort = 'price asc';
     $find_item = null;
@@ -313,39 +312,58 @@ function umc_do_find() {
     $search_label = '';
 
     foreach (array_splice($args,3) as $arg) {
+        
         if (is_null($arg)) {
             next;
         }
-        // error_log($arg);
+        
+        // cast to lowercase so case doesn't remove results
+        $arg = strtolower($arg);
+
         $match = array();
+        
         switch ($arg) {
+        	
+        	// match specific enchantments being searched for
             case (preg_match('/ench:(.+)/',$arg, $match) ? $arg : false):
                 $find_specific_ench = umc_sanitize_input($match[1], 'ench');
                 $qualifier .= " AND meta LIKE '%$find_specific_ench%'";
                 $search_label = "{purple}{$ENCH_ITEMS[$find_specific_ench]['name']}";
                 break;
+                
+            // match broadly any enchanted result
             case ('ench'):
                 $qualifier .= " AND meta IS NOT NULL AND meta != ''";
                 $search_label = "{purple}Enchanted";
                 break;
+            
+            // minimum price based search
             case (preg_match('/^>([0-9.]+)/',$arg, $match) ? $arg : false):
                 $find_min_price = umc_sanitize_input($match[1],'price');
                 $qualifier .= " AND price > $find_min_price";
                 $search_label = "{gray}over {cyan}$find_min_price each";
                 break;
+                
+            // maximum price based search
             case (preg_match('/^<([0-9.]+)/',$arg, $match) ? $arg : false):
                 $find_max_price = umc_sanitize_input($match[1],'price');
                 $qualifier .= " AND price < $find_max_price";
                 $search_label = "{gray}under {cyan}$find_max_price each";
                 break;
+
+			// match only new results
             case ('new'):
                 $sort = 'id desc';
                 $search_label = ' {white}New';
                 $no_item_ok = true;
                 break;
+                
+            // match any result
             case ('any'):
                 $no_item_ok = true;
                 break;
+            
+            // catch all undefined args
             default:
                 if (is_numeric($arg)) {
                     $arg = $UMC_DATA_ID2NAME[$arg];
@@ -720,37 +738,75 @@ function umc_do_search() {
     $args = $UMC_USER['args'];
     $max = 50;
 
+	// check for nonsense queries returning large sets
     if (!isset($args[2]) || strlen($args[2]) < 3) {
         umc_error("{red}You need at least 3 letters to search for!;");
     }
+    
     $term = $args[2];
+    $pageindex = 1;
 
+	// check for multiple search terms, or if it is just a pagination index
     if (isset($args[3])) {
-        umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
+    	if(!is_numeric($args[3])){
+        	umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
+    	} else {
+    		$pageindex = ($args[3])
+    	}
     }
+    
+    // cast to lowercase so case doesn't remove results
+    $term = strtolower($term)
 
+	// chat formatting of results
     umc_header();
     umc_echo("{gray}Searching for {white}$term{gray}...");
     umc_echo("{green}Item name => {blue} Alias{grey},{blue}...");
+    
     $finds = array();
     $count = 0;
+    
+    // populate array with found results
     foreach ($ITEM_SEARCH as $name => $data) {
         if ((strpos($name, $term, 0) !== false) || ($term == $data['item_name'])) { //find partial or full matches
             $finds[$data['item_name']][] = $name; // make sure we don't duplicate stuff by setting key as well
         }
     }
+    
+    // check for broadform too many results
     $len = count($finds);
     if ($len > $max) {
-        umc_error("Too many results ($len)! http://uncovery.me/server-access/shop-manager/?page=goods");
+        umc_error("Too many results ($len)! Please see http://uncovery.me/server-access/shop-manager/?page=goods");
     }
+    
+    // return results, paginated if required
     foreach ($finds as $item_name => $data) {
-        if (count($data) > 50) {
-            $text = "{red}Too many sub-results. Please see http://uncovery.me/server-access/shop-manager/?page=goods";
+        
+        // if data has more than max subsets
+        if (count($data) > $max) {
+            
+            // get number of pages of results 
+        	$pagemax = ceil(count($data)/$max);
+        	
+        	// data validation checks
+        	if ($pageindex > $pagemax) {$pageindex = $pagemax}
+        	if ($pageindex < 1) {$pageindex = 1}
+        	
+        	// set the offset based on supplied page
+            $offset = ($pageindex - 1) * $max
+            
+            // return the subset array
+            $subset = array_slice($data, $offset, $max);
+            
+            // output the subset
+            $text = "{yellow}Page $pageindex of $pagemax :" . (implode("{gray}, {blue}", $subset))
+            
         } else {
             $text =  implode("{gray}, {blue}", $data);
         }
         umc_echo("{green}$item_name {gray}=> {blue}" . $text);
     }
+    
     umc_pretty_bar("darkblue", "-", "{blue} $len match(es) found");
 }
 
