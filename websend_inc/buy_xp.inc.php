@@ -30,7 +30,7 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
         'help' => array(
             'title' => 'Buy XP',  // give it a friendly title
             'short' => 'Buy XP for Uncs',  // a short description
-            'long' => "Buys XP for the value of <uncs>. The exchange rate is 0.1 Unc per 1 XP.", // a long add-on to the short  description
+            'long' => "Buys XP for the value of <uncs>. The exchange rate is 10 Uncs per 1 XP.", // a long add-on to the short  description
             ),
     ),
     'buyxp' => array( // this is the base command if there are no other commands
