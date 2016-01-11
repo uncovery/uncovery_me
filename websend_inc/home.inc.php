@@ -180,7 +180,7 @@ function umc_home_warp() {
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
     $cmd = "tppos $player $x $y $z $yaw";
-    umc_log('home', 'warp', "$player warped to home $name at $player $x $y $z $yaw");
+    umc_log('home', 'warp', "$player warped to home $name at $world $x $y $z $yaw");
     umc_ws_cmd($cmd, 'asConsole');    
 }
 
