@@ -21,7 +21,9 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['home2'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'PlayerJoinEvent' => 'umc_home_import',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Home',  // give it a friendly title
@@ -46,7 +48,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_buy',
-    ),    
+    ),
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Update the location of a home',
@@ -54,7 +56,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_update',
-    ),     
+    ),
     'rename' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Change the name of a home',
@@ -70,7 +72,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             // 'args' => '<home name> <new name>',
         ),
         'function' => 'umc_home_import',
-    ),  
+    ),
     'sell' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Sell a home slot',
@@ -78,7 +80,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_sell',
-    ), 
+    ),
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Get a list of your homes',
@@ -86,7 +88,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '[world]',
         ),
         'function' => 'umc_home_list',
-    ),     
+    ),
 );
 
 $UMC_SETTING['max_homes'] = array(
@@ -102,10 +104,10 @@ $UMC_SETTING['max_homes'] = array(
 
 function umc_home_warp() {
     global $UMC_USER;
-    
+
     $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
-    
+
     // no home name given
     if (!isset($args[2])) {
         // check if the user has only one home
@@ -125,13 +127,13 @@ function umc_home_warp() {
         }
         $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' AND name=$name;";
     }
-    
+
     $D = umc_mysql_fetch_all($sql);
     $row = $D[0];
     $world = $row['world'];
     if ($world != $playerworld) {
         umc_ws_cmd("mv tp $world", 'asPlayer');
-    }    
+    }
     $x = $row['x'];
     $z = $row['z'];
     $y = $row['y'];
@@ -149,11 +151,11 @@ function umc_home_buy() {
     $cost = pow($count + 1, 3) * $base;
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
-    
+
     if ($count >= $max_homes) {
         umc_error("You already reached your maximum home count ($max_homes)!");
     }
-    
+
     // check if the user has the cash
     $bank = umc_money_check($UMC_USER['uuid']);
     if ($bank < $cost) {
@@ -200,12 +202,12 @@ function umc_home_sell() {
             umc_error("{red}You do not have a home with that name!");
         }
     }
-    
+
     umc_money(false, $UMC_USER['uuid'], $cost);
     $bank = umc_money_check($UMC_USER['uuid']);
     $newcount = $count - 1;
     $sql = "DELETE FROM minecraft_srvr.`homes` WHERE uuid='{$UMC_USER['uuid']}' AND name=$name;";
-    umc_mysql_query($sql, true);    
+    umc_mysql_query($sql, true);
     umc_header("Selling a home");
     umc_echo("You currently have $count homes, selling one.");
     umc_echo("This home sell earns you $cost Uncs! You now have $bank Uncs in your account.");
@@ -249,7 +251,7 @@ function umc_home_rename() {
         $new_name_check = umc_home_count($new_name);
         if ($new_name_check == 1) {
             umc_error("{red}You already have a home with that name!");
-        }        
+        }
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -269,7 +271,7 @@ function umc_home_count($name = false) {
     $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' $name_sql;";
     $D = umc_mysql_fetch_all($sql);
     $homes = $D[0]['count'];
-    return $homes;    
+    return $homes;
 }
 
 // import current homes from the essential plugin
@@ -289,7 +291,7 @@ function umc_home_import() {
         return;
     }
     $H = $A['homes'];
-    
+
     // iterate homes and import them
     foreach ($H as $home_name => $h) {
         $name = umc_mysql_real_escape_string($home_name);
@@ -307,11 +309,11 @@ function umc_home_list() {
     $D = umc_mysql_fetch_all($sql);
     $count = count($D);
     umc_header("Your home list ($count homes)");
-    
+
     $cur_world = false;
     $out = '';
     $worldhomes = array();
-    foreach ($D as $d) {      
+    foreach ($D as $d) {
         if ($d['world'] <> $cur_world) {
             if ($cur_world) {
                 $out .= implode(", ", $worldhomes);
