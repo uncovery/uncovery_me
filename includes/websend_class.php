@@ -33,7 +33,8 @@
                 $this->writeRawByte(21);
                 $this->writeString("websendmagic");
                 $seed = $this->readRawInt();
-                $hashedPassword = hash($this->hashAlgorithm, $seed.$this->file_get_contents("/home/includes/certificates/websend_code.txt"));
+                $password = file_get_contents("/home/includes/certificates/websend_code.txt");
+                $hashedPassword = hash($this->hashAlgorithm, $password);
                 $this->writeString($hashedPassword);
                 $result = $this->readRawInt();
                 if($result == 1){
