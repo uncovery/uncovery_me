@@ -18,7 +18,7 @@
  */
 
 /*
- * This function is a central interface to all things Websend. Anything that comes 
+ * This function is a central interface to all things Websend. Anything that comes
  * from websend or goes to the game through websend passes throug here.
  */
 
@@ -30,7 +30,7 @@
 function umc_ws_auth() {
 
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $checkpass = "willkommenaufdererde";
+    $checkpass = file_get_contents("/home/includes/certificates/websend_code.txt");
     $hashAlgorithm = "sha512";
 
     $s_post  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -192,9 +192,9 @@ function umc_ws_get_vars() {
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
             $ip_matches = false;
             $pattern = "/^\/((?:[0-9]{1,3}\.){3}[0-9]{1,3})/";
-            preg_match($pattern, $ip_raw, $ip_matches);         
+            preg_match($pattern, $ip_raw, $ip_matches);
             $UMC_USER['ip'] = $ip_matches[1];
-            
+
         }
         $UMC_USER['inv'] = array();
         if (isset($json['Invoker']['Inventory'])) {
@@ -405,7 +405,7 @@ function umc_ws_get_inv($inv_data) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
                     $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
-     
+
                     XMPP_ERROR_trigger("ITEM ISSUE: $item_typename not found in \$UMC_DATA, item {$item['Type']} : {$item['Durability']}, should be {$inv[$slot]['item_name']}");
                 }
             } else if ($name == "Type") {

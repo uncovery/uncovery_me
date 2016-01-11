@@ -2,7 +2,7 @@
     /*
      *  This is the central websend class that does the actual communication with
      *  Websend
-     * 
+     *
      *  Writted by Waterflames for the Websend project
      *  (Project page: http://dev.bukkit.org/bukkit-plugins/websend/)
      *  See https://github.com/Waterflames/Websend/blob/master/package/Websend.php for commits by other users.
@@ -10,7 +10,6 @@
 	class Websend
 	{
         public $timeout = 3600;/* Connection timeout as defined in fsockopen */
-        public $password = "willkommenaufdererde";/* Password in Websend server config */
         public $hashAlgorithm = "sha512";
 
         var $host;
@@ -34,7 +33,7 @@
                 $this->writeRawByte(21);
                 $this->writeString("websendmagic");
                 $seed = $this->readRawInt();
-                $hashedPassword = hash($this->hashAlgorithm, $seed.$this->password);
+                $hashedPassword = hash($this->hashAlgorithm, $seed.$this->file_get_contents("/home/includes/certificates/websend_code.txt"));
                 $this->writeString($hashedPassword);
                 $result = $this->readRawInt();
                 if($result == 1){
