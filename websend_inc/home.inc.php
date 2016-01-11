@@ -114,10 +114,11 @@ $UMC_SETTING['max_homes'] = array(
 
 // returns information about the players homes
 function umc_home_check() {
+    global $UMC_USER, $UMC_SETTING;
     
     $count = umc_home_count();
-    $base = 10;
-    $cost = pow($count + 1, 3) * $base;
+
+    $cost = umc_home_calc_costs($count);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
@@ -128,7 +129,13 @@ function umc_home_check() {
     umc_echo("Your maximum number of homes available for purchase is $max_homes.");
     umc_echo("The cost to purchase your next home is $cost Uncs.");
     umc_echo("You currently have $bank Uncs.");
-    
+    umc_footer();
+}
+
+function umc_home_calc_costs($count) {
+    $base = 10;
+    $cost = pow($count + 1, 3) * $base;
+    return $cost;
 }
 
 function umc_home_warp() {
@@ -136,6 +143,7 @@ function umc_home_warp() {
 
     $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
+    $player = $UMC_USER['username'];
 
     // no home name given
     if (!isset($args[2])) {
@@ -161,15 +169,16 @@ function umc_home_warp() {
     $row = $D[0];
     $world = $row['world'];
     if ($world != $playerworld) {
-        umc_ws_cmd("mv tp $world", 'asPlayer');
+        umc_ws_cmd("mv tp $player $world", 'asConsole');
     }
     $x = $row['x'];
     $z = $row['z'];
     $y = $row['y'];
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
+    $cmd = "tppos $player $x $y $z $yaw";
     XMPP_ERROR_send_msg("tppos $x $y $z $yaw");
-    umc_ws_cmd("tppos $x $y $z $yaw", 'asPlayer');
+    umc_ws_cmd($cmd, 'asConsole');    
 }
 
 // 
@@ -177,8 +186,7 @@ function umc_home_buy() {
     global $UMC_USER, $UMC_SETTING;
     $args = $UMC_USER['args'];
     $count = umc_home_count();
-    $base = 10;
-    $cost = pow($count + 1, 3) * $base;
+    $cost = $cost = umc_home_calc_costs($count);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
 
