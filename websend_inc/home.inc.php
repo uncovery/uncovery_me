@@ -127,7 +127,7 @@ function umc_home_check() {
     umc_echo("You currently have $count homes.");
     umc_echo("Your maximum number of homes available for purchase is $max_homes.");
     umc_echo("The cost to purchase your next home is $cost Uncs.");
-    umc_echo("You currently have $bank Uncs."
+    umc_echo("You currently have $bank Uncs.");
     
 }
 
