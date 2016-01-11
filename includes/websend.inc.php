@@ -255,11 +255,13 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     umc_log('websend', 'outgoing', "$cmd $how to $player");
     require_once "$UMC_PATH_MC/server/bin/includes/websend_class.php";
     $ws = new Websend("74.208.45.80"); //, 4445
-    $ws->password = "willkommenaufdererde";
+    $password = file_get_contents("/home/includes/certificates/websend_code.txt");
+    $ws->password = $password;
     if (!$ws->connect()) {
         // try again
+        XMPP_ERROR_trace("websend Auth failed (attempt 1, trying again)", "none");
         $ws = new Websend("74.208.45.80"); //, 4445
-        $ws->password = "willkommenaufdererde";
+        $ws->password = $password;
         if (!$ws->connect()) { // fail agin? bail.
             XMPP_ERROR_trigger("Could not connect to websend server (umc_exec_command / $cmd / $how / $player)");
         }
