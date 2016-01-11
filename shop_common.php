@@ -121,20 +121,26 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
+    
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    // cast part capitalized text to lowercase.
+    $item_name = strtolower($item_name)
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
         $item_name = $UMC_DATA_ID2NAME[$item_name];
         // conversion failed, item does not exist
         if (!$item_name) {
-            XMPP_ERROR_trigger("Could not identify $item_name umc_goods_get_text");
+            XMPP_ERROR_trigger("Could not identify $item_name from $item_data: DATA umc_goods_get_text");
             return false;
         }
     }
+    
+    // if item name is not set at all
     if (!isset($UMC_DATA[$item_name])) {
-        XMPP_ERROR_trigger("Could not identify $item_name umc_goods_get_text");
+        XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text");
         return false;
     } else {
         $item_arr = $UMC_DATA[$item_name];
@@ -145,6 +151,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
     $damage_spacer = '';
     $mc_name = $item_name;
     $icon_ext = strtolower(pathinfo($item_arr['icon_url'], PATHINFO_EXTENSION));
+    
     if (isset($item_arr['damage'])) {
         $damage = umc_goods_damage_calc($item_data, $item_arr['damage']);
         if ($damage) {
@@ -155,6 +162,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
         $mc_name = $item_arr['subtypes'][$item_data]['name'];
         $icon_ext = strtolower(pathinfo($item_arr['subtypes'][$item_data]['icon_url'], PATHINFO_EXTENSION));
     }
+    
     $nice_name = umc_pretty_name($mc_name);
 
     $icon_file = "icons/$mc_name.$icon_ext";
