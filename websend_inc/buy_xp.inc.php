@@ -36,8 +36,8 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
     'buyxp' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Buys XP',
-            'long' => "Buys XP to the value of <Uncs>. The exchange rate is 0.1 Unc per 1 XP.",
-            'args' => '<Uncs>',
+            'long' => "Buys XP to the value of <Uncs>. The exchange rate is 0.1 Unc per 1 XP. Use /buyxp check to check your current XP levels.",
+            'args' => '<Uncs>/"check"',
         ),
         'function' => 'umc_do_buyxp',
     ),
