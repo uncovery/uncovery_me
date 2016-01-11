@@ -185,11 +185,15 @@ function umc_ws_get_vars() {
                     'z' => $json['Invoker']['Location']['Z'],
                     'yaw' => $json['Invoker']['Location']['Yaw'],
             );
+            $UMC_USER['xp'] = $json['Invoker']['XP'];
+            $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
+            //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
             $ip_matches = false;
             $pattern = "/^\/((?:[0-9]{1,3}\.){3}[0-9]{1,3})/";
             preg_match($pattern, $ip_raw, $ip_matches);         
             $UMC_USER['ip'] = $ip_matches[1];
+            
         }
         $UMC_USER['inv'] = array();
         if (isset($json['Invoker']['Inventory'])) {
