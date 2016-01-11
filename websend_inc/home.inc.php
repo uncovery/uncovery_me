@@ -114,6 +114,7 @@ $UMC_SETTING['max_homes'] = array(
 
 // returns information about the players homes
 function umc_home_check() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     
     $count = umc_home_count();
@@ -133,12 +134,14 @@ function umc_home_check() {
 }
 
 function umc_home_calc_costs($count) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $base = 10;
     $cost = pow($count + 1, 3) * $base;
     return $cost;
 }
 
 function umc_home_warp() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
 
     $playerworld = $UMC_USER['world'];
@@ -177,12 +180,13 @@ function umc_home_warp() {
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
     $cmd = "tppos $player $x $y $z $yaw";
-    XMPP_ERROR_send_msg("tppos $x $y $z $yaw");
+    umc_log('home', 'warp', "$player warped to home $name at $player $x $y $z $yaw");
     umc_ws_cmd($cmd, 'asConsole');    
 }
 
 // 
 function umc_home_buy() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     $args = $UMC_USER['args'];
     $count = umc_home_count();
@@ -229,10 +233,11 @@ function umc_home_buy() {
     umc_echo("Your home slot has been purchased and set to your current location.");
     umc_echo("You can edit it with the {blue}rename{white} and {blue}update{white} commands!");
     umc_footer();
-    umc_log('homes', 'buy', "{$UMC_USER['uuid']}/{$UMC_USER['username']} bought a home called {$args[2]}!");
+    umc_log('home', 'buy', "{$UMC_USER['uuid']}/{$UMC_USER['username']} bought a home called {$args[2]} for $cost!");
 }
 
 function umc_home_sell() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
     $count = umc_home_count();
@@ -258,10 +263,11 @@ function umc_home_sell() {
     umc_echo("This home sell earns you $cost Uncs! You now have $bank Uncs in your account.");
     umc_echo("Your home slot has been sold successfully sold, you now have $newcount homes.");
     umc_footer();
-    umc_log('homes', 'sell', "{$UMC_USER['uuid']}/{$UMC_USER['username']} sold the home called {$args[2]}!");
+    umc_log('home', 'sell', "{$UMC_USER['uuid']}/{$UMC_USER['username']} sold the home called {$args[2]}!");
 }
 
 function umc_home_update() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
     // home name
@@ -278,10 +284,12 @@ function umc_home_update() {
     $sql = "UPDATE minecraft_srvr.`homes` SET `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$name LIMIT 1;";
     umc_mysql_query($sql, true);
+    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]}!");
     umc_echo("The coordinates of home {$args[2]} were updated to the current location!");
 }
 
 function umc_home_rename() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
     // home name
@@ -303,11 +311,13 @@ function umc_home_rename() {
     $sql = "UPDATE minecraft_srvr.`homes` SET `name`=$new_name "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$old_name LIMIT 1;";
     umc_mysql_query($sql, true);
+    umc_log('home', 'rename', "{$UMC_USER['uuid']}/{$UMC_USER['username']} renamed home {$args[2]} to {$args[3]}!");
     umc_echo("The name of home {$args[2]} was updated to {$args[3]}!");
 }
 
 // find out how many homes a user has already
 function umc_home_count($name = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $name_sql = '';
     if ($name) {
@@ -321,6 +331,7 @@ function umc_home_count($name = false) {
 
 // import current homes from the essential plugin
 function umc_home_import() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // we automatically import old homes for all players on login, but only once
     $existing_count = umc_home_count();
@@ -332,7 +343,8 @@ function umc_home_import() {
     require_once('/home/includes/spyc/Spyc.php');
     $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $UMC_USER['uuid'] . ".yml";
     $A = Spyc::YAMLLoad($path);
-    if (!isset($A['homes']) || count($A['homes']) == 0) {
+    $count = count($A['homes']);
+    if (!isset($A['homes']) || $count == 0) {
         return;
     }
     $H = $A['homes'];
@@ -345,10 +357,11 @@ function umc_home_import() {
             . "($name,'{$UMC_USER['uuid']}','{$h['world']}','{$h['x']}','{$h['y']}','{$h['z']}','{$h['yaw']}');";
         umc_mysql_query($sql, true);
     }
-    umc_log('homes', 'import', "{$UMC_USER['uuid']}/{$UMC_USER['username']}homes have been imported!");
+    umc_log('homes', 'import', "{$UMC_USER['uuid']}/{$UMC_USER['username']} $count homes have been imported!");
 }
 
 function umc_home_list() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' ORDER BY world, name;";
     $D = umc_mysql_fetch_all($sql);
