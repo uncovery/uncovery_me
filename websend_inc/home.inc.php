@@ -243,7 +243,7 @@ function umc_home_sell() {
     $count = umc_home_count();
     $cost = umc_home_calc_costs($count) / 2;
     if (!isset($args[2])) {
-        umc_error("{red}You need to specify the name of your new home!");
+        umc_error("{red}You need to specify which home you wish to sell");
     } else {
         $name = umc_mysql_real_escape_string(trim($args[2]));
         $name_check = umc_home_count($name);
