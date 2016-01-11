@@ -126,7 +126,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // cast part capitalized text to lowercase.
-    $item_name = strtolower($item_name)
+    $item_name = strtolower($item_name);
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
