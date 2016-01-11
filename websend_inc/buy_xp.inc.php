@@ -30,13 +30,13 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
         'help' => array(
             'title' => 'Buy XP',  // give it a friendly title
             'short' => 'Buy XP for Uncs',  // a short description
-            'long' => "Buys XP for the value of <uncs>. The exchange rate is 10 Uncs per 1 XP.", // a long add-on to the short  description
+            'long' => "Buys XP for the value of <uncs>. The exchange rate is 1 Uncs per 1 XP.", // a long add-on to the short  description
             ),
     ),
     'buyxp' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Buys XP',
-            'long' => "Buys XP to the value of <Uncs>. The exchange rate is 0.1 Unc per 1 XP. Use /buyxp check to check your current XP levels.",
+            'long' => "Buys XP to the value of <Uncs>. The exchange rate is 1 Unc per 1 XP. Use /buyxp check to check your current XP levels.",
             'args' => '<Uncs>/"check"',
         ),
         'function' => 'umc_do_buyxp',
@@ -54,7 +54,7 @@ function umc_do_buyxp() {
 	
     $player = $UMC_USER['username'];
     $args = $UMC_USER['args'];
-    $xp_ratio = 0.1;
+    $xp_ratio = 1;
 	
     // check to see if player has entered a value of xp to buy
     if (isset($args[2])) {
