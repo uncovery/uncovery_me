@@ -185,6 +185,7 @@ function umc_ws_get_vars() {
                     'z' => $json['Invoker']['Location']['Z'],
                     'yaw' => $json['Invoker']['Location']['Yaw'],
             );
+            // the raw figure is a 0.x, might have to change to get to full numbers
             $UMC_USER['xp'] = $json['Invoker']['XP'];
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             //IP Address
