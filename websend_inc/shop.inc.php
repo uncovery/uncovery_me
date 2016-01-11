@@ -751,12 +751,12 @@ function umc_do_search() {
         if(!is_numeric($args[3])){
             umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
         } else {
-            $pageindex = ($args[3])
+            $pageindex = ($args[3]);
         }
     }
     
     // cast to lowercase so case doesn't remove results
-    $term = strtolower($term)
+    $term = strtolower($term);
 
     // chat formatting of results
     umc_header();
@@ -789,17 +789,17 @@ function umc_do_search() {
             $pagemax = ceil(count($data)/$max);
             
             // data validation checks
-            if ($pageindex > $pagemax) {$pageindex = $pagemax}
-            if ($pageindex < 1) {$pageindex = 1}
+            if ($pageindex > $pagemax) {$pageindex = $pagemax;}
+            if ($pageindex < 1) {$pageindex = 1;}
             
             // set the offset based on supplied page
-            $offset = ($pageindex - 1) * $max
+            $offset = ($pageindex - 1) * $max;
             
             // return the subset array
             $subset = array_slice($data, $offset, $max);
             
             // output the subset
-            $text = "{yellow}Page $pageindex of $pagemax :" . (implode("{gray}, {blue}", $subset))
+            $text = "{yellow}Page $pageindex of $pagemax :" . (implode("{gray}, {blue}", $subset));
             
         } else {
             $text =  implode("{gray}, {blue}", $data);
