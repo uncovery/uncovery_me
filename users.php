@@ -18,8 +18,8 @@
  */
 
 /*
- * This file manages several central aspects of users, creates several different 
- * lists of users and other user information. Some of these functions should be 
+ * This file manages several central aspects of users, creates several different
+ * lists of users and other user information. Some of these functions should be
  * relocated to uuid.inc.php
  */
 
@@ -631,9 +631,8 @@ function umc_user_ban($user, $reason) {
 function umc_user_directory() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // list all users
-    if (isset($_GET['u'])) {
-        $username_get = filter_var($_GET['u'], FILTER_SANITIZE_STRING);
-
+    $username_get = filter_input(INPUT_GET, 'u', FILTER_SANITIZE_STRING);
+    if (!is_null($username_get)) {
         $wordpress_id = umc_user_get_wordpress_id($username_get);
         $username = strtolower(umc_check_user($username_get));
         if (!$wordpress_id) {
