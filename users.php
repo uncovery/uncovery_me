@@ -633,27 +633,24 @@ function umc_user_directory() {
     // list all users
     if (isset($_GET['u'])) {
         $username_get = filter_var($_GET['u'], FILTER_SANITIZE_STRING);
+
         $wordpress_id = umc_user_get_wordpress_id($username_get);
         $username = strtolower(umc_check_user($username_get));
         if (!$wordpress_id) {
             return "User does not exist!";
         }
-        // Start tabs
-        echo '<div style="display: block;" class="umc_jquery_tabs umc_fade_in ui-tabs ui-widget ui-widget-content ui-corner-all">';
-        echo '<ul role="tablist" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">';
-        
-        // Start tab 1 
-        echo '<div aria-hidden="false" role="tabpanel" class="ui-tabs-panel ui-widget-content ui-corner-bottom" aria-labelledby="ui-id-1" id="tab0">';
-        
+
         // user icon
         echo get_avatar($wordpress_id, $size = '96');
         echo "<br><strong>Username:</strong> $username<br>";
         $uuid = umc_user2uuid($username);
         echo "<br><strong>UUID:</strong> $uuid<br>";
+
         $previous_names = umc_uuid_username_history($uuid);
         if ($previous_names) {
             echo "<strong>Usernames History:</strong> $previous_names<br>";
         }
+
         // is user banned?
         if (umc_user_is_banned($uuid)) {
             echo "<strong>User is BANNED!</strong><br>";
@@ -662,14 +659,24 @@ function umc_user_directory() {
             umc_promote_citizen($username);
             umc_donation_level($username);
         }
+
         // get userlevel
         $level = umc_get_userlevel($username);
         echo "<strong>Level:</strong> $level<br>";
+
         $karma = umc_getkarma($uuid, true);
         echo "<strong>Karma:</strong> $karma<br>";
+
         $money = umc_money_check($uuid);
         echo "<strong>Money:</strong> $money Uncs<br>";
-        
+
+        // get lots
+        $lots = umc_user_getlots($uuid);
+        echo "<strong>Lots:</strong><br>    ";
+        foreach ($lots as $data) {
+            echo $data['lot'] . "<br>" . $data['image'] . "<br>";
+        }
+
         $donator_level = umc_users_donators($uuid);
         if ($donator_level > 12) {
             $donator_str = 'More than 1 year';
@@ -680,6 +687,7 @@ function umc_user_directory() {
             $donator_str = "Not a donator";
         }
         echo "<strong>Donations remaining:</strong> $donator_str<br>";
+
         // get member since
         $online_time = umc_get_lot_owner_age('days', $uuid);
         if ($online_time) {
@@ -697,26 +705,8 @@ function umc_user_directory() {
             $row = $D[0];
             echo "<strong>Bio:</strong> " . $row['meta_value'] . "<br>";
         }
-        
-        // End tab 1
-        echo "</div>";
-        
-        // Start tab 2
-        echo '<div aria-hidden="false" role="tabpanel" class="ui-tabs-panel ui-widget-content ui-corner-bottom" aria-labelledby="ui-id-2" id="tab1">';
-        
-        // get lots
-        $lots = umc_user_getlots($uuid);
-        echo "<strong>Lots:</strong><br>    ";
-        foreach ($lots as $data) {
-            echo $data['lot'] . "<br>" . $data['image'] . "<br>";
-        }
-        
-        // End tab 2
-        echo "</div>";
-        
-        // Start tab 3
-        echo '<div aria-hidden="false" role="tabpanel" class="ui-tabs-panel ui-widget-content ui-corner-bottom" aria-labelledby="ui-id-3" id="tab2">';
-        
+
+
         // comments
         $sql2 = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
             LEFT JOIN minecraft.wp_posts ON comment_post_id=id
@@ -728,6 +718,7 @@ function umc_user_directory() {
             echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
         }
         echo "</ul>\n";
+
         //forum posts
         $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
 		wpp.post_parent AS parent, wpp.post_type AS type, parent.post_title AS parent_title
@@ -753,13 +744,6 @@ function umc_user_directory() {
             echo "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
         }
         echo "</ul>\n";
-        
-        // End tab 3
-        echo "</div>";
-
-        // Completely end tabs
-        echo "</div>";
-        
     } else {
         // $bans = umc_get_banned_users();
         //var_dump($bans);
@@ -777,6 +761,7 @@ function umc_user_directory() {
             . "<th>Online min/day</th>"
             . "<th>Online hrs</th>"
             . "</thead>\n<tbody>\n";
+
         $sql = "SELECT username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
             FROM minecraft_srvr.UUID
             LEFT JOIN minecraft_srvr.permissions_inheritance ON UUID.uuid=child
@@ -786,10 +771,12 @@ function umc_user_directory() {
             GROUP BY username, owner
             ORDER BY firstlogin";
         $rst = umc_mysql_query($sql);
+
         $now = time(); // or your date as well
         $your_date = strtotime("2013-11-20");
         $datediff = $now - $your_date;
         $alt_days = floor($datediff/(60*60*24));
+
         while ($row = umc_mysql_fetch_array($rst)) {
             $days_offline = $row['days_offline'];
             $settler_levels = array('Settler', 'SettlerDonator', 'SettlerDonatorPlus');
@@ -802,6 +789,7 @@ function umc_user_directory() {
                     if (($alt_days - $days_offline) == 0) {
                         continue;
                     }
+
                     $avg_online = floor(($row['onlinetime'] / 60) / $alt_days);
                 } else {
                     $avg_online = floor(($row['onlinetime'] / 60) / $row['registered_since']);
