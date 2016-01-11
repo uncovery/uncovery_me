@@ -119,7 +119,7 @@ function umc_home_check() {
     
     $count = umc_home_count();
 
-    $cost = umc_home_calc_costs($count);
+    $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
@@ -136,7 +136,7 @@ function umc_home_check() {
 function umc_home_calc_costs($count) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $base = 10;
-    $cost = pow($count + 1, 3) * $base;
+    $cost = pow($count, 3) * $base;
     return $cost;
 }
 
@@ -190,7 +190,7 @@ function umc_home_buy() {
     global $UMC_USER, $UMC_SETTING;
     $args = $UMC_USER['args'];
     $count = umc_home_count();
-    $cost = $cost = umc_home_calc_costs($count);
+    $cost = $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
 
@@ -241,8 +241,7 @@ function umc_home_sell() {
     global $UMC_USER;
     $args = $UMC_USER['args'];
     $count = umc_home_count();
-    $base = 10;
-    $cost = (pow($count, 3) * $base) / 2;
+    $cost = umc_home_calc_costs($count) / 2;
     if (!isset($args[2])) {
         umc_error("{red}You need to specify the name of your new home!");
     } else {
