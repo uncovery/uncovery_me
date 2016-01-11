@@ -159,11 +159,12 @@ $WS_INIT['shop'] = array(
     'search' => array(
         'function' => 'umc_do_search',
         'help' => array(
-            'args' => '<term>',
+            'args' => '<term> [page]',
             'short' => 'Search for item names matching <term>;',
             'long' => '{gray}Use the results shown with other commands, such as {yellow}/find;'
             . '{cyan}* Example:;'
             . '{yellow}/search ore{gray} => Find item names containing the word "ore";'
+            . '{yellow}/search pot 2{gray} => Returns page 2 of large subset results ie potions;'
         ),
         'top' => true,
     ),
@@ -799,7 +800,7 @@ function umc_do_search() {
             $subset = array_slice($data, $offset, $max);
             
             // output the subset
-            $text = "{yellow}Page $pageindex of $pagemax :" . (implode("{gray}, {blue}", $subset));
+            $text = "{yellow}Page $pageindex of $pagemax :{blue}" . (implode("{gray}, {blue}", $subset));
             
         } else {
             $text =  implode("{gray}, {blue}", $data);
