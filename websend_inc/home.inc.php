@@ -107,7 +107,8 @@ function umc_home_warp() {
 
     $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
-
+    $player = $UMC_USER['username'];
+    
     // no home name given
     if (!isset($args[2])) {
         // check if the user has only one home
@@ -132,15 +133,15 @@ function umc_home_warp() {
     $row = $D[0];
     $world = $row['world'];
     if ($world != $playerworld) {
-        umc_ws_cmd("mv tp $world", 'asPlayer');
+        umc_ws_cmd("mv tp $player $world", 'asConsole');
     }
     $x = $row['x'];
     $z = $row['z'];
     $y = $row['y'];
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
-    XMPP_ERROR_send_msg("tppos $x $y $z $yaw");
-    umc_ws_cmd("tppos $x $y $z $yaw", 'asPlayer');
+    $cmd = "tppos $player $x $y $z $yaw";
+    umc_ws_cmd($cmd, 'asConsole');    
 }
 
 function umc_home_buy() {
@@ -162,8 +163,7 @@ function umc_home_buy() {
         umc_error("You do not have enough cash to buy another home! You have only $bank Uncs.");
     }
     $leftover = $bank - $cost;
-    // transfer the money
-    umc_money($UMC_USER['uuid'], false, $cost);
+
     // home name
     if (isset($args[2])) {
         $name = umc_mysql_real_escape_string(trim($args[2]));
@@ -175,6 +175,9 @@ function umc_home_buy() {
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
+    // transfer the money
+    umc_money($UMC_USER['uuid'], false, $cost);    
+    
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
         . "($name,'{$UMC_USER['uuid']}','{$UMC_USER['world']}','{$UMC_USER['coords']['x']}','{$UMC_USER['coords']['y']}','{$UMC_USER['coords']['z']}','{$UMC_USER['coords']['yaw']}');";
     umc_mysql_query($sql, true);
