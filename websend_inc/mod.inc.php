@@ -123,11 +123,14 @@ $WS_INIT['mod'] = array(  // the name of the plugin
         'security' => array(
             'level'=>'Owner',
          ),
-    ),    
+    ),
 );
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    $cmd = "ch qm n This is a test&f";
+    umc_exec_command($cmd, 'asConsole');
     XMPP_ERROR_trigger("test");
 }
 
@@ -328,7 +331,7 @@ function umc_mod_unmute() {
     $txt = file_get_contents($file);
     $search = "muted: true";
     if (strstr($txt, $search)) {
-    // YAML library is not installed, 
+    // YAML library is not installed,
     //$yml = yaml_parse_file($file);
     //if ($yml['muted'] == 'true') {
         $uuid = umc_user2uuid($user);
