@@ -39,6 +39,9 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'long' => "Warps you to your home. If you have several homes, add the name of it.",
             'args' => '<home name>',
         ),
+        'security' => array(
+            'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
+        ),
         'function' => 'umc_home_warp',
     ),
     'buy' => array( // this is the base command if there are no other commands
@@ -89,6 +92,13 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_list',
     ),
+    'check' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Gets the next homes cost',
+            'long' => "This will return the cost of your next home you can purchase along with your current maximum number of homes.",
+        ),
+        'function' => 'umc_home_check',
+    ),
 );
 
 $UMC_SETTING['max_homes'] = array(
@@ -102,13 +112,31 @@ $UMC_SETTING['max_homes'] = array(
     'Owner' => 15,
 );
 
+// returns information about the players homes
+function umc_home_check() {
+    
+    $count = umc_home_count();
+    $base = 10;
+    $cost = pow($count + 1, 3) * $base;
+    $userlevel = $UMC_USER['userlevel'];
+    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    $bank = umc_money_check($UMC_USER['uuid']);
+    
+    // output the return values to the chat window
+    umc_header("Checking Home Status");
+    umc_echo("You currently have $count homes.");
+    umc_echo("Your maximum number of homes available for purchase is $max_homes.");
+    umc_echo("The cost to purchase your next home is $cost Uncs.");
+    umc_echo("You currently have $bank Uncs.");
+    
+}
+
 function umc_home_warp() {
     global $UMC_USER;
 
     $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
-    $player = $UMC_USER['username'];
-    
+
     // no home name given
     if (!isset($args[2])) {
         // check if the user has only one home
@@ -133,17 +161,18 @@ function umc_home_warp() {
     $row = $D[0];
     $world = $row['world'];
     if ($world != $playerworld) {
-        umc_ws_cmd("mv tp $player $world", 'asConsole');
+        umc_ws_cmd("mv tp $world", 'asPlayer');
     }
     $x = $row['x'];
     $z = $row['z'];
     $y = $row['y'];
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
-    $cmd = "tppos $player $x $y $z $yaw";
-    umc_ws_cmd($cmd, 'asConsole');    
+    XMPP_ERROR_send_msg("tppos $x $y $z $yaw");
+    umc_ws_cmd("tppos $x $y $z $yaw", 'asPlayer');
 }
 
+// 
 function umc_home_buy() {
     global $UMC_USER, $UMC_SETTING;
     $args = $UMC_USER['args'];
@@ -153,18 +182,7 @@ function umc_home_buy() {
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
 
-    if ($count >= $max_homes) {
-        umc_error("You already reached your maximum home count ($max_homes)!");
-    }
-
-    // check if the user has the cash
-    $bank = umc_money_check($UMC_USER['uuid']);
-    if ($bank < $cost) {
-        umc_error("You do not have enough cash to buy another home! You have only $bank Uncs.");
-    }
-    $leftover = $bank - $cost;
-
-    // home name
+    // sanitise input and check if home name valid
     if (isset($args[2])) {
         $name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
@@ -175,12 +193,28 @@ function umc_home_buy() {
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
-    // transfer the money
-    umc_money($UMC_USER['uuid'], false, $cost);    
     
+    // check player is not home capped
+    if ($count >= $max_homes) {
+        umc_error("You already reached your maximum home count ($max_homes)!");
+    }
+
+    // check if the user has the cash to afford their new home
+    $bank = umc_money_check($UMC_USER['uuid']);
+    if ($bank < $cost) {
+        umc_error("You do not have enough cash to buy another home! You have only $bank Uncs. You need $cost Uncs.");
+    }
+    $leftover = $bank - $cost;
+    
+    // transfer the money
+    umc_money($UMC_USER['uuid'], false, $cost);
+    
+    // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
         . "($name,'{$UMC_USER['uuid']}','{$UMC_USER['world']}','{$UMC_USER['coords']['x']}','{$UMC_USER['coords']['y']}','{$UMC_USER['coords']['z']}','{$UMC_USER['coords']['yaw']}');";
     umc_mysql_query($sql, true);
+    
+    // output user feedback regarding their purchase
     umc_header("Buying a home");
     umc_echo("You currently have $count homes.");
     umc_echo("This home costs you $cost Uncs! You have $leftover Uncs in your account left.");
