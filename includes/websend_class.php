@@ -11,6 +11,7 @@
 	{
         public $timeout = 3600;/* Connection timeout as defined in fsockopen */
         public $hashAlgorithm = "sha512";
+        public $password = "";
 
         var $host;
         var $port;
@@ -28,13 +29,13 @@
 		*/
 		public function connect()
 		{
-            $this->stream = fsockopen($this->host, $this->port,$errno,$errstr,$this->timeout);
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+            $this->stream = fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
             if($this->stream){
                 $this->writeRawByte(21);
                 $this->writeString("websendmagic");
                 $seed = $this->readRawInt();
-                $password = file_get_contents("/home/includes/certificates/websend_code.txt");
-                $hashedPassword = hash($this->hashAlgorithm, $password);
+                $hashedPassword = hash($this->hashAlgorithm, $seed.$this->password);
                 $this->writeString($hashedPassword);
                 $result = $this->readRawInt();
                 if($result == 1){
