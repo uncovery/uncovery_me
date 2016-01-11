@@ -54,10 +54,16 @@ function umc_do_buyxp() {
 	
     $player = $UMC_USER['username'];
     $args = $UMC_USER['args'];
-    $xp_ratio = 10;
+    $xp_ratio = 0.1;
 	
     // check to see if player has entered a value of xp to buy
     if (isset($args[2])) {
+        if ($args[2] == 'check') {
+            $user_xp = $UMC_USER['xp'];
+            $user_xplevel = $UMC_USER['xplevel'];
+            umc_echo("{white}Your XP Level: {red}$user_xplevel{white}, XP: {red}$user_xp{white}");
+            return;
+        }
         
         // amount player is trying to spend
         $amount = $args[2];
