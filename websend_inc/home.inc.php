@@ -357,7 +357,7 @@ function umc_home_import() {
             . "($name,'{$UMC_USER['uuid']}','{$h['world']}','{$h['x']}','{$h['y']}','{$h['z']}','{$h['yaw']}');";
         umc_mysql_query($sql, true);
     }
-    umc_log('homes', 'import', "{$UMC_USER['uuid']}/{$UMC_USER['username']} $count homes have been imported!");
+    umc_log('home', 'import', "{$UMC_USER['uuid']}/{$UMC_USER['username']} $count homes have been imported!");
 }
 
 function umc_home_list() {
