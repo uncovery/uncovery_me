@@ -165,17 +165,17 @@ function umc_ws_get_xptolvl($inputlevel){
         
         // levels 0-16
         if ($inputlevel <= 16){
-            $xp = 2 x $inputlevel + 7;
+            $xp = 2 * $inputlevel + 7;
         }
         
         // levels 17-31
         if ($inputlevel >= 17 && $inputlevel <= 31){
-            $xp = 5 x $inputlevel - 38;
+            $xp = 5 * $inputlevel - 38;
         }
         
         // levels 32+
         if ($inputlevel >= 32){
-            $xp = 9 x $inputlevel - 158;
+            $xp = 9 * $inputlevel - 158;
         }
     
         return($xp);
