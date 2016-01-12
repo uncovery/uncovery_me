@@ -70,10 +70,10 @@ function umc_do_buyxp() {
             $test_b = umc_ws_convert_xp(0,30);
             umc_echo("{white}B ~ expected 1395 actual $test_b");
             
-            $test_c = umc_ws_convert_xp(0.70212769508362,17)
+            $test_c = umc_ws_convert_xp(0.70212769508362,17);
             umc_echo("{white}C ~ expected 427 actual $test_c");
             
-            $test_d = umc_ws_convert_xp(0,0)
+            $test_d = umc_ws_convert_xp(0,0);
             umc_echo("{white}D ~ expected 0 actual $test_d");
             
             return;
