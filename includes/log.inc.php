@@ -459,6 +459,137 @@ function umc_display_logblock() {
 
 }
 
+/**
+ * This function shows block logs only for the active user's lots
+ * and only changes done by other users.
+ *
+ * @global type $UMC_USER
+ * @global type $UMC_DOMAIN
+ * @return string
+ */
+function umc_log_logblock() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER, $UMC_DOMAIN;
+    $out = 'This shows only changes done on your lots by other users.';
+
+    $line_limit = 1000;
+
+    if (!$UMC_USER) {
+        $out = "Please <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!";
+        return $out;
+    }
+
+    $uuid = $UMC_USER['uuid'];
+    $worlds = array('empire', 'kingdom');
+    $lots = umc_user_getlots($uuid, $worlds);
+    if (count($lots) == 0 ) {
+        return "You do not have any lots!";
+    }
+
+    $post_lot = filter_input(INPUT_POST, 'lot', FILTER_SANITIZE_STRING);
+    $post_line = filter_input(INPUT_POST, 'line', FILTER_SANITIZE_STRING);
+    $post_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+
+    // world filter
+    if (!is_null($post_lot)) {
+        if (!isset($lots[$post_lot])) {
+            return "<h2>Invalid lot!</h2>";
+        }
+    } else {
+        reset($lots);
+        list($post_lot, $lot_data) = each($lots);
+    }
+
+    $post_world = $lots[$post_lot]['world'];
+    $lot_filter = umc_logblock_get_coord_filter_from_lot($post_lot);
+    $world_filter = "lb-$post_world";
+
+    // user filter
+    $username_filter = "AND UUID <> '$uuid'";
+    if (isset($post_username) && $post_username != 'none') {
+        $username_filter = "AND playername='$post_username'";
+    }
+
+    // line filter
+    if (!isset($post_line)) {
+        $post_line = 0;
+    }
+
+    $nodata = false;
+    $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
+        LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+        WHERE 1 $username_filter $lot_filter;";
+    $C = umc_mysql_fetch_all($count_sql);
+    if (count($C) > 0) {
+        $num_rows = $C[0]['counter'];
+        if ($num_rows == 0) {
+            $nodata = true;
+        }
+    } else {
+        $nodata = true;
+    }
+
+    $out .= "<form action=\"\" method=\"post\">\n"
+        . "Lot: <select name=\"lot\">";
+    foreach ($lots as $one_lot => $lot_data) {
+        $out .= umc_log_dropdown_preselect($one_lot, $one_lot, $post_lot);
+    }
+    $out .= "</select> Line: <select name=\"line\"><option value=\"0\">0 -> 999</option>";
+    $selected = array();
+    if (!$nodata) {
+        $lines = array();
+        $line = 0;
+        while ($line <= ($num_rows - $line_limit)) {
+            $line += $line_limit;
+            $max_limit = min(($line + $line_limit - 1), $num_rows);
+            $lines[$line] = $max_limit;
+        }
+        $selected[$post_line] = " selected=\"selected\"";
+        foreach ($lines as $one_line => $next_line) {
+            $out .= umc_log_dropdown_preselect($one_line, "$one_line -> $next_line", $post_line);
+        }
+        $out .= "</select>&nbsp;<input type=\"submit\" name=\"proposebutton\" value=\"Check\"></form>";
+    } else {
+        $out .= "<input type=\"submit\" name=\"proposebutton\" value=\"Check\"></form>There is no data for this lot!";
+        return $out;
+    }
+    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th><th>Removed</th><th>Placed</th><th>Lot</th><th>Coordinates</th></tr>\n";
+    $yesterday = '';
+
+    $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+            WHERE 1 $username_filter $lot_filter
+	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
+        $row_style = '';
+        $date_arr = explode(" ", $row['date']);
+        if ($yesterday != $date_arr[0]) {
+            $row_style = ' style="background-color:#CCCCCC;"';
+        }
+
+        if ($row['replaced'] == 0) {
+            $remove_item = "";
+        } else {
+            $remove_item = umc_logores_item_name($row['replaced']);
+        }
+        if ($row['type'] == 0) {
+            $place_item = "XXX";
+        } else {
+            $place_item = umc_logores_item_name($row['type'], $row['data']);
+        }
+
+        $one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
+
+        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td><td>$one_lot</td><td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
+	$yesterday = $date_arr[0];
+    }
+    $out .= "</table>\n";
+
+    return $out;
+
+}
+
 function umc_log_dropdown_preselect($value, $text, $presel_value) {
     $out = '';
     if ($value == $presel_value) {
