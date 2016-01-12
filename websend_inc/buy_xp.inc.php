@@ -61,7 +61,7 @@ function umc_do_buyxp() {
     	
     	// feedback on current xp point values
         $user_xp = $UMC_USER['xp'];
-	umc_echo("{white} You started with $user_xp experience points.")
+	umc_echo("{white} You started with $user_xp experience points.");
         
         // amount player is trying to spend
         $amount = $args[2];
@@ -96,7 +96,7 @@ function umc_do_buyxp() {
         
         // announce the purchase to encourage players to consider buying xp
         umc_announce("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $amount Uncs{gray}!");
-	umc_echo("{white} You ended with $new_xp experience points.")
+	umc_echo("{white} You ended with $new_xp experience points.");
 
         // log the purchase
         umc_log('buyxp', 'buy', "$player paid $amount for $xp XP, going from $user_xp to $new_xp");
