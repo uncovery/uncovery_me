@@ -59,10 +59,23 @@ function umc_do_buyxp() {
     // check to see if player has entered a value of xp to buy
     if (isset($args[2])) {
         if ($args[2] == 'check') {
+        
             $user_xp = $UMC_USER['xp'];
             $user_xplevel = $UMC_USER['xplevel'];
             $user_fraction = $UMC_USER['xpfraction'];
-            umc_echo("{white}Your XP Level: {red}$user_xplevel{white}, XP: {red}$user_xp{white}, Fraction: {red}$user_fraction{white}");
+            
+            $test_a = umc_ws_convert_xp($user_fraction, $user_xplevel);
+            umc_echo("{white}A ~ Your XP Level: {red}$user_xplevel{white}, XP: {red}$test_a{white}, Fraction: {red}$user_fraction{white}");
+            
+            $test_b = umc_ws_convert_xp(0,30);
+            umc_echo("{white}B ~ expected 1395 actual $test_b");
+            
+            $test_c = umc_ws_convert_xp(0.70212769508362,17)
+            umc_echo("{white}C ~ expected 427 actual $test_c");
+            
+            $test_d = umc_ws_convert_xp(0,0)
+            umc_echo("{white}D ~ expected 0 actual $test_d");
+            
             return;
         }
         
