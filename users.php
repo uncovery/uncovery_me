@@ -676,7 +676,7 @@ function umc_user_directory() {
             if (!isset($O[$world])) {
                 $O[$world] = '';
             }
-            $O[$world] .= $data['lot'] . "<br>" . $data['image'] . "<br>\n";
+            $O[$world] .= "<div class=\"imagebox\">" . $data['image'] . "<br>"  . $data['lot'] . "</div>\n";
         }
 
         $donator_level = umc_users_donators($uuid);
