@@ -304,7 +304,7 @@ a .widget .bbp-author-name {
     margin: 6px;
     text-align:center;
     background-color: #eee;
-
+    padding: 3px;
 }
 
 .imagebox img {
