@@ -139,7 +139,7 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
     $total_xp_as_points = $points_in_levels + $points_in_fraction;
     
-    return($total_xp_as_points);
+    return $total_xp_as_points;
     
 }
 
@@ -169,7 +169,7 @@ function umc_ws_get_xptolvl($inputlevel){
             $xp = 9 * $inputlevel - 158;
         }
     
-        return($xp);
+        return $xp;
 
     }
     
@@ -201,7 +201,7 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
             $xp = (4.5 * ($inputlevel ^ 2)) - (162.5 * $inputlevel) + 2220; 
         }
     
-        return($xp);
+        return $xp;
     
     }
 }
