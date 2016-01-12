@@ -470,7 +470,7 @@ function umc_display_logblock() {
 function umc_log_logblock() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_DOMAIN;
-    $out = 'This shows only changes done on your lots by other users.';
+    $out = 'This shows only changes done on your lots by other users. This is currently only possible for Empire & Kingdom lots';
 
     $line_limit = 1000;
 
