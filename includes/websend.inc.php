@@ -139,15 +139,16 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
         if (is_numeric($rawlevel) && $rawlevel >= 0){
             
             $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
-            
-            // this may need a floor or ceil pending testing of the conversion accuracy.
-            $points_in_fraction = umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction;
-            
+            $points_in_fraction = floor(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
             $total_xp_as_points = $points_in_levels + $points_in_fraction;
             
             return($total_xp_as_points);
             
+        } else {
+            umc_error("INPUT LVL ERROR");
         }
+    } else {
+        umc_error("INPUT FRACTION ERROR");
     }
     
 }
@@ -283,7 +284,7 @@ function umc_ws_get_vars() {
             // xp converted to points value obtained total. JSON returns fractional value.
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             $UMC_USER['xpfraction'] = $json['Invoker']['XP'];
-            $UMC_USER['xp'] = umc_ws_convert_xp($UMC_USER['xpfraction'], $UMC_USER['xplevel']);
+            $UMC_USER['xp'] = umc_ws_convert_xp($json['Invoker']['XP'], $json['Invoker']['XPLevel']);
             
             //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
