@@ -16,10 +16,10 @@
 }
 
 .donation td{
-   padding-right:4px; 
+   padding-right:4px;
 }
 .donation .numbers {
-   text-align:right; 
+   text-align:right;
 }
 
 .lotform {
@@ -37,8 +37,8 @@
 }
 
 .imgdiv {
-    margin:5px; 
-    float:left; 
+    margin:5px;
+    float:left;
 }
 .submitbutton {
     float:right;
@@ -252,7 +252,7 @@ div.ts3_viewer {
     line-height:normal;
     font-size: 15px;
     padding: 5px;
-    margin-bottom: 3px;    
+    margin-bottom: 3px;
 }
 #accordion .ui-accordion-header:hover {
     background-color: #eee;
@@ -277,7 +277,7 @@ div.ts3_viewer {
 
 #accordion .categories {
     text-align: right;
-    font-family: monospace; 
+    font-family: monospace;
 }
 
 /* This prevents the github lables from wrapping */
@@ -296,4 +296,17 @@ table.unc_datatables tbody td {
 /* BBPRESS changes */
 a .widget .bbp-author-name {
     font-weight: normal;
+}
+
+.imagebox {
+    float:left;
+    border: 1px solid grey;
+    margin: 6px;
+    text-align:center;
+    background-color: #eee;
+
+}
+
+.imagebox img {
+    margin: 3px;
 }
