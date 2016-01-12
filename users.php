@@ -633,26 +633,27 @@ function umc_user_directory() {
     // list all users
     $username_get = filter_input(INPUT_GET, 'u', FILTER_SANITIZE_STRING);
     if (!is_null($username_get)) {
+        $O = array();
+
         $wordpress_id = umc_user_get_wordpress_id($username_get);
         $username = strtolower(umc_check_user($username_get));
         if (!$wordpress_id) {
             return "User does not exist!";
         }
-
-        // user icon
-        echo get_avatar($wordpress_id, $size = '96');
-        echo "<br><strong>Username:</strong> $username<br>";
         $uuid = umc_user2uuid($username);
-        echo "<br><strong>UUID:</strong> $uuid<br>";
+        // user icon
+        $O['User'] = get_avatar($wordpress_id, $size = '96')
+            . "<p><strong>Username:</strong> $username</p>\n"
+            . "<p><strong>UUID:</strong> $uuid</p>\n";
 
         $previous_names = umc_uuid_username_history($uuid);
         if ($previous_names) {
-            echo "<strong>Usernames History:</strong> $previous_names<br>";
+            $O['User'] .=  "<p><strong>Usernames History:</strong> $previous_names</p>\n";
         }
 
         // is user banned?
         if (umc_user_is_banned($uuid)) {
-            echo "<strong>User is BANNED!</strong><br>";
+            $O['User'] .= "<p><strong>User is BANNED!</strong></p>\n";
             return;
         } else {
             umc_promote_citizen($username);
@@ -660,20 +661,22 @@ function umc_user_directory() {
         }
 
         // get userlevel
-        $level = umc_get_userlevel($username);
-        echo "<strong>Level:</strong> $level<br>";
-
+        $level = umc_get_userlevel($uuid);
         $karma = umc_getkarma($uuid, true);
-        echo "<strong>Karma:</strong> $karma<br>";
-
         $money = umc_money_check($uuid);
-        echo "<strong>Money:</strong> $money Uncs<br>";
+
+        $O['User'] .= "<p><strong>Level:</strong> $level</p>\n"
+            . "<p><strong>Karma:</strong> $karma</p>\n"
+            . "<p><strong>Money:</strong> $money Uncs</p>\n";
 
         // get lots
         $lots = umc_user_getlots($uuid);
-        echo "<strong>Lots:</strong><br>    ";
         foreach ($lots as $data) {
-            echo $data['lot'] . "<br>" . $data['image'] . "<br>";
+            $world = ucwords($data['world']);
+            if (!isset($O[$world])) {
+                $O[$world] = '';
+            }
+            $O[$world] .= $data['lot'] . "<br>" . $data['image'] . "<br>\n";
         }
 
         $donator_level = umc_users_donators($uuid);
@@ -685,15 +688,15 @@ function umc_user_directory() {
         } else {
             $donator_str = "Not a donator";
         }
-        echo "<strong>Donations remaining:</strong> $donator_str<br>";
+        $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
 
         // get member since
         $online_time = umc_get_lot_owner_age('days', $uuid);
         if ($online_time) {
             $lastlogin = $online_time[$uuid]['lastlogin']['days'];
             $firstlogin = $online_time[$uuid]['firstlogin']['days'];
-            echo "<strong>Member since:</strong> $firstlogin days<br>";
-            echo "<strong>Offline since:</strong> $lastlogin days<br>";
+            $O['User'] .= "<p><strong>Member since:</strong> $firstlogin days</p>\n"
+                . "<p><strong>Offline since:</strong> $lastlogin days</p>\n";
         }
         // get user bio
         $sql = "SELECT meta_value FROM minecraft.wp_users
@@ -702,9 +705,8 @@ function umc_user_directory() {
         $D = umc_mysql_fetch_all($sql);
         if (count($D) > 0) {
             $row = $D[0];
-            echo "<strong>Bio:</strong> " . $row['meta_value'] . "<br>";
+            $O['User'] .= "<p><strong>Bio:</strong> " . $row['meta_value'] . "</p>\n";
         }
-
 
         // comments
         $sql2 = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
@@ -712,11 +714,13 @@ function umc_user_directory() {
             WHERE comment_author = '$username' AND comment_approved='1' AND id <> 'NULL'
             ORDER BY comment_date DESC";
         $D2 = umc_mysql_fetch_all($sql2);
-        echo "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
-        foreach ($D2 as $row) {
-            echo "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
+        if (count($D2) > 0) {
+            $O['Comments'] = "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
+            foreach ($D2 as $row) {
+                $O['Comments'] .=  "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
+            }
+            $O['Comments'] .= "</ul>\n";
         }
-        echo "</ul>\n";
 
         //forum posts
         $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
@@ -730,19 +734,22 @@ function umc_user_directory() {
 	    ORDER BY wpp.post_date DESC";
         $D3 = umc_mysql_fetch_all($sql3);
         // echo $sql;
-        echo "<strong>Forum Posts:</strong> (". count($D3) . ")\n<ul>\n";
-        foreach ($D3 as $row) {
-            $date = $row['date'];
-            if ($row['type'] == 'reply') {
-                $link = $row['parent'] . "#post-" . $row['id'];
-                $title = $row['parent_title'];
-            } else {
-                $link = $row['id'];
-                $title = $row['title'];
+        if (count($D3) > 0) {
+            $O['Forum'] = "<strong>Forum Posts:</strong> (". count($D3) . ")\n<ul>\n";
+            foreach ($D3 as $row) {
+                $date = $row['date'];
+                if ($row['type'] == 'reply') {
+                    $link = $row['parent'] . "#post-" . $row['id'];
+                    $title = $row['parent_title'];
+                } else {
+                    $link = $row['id'];
+                    $title = $row['title'];
+                }
+                $O['Forum'] .= "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
             }
-            echo "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
+            $O['Forum'] .= "</ul>\n";
         }
-        echo "</ul>\n";
+        echo umc_jquery_tabs($O);
     } else {
         // $bans = umc_get_banned_users();
         //var_dump($bans);
