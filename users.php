@@ -480,8 +480,14 @@ function umc_user_getlots($uuid, $world = false) {
     // worldguard stores everything in lower case.
     $filter = '';
     if ($world) {
-        $filter = "AND world.name = '$world'";
+        if (is_array($world)){
+            $worlds = implode("','", $world);
+            $filter = "AND world.name IN('$worlds')";
+        } else {
+            $filter = "AND world.name = '$world'";
+        }
     }
+
     $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players`
         LEFT JOIN minecraft_worldguard.user ON user_id = user.id
         LEFT JOIN minecraft_worldguard.world ON world_id = world.id
