@@ -201,17 +201,17 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
     
         // levels 0-16
         if ($inputlevel <= 16){
-            $xp = ($inputlevel ^ 2) + (6 x $inputlevel);
+            $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
         }
         
         // levels 17-31
         if ($inputlevel >= 17 && $inputlevel <= 31){
-            $xp = (2.5 x ($inputlevel ^ 2)) - (40.5 x $inputlevel) + 360; 
+            $xp = (2.5 * ($inputlevel ^ 2)) - (40.5 * $inputlevel) + 360; 
         }
         
         // levels 32+
         if ($inputlevel >= 32){
-            $xp = (4.5 x ($inputlevel ^ 2)) - (162.5 x $inputlevel) + 2220; 
+            $xp = (4.5 * ($inputlevel ^ 2)) - (162.5 * $inputlevel) + 2220; 
         }
     
         return($xp);
