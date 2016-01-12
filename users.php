@@ -492,10 +492,10 @@ function umc_user_getlots($uuid, $world = false) {
         LEFT JOIN minecraft_worldguard.user ON user_id = user.id
         LEFT JOIN minecraft_worldguard.world ON world_id = world.id
         WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
-    $rst = umc_mysql_query($sql);
+    $R = umc_mysql_fetch_all($sql);
     $out = array();
     //echo $sql;
-    while ($row = umc_mysql_fetch_array($rst)) {
+    foreach ($R as $row) {
         $link = umc_user_get_lot_tile($row['region_id'], $row['name']);
         if (!$link) {
             $link = '';
@@ -503,7 +503,6 @@ function umc_user_getlots($uuid, $world = false) {
         $lot = $row['region_id'];
         $out[$lot] = array('world' => $row['name'], 'lot' => $lot, 'image' => $link);
     }
-    umc_mysql_free_result($rst);
     return $out;
 }
 
