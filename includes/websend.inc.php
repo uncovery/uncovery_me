@@ -135,21 +135,11 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
-    if (is_numeric($rawlevelfraction) && $rawlevelfraction >= 0){
-        if (is_numeric($rawlevel) && $rawlevel >= 0){
-            
-            $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
-            $points_in_fraction = floor(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
-            $total_xp_as_points = $points_in_levels + $points_in_fraction;
-            
-            return($total_xp_as_points);
-            
-        } else {
-            umc_error("INPUT LVL ERROR");
-        }
-    } else {
-        umc_error("INPUT FRACTION ERROR");
-    }
+    $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
+    $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
+    $total_xp_as_points = $points_in_levels + $points_in_fraction;
+    
+    return($total_xp_as_points);
     
 }
 
@@ -181,10 +171,6 @@ function umc_ws_get_xptolvl($inputlevel){
     
         return($xp);
 
-    } else {
-        
-        umc_error("Conversion Input level must be a positive value of 0 or greater");
-        
     }
     
 }
@@ -217,13 +203,7 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
     
         return($xp);
     
-    } else {
-        
-        
-        umc_error("Conversion Input level must be a positive value of 0 or greater");
-        
     }
-    
 }
 
 
