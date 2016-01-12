@@ -116,14 +116,14 @@ $UMC_SETTING['max_homes'] = array(
 function umc_home_check() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
-    
+
     $count = umc_home_count();
 
     $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
-    
+
     // output the return values to the chat window
     umc_header("Checking Home Status");
     umc_echo("You currently have $count homes.");
@@ -181,10 +181,10 @@ function umc_home_warp() {
     // todo translate ESSENTIALS yaw into minecraft yaw
     $cmd = "tppos $player $x $y $z $yaw";
     umc_log('home', 'warp', "$player warped to home $name at $world $x $y $z $yaw");
-    umc_ws_cmd($cmd, 'asConsole');    
+    umc_ws_cmd($cmd, 'asConsole');
 }
 
-// 
+//
 function umc_home_buy() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
@@ -205,7 +205,7 @@ function umc_home_buy() {
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
-    
+
     // check player is not home capped
     if ($count >= $max_homes) {
         umc_error("You already reached your maximum home count ($max_homes)!");
@@ -217,15 +217,15 @@ function umc_home_buy() {
         umc_error("You do not have enough cash to buy another home! You have only $bank Uncs. You need $cost Uncs.");
     }
     $leftover = $bank - $cost;
-    
+
     // transfer the money
     umc_money($UMC_USER['uuid'], false, $cost);
-    
+
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
         . "($name,'{$UMC_USER['uuid']}','{$UMC_USER['world']}','{$UMC_USER['coords']['x']}','{$UMC_USER['coords']['y']}','{$UMC_USER['coords']['z']}','{$UMC_USER['coords']['yaw']}');";
     umc_mysql_query($sql, true);
-    
+
     // output user feedback regarding their purchase
     umc_header("Buying a home");
     umc_echo("You currently have $count homes.");
@@ -342,8 +342,12 @@ function umc_home_import() {
     require_once('/home/includes/spyc/Spyc.php');
     $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $UMC_USER['uuid'] . ".yml";
     $A = Spyc::YAMLLoad($path);
+
+    if (!isset($A['homes'])) {
+        return;
+    }
     $count = count($A['homes']);
-    if (!isset($A['homes']) || $count == 0) {
+    if ($count == 0) {
         return;
     }
     $H = $A['homes'];
