@@ -135,11 +135,9 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
-    XMPP_ERROR_trace('$points_in_levels', $points_in_levels);
     $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
-    XMPP_ERROR_trace('$points_in_fraction', $points_in_fraction);
     $total_xp_as_points = $points_in_levels + $points_in_fraction;
-    XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
+    //XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
     return $total_xp_as_points;
     
 }
@@ -192,12 +190,12 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
         
         // levels 17-31
         if ($inputlevel >= 17 && $inputlevel <= 31){
-            $xp = (2.5 * ($inputlevel ^ 2)) - (40.5 * $inputlevel) + 360; 
+            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360; 
         }
         
         // levels 32+
         if ($inputlevel >= 32){
-            $xp = (4.5 * ($inputlevel ^ 2)) - (162.5 * $inputlevel) + 2220; 
+            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220; 
         }
     
         return $xp;
