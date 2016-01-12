@@ -132,20 +132,20 @@ function umc_ws_eventhandler($event) {
 
 // returns the TOTAL points of experience of a player based on level fraction and 
 function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
-    
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
+    XMPP_ERROR_trace('$points_in_levels', $points_in_levels);
     $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
+    XMPP_ERROR_trace('$points_in_fraction', $points_in_fraction);
     $total_xp_as_points = $points_in_levels + $points_in_fraction;
-    
+    XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
     return $total_xp_as_points;
     
 }
 
 // returns the amount of exp needed to be obtained to advance from specific level as a points value
 function umc_ws_get_xptolvl($inputlevel){
-    
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
     // reference material
@@ -177,7 +177,6 @@ function umc_ws_get_xptolvl($inputlevel){
 
 // returns the amount of exp points equivalent to input level
 function umc_ws_convert_xplvl_to_points($inputlevel){
-    
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
     // reference material
