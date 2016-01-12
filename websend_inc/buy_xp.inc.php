@@ -61,7 +61,8 @@ function umc_do_buyxp() {
         if ($args[2] == 'check') {
             $user_xp = $UMC_USER['xp'];
             $user_xplevel = $UMC_USER['xplevel'];
-            umc_echo("{white}Your XP Level: {red}$user_xplevel{white}, XP: {red}$user_xp{white}");
+            $user_fraction = $UMC_USER['xpfraction'];
+            umc_echo("{white}Your XP Level: {red}$user_xplevel{white}, XP: {red}$user_xp{white}, Fraction: {red}$user_fraction{white}");
             return;
         }
         
