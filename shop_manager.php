@@ -18,7 +18,7 @@
  */
 
 /*
- * This is the web-based shop manager function that allows users to see the shop 
+ * This is the web-based shop manager function that allows users to see the shop
  * contents online
  */
 
