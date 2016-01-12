@@ -641,6 +641,12 @@ function umc_user_directory() {
             return "User does not exist!";
         }
         $uuid = umc_user2uuid($username);
+        // check if the user is active
+        $count_lots = umc_user_countlots($uuid);
+        if ($count_lots == 0) {
+            return "User is not active!";
+        }
+
         // user icon
         $O['User'] = get_avatar($wordpress_id, $size = '96')
             . "<p><strong>Username:</strong> $username</p>\n"
