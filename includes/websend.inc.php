@@ -150,10 +150,12 @@ function umc_ws_get_xptolvl($inputlevel){
     // http://minecraft.gamepedia.com/Experience
     // conversions dated 12/01/2016 - v 1.8.9 accurate
 
-    if (is_numeric($inputlevel) && $inputlevel >= 0){
+    $xp = 0;
+
+    if (is_numeric($inputlevel) && $inputlevel > 0){
         
         // levels 0-16
-        if ($inputlevel <= 16){
+        if ($inputlevel <= 16 && $inputlevel > 0){
             $xp = 2 * $inputlevel + 7;
         }
         
@@ -166,10 +168,10 @@ function umc_ws_get_xptolvl($inputlevel){
         if ($inputlevel >= 32){
             $xp = 9 * $inputlevel - 158;
         }
-    
-        return $xp;
 
     }
+    
+    return $xp;
     
 }
 
@@ -180,8 +182,10 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
     // reference material
     // http://minecraft.gamepedia.com/Experience
     // conversions dated 12/01/2016 - v 1.8.9 accurate
-
-    if (is_numeric($inputlevel) && $inputlevel >= 0){
+    
+    $xp = 0;
+    
+    if (is_numeric($inputlevel) && $inputlevel > 0){
     
         // levels 0-16
         if ($inputlevel <= 16){
@@ -197,10 +201,10 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
         if ($inputlevel >= 32){
             $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220; 
         }
-    
-        return $xp;
-    
     }
+    
+    return $xp;
+    
 }
 
 
