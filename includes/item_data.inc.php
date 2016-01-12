@@ -1178,12 +1178,12 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/0/00/Grid_Enchantment_Table.png',
     ),
-    //'brewing_stand' => array( unobtainable item
-    //    'id' => 117,
-    //    'stack' => 64,
-    //    'avail' => false,
-    //    'icon_url' => '/7/70/Grid_Brewing_Stand.png',
-    //),
+    'brewing_stand' => array( // unobtainable item, but shows up in block logs
+        'id' => 117,
+        'stack' => 64,
+        'avail' => false,
+        'icon_url' => '/7/70/Grid_Brewing_Stand.png',
+    ),
     'cauldron' => array(
         'id' => 118,
         'stack' => 64,
@@ -1840,7 +1840,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/8/8e/Purpur_Stairs.png',
-    ),    
+    ),
     'purpur_double_slab' => array(
         'id' => 204,
         'stack' => 64,
@@ -1852,18 +1852,18 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/c/c3/Purpur_Slab.png',
-    ),    
+    ),
     'end_bricks' => array(
         'id' => 206,
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/e/ea/End_Stone_Bricks.png',
-    ),   
-    
+    ),
+
     /*************************************************/
     /*                ITEMS                          */
     /*************************************************/
-    
+
     'iron_shovel' => array(
         'id' => 256,
         'damage' => 251,
@@ -3217,38 +3217,38 @@ $UMC_DATA = array(
         'id' => 432,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/e/ef/Chorus_Fruit.png',        
+        'icon_url' => '/e/ef/Chorus_Fruit.png',
     ),
     'chorus_fruit_popped' => array(
         'id' => 433,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/3/3b/Popped_Chorus_Fruit.png',        
+        'icon_url' => '/3/3b/Popped_Chorus_Fruit.png',
     ),
     'beetroot' => array(
         'id' => 434,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/5/56/Beetroot.png',        
-    ),    
+        'icon_url' => '/5/56/Beetroot.png',
+    ),
     'beetroot_seeds' => array(
         'id' => 435,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/0/04/Beetroot_Seeds.png',        
+        'icon_url' => '/0/04/Beetroot_Seeds.png',
     ),
     'beetroot_soup' => array(
         'id' => 436,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/c/c6/Dragon%27s_Breath.png',        
+        'icon_url' => '/c/c6/Dragon%27s_Breath.png',
     ),
     'dragon_breath' => array(
         'id' => 437,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/6/61/Beetroot_Soup.png',        
-    ),      
+        'icon_url' => '/6/61/Beetroot_Soup.png',
+    ),
     'splash_potion' => array(
         'id' => 438,
         'stack' => 1,
@@ -3299,13 +3299,13 @@ $UMC_DATA = array(
         'id' => 439,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/4/41/Arrow.png',        
+        'icon_url' => '/4/41/Arrow.png',
     ),
     'tipped_arrow' => array(
         'id' => 440,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/4/41/Arrow.png',        
+        'icon_url' => '/4/41/Arrow.png',
     ),
     'lingering_potion' => array(
         'id' => 441,
@@ -3357,49 +3357,49 @@ $UMC_DATA = array(
         'id' => 442,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/4/41/Arrow.png',        
-    ),  
+        'icon_url' => '/4/41/Arrow.png',
+    ),
     'elytra' => array(
         'id' => 443,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/7/70/Elytra.png',        
+        'icon_url' => '/7/70/Elytra.png',
     ),
     'spruce_boat' => array(
         'id' => 444,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/5/59/Grid_Boat.png',        
-    ),    
+        'icon_url' => '/5/59/Grid_Boat.png',
+    ),
     'birch_boat' => array(
         'id' => 445,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/5/59/Grid_Boat.png',        
-    ),     
+        'icon_url' => '/5/59/Grid_Boat.png',
+    ),
     'jungle_boat' => array(
         'id' => 446,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/5/59/Grid_Boat.png',        
-    ),  
+        'icon_url' => '/5/59/Grid_Boat.png',
+    ),
     'acacia_boat' => array(
         'id' => 447,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/5/59/Grid_Boat.png',        
-    ),  
+        'icon_url' => '/5/59/Grid_Boat.png',
+    ),
     'dark_oak_boat' => array(
         'id' => 448,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/5/59/Grid_Boat.png',        
-    ),    
-    
+        'icon_url' => '/5/59/Grid_Boat.png',
+    ),
+
     /*************************************************/
     /*                RECORDS                        */
     /*************************************************/
-    
+
     'record_13' => array(
         'id' => 2256,
         'stack' => 1,
