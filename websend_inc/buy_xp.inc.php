@@ -37,7 +37,7 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
         'help' => array(
             'short' => 'Buys XP',
             'long' => "Buys XP to the value of <Uncs>. The exchange rate is 1 Unc per 1 XP. Use /buyxp check to check your current XP levels.",
-            'args' => '<Uncs>/"check"',
+            'args' => '<Uncs>',
         ),
         'function' => 'umc_do_buyxp',
     ),
@@ -58,26 +58,10 @@ function umc_do_buyxp() {
 	
     // check to see if player has entered a value of xp to buy
     if (isset($args[2])) {
-        if ($args[2] == 'check') {
-        
-            $user_xp = $UMC_USER['xp'];
-            $user_xplevel = $UMC_USER['xplevel'];
-            $user_fraction = $UMC_USER['xpfraction'];
-            
-            $test_a = umc_ws_convert_xp($user_fraction, $user_xplevel);
-            umc_echo("{white}A ~ Your XP Level: {red}$user_xplevel{white}, XP: {red}$test_a{white}, Fraction: {red}$user_fraction{white}");
-            
-            $test_b = umc_ws_convert_xp(0,30);
-            umc_echo("{white}B ~ expected 1395 actual $test_b");
-            
-            $test_c = umc_ws_convert_xp(0.70212769508362,17);
-            umc_echo("{white}C ~ expected 427 actual $test_c");
-            
-            $test_d = umc_ws_convert_xp(0,0);
-            umc_echo("{white}D ~ expected 0 actual $test_d");
-            
-            return;
-        }
+    	
+    	// feedback on current xp point values
+        $user_xp = $UMC_USER['xp'];
+	umc_echo("{white} You started with $user_xp experience points.")
         
         // amount player is trying to spend
         $amount = $args[2];
@@ -91,7 +75,6 @@ function umc_do_buyxp() {
         // retrieve the players balance to check if they can afford
         $balance = umc_money_check($player);
 
-        
         if ( $xp < 1 || $amount < 1 ) {	
             umc_error("{red}You need to buy at least 1 XP. For $amount Uncs you get only $xp XP (ratio is $xp_ratio!)");
         }
@@ -99,10 +82,13 @@ function umc_do_buyxp() {
 	if ( $amount > $balance ) {
             umc_error("{red}Sorry, you cannot afford this purchase. You currently have $balance uncs.");
         }
+        
+        // calculate the total new xp point value
+        $new_xp = $user_xp + $xp;
 
         // apply purchase
         // send the console command to give the player experience
-        umc_ws_cmd("xp $xp $player", 'asConsole');
+        umc_ws_cmd("exp set $player $new_xp", 'asConsole');
 
         // take the purchase amount from players account.
         // take from, give to, positive value
@@ -110,9 +96,10 @@ function umc_do_buyxp() {
         
         // announce the purchase to encourage players to consider buying xp
         umc_announce("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $amount Uncs{gray}!");
+	umc_echo("{white} You ended with $new_xp experience points.")
 
         // log the purchase
-        umc_log('buyxp', 'buy', "$player paid $amount for $xp XP");
+        umc_log('buyxp', 'buy', "$player paid $amount for $xp XP, going from $user_xp to $new_xp");
     
     } else {
         umc_error("{red}You need to specify the amount of Uncs you want to spend. See {yellow}/helpme buyxp");
