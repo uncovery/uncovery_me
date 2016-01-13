@@ -40,7 +40,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'security' => array(
-            'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
         ),
         'function' => 'umc_home_warp',
     ),
