@@ -241,6 +241,9 @@ div.ts3_viewer {
     border:1px solid black;
 }
 
+.umc_jquery_tabs {
+    overflow:auto;
+}
 
 /* JQUERY Accordion styles used in FAQ */
 #accordion .ui-accordion-header {
