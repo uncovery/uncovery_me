@@ -83,13 +83,13 @@ $WS_INIT['trivia'] = array(  // the name of the plugin
         ),
         'function' => 'umc_trivia_answer',
     ),
-    'disabled' => false,
+    'disabled' => true,
     'events' => false,
 );
 
 function umc_trivia_new() {
     global $UMC_USER;
-    $player = $UMC_USER['uncovery'];
+    $player = $UMC_USER['username'];
     $args = $UMC_USER['args'];
 
     if ($player != 'uncovery') {
@@ -388,12 +388,12 @@ function umc_trivia_get_current_quiz() {
         if ($quiz_arr['question_no']) {
             $answers_sql = "SELECT * FROM minecraft_quiz.quiz_answers
                     WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']} ORDER BY answer_id;";
-            $A = umc_mysql_fetch_all($anwers_sql);
+            $A = umc_mysql_fetch_all($answers_sql);
             if (count($A) > 0) {
                 foreach ($A as $answers_row) {
-                    $id = $answer_row['answer_id'];
-                    $quiz_arr['answers'][$id] = $answer_row['answer_text'];
-                    $quiz_arr['users'][] = $answer_row['username'];
+                    $id = $answers_row['answer_id'];
+                    $quiz_arr['answers'][$id] = $answers_row['answer_text'];
+                    $quiz_arr['users'][] = $answers_row['username'];
                 }
             }
         }
@@ -423,8 +423,8 @@ function umc_trivia_call_question() {
 function umc_trivia_pick_question($quiz_id) {
     // Get a new question
 
-    $D = umc_trivia_call_question();
-    $question_row = $D[0];
+    $Q = umc_trivia_call_question();
+    $question_row = $Q[0];
     $question_arr = array(
         'id' => $question_row['question_id'],
         'question' => $question_row['question'],
