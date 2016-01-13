@@ -83,7 +83,7 @@ $WS_INIT['trivia'] = array(  // the name of the plugin
         ),
         'function' => 'umc_trivia_answer',
     ),
-    'disabled' => true,
+    'disabled' => false,
     'events' => false,
 );
 
