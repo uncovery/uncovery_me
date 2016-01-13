@@ -51,6 +51,9 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_buy',
+        'security' => array(
+            'level'=>'Owner',
+        ),
     ),
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -68,7 +71,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_rename',
     ),
-    'import' => array( // this is the base command if there are no other commands
+    /*'import' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Import your legacy homes',
             'long' => "This will import your old homes.",
@@ -76,6 +79,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_import',
     ),
+     */
     'sell' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Sell a home slot',
@@ -228,7 +232,7 @@ function umc_home_buy() {
 
     // output user feedback regarding their purchase
     umc_header("Buying a home");
-    umc_echo("You currently have $count homes.");
+    umc_echo("You currently have $count homes (max $max_homes).");
     umc_echo("This home costs you $cost Uncs! You have $leftover Uncs in your account left.");
     umc_echo("Your home slot has been purchased and set to your current location.");
     umc_echo("You can edit it with the {blue}rename{white} and {blue}update{white} commands!");
