@@ -462,6 +462,8 @@ function umc_web_table_format_column($name, $value) {
 /**
  * @param array $data: An associative array in the following format:
  *      Tab Title (String) => Tab Content (String - HTML OK)
+ *      if the data is supposed to be loaded via AJAX,  use
+ *      Tab Title (String) => Tab URL (http://....)
  * @return string
  *
  * **NOTE: This function also supports popovers in the following format:
@@ -488,16 +490,24 @@ function umc_jquery_tabs($data) {
     # Set up tab titles
     $i = 0;
     foreach ($data as $tab => $tab_html) {
-            $out .= "<li><a href='#tab$i'><span>$tab</span></a></li>";
-            $i += 1;
+        // if the tab is externally loaded, use the HTML as URL instead
+        if (strstr($tab_html, "http://")) {
+            $tab_link = $tab_html;
+        } else {
+            $tab_link = "#tab$i";
+        }
+        $out .= "<li><a href='$tab_link'><span>$tab</span></a></li>";
+        $i += 1;
     }
     $out .= "</ul>\n";
 
     # Set up tab content <div>s
     $i = 0;
     foreach ($data as $tab => $tab_html) {
+        if (!strstr($tab_html, "http://")) {
             $out .= "<div id='tab$i'>\n$tab_html\n</div>";
-            $i += 1;
+        }
+        $i += 1;
     }
     $out .= "</div>\n";
 
@@ -566,11 +576,11 @@ function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
 
 /**
  * returns likely accounts shared by UUIDs
- * 
+ *
  */
 function umc_web_usercheck() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     $tables = array(
         'Same IP' => 'last_ip',
         'Same Browser' => 'browser_id',
@@ -580,7 +590,7 @@ function umc_web_usercheck() {
     foreach ($tables as $table_name => $crit_field) {
         $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> '' "
                 . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
-        
+
         $L = umc_mysql_fetch_all($sql);
         $out_arr = array();
         foreach ($L as $l) {
@@ -601,7 +611,7 @@ function umc_web_usercheck() {
 /**
  * Update the browser fingerprint.
  * Called by javascript from js in umc_wp_fingerprint_call()
- * 
+ *
  * @global type $UMC_USER
  */
 function umc_web_set_fingerprint() {
