@@ -19,7 +19,7 @@
 
 global $UMC_SETTING, $WS_INIT;
 
-$WS_INIT['home2'] = array(  // the name of the plugin
+$WS_INIT['homes'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'PlayerJoinEvent' => 'umc_home_import',
@@ -43,6 +43,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether'),
         ),
         'function' => 'umc_home_warp',
+        'top' => true,
     ),
     'buy' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -53,8 +54,8 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         'function' => 'umc_home_buy',
         'security' => array(
             'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether'),
-            'level'=>'Owner',
-        ),        
+            // 'level'=>'Owner',
+        ),
     ),
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -65,7 +66,7 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         'function' => 'umc_home_update',
         'security' => array(
             'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether'),
-        ),                
+        ),
     ),
     'rename' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -75,15 +76,6 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_rename',
     ),
-    /*'import' => array( // this is the base command if there are no other commands
-        'help' => array(
-            'short' => 'Import your legacy homes',
-            'long' => "This will import your old homes.",
-            // 'args' => '<home name> <new name>',
-        ),
-        'function' => 'umc_home_import',
-    ),
-     */
     'sell' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Sell a home slot',
@@ -91,6 +83,9 @@ $WS_INIT['home2'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_sell',
+        'security' => array(
+            'level'=>'Owner',
+        ),
     ),
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -107,6 +102,15 @@ $WS_INIT['home2'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_check',
     ),
+    /*'import' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Import your legacy homes',
+            'long' => "This will import your old homes.",
+            // 'args' => '<home name> <new name>',
+        ),
+        'function' => 'umc_home_import',
+    ),
+     */
 );
 
 $UMC_SETTING['max_homes'] = array(
@@ -161,9 +165,9 @@ function umc_home_warp() {
         // check if the user has only one home
         $home_count = umc_home_count();
         if ($home_count > 1) {
-            umc_error("{red}You need to specify the name of your home!");
+            umc_error("{red}You need to specify the name of your home! Use /homes list to see all homes");
         } else if ($home_count == 0) {
-            umc_error("{red}You do not have any homeslots yet!");
+            umc_error("{red}You do not have any homeslots yet! Use /homes buy to get a new home");
         } else {
             $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' LIMIT 1;";
         }
