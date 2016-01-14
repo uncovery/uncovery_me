@@ -22,7 +22,7 @@ global $UMC_SETTING, $WS_INIT;
 $WS_INIT['homes'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
-        'PlayerJoinEvent' => 'umc_home_import',
+        // 'PlayerJoinEvent' => 'umc_home_import',
     ),
     'default' => array(
         'help' => array(
@@ -83,9 +83,6 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'function' => 'umc_home_sell',
-        'security' => array(
-            'level'=>'Owner',
-        ),
     ),
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -347,41 +344,6 @@ function umc_home_count($name = false, $uuid_req = false) {
     return $homes;
 }
 
-// import current homes from the essential plugin
-function umc_home_import() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER;
-    // we automatically import old homes for all players on login, but only once
-    $existing_count = umc_home_count();
-    if ($existing_count > 0) {
-        return;
-    }
-
-    // include spyc to parse YAML https://github.com/mustangostang/spyc
-    require_once('/home/includes/spyc/Spyc.php');
-    $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $UMC_USER['uuid'] . ".yml";
-    $A = Spyc::YAMLLoad($path);
-
-    if (!isset($A['homes'])) {
-        return;
-    }
-    $count = count($A['homes']);
-    if ($count == 0) {
-        return;
-    }
-    $H = $A['homes'];
-
-    // iterate homes and import them
-    foreach ($H as $home_name => $h) {
-        $name = umc_mysql_real_escape_string($home_name);
-        // XMPP_ERROR_trigger($h);
-        $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
-            . "($name,'{$UMC_USER['uuid']}','{$h['world']}','{$h['x']}','{$h['y']}','{$h['z']}','{$h['yaw']}');";
-        umc_mysql_query($sql, true);
-    }
-    umc_log('home', 'import', "{$UMC_USER['uuid']}/{$UMC_USER['username']} $count homes have been imported!");
-}
-
 function umc_home_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
@@ -396,7 +358,7 @@ function umc_home_list() {
     foreach ($D as $d) {
         if ($d['world'] <> $cur_world) {
             if ($cur_world) {
-                $out .= implode(", ", $worldhomes);
+                $out .= implode("{red},{white} ", $worldhomes);
                 umc_echo($out);
             }
             $out = "{red}{$d['world']}:{white} ";
@@ -406,4 +368,45 @@ function umc_home_list() {
         $cur_world = $d['world'];
     }
     umc_footer();
+}
+
+// import current homes from the essential plugin
+// this is not needed anymore, import done.
+function umc_home_import() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // global $UMC_USER;
+    // we automatically import old homes for all players on login, but only once
+
+    // include spyc to parse YAML https://github.com/mustangostang/spyc
+    require_once('/home/includes/spyc/Spyc.php');
+    $users = umc_get_active_members();
+    
+    foreach ($users as $uuid => $username) {
+        $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $uuid . ".yml";
+        $A = Spyc::YAMLLoad($path);
+
+        $existing_count = umc_home_count(false, $uuid);
+        if ($existing_count > 0) {
+            continue;
+        }        
+        
+        if (!isset($A['homes'])) {
+            continue;
+        }
+        $count = count($A['homes']);
+        if ($count == 0) {
+            continue;
+        }
+        $H = $A['homes'];
+
+        // iterate homes and import them
+        foreach ($H as $home_name => $h) {
+            $name = umc_mysql_real_escape_string($home_name);
+            // XMPP_ERROR_trigger($h);
+            $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
+                . "($name,'$uuid','{$h['world']}','{$h['x']}','{$h['y']}','{$h['z']}','{$h['yaw']}');";
+            umc_mysql_query($sql, true);
+        }
+        umc_log('home', 'import', "$uuid/$username $count homes have been imported!");
+    }
 }
