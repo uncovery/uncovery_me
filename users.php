@@ -1094,6 +1094,9 @@ function umc_promote_citizen($username, $userlevel = false) {
 
     $user['First login'] = $d['firstlogin'];
 
+    $homes_count = umc_home_count(false, $uuid);
+    $user['Homes count'] = $homes_count;
+
     $karma = umc_getkarma($user['uuid'], true);
     $user['Karma'] = $karma;
 
