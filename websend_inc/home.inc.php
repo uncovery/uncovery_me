@@ -29,8 +29,8 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'title' => 'Home Manager',  // give it a friendly title
             'short' => 'Warp to personal, pre-defined locations',  // a short description
             'long' => "This command allows you to warp to pre-defined locations (homes). "
-                . "It also allows you to buy additional homes locations, depending on your userlevel"
-                . "Home prices rise exponentially with each additional home.", // a long add-on to the short  description
+                . "It also allows you to buy additional homes locations, depending on your userlevel. "
+                . "Home prices increase with each additional home. We use the formula: cost = (no_of_homes ^ 3) x 10.", // a long add-on to the short  description
             ),
     ),
     'home' => array( // this is the base command if there are no other commands
