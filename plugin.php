@@ -192,7 +192,15 @@ function umc_show_help($args = false) {
     return true;
 }
 
-function umc_plugin_web_help() {
+/**
+ * Displays the help for all plugins or one specific one on the website.
+ *
+ * @global type $WS_INIT
+ * @global type $UMC_USER
+ * @param type $one_plugin
+ * @return string
+ */
+function umc_plugin_web_help($one_plugin = false) {
     global $WS_INIT ,$UMC_USER;
 
     if (!$UMC_USER) {
@@ -206,6 +214,9 @@ function umc_plugin_web_help() {
     arsort($WS_INIT);
     $out = "<table style=\"font-size:85%;\">\n<tr><th>Plugin / Command</th><th>Description</th></tr>\n";
     foreach ($WS_INIT as $plugin => $data) {
+        if ($one_plugin && $plugin <> $one_plugin) {
+            continue;
+        }
         if (count($data) <= 3) {
             continue;
         }
