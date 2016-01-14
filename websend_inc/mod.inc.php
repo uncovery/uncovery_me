@@ -128,9 +128,8 @@ $WS_INIT['mod'] = array(  // the name of the plugin
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    $cmd = "ch qm n This is a test&f";
-    umc_exec_command($cmd, 'asConsole');
+    global $UMC_USER;
+    // umc_exec_command($cmd, 'asConsole');
     XMPP_ERROR_trigger("test");
 }
 
