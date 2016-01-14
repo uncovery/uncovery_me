@@ -197,7 +197,7 @@ function umc_github_wordpress_update() {
     $today_obj = new DateTime(NULL);
     $today_obj->modify('-1 day');
     // $date_new->setTimezone(new DateTimeZone('Asia/Hong_Kong'));    
-    $today_str = $today_obj->format('Y-m-d\T00:00:00\Z');
+    $today_str = $today_obj->format('Y-m-d\T16:00:00\Z');
     
     $issue_arr = array();
     
