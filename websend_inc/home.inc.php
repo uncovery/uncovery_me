@@ -352,20 +352,16 @@ function umc_home_list() {
     $count = count($D);
     umc_header("Your home list ($count homes)");
 
-    $cur_world = false;
-    $out = '';
-    $worldhomes = array();
+    $homes = array();
     foreach ($D as $d) {
-        if ($d['world'] <> $cur_world) {
-            if ($cur_world) {
-                $out .= implode("{red},{white} ", $worldhomes);
-                umc_echo($out);
-            }
-            $out = "{red}{$d['world']}:{white} ";
-            $worldhomes = array();
-        }
-        $worldhomes[] = $d['name'];
-        $cur_world = $d['world'];
+        $world = $d['world'];
+        $name = $d['name'];
+        $homes[$world][] = $name;
+    }
+
+    foreach ($homes as $world => $worldhomes) {
+        $out = "{red}$world: {white}" . implode("{red},{white} ", $worldhomes);
+        umc_echo($out);
     }
     umc_footer();
 }
