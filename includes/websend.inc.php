@@ -130,7 +130,7 @@ function umc_ws_eventhandler($event) {
     }
 }
 
-// returns the TOTAL points of experience of a player based on level fraction and 
+// returns the TOTAL points of experience of a player based on level fraction and
 function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
@@ -139,13 +139,13 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     $total_xp_as_points = $points_in_levels + $points_in_fraction;
     //XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
     return $total_xp_as_points;
-    
+
 }
 
 // returns the amount of exp needed to be obtained to advance from specific level as a points value
 function umc_ws_get_xptolvl($inputlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // reference material
     // http://minecraft.gamepedia.com/Experience
     // conversions dated 12/01/2016 - v 1.8.9 accurate
@@ -153,58 +153,58 @@ function umc_ws_get_xptolvl($inputlevel){
     $xp = 0;
 
     if (is_numeric($inputlevel) && $inputlevel > 0){
-        
+
         // levels 0-16
         if ($inputlevel <= 16 && $inputlevel > 0){
             $xp = 2 * $inputlevel + 7;
         }
-        
+
         // levels 17-31
         if ($inputlevel >= 17 && $inputlevel <= 31){
             $xp = 5 * $inputlevel - 38;
         }
-        
+
         // levels 32+
         if ($inputlevel >= 32){
             $xp = 9 * $inputlevel - 158;
         }
 
     }
-    
+
     return $xp;
-    
+
 }
 
 // returns the amount of exp points equivalent to input level
 function umc_ws_convert_xplvl_to_points($inputlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // reference material
     // http://minecraft.gamepedia.com/Experience
     // conversions dated 12/01/2016 - v 1.8.9 accurate
-    
+
     $xp = 0;
-    
+
     if (is_numeric($inputlevel) && $inputlevel > 0){
-    
+
         // levels 0-16
         if ($inputlevel <= 16){
             $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
         }
-        
+
         // levels 17-31
         if ($inputlevel >= 17 && $inputlevel <= 31){
-            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360; 
+            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360;
         }
-        
+
         // levels 32+
         if ($inputlevel >= 32){
-            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220; 
+            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220;
         }
     }
-    
+
     return $xp;
-    
+
 }
 
 
@@ -259,14 +259,14 @@ function umc_ws_get_vars() {
                     'x' => $json['Invoker']['Location']['X'],
                     'y' => $json['Invoker']['Location']['Y'],
                     'z' => $json['Invoker']['Location']['Z'],
-                    'yaw' => $json['Invoker']['Location']['Yaw'],
+                    'yaw' => umc_ws_yaw_fix($json['Invoker']['Location']['Yaw']),
             );
-            
+
             // xp converted to points value obtained total. JSON returns fractional value.
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             $UMC_USER['xpfraction'] = $json['Invoker']['XP'];
             $UMC_USER['xp'] = umc_ws_convert_xp($json['Invoker']['XP'], $json['Invoker']['XPLevel']);
-            
+
             //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
             $ip_matches = false;
@@ -318,6 +318,26 @@ function umc_ws_get_vars() {
     $UMC_USERS[$UMC_USER['uuid']] = $current_user;      // add the object to the list of all users
      *
      */
+}
+
+/**
+ * Convert Websend-based YAW information into Bukkit/mc based yaw info.
+ *
+ * @param type $raw_yaw
+ * @return int
+ */
+function umc_ws_yaw_fix($raw_yaw) {
+    $yaw = round($raw_yaw, 1);
+    // first we fix the 2x turn from websend with negative -350 degrees
+    if ($yaw < 0) {
+        $yaw += 360;
+    }
+    // then we change the system from 0-360 to +180/-180
+    // as minecraft shows on F3
+    if ($yaw > 180) {
+        $yaw -= 360;
+    }
+    return $yaw;
 }
 
 /**
