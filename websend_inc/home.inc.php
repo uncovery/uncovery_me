@@ -121,7 +121,7 @@ $UMC_SETTING['max_homes'] = array(
     'Designer' => 15, 'DesignerDonator' => 15, 'DesignerDonatorPlus' => 15,
     'Master' => 20, 'MasterDonator' => 20, 'MasterDonatorPlus' => 20,
     'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
-    'Owner' => 15,
+    'Owner' => 100,
 );
 
 // returns information about the players homes
