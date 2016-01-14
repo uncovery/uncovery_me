@@ -26,7 +26,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
     ),
     'default' => array(
         'help' => array(
-            'title' => 'Home',  // give it a friendly title
+            'title' => 'Home Manager',  // give it a friendly title
             'short' => 'Warp to personal, pre-defined locations',  // a short description
             'long' => "This command allows you to warp to pre-defined locations (homes). "
                 . "It also allows you to buy additional homes locations, depending on your userlevel"
