@@ -182,6 +182,7 @@ function umc_home_warp() {
 
     $D = umc_mysql_fetch_all($sql);
     $row = $D[0];
+    $name = $D[0]['name'];
     $world = $row['world'];
     if ($world != $playerworld) {
         umc_ws_cmd("mv tp $player $world", 'asConsole');
@@ -327,14 +328,20 @@ function umc_home_rename() {
 }
 
 // find out how many homes a user has already
-function umc_home_count($name = false) {
+function umc_home_count($name = false, $uuid_req = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    if (!$uuid_req) {
+        $uuid = $UMC_USER['uuid'];
+    } else {
+        $uuid = $uuid_req;
+    }
     global $UMC_USER;
     $name_sql = '';
     if ($name) {
         $name_sql = "AND name=$name";
     }
-    $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' $name_sql;";
+    $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='$uuid' $name_sql;";
     $D = umc_mysql_fetch_all($sql);
     $homes = $D[0]['count'];
     return $homes;
