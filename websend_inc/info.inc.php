@@ -18,7 +18,7 @@
  */
 
 /*
- * This is a small plugin that send various information to the client. It also 
+ * This is a small plugin that send various information to the client. It also
  * allows password resets w/o using wordpress
  */
 global $UMC_SETTING, $WS_INIT;
@@ -86,12 +86,12 @@ $WS_INIT['info'] = array(  // the name of the plugin
 );
 
 function umc_info_setpass() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args()); 
-    
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $user_login = umc_wp_get_login_from_uuid($uuid);
-    
+
     // get userdata
     // this code is copied from wp-login.php, round line 325, grep for 'get_password_reset_key'
     $user_data = get_user_by('login', $user_login);
@@ -99,7 +99,7 @@ function umc_info_setpass() {
     $url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user_login), 'login');
     // shorten the URL
     $shortenedurl = file_get_contents('http://uncovery.me/s/shorten.php?longurl=' . urlencode($url));
-    
+
     umc_header("Password Reset Link");
     umc_echo("Please click on the following link to set a new password:");
     umc_echo($shortenedurl);
@@ -185,7 +185,7 @@ function umc_info_whereami() {
     $region_z = floor($z / 512);
 
     // Yaw
-    $yaw = round($UMC_USER['coords']['yaw'], 1);
+    $yaw = $UMC_USER['coords']['yaw'];
 
     // -22.49969482421875 ?
 
@@ -200,11 +200,8 @@ function umc_info_whereami() {
         315 => 'SouthEast',
         360 => 'South',
     );
+    // angle difference for 45 degrees:
     $var = 22.5;
-    $game_yaw = $yaw;
-    if ($yaw < 0) {
-        $yaw += 360;
-    }
     $compass = false;
     foreach ($yaw_arr as $angle => $direction) {
         if (($yaw > ($angle - $var)) && ($yaw < ($angle + $var))) {
@@ -234,7 +231,7 @@ function umc_info_whereami() {
         umc_echo("{green}Lot Owner:{white} Unoccupied lot");
     }
 
-    umc_echo("{green}Compass:{white} $compass {green}Yaw:{white} $yaw {green}Game-Yaw:{white} $game_yaw");
+    umc_echo("{green}Compass:{white} $compass {green}Yaw:{white} $yaw {green}");
     umc_echo("{green}Coordinates:{white} x: $x,  y: $y,  z: $z");
     umc_echo("{green}Chunk:{white} x: $chunk_x, z: $chunk_z {green}Region:{white} x: $region_x, z: $region_z $map_str");
     umc_footer();
