@@ -476,14 +476,14 @@ function umc_do_offer_internal($deposit) {
 	$id = $args[2];
 	array_splice($args, 2, 1);
 
-    if ($id) {
+    if ($id) {if (ctype_digit($id)) {
     	$sql = "SELECT * from minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' and id='$id'";
     	$dep_data = umc_mysql_fetch_all($sql);
     	if (count($dep_data) < 1) {
                 umc_error("You have no such deposit ID");
     	}
     } else {
-        umc_error("{red}You did not specify a deposit ID. {white}Type {yellow}/shop{white} for help.");
+        umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
     }	
     	
    	$row = $dep_data[0];
