@@ -194,6 +194,27 @@ function umc_home_warp() {
     umc_ws_cmd($cmd, 'asConsole');
 }
 
+// used primarily by lottery to force a home called 'lottery'
+function umc_home_add($name){
+    
+    global $UMC_USER, $UMC_SETTING;
+    
+    $count = umc_home_count();
+    $newname = umc_get_code() + '_' + $name;
+    $userlevel = $UMC_USER['userlevel'];
+    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    
+    if ($count >= $max_homes) {
+        umc_error("You already reached your maximum home count ($max_homes)!");
+    }
+    
+    // add the new entry to the database
+    $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
+        . "($newname,'{$UMC_USER['uuid']}','empire','{66.565}','{64}','{-57.219}','{$UMC_USER['coords']['yaw']}');";
+    umc_mysql_query($sql, true);
+    
+}
+
 //
 function umc_home_buy() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
