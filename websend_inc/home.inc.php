@@ -195,11 +195,13 @@ function umc_home_warp() {
 }
 
 // used primarily by lottery to force a home called 'lottery'
-function umc_home_add($name){
+function umc_home_add($uuid, $name){
     
     global $UMC_USER, $UMC_SETTING;
     
     $count = umc_home_count();
+    
+    // add a prefix string to lottery home name to prevent conflict
     $newname = umc_get_code() + '_' + $name;
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
@@ -210,7 +212,7 @@ function umc_home_add($name){
     
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
-        . "($newname,'{$UMC_USER['uuid']}','empire','{66.565}','{64}','{-57.219}','{$UMC_USER['coords']['yaw']}');";
+        . "($newname,$uuid,'empire','66.565','64','-57.219','{$UMC_USER['coords']['yaw']}');";
     umc_mysql_query($sql, true);
     
 }
