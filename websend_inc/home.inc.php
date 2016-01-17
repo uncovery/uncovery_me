@@ -40,7 +40,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
         ),
         'function' => 'umc_home_warp',
         'top' => true,
@@ -53,7 +53,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_buy',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
             // 'level'=>'Owner',
         ),
     ),
@@ -65,7 +65,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_update',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
         ),
     ),
     'rename' => array( // this is the base command if there are no other commands
