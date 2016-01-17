@@ -291,6 +291,14 @@ function umc_lottery() {
     // get the voting players uuid
     $uuid = umc_user2uuid($user);
     
+    // give reinforcing feedback - set subtitle (not displayed)
+    $cmd = 'title ' + $user + ' subtitle {text:"Thanks for your vote!",color:gold }';
+    umc_ws_cmd($cmd, 'asConsole');
+    
+    // display the feedback - displays subtitle AND title
+    $cmd = 'title ' + $user + ' title {text:"+100 Uncs",color:gold }';
+    umc_ws_cmd($cmd, 'asConsole');
+    
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
     if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
