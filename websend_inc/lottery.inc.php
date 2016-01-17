@@ -334,7 +334,7 @@ function umc_lottery() {
             $item_txt = $prize['txt'];
             break;
         case 'additional_home':
-            umc_home_add('lottery')
+            umc_home_add($uuid,'lottery')
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
