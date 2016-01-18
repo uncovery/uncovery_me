@@ -534,7 +534,7 @@ function umc_user_get_lot_tile($lot, $world = false) {
             }
         }
     }
-    return "<img style=\"background:#000000;\" src=\"$UMC_DOMAIN/map/lots/$world/$lot.png\" alt=\"$lot\">";
+    return "<img class=\"lot_tile\" src=\"$UMC_DOMAIN/map/lots/$world/$lot.png\" alt=\"$lot\">";
 }
 
 function umc_get_banned_users() {
