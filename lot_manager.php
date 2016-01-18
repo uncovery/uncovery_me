@@ -727,7 +727,8 @@ function umc_get_member_form($lot, $form = false) {
         // make a form where existing members can be removed
         foreach ($lot_members as $UUID => $member) {
             // remoe all inactive members from the lot
-            if (!in_array($member, $members)) {
+            if (!isset($members[$UUID])) {
+                XMPP_ERROR_trace("Removing inactive player $UUID from lot, list of active members:", $members);
                 umc_lot_rem_player($UUID, $lot, 0);
             }
             if ($form) {
