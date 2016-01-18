@@ -218,7 +218,7 @@ function umc_github_wordpress_update() {
             if (count($issue['labels']) > 0) {
                 $label_txt = " ($labels)";
             }
-            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a> - <strong><a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a></strong>$label_txt";
+            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a> (<a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a>) $label_txt";
             if ($issue['state'] == 'open') {
                 if ($issue_opened_date == $issue_updated_date) {
                     $issue_arr['opened'][$issue['number']] = $text;
