@@ -476,7 +476,7 @@ function umc_do_offer_internal($deposit) {
 	$id = $args[2];
 	array_splice($args, 2, 1);
 
-    if ($id) {if (ctype_digit($id)) {
+    if ($id) {if (is_numeric($id)) {
     	$sql = "SELECT * from minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' and id='$id'";
     	$dep_data = umc_mysql_fetch_all($sql);
     	if (count($dep_data) < 1) {
