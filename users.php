@@ -268,7 +268,6 @@ function umc_get_active_members() {
         GROUP BY user_uuid ORDER BY name";
     $data = umc_mysql_fetch_all($sql);
     foreach ($data as $row) {
-
         $active_members[$row['user_uuid']] = $row['name'];
     }
     return $active_members;
