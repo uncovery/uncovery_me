@@ -313,3 +313,7 @@ a .widget .bbp-author-name {
 .imagebox img {
     margin: 3px;
 }
+
+.lot_tile {
+    background: #000000;
+}
