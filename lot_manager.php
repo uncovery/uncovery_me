@@ -415,7 +415,7 @@ function umc_lot_manager_dib_cleanup() {
             XMPP_ERROR_send_msg("User $uuid is not active anymore, remove dibs for $lot!");
             umc_lot_manager_dib_delete($uuid, $lot);
         } else {
-            
+
             $user_lots = umc_user_getlots($uuid);
             if (isset($user_lots[$lot])) {
                 XMPP_ERROR_send_msg("User $uuid is owner of $lot already, remove dibs!");
@@ -1098,10 +1098,10 @@ function umc_lot_manager_get_occupied_lots($world=false) {
         LEFT JOIN minecraft_worldguard.world ON world.id=region_players.world_id
         WHERE owner=1 AND SUBSTR(region_players.region_id, 1, 4) IN {$UMC_SETTING['lot_worlds_sql']}$world_str
 	ORDER BY region_id;";
-    $rst = umc_mysql_query($sql);
+    $D = umc_mysql_fetch_all($sql);
     $lots = array();
-    while ($R = umc_mysql_fetch_array($rst)) {
-        $lots[$R['lot']] = $R['lot'];
+    foreach ($D as $d) {
+        $lots[$d['lot']] = $d['lot'];
     }
     return $lots;
 }
@@ -1251,7 +1251,7 @@ function umc_check_lot_owner($lot, $uuid = false) {
 function umc_lot_reset_process() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_PATH_MC;
-    
+
     // first of all, clean up user dibs
     umc_lot_manager_dib_cleanup();
 
@@ -1305,10 +1305,10 @@ function umc_lot_reset_process() {
         if ($owner_username == 'uncovery') { // we do not reset uncovery's lots
             continue;
         }
-        
+
         if ($owner_username == 'riedi77') { // we do not reset uncovery's lots
             continue;
-        }        
+        }
 
         // we do not reset active donators, except those who are banned
         if (isset($donators[$owner_uuid]) && !isset($banned_users[$owner_uuid])) {
