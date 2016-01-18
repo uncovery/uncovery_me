@@ -41,7 +41,48 @@ $WS_INIT['buyxp'] = array(  // the name of the plugin
         ),
         'function' => 'umc_do_buyxp',
     ),
+    'bottlexp' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Bottle XP',
+            'long' => "Bottles all current XP at the rate of 10 xp per bottle.",
+        ),
+        'function' => 'umc_xp_bottle',
+        'security' => array(
+            'worlds' => array( 'empire', 'kingdom', 'skylands', 'aether', 'the_end'),
+    ),
 );
+
+function umc_xp_bottle(){
+    
+    global $UMC_USER;
+	
+    $player = $UMC_USER['username'];
+    $user_xp = $UMC_USER['xp'];
+    
+    // make sure they have enough xp.
+    if ($user_xp < 10) {	
+        umc_error("{red}You need at least 10 XP points to bottle. You currently have only $user_xp.");
+    }
+    
+    // calculate
+    $bottle_count = floor($user_xp / 10);
+    $taking_xp = $bottle_count * 10;
+    $uuid = umc_user2uuid($player);
+    $nex_xp = $user_xp - $taking_xp;
+    
+    // set the nex exp value
+    umc_ws_cmd("exp set $player $new_xp", 'asConsole');
+    
+    // give the item into deposit
+    umc_deposit_give_item($uuid, 393, 0, '', $bottle_count, 'bottlexp');
+    
+    // create the log
+    umc_log('buyxp', 'bottle', "$player bottled $taking_xp into $bottle_count bottles.");
+    
+    // give some player feedback
+    umc_echo("{green} You deposited $bottle_count bottles into your deposit box.");
+    
+}
 
 /**
  * Buy XP in-game // function is still working with usernames instead of UUID since
