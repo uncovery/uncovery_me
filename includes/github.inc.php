@@ -25,6 +25,7 @@ global $GITHUB;
 $GITHUB['owner'] = 'uncovery';
 $GITHUB['repo'] = 'uncovery_me'; 
 $GITHUB['page'] = 'http://uncovery.me/server-features/development-status/';
+$GITHUB['page_direct_issues'] = 'https://github.com/uncovery/uncovery_me/issues/';
 
 // https://github.com/KnpLabs/php-github-api
 
@@ -166,7 +167,7 @@ function umc_github_issue_details($issue, $comments) {
     $out = "    <table class='dataTable'>
         <tr>
             <td><strong>ID:</strong> {$issue['number']}</td>
-            <td colspan=4><strong>Title:</strong> {$issue['title']}</td>
+            <td colspan=4><strong>Title:</strong> {$issue['title']} - <strong> - <strong><a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a></td>
         </tr>
         <tr>
             <td><strong>Labels:</strong></td><td>$labels</td>
@@ -216,7 +217,7 @@ function umc_github_wordpress_update() {
             if (count($issue['labels']) > 0) {
                 $label_txt = " ($labels)";
             }
-            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a>$label_txt";
+            $text = "Issue No. {$issue['number']}, <a href=\"$page?action=issue_detail&amp;id={$issue['number']}\">{$issue['title']}</a> - <strong><a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a>$label_txt";
             if ($issue['state'] == 'open') {
                 if ($issue_opened_date == $issue_updated_date) {
                     $issue_arr['opened'][$issue['number']] = $text;
@@ -230,7 +231,7 @@ function umc_github_wordpress_update() {
     }    
 
     $out = "This is a daily update on the status of the work done behind the scenes. You can see the complete status <a href=\"$page\">here</a>.\n "
-        . "By the way our server code is Open Source. You can help improving it <a href=\"https://github.com/uncovery/uncovery_me\">here</a>.<ul>\n"; 
+        . "Our webserver is completely open source, hosted on GitHub. You can help improve the server by fixng issues <a href=\"https://github.com/uncovery/uncovery_me/issues">here</a>.<ul>\n"; 
     foreach ($issue_arr as $section => $lines) {
         $section_str = ucwords($section);
         $out .= "    <li><strong>Issues $section_str:</strong>\n";
