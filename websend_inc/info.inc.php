@@ -186,6 +186,8 @@ function umc_info_whereami() {
 
     // Yaw
     $yaw = $UMC_USER['coords']['yaw'];
+    // we need to convert this to work with 0-360 instead of +-180
+    $yaw_360 = $yaw + 180;
 
     // -22.49969482421875 ?
 
@@ -204,14 +206,14 @@ function umc_info_whereami() {
     $var = 22.5;
     $compass = false;
     foreach ($yaw_arr as $angle => $direction) {
-        if (($yaw > ($angle - $var)) && ($yaw < ($angle + $var))) {
+        if (($yaw_360 > ($angle - $var)) && ($yaw_360 < ($angle + $var))) {
             $compass = $direction;
             break;
         }
     }
     // could not identify direction
     if (!$compass) {
-        XMPP_ERROR_trigger("Could not idenfiy compass direction in /whereami");
+        XMPP_ERROR_trigger("Could not identfiy compass direction in /whereami");
         $compass = "?";
     }
 
