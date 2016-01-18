@@ -168,7 +168,7 @@ function umc_github_issue_details($issue, $comments) {
     $out = "    <table class='dataTable'>
         <tr>
             <td><strong>ID:</strong> {$issue['number']}</td>
-            <td colspan=4><strong>Title:</strong> {$issue['title']} - <strong> - <strong><a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a></strong></td>
+            <td colspan=4><strong>Title:</strong> {$issue['title']} (<a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>Direct Link</a>)</td>
         </tr>
         <tr>
             <td><strong>Labels:</strong></td><td>$labels</td>
