@@ -271,7 +271,7 @@ function umc_lot_addrem() {
         $active_users = umc_get_active_members();
 
         for ($i=4; $i<count($args); $i++) {
-            $target = $args[$i];
+            $target = strtolower($args[$i]);
 
             // check if target player exists
             $target_id = umc_get_worldguard_id('user', strtolower($target));
@@ -283,6 +283,7 @@ function umc_lot_addrem() {
                 if ($targ_group == 'Guest') {
                     umc_error("You cannnot add Guests to your lot!;");
                 } else if (!in_array($target, $active_users)) {
+                    XMPP_ERROR_trigger("$player tried to add $target to his lot $lot, but $target is not an active member!");
                     umc_error("$target is not an active user!");
                 }
             }
