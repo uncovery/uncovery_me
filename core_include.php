@@ -290,3 +290,18 @@ function umc_print_truefalse($query) {
         return 'false';
     }
 }
+
+function umc_random_code_gen($length = 4) {
+    $chars = "abcdefghijkmnopqrstuvwxyz0123456789";
+    srand((double)microtime()*1000000);
+    $i = 0;
+    $pass = '' ;
+
+    while ($i <= $length) {
+        $num = rand() % 33;
+        $tmp = substr($chars, $num, 1);
+        $pass = $pass . $tmp;
+        $i++;
+    }
+    return $pass;
+}
