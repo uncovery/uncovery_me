@@ -407,9 +407,11 @@ function umc_lottery() {
     // fix service
     $search = array('http://www.', 'https://www.', 'http://', 'https://');
     $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
+    // sql log
+    $sql_reward = umc_mysql_real_escape_string($type);
     $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
-    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
-        VALUES ('$uuid', NOW(), $service, $ip);";
+    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
+        VALUES ('$uuid', NOW(), $service, $ip, $luck, $sql_reward);";
     umc_mysql_query($sql, true);
     XMPP_ERROR_trigger("Vote done!");
 }
