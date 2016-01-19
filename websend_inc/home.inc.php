@@ -209,7 +209,7 @@ function umc_home_add($uuid, $name){
         umc_error("You already reached your maximum home count ($max_homes)!");
     }
     $uuid_sql = umc_mysql_real_escape_string($uuid);
-    $name_sql = umc_mysql_real_escape_string($newname);
+    $name_sql = umc_mysql_real_escape_string($name);
 
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
