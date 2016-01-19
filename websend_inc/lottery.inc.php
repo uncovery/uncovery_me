@@ -341,7 +341,8 @@ function umc_lottery() {
             $item_txt = $prize['txt'];
             break;
         case 'additional_home':
-            umc_home_add($uuid, 'lottery');
+            $newname = 'lottery' . "_" . umc_random_code_gen(4);
+            umc_home_add($uuid, $newname);
             $item_txt = "an addtional home!!";
             break;
         case 'random_unc':
