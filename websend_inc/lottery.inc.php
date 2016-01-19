@@ -247,29 +247,21 @@ function umc_lottery_reminder() {
 
 function umc_lottery_show_chances() {
     global $lottery;
-    $sum = 1;
-    echo "<table>\n<tr><th>Prize</th><th>Chance</th><th>Numbers</th></tr>\n";
+
+    $sum = 0;
+    $lastchance = 0;
+    echo "<table>\n<tr><th>Prize</th><th style=\"text-align:right;\">Chance</th><th style=\"text-align:right;\">Numbers</th></tr>\n";
+
     foreach ($lottery as $data) {
-        $temp = $sum + $data['chance'] - 1;
-        if ($sum == $temp) {
-            $num_txt = $sum;
-        } else {
-            $num_txt = "$sum - $temp";
-        }
-        echo "<tr><td>{$data['txt']}</td><td>{$data['chance']}</td><td>$num_txt</td></tr>";
-        $sum = $sum + $data['chance'];
-/*        if (isset($data['blocks'])) {
-            echo "<tr><td colspan=3>";
-            foreach ($data['blocks'] as $block) {
-                $item_id = umc_get_id($block, 0);
-                echo $item_id['name'] . " ";
-            }
-            echo "</td></tr>";
-        }
-*/
+        $chance = $data['chance'] / 100;
+        $sum = $lastchance + $data['chance'];
+        $num_txt = "$lastchance - $sum";
+        echo "<tr><td>{$data['txt']}</td><td style=\"text-align:right;\">$chance %</td><td style=\"text-align:right;\">$num_txt</td></tr>";
+        $lastchance = $sum;
     }
-    $sum--;
-    echo "<tr><td>Sum:</td><td>$sum%</td><td></td></tr>";
+
+    $final_sum = $sum / 100;
+    echo "<tr><td>Sum:</td><td style=\"text-align:right;\">$final_sum %</td><td></td></tr>";
     echo "</table>";
 
 }
@@ -519,8 +511,8 @@ function umc_lottery_web_stats() {
         $minval = min($minval, $row['vote_count']);
         $date = $row['date'];
         $legend[$date] = $date;
-        if ($row['website'] == 'MCSL') {
-            $site = 'Minecraft-Server-List.com';
+        if ($row['website'] == 'mcsl') {
+            $site = 'minecraft-server-list.com';
         } else {
             $site = $row['website'];
         }
