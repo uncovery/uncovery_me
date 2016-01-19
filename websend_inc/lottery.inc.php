@@ -20,7 +20,7 @@
 
 /*
  * This manages the lottery process that happens when a user votes on a server
- * list. It requires the deposit box since the winnings have to go somewhere 
+ * list. It requires the deposit box since the winnings have to go somewhere
  * even if the user in not in-game.
  */
 
@@ -275,51 +275,50 @@ function umc_lottery_show_chances() {
 }
 
 function umc_lottery() {
-    
     //  umc_error_notify("User $user, $chance (umc_lottery)");
-    global $UMC_USER, $lottery, $ENCH_ITEMS,$UMC_SETTING;
+    global $UMC_USER, $lottery, $ENCH_ITEMS;
 
     $user_input = $UMC_USER['args'][2];
-    
+
     // check if there is a valid user on the server before applying the vote.
     $user = umc_check_user($user_input);
     if (!$user) {
         umc_log("lottery", "voting", "user $user does not exist");
         return false;
     }
-    
+
     // get the voting players uuid
     $uuid = umc_user2uuid($user);
-    
+
     // give reinforcing feedback - set subtitle (not displayed)
-    $cmd = 'title ' + $user + ' subtitle {text:"Thanks for your vote!",color:gold }';
-    umc_ws_cmd($cmd, 'asConsole');
-    
+    $cmd1 = 'title ' + $user + ' subtitle {text:"Thanks for your vote!",color:gold }';
+    umc_ws_cmd($cmd1, 'asConsole');
+
     // display the feedback - displays subtitle AND title
-    $cmd = 'title ' + $user + ' title {text:"+100 Uncs",color:gold }';
-    umc_ws_cmd($cmd, 'asConsole');
-    
+    $cmd2 = 'title ' + $user + ' title {text:"+100 Uncs",color:gold }';
+    umc_ws_cmd($cmd2, 'asConsole');
+
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
     if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
         $chance = $UMC_USER['args'][3];
     }
-    
+
     // get the roll array based on chance
     $roll = umc_lottery_roll_dice($chance);
-    
+
     // umc_echo(umc_ws_vardump($roll));
-    
+
     // define the rewards and item more legibly
     $item = $roll['item'];
     $luck = $roll['luck'];
     $prize = $lottery[$item];
-    
+
     //echo "type = {$prize['type']}<br>;";
 
     //echo "complete chance: $chance<br>;";
     //var_dump($prize);
-    
+
     // get the metadata if required for the item
     if (isset($prize['detail'])) {
         $detail = $prize['detail'];
@@ -332,9 +331,9 @@ function umc_lottery() {
     // instantiate block variables
     $given_block_data = 0;
     $given_block_type = 0;
-    
+
     //var_dump($prize);
-    
+
     // based on item type, give reward to the player
     switch ($type) {
         case 'item':
@@ -342,7 +341,7 @@ function umc_lottery() {
             $item_txt = $prize['txt'];
             break;
         case 'additional_home':
-            umc_home_add($uuid,'lottery')
+            umc_home_add($uuid, 'lottery');
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
@@ -420,13 +419,12 @@ function umc_lottery() {
 
 // returns an array with the item and roll value
 function umc_lottery_roll_dice($chance = false) {
-    
     global $lottery;
-    
+
     // vars set to 0 :S
     $rank = 0;
     $lastrank = 0;
-    
+
     // if chance is defined, set roll to chance
     if ($chance) {
         $roll = $chance;
@@ -434,37 +432,27 @@ function umc_lottery_roll_dice($chance = false) {
         // TODO - range should be defined by count of chances in lottery array
         $roll = mt_rand(1, 10000);
     }
-    
+
     // set last_item to false why
     $last_item = false;
-    
+
     // iterate through lottery array of data
     foreach ($lottery as $item => $data) {
-        
         // while last item flag is false
         if (!$last_item) {
-            // set last item to current item in lottery array
-            $last_item = $item;
+            $last_item = $item; // set last item to current item in lottery array
         }
-        
-        // get the chance of the item roll
-        $chance = $data['chance'];
-        
-        // add chance to running total
-        $rank = $rank + $chance;
-        
+
+        $chance = $data['chance']; // get the chance of the item roll
+        $rank = $rank + $chance; // add chance to running total
+
         // if roll matches the item chances range
         if ($roll <= $rank && $roll > $lastrank) {
-            // return the item and the roll
-            return array('item' => $item, 'luck' => $roll);
+            return array('item' => $item, 'luck' => $roll); // return the item and the roll
         }
-        
-        // set lastrank to running total of chance
-        $lastrank = $rank;
-        
-        // set the last item to item currently iterated
-        $last_item = $item;
-        
+
+        $lastrank = $rank; // set lastrank to running total of chance
+        $last_item = $item; // set the last item to item currently iterated
     }
 }
 
