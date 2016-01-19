@@ -196,7 +196,7 @@ function umc_home_warp() {
 
 // used primarily by lottery to force a home called 'lottery'
 function umc_home_add($uuid, $name){
-
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
 
     $count = umc_home_count();
@@ -214,7 +214,7 @@ function umc_home_add($uuid, $name){
 
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
-        . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','0');";
+        . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','0');"; // home is empire spawn
     umc_mysql_query($sql, true);
 
 }
