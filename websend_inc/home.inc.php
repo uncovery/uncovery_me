@@ -181,15 +181,12 @@ function umc_home_warp() {
     $row = $D[0];
     $name = $D[0]['name'];
     $world = $row['world'];
-    if ($world != $playerworld) {
-        umc_ws_cmd("mv tp $player $world", 'asConsole');
-    }
     $x = $row['x'];
     $z = $row['z'];
     $y = $row['y'];
     $yaw = $row['yaw'];
     // todo translate ESSENTIALS yaw into minecraft yaw
-    $cmd = "tppos $player $x $y $z $yaw";
+    $cmd = "consoletp $player $world $x $y $z $yaw 0";
     umc_log('home', 'warp', "$player warped to home $name at $world $x $y $z $yaw");
     umc_ws_cmd($cmd, 'asConsole');
 }
