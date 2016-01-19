@@ -55,7 +55,7 @@ global $lottery;
 
 $lottery = array(
     'diamond' => array(
-        'chance' => 10,
+        'chance' => 1000,
         'type' => 'item',
         'data' => 264,
         'txt' => 'a shiny, tiny, diamond',
@@ -66,7 +66,7 @@ $lottery = array(
         ),
     ),
     'diamondblock' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'item',
         'data' => 57,
         'txt' => 'an ugly, heavy diamond block',
@@ -77,7 +77,7 @@ $lottery = array(
         ),
     ),
     'goldenapple' => array(
-        'chance' => 7,
+        'chance' => 700,
         'type' => 'item',
         'data' => 322,
         'txt' => 'a shiny golden apple (Yum!)',
@@ -88,7 +88,7 @@ $lottery = array(
         ),
     ),
     'cake' => array(
-        'chance' => 5,
+        'chance' => 500,
         'type' => 'item',
         'data' => 354,
         'txt' => 'an entire cake (Happy Cakeday!)',
@@ -99,7 +99,7 @@ $lottery = array(
         ),
     ),
     'coal' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'item',
         'data' => 263,
         'txt' => 'a NOT shiny piece of coal',
@@ -110,7 +110,7 @@ $lottery = array(
         ),
     ),
     'enchanted_pick' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'item',
         'data' => '270 1 DIG_SPEED:5 SILK_TOUCH:1 LOOT_BONUS_BLOCKS:3',
         'txt' => 'a super-enchanted wooden pickaxe',
@@ -125,7 +125,7 @@ $lottery = array(
         ),
     ),
     'enchanted_sword' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'item',
         'data' => '268 1 DAMAGE_ALL:5 KNOCKBACK:2 FIRE_ASPECT:2 LOOT_BONUS_MOBS:3',
         'txt' => 'a super-enchanted wooden sword',
@@ -141,7 +141,7 @@ $lottery = array(
         ),
     ),
     'dirtblock' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'item',
         'data' => 3,
         'txt' => 'a big block of extra-fine dirt',
@@ -152,7 +152,7 @@ $lottery = array(
         ),
     ),
     'cookie' => array(
-        'chance' => 7,
+        'chance' => 700,
         'type' => 'item',
         'data' => 357,
         'txt' => 'a hot cookie (OUCH!)',
@@ -163,7 +163,7 @@ $lottery = array(
         ),
     ),
     'random_pet' => array(
-        'chance' => 1,
+        'chance' => 100,
         'type' => 'random_pet',
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
@@ -173,13 +173,13 @@ $lottery = array(
         ),
     ),
     'random_unc' => array(
-        'chance' => 18,
+        'chance' => 1800,
         'type' => 'random_unc',
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_common' => array(
-        'chance' => 20,
+        'chance' => 2000,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
@@ -191,7 +191,7 @@ $lottery = array(
         ),
     ),
     'random_ore' => array(
-        'chance' => 5,
+        'chance' => 500,
         'type' => 'random_ore',
         'data' => 'ore',
         'txt' => '1-64 of random rare block',
@@ -203,7 +203,7 @@ $lottery = array(
         ),
     ),
     'random_manuf' => array(
-        'chance' => 15,
+        'chance' => 1500,
         'type' => 'random_manuf',
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
@@ -219,10 +219,16 @@ $lottery = array(
         ),
     ),
     'random_ench' => array(
-        'chance' => 8,
+        'chance' => 690, // rate of 69 in 1000
         'type' => 'random_ench',
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
+    ),
+    'additional_home' => array(
+        'chance' => 10, // rate of 1 in 1000
+        'type' => 'additional_home',
+        'data' => 'home',
+        'txt' => '{green} an additional home!',
     ),
 );
 
@@ -250,7 +256,7 @@ function umc_lottery_show_chances() {
         } else {
             $num_txt = "$sum - $temp";
         }
-        echo "<tr><td>{$data['txt']}</td><td>{$data['chance']}%</td><td>$num_txt</td></tr>";
+        echo "<tr><td>{$data['txt']}</td><td>{$data['chance']}</td><td>$num_txt</td></tr>";
         $sum = $sum + $data['chance'];
 /*        if (isset($data['blocks'])) {
             echo "<tr><td colspan=3>";
@@ -269,46 +275,74 @@ function umc_lottery_show_chances() {
 }
 
 function umc_lottery() {
+    
     //  umc_error_notify("User $user, $chance (umc_lottery)");
-    global $UMC_USER, $lottery, $ENCH_ITEMS;
+    global $UMC_USER, $lottery, $ENCH_ITEMS,$UMC_SETTING;
 
     $user_input = $UMC_USER['args'][2];
+    
+    // check if there is a valid user on the server before applying the vote.
     $user = umc_check_user($user_input);
     if (!$user) {
         umc_log("lottery", "voting", "user $user does not exist");
         return false;
     }
+    
+    // get the voting players uuid
     $uuid = umc_user2uuid($user);
+    
+    // give reinforcing feedback - set subtitle (not displayed)
+    $cmd = 'title ' + $user + ' subtitle {text:"Thanks for your vote!",color:gold }';
+    umc_ws_cmd($cmd, 'asConsole');
+    
+    // display the feedback - displays subtitle AND title
+    $cmd = 'title ' + $user + ' title {text:"+100 Uncs",color:gold }';
+    umc_ws_cmd($cmd, 'asConsole');
+    
+    // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
     if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
         $chance = $UMC_USER['args'][3];
     }
-
+    
+    // get the roll array based on chance
     $roll = umc_lottery_roll_dice($chance);
+    
     // umc_echo(umc_ws_vardump($roll));
+    
+    // define the rewards and item more legibly
     $item = $roll['item'];
     $luck = $roll['luck'];
-
     $prize = $lottery[$item];
+    
     //echo "type = {$prize['type']}<br>;";
 
     //echo "complete chance: $chance<br>;";
     //var_dump($prize);
+    
+    // get the metadata if required for the item
     if (isset($prize['detail'])) {
         $detail = $prize['detail'];
     }
     $type = $prize['type'];
 
-    // always give 100 uncs
+    // always give 100 uncs irrespective of roll.
     umc_money(false, $user, 100);
 
+    // instantiate block variables
     $given_block_data = 0;
     $given_block_type = 0;
+    
     //var_dump($prize);
+    
+    // based on item type, give reward to the player
     switch ($type) {
         case 'item':
             umc_deposit_give_item($uuid, $detail['type'], $detail['data'],  $detail['ench'], 1, 'lottery');
             $item_txt = $prize['txt'];
+            break;
+        case 'additional_home':
+            umc_home_add($uuid,'lottery')
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
@@ -384,30 +418,53 @@ function umc_lottery() {
     // echo "$user voted for the server and got $item_txt!;";
 }
 
+// returns an array with the item and roll value
 function umc_lottery_roll_dice($chance = false) {
+    
     global $lottery;
+    
+    // vars set to 0 :S
     $rank = 0;
     $lastrank = 0;
+    
+    // if chance is defined, set roll to chance
     if ($chance) {
-        $luck = $chance;
+        $roll = $chance;
     } else {
-        $luck = mt_rand(1, 100);
+        // TODO - range should be defined by count of chances in lottery array
+        $roll = mt_rand(1, 10000);
     }
-    //echo "You drew the lucky number $luck!;";
-    //echo "luck = $luck<br>";
+    
+    // set last_item to false why
     $last_item = false;
+    
+    // iterate through lottery array of data
     foreach ($lottery as $item => $data) {
+        
+        // while last item flag is false
         if (!$last_item) {
+            // set last item to current item in lottery array
             $last_item = $item;
         }
+        
+        // get the chance of the item roll
         $chance = $data['chance'];
+        
+        // add chance to running total
         $rank = $rank + $chance;
-        //$ranking[$item] = $rank;
-        if ($luck <= $rank && $luck > $lastrank) {
-            return array('item' => $item, 'luck' => $luck);
+        
+        // if roll matches the item chances range
+        if ($roll <= $rank && $roll > $lastrank) {
+            // return the item and the roll
+            return array('item' => $item, 'luck' => $roll);
         }
+        
+        // set lastrank to running total of chance
         $lastrank = $rank;
+        
+        // set the last item to item currently iterated
         $last_item = $item;
+        
     }
 }
 
