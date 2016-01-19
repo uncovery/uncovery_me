@@ -410,10 +410,10 @@ function umc_lottery() {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
     // add vote to the database
-    $service_raw = umc_mysql_real_escape_string($UMC_USER['args'][3]);
+    $service_raw = strtolower($UMC_USER['args'][3]);
     // fix service
     $search = array('http://www.', 'https://www.', 'http://', 'https://');
-    $service= str_replace($search, '', $service_raw);
+    $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
     $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
     $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
         VALUES ('$uuid', NOW(), $service, $ip);";
