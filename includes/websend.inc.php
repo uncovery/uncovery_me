@@ -344,21 +344,9 @@ function umc_ws_yaw_fix($raw_yaw) {
  * @param type $player
  */
 function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
-    global $UMC_PATH_MC;
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    umc_log('websend', 'outgoing', "$cmd $how to $player");
-    require_once "$UMC_PATH_MC/server/bin/includes/websend_class.php";
-    $ws = new Websend("74.208.45.80"); //, 4445
-    $password = file_get_contents("/home/includes/certificates/websend_code.txt");
-    $ws->password = $password;
-    if (!$ws->connect()) {
-        // try again
-        XMPP_ERROR_trace("websend Auth failed (attempt 1, trying again)", "none");
-        $ws = new Websend("74.208.45.80"); //, 4445
-        $ws->password = $password;
-        if (!$ws->connect()) { // fail agin? bail.
-            XMPP_ERROR_trigger("Could not connect to websend server (umc_exec_command / $cmd / $how / $player)");
-        }
+    $ws = umc_ws_connect();
+    if (!$ws) {
+        return;
     }
     // $ws->writeOutputToConsole("starting ws communication;");
     // $ws->writeOutputToConsole("Executing Command '$cmd' Method '$how' Player '$player';");
@@ -389,7 +377,47 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
         //$check = $ws->writeOutputToConsole("error");
     }
     $ws->disconnect();
+}
 
+/*
+ *  This is experimental and does not seem to work.
+ * It requires the feature WRAP_COMMAND_EXECUTOR=true in the websend config
+ * which crashes on a stackoverflow.
+function umc_ws_plugin_comms($plugin, $cmd) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $ws = umc_ws_connect();
+    if (!$ws) {
+        return;
+    }
+    $check1 = $ws->startPluginOutputListening($plugin);
+    XMPP_ERROR_trace("connect $plugin", $check1);
+    $check2 = $ws->doCommandAsConsole($cmd);
+    XMPP_ERROR_trace("do command $cmd", $check2);
+    $check3 = $ws->stopPluginOutputListening($plugin);
+    XMPP_ERROR_trace("disconnect $plugin", $check3);
+    XMPP_ERROR_trigger("Done!");
+}
+
+ */
+
+function umc_ws_connect() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_PATH_MC;
+    require_once "$UMC_PATH_MC/server/bin/includes/websend_class.php";
+    $ws = new Websend("74.208.45.80"); //, 4445
+    $password = file_get_contents("/home/includes/certificates/websend_code.txt");
+    $ws->password = $password;
+    if (!$ws->connect()) {
+        // try again
+        XMPP_ERROR_trace("websend Auth failed (attempt 1, trying again)", "none");
+        $ws = new Websend("74.208.45.80"); //, 4445
+        $ws->password = $password;
+        if (!$ws->connect()) { // fail agin? bail.
+            XMPP_ERROR_trigger("Could not connect to websend server (umc_exec_command)");
+            return false;
+        }
+    }
+    return $ws;
 }
 
 
