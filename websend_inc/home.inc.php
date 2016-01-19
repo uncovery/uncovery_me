@@ -76,7 +76,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_rename',
     ),
-    'sell' => array( // this is the base command if there are no other commands
+    /* 'sell' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Sell a home slot',
             'long' => "This will sell one of your homes and refund you 50%.",
@@ -84,6 +84,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_sell',
     ),
+     */
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Get a list of your homes',
