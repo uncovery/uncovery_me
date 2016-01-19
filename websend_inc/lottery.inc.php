@@ -413,7 +413,6 @@ function umc_lottery() {
     $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
         VALUES ('$uuid', NOW(), $service, $ip, $luck, $sql_reward);";
     umc_mysql_query($sql, true);
-    XMPP_ERROR_trigger("Vote done!");
 }
 
 // returns an array with the item and roll value
