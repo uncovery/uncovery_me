@@ -300,8 +300,8 @@ function umc_lottery() {
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
-    if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
-        $chance = $UMC_USER['args'][3];
+    if (($user == 'uncovery') && (isset($UMC_USER['args'][5]))) {
+        $chance = $UMC_USER['args'][5];
     }
 
     // get the roll array based on chance
@@ -410,13 +410,14 @@ function umc_lottery() {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
     // add vote to the database
-    if ($user != 'uncovery') {
-        $service = umc_mysql_real_escape_string($UMC_USER['args'][3]);
-        $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
-        $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
-            VALUES ('$uuid', NOW(), $service, $ip);";
-        umc_mysql_query($sql, true);
-    }
+    $service_raw = umc_mysql_real_escape_string($UMC_USER['args'][3]);
+    // fix service
+    $search = array('http://www.', 'https://www.', 'http://', 'https://');
+    $service= str_replace($search, '', $service_raw);
+    $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
+        VALUES ('$uuid', NOW(), $service, $ip);";
+    umc_mysql_query($sql, true);
     XMPP_ERROR_trigger("Vote done!");
 }
 
