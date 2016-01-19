@@ -430,7 +430,7 @@ function umc_lottery_roll_dice($chance = false) {
         $roll = $chance;
     } else {
         // TODO - range should be defined by count of chances in lottery array
-        $roll = mt_rand(1, 10000);
+        $roll = mt_rand(1, 1000);
     }
 
     XMPP_ERROR_trace("Rolled: ", $roll);
