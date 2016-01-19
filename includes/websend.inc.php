@@ -402,11 +402,12 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
  * @param $how send the command by either console or user
  * @return boolean true or false. false if the $how param was wrong
  */
-function umc_ws_cmd($cmd, $how = 'asConsole', $player = false, $silent = false) {
+function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = false) {
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (isset($_POST["player"])) {
-        $fromplayer = $_POST['player'];
+    $post_player = filter_input(INPUT_POST, "player", FILTER_SANITIZE_STRING);
+    if (!is_null($player)) {
+        $fromplayer = $post_player;
     } else {
         $fromplayer = $UMC_USER['username'];
     }
@@ -419,7 +420,7 @@ function umc_ws_cmd($cmd, $how = 'asConsole', $player = false, $silent = false) 
         $how = 'asConsole';
     }
     // remove colons, just in case
-    $cmd = str_replace(';', '', $cmd);
+    $cmd = str_replace(';', '', $cmd_raw);
 
     // this is debugging info
     if (!$silent) {
