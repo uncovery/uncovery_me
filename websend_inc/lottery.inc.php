@@ -275,7 +275,7 @@ function umc_lottery_show_chances() {
 }
 
 function umc_lottery() {
-    //  umc_error_notify("User $user, $chance (umc_lottery)");
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $lottery, $ENCH_ITEMS;
 
     $user_input = $UMC_USER['args'][2];
@@ -417,10 +417,12 @@ function umc_lottery() {
             VALUES ('$uuid', NOW(), $service, $ip);";
         umc_mysql_query($sql, true);
     }
+    XMPP_ERROR_trigger("Vote done!");
 }
 
 // returns an array with the item and roll value
 function umc_lottery_roll_dice($chance = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $lottery;
 
     // vars set to 0 :S
@@ -435,6 +437,7 @@ function umc_lottery_roll_dice($chance = false) {
         $roll = mt_rand(1, 10000);
     }
 
+    XMPP_ERROR_trace("Rolled: ", $roll);
     // set last_item to false why
     $last_item = false;
 
@@ -448,6 +451,7 @@ function umc_lottery_roll_dice($chance = false) {
         $chance = $data['chance']; // get the chance of the item roll
         $rank = $rank + $chance; // add chance to running total
 
+        XMPP_ERROR_trace("Chance check between $lastrank and $rank");
         // if roll matches the item chances range
         if ($roll <= $rank && $roll > $lastrank) {
             return array('item' => $item, 'luck' => $roll); // return the item and the roll
@@ -456,20 +460,10 @@ function umc_lottery_roll_dice($chance = false) {
         $lastrank = $rank; // set lastrank to running total of chance
         $last_item = $item; // set the last item to item currently iterated
     }
-    return array('item' => $item, 'luck' => $roll);
+    // we should not arrive here in any case
+    XMPP_ERROR_trigger("Dice roll ($roll) in lottery did not match lottery item!");
 }
 
-/**
- * this function tests different date format to make sure they are properly parsed into the database
- */
-function umc_test_lottery_date() {
-    $date = '2014-07-23 03:31:37 -0700';
-    echo umc_lottery_lot_fix_time($date) . "<br>";
-    $date = '1406488618339';
-    echo umc_lottery_lot_fix_time($date) . "<br>";
-    $date = '2014-07-23 03:31:37';
-    echo umc_lottery_lot_fix_time($date) . "<br>";
-}
 
 function umc_lottery_lot_fix_time($datetime) {
     if (!strstr($datetime, ':')) { // unix timestamp
