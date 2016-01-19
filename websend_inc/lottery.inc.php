@@ -228,7 +228,7 @@ $lottery = array(
         'chance' => 10, // rate of 1 in 1000
         'type' => 'additional_home',
         'data' => 'home',
-        'txt' => '{green} an additional home!',
+        'txt' => 'an additional home!',
     ),
 );
 
