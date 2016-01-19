@@ -196,25 +196,27 @@ function umc_home_warp() {
 
 // used primarily by lottery to force a home called 'lottery'
 function umc_home_add($uuid, $name){
-    
+
     global $UMC_USER, $UMC_SETTING;
-    
+
     $count = umc_home_count();
-    
+
     // add a prefix string to lottery home name to prevent conflict
     $newname = umc_get_code() + '_' + $name;
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
-    
+
     if ($count >= $max_homes) {
         umc_error("You already reached your maximum home count ($max_homes)!");
     }
-    
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
+    $name_sql = umc_mysql_real_escape_string($newname);
+
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
-        . "($newname,$uuid,'empire','66.565','64','-57.219','{$UMC_USER['coords']['yaw']}');";
+        . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','{$UMC_USER['coords']['yaw']}');";
     umc_mysql_query($sql, true);
-    
+
 }
 
 //
@@ -399,7 +401,7 @@ function umc_home_import() {
     // include spyc to parse YAML https://github.com/mustangostang/spyc
     require_once('/home/includes/spyc/Spyc.php');
     $users = umc_get_active_members();
-    
+
     foreach ($users as $uuid => $username) {
         $path = '/home/minecraft/server/bukkit/plugins/Essentials/userdata/' . $uuid . ".yml";
         $A = Spyc::YAMLLoad($path);
@@ -407,8 +409,8 @@ function umc_home_import() {
         $existing_count = umc_home_count(false, $uuid);
         if ($existing_count > 0) {
             continue;
-        }        
-        
+        }
+
         if (!isset($A['homes'])) {
             continue;
         }
