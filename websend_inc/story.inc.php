@@ -18,7 +18,7 @@
  */
 
 /*
- * This manages adventure-like stories where users can place signs in-game 
+ * This manages adventure-like stories where users can place signs in-game
  * that display longer info to players and perform certain other actions.
  * This includes a web interface to manage the stories.
  */
@@ -295,17 +295,8 @@ function umc_story_show() {
 }
 
 function umc_get_code() {
-    $chars = "abcdefghijkmnopqrstuvwxyz023456789";
-    srand((double)microtime()*1000000);
-    $i = 0;
-    $pass = '' ;
-
-    while ($i <= 4) {
-        $num = rand() % 33;
-        $tmp = substr($chars, $num, 1);
-        $pass = $pass . $tmp;
-        $i++;
-    }
+    $pass = umc_random_code_gen();
+    
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code='$pass';";
     $D3 = umc_mysql_fetch_all($sql);
     $count = count($D3);
