@@ -19,8 +19,8 @@
 
 /*
  * This plugin enables a central, internal mail system including a simple web interface
- * What is important to know is that emails NEVER get deleted, they only get 
- * marked as deleted since there only one table that the emails get stored in. Senders 
+ * What is important to know is that emails NEVER get deleted, they only get
+ * marked as deleted since there only one table that the emails get stored in. Senders
  * and recipients read from the same table.
  */
 
@@ -214,9 +214,9 @@ function umc_mail_send() {
  * Function to send emails to a recipient faster. This is used by other functions
  * to send status emails through code instead of user interactions. Does not use
  * the draft function. One has to chose if the user is the system or the initiator
- * of the calling function. In the latter case the sent mail will appear in the 
+ * of the calling function. In the latter case the sent mail will appear in the
  * outbox of the sender which might be a bit confusing.
- * 
+ *
  * @param type $message
  * @param type $recipient
  * @param type $sender
@@ -227,10 +227,10 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
         $sender_uuid = 'Server00-0000-0000-0000-000000000000';
         $message .= "\nThis email is system-generated. Do not reply to this email.";
     }
-    
+
     $title_sql = umc_mysql_real_escape_string($title);
     $message_sql = umc_mysql_real_escape_string($message);
-    
+
     $sql = 'INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) '
         . "VALUES ('$sender_uuid', '$recipient_uuid', $title_sql, $message_sql, 'sent', NOW());";
     umc_mysql_query($sql, true);
@@ -663,7 +663,7 @@ function umc_mail_web() {
         } else {
             $mail = $mail_data[0];
             $recipient = $mail['username'];
-            $subject = htmlentities(trim($mail['subject']));
+            $subject = htmlentities(trim($mail['title']));
             $message = htmlentities(trim($mail['message']));
             $msg_id = $mail['msg_id'];
             $action = "New Mail";
