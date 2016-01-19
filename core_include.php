@@ -291,10 +291,10 @@ function umc_print_truefalse($query) {
     }
 }
 
-function umc_random_code_gen($length = 4) {
+function umc_random_code_gen($length = 5) {
     $chars = "abcdefghijkmnopqrstuvwxyz0123456789";
     srand((double)microtime()*1000000);
-    $i = 0;
+    $i = 1;
     $pass = '' ;
 
     while ($i <= $length) {
