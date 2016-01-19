@@ -197,13 +197,13 @@ function umc_home_warp() {
 // used primarily by lottery to force a home called 'lottery'
 function umc_home_add($uuid, $name){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $UMC_SETTING;
+    global $UMC_SETTING;
 
     $count = umc_home_count();
 
     // add a prefix string to lottery home name to prevent conflict
     $newname = umc_random_code_gen() + '_' + $name;
-    $userlevel = $UMC_USER['userlevel'];
+    $userlevel = umc_get_uuid_level($uuid);
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
 
     if ($count >= $max_homes) {
