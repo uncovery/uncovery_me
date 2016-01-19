@@ -55,7 +55,7 @@ global $lottery;
 
 $lottery = array(
     'diamond' => array(
-        'chance' => 1000,
+        'chance' => 100,
         'type' => 'item',
         'data' => 264,
         'txt' => 'a shiny, tiny, diamond',
@@ -66,7 +66,7 @@ $lottery = array(
         ),
     ),
     'diamondblock' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'item',
         'data' => 57,
         'txt' => 'an ugly, heavy diamond block',
@@ -77,7 +77,7 @@ $lottery = array(
         ),
     ),
     'goldenapple' => array(
-        'chance' => 700,
+        'chance' => 70,
         'type' => 'item',
         'data' => 322,
         'txt' => 'a shiny golden apple (Yum!)',
@@ -88,7 +88,7 @@ $lottery = array(
         ),
     ),
     'cake' => array(
-        'chance' => 500,
+        'chance' => 50,
         'type' => 'item',
         'data' => 354,
         'txt' => 'an entire cake (Happy Cakeday!)',
@@ -99,7 +99,7 @@ $lottery = array(
         ),
     ),
     'coal' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'item',
         'data' => 263,
         'txt' => 'a NOT shiny piece of coal',
@@ -110,7 +110,7 @@ $lottery = array(
         ),
     ),
     'enchanted_pick' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'item',
         'data' => '270 1 DIG_SPEED:5 SILK_TOUCH:1 LOOT_BONUS_BLOCKS:3',
         'txt' => 'a super-enchanted wooden pickaxe',
@@ -125,7 +125,7 @@ $lottery = array(
         ),
     ),
     'enchanted_sword' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'item',
         'data' => '268 1 DAMAGE_ALL:5 KNOCKBACK:2 FIRE_ASPECT:2 LOOT_BONUS_MOBS:3',
         'txt' => 'a super-enchanted wooden sword',
@@ -141,7 +141,7 @@ $lottery = array(
         ),
     ),
     'dirtblock' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'item',
         'data' => 3,
         'txt' => 'a big block of extra-fine dirt',
@@ -152,7 +152,7 @@ $lottery = array(
         ),
     ),
     'cookie' => array(
-        'chance' => 700,
+        'chance' => 70,
         'type' => 'item',
         'data' => 357,
         'txt' => 'a hot cookie (OUCH!)',
@@ -163,7 +163,7 @@ $lottery = array(
         ),
     ),
     'random_pet' => array(
-        'chance' => 100,
+        'chance' => 10,
         'type' => 'random_pet',
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
@@ -173,13 +173,13 @@ $lottery = array(
         ),
     ),
     'random_unc' => array(
-        'chance' => 1800,
+        'chance' => 180,
         'type' => 'random_unc',
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_common' => array(
-        'chance' => 2000,
+        'chance' => 200,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
@@ -191,7 +191,7 @@ $lottery = array(
         ),
     ),
     'random_ore' => array(
-        'chance' => 500,
+        'chance' => 50,
         'type' => 'random_ore',
         'data' => 'ore',
         'txt' => '1-64 of random rare block',
@@ -203,7 +203,7 @@ $lottery = array(
         ),
     ),
     'random_manuf' => array(
-        'chance' => 1500,
+        'chance' => 150,
         'type' => 'random_manuf',
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
@@ -219,13 +219,13 @@ $lottery = array(
         ),
     ),
     'random_ench' => array(
-        'chance' => 690, // rate of 69 in 1000
+        'chance' => 69, // rate of 69 in 1000
         'type' => 'random_ench',
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
     ),
     'additional_home' => array(
-        'chance' => 10, // rate of 1 in 1000
+        'chance' => 1, // rate of 1 in 1000
         'type' => 'additional_home',
         'data' => 'home',
         'txt' => 'an additional home!',
@@ -253,14 +253,14 @@ function umc_lottery_show_chances() {
     echo "<table>\n<tr><th>Prize</th><th style=\"text-align:right;\">Chance</th><th style=\"text-align:right;\">Numbers</th></tr>\n";
 
     foreach ($lottery as $data) {
-        $chance = $data['chance'] / 100;
+        $chance = $data['chance'] / 10;
         $sum = $lastchance + $data['chance'];
         $num_txt = "$lastchance - $sum";
         echo "<tr><td>{$data['txt']}</td><td style=\"text-align:right;\">$chance %</td><td style=\"text-align:right;\">$num_txt</td></tr>";
         $lastchance = $sum;
     }
 
-    $final_sum = $sum / 100;
+    $final_sum = $sum / 10;
     echo "<tr><td>Sum:</td><td style=\"text-align:right;\">$final_sum %</td><td></td></tr>";
     echo "</table>";
 
