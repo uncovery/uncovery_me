@@ -44,6 +44,16 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'level'=>'Settler',
         ),
     ),
+    'list' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'List all users on the Teamspeak server',
+            'long' => "This will list all users that are currently logged in on the teamspeak server",
+        ),
+        'function' => 'umc_ts_listusers',
+        'security' => array(
+            'level'=>'Settler',
+        ),
+    ),
 );
 
 $UMC_TEAMSPEAK = array(
@@ -62,15 +72,40 @@ $UMC_TEAMSPEAK = array(
     ),
 );
 
+function umc_ts_connect() {
+    global $UMC_TEAMSPEAK;
+    $query_string = file_get_contents("/home/includes/certificates/teamspeak_query.txt");
+    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
+
+    if (!$UMC_TEAMSPEAK['server']) {
+        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory($query_string);
+    }
+}
+
+function umc_ts_listusers() {
+    global $UMC_TEAMSPEAK;
+    umc_ts_connect();
+    $users = array();
+    foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
+        $username = $ts_Client["client_nickname"];
+        if (strpos($username, 'mc_bot') === false) {
+            $users[] = $ts_Client["client_nickname"];
+        }
+    }
+    $count = count($users);
+    umc_header("Teamspeak users: $count");
+    if ($count > 0) {
+        umc_echo(implode(", ", $users));
+    } else {
+        umc_echo("Nobody online...");
+    }
+    umc_footer();
+}
+
 function umc_ts_authorize() {
     global $UMC_USER, $UMC_TEAMSPEAK;
-    // include libraries
-    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
-    // connect to server
-    if (!$UMC_TEAMSPEAK['server']) {
-        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }
- 
+    umc_ts_connect();
+
     // get client by name
     $uuid = $UMC_USER['uuid'];
     $userlevel = $UMC_USER['userlevel'];
@@ -87,10 +122,10 @@ function umc_ts_authorize() {
     // first, we see if there is a current user logged in
     $ts_Client = false;
     umc_header();
-    
+
     // first, we clean out old clients that are registered with minecraft
     umc_ts_clear_rights($uuid, true);
-    
+
     // then, we try to find a new user on the TS server to give rights to
     umc_echo("Your TS level is " . $UMC_TEAMSPEAK['ts_groups'][$target_group]);
     umc_echo("Looking for user $username in TS...");
@@ -100,7 +135,7 @@ function umc_ts_authorize() {
             $found++;
         }
     }
-    
+
     if ($found == 0) {
         umc_echo("You need to logon to Teamspeak with the EXACT same username (\"$username\")");
         umc_echo("Once you did that, please try again");
@@ -113,7 +148,7 @@ function umc_ts_authorize() {
         umc_footer();
         return false;
     }
-    
+
     // we have a user
     umc_echo("Found TS user " . $ts_Client["client_nickname"]);
     $ts_dbid = $ts_Client["client_database_id"];
@@ -134,7 +169,7 @@ function umc_ts_authorize() {
         umc_echo("Adding you to group " . $UMC_TEAMSPEAK['ts_groups'][$target_group]);
         $ts_Client->addServerGroup($target_group);
     }
-    
+
     // get UUID
     $target_ts_uuid = $ts_Client["client_unique_identifier"];
     $ts_uuid = umc_mysql_real_escape_string($target_ts_uuid);
@@ -159,7 +194,7 @@ PHP Fatal error:  Uncaught exception 'TeamSpeak3_Adapter_ServerQuery_Exception' 
 /**
  * Reset TS user rights to "Guest" for a specific user
  * This can be done even if the user is not online
- * 
+ *
  * @param string $uuid
  * @param boolean $echo
  * @return boolean
@@ -169,12 +204,12 @@ function umc_ts_clear_rights($uuid, $echo = false) {
     umc_echo("Trying to remove old permissions:");
     require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
-    
 
-    
+
+
     // find out the TS id the user has been using from the database
     $check_sql = "SELECT ts_uuid FROM minecraft_srvr.UUID WHERE UUID='$uuid';";
-    $D = umc_mysql_fetch_all($check_sql);    
+    $D = umc_mysql_fetch_all($check_sql);
     if ($D[0]['ts_uuid'] == '') {
         if ($echo) {
             umc_echo("Old Client: No previous TS account detected.");
@@ -184,12 +219,12 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         umc_echo("Found old permissions.");
         $ts_uuid = $D[0]['ts_uuid'];
     }
-    
+
     umc_echo("Connecting to TS server.");
     if (!$UMC_TEAMSPEAK['server']) {
         $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }    
-    
+    }
+
     // find the TS user by that TS UUID
     umc_echo("Searching for you on the TS server.");
     $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
@@ -210,7 +245,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         }
         // also remove TS UUID from DB
         $ins_sql = "UPDATE minecraft_srvr.UUID SET ts_uuid='' WHERE ts_uuid='$ts_uuid';";
-        umc_mysql_query($ins_sql, true);        
+        umc_mysql_query($ins_sql, true);
         return true;
     } else {
         if ($echo) {
@@ -222,7 +257,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
 
 /**
  * Create a HTML version of the TS server status
- * 
+ *
  * @global type $UMC_TEAMSPEAK
  * @return string
  */
@@ -237,29 +272,29 @@ function umc_ts_viewer() {
                 float:right;
         }
      */
-    
-    
+
+
     global $UMC_TEAMSPEAK;
     require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
-    
+
     if (!$UMC_TEAMSPEAK['server']) {
         $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    } 
-    
+    }
+
     // no line breaks here!
     $pattern = "<div id='%0' class='%1 %3' summary='%2'><span class='%4'>%5</span><span class='%6' title='%7'>%8 %9</span><span class='%10'>%11%12</span></div>\n";
-    
+
     $ts_viewer = new TeamSpeak3_Viewer_Html(
-        "admin/img/teamspeak/viewer/", 
+        "admin/img/teamspeak/viewer/",
         "admin/img/teamspeak/flags/",
         "data:image",
         $pattern
     );
-    
+
     $out = $UMC_TEAMSPEAK['server']->getViewer($ts_viewer);
-    
+
     // process text line by line
-    
+
     $out_lines = explode("\n", $out);
     $out_new = '';
     foreach ($out_lines as $line) {
@@ -267,7 +302,7 @@ function umc_ts_viewer() {
             $out_new .= $line . "\n";
         }
     }
-    
+
     $out_new .= "<div style=\"text-align:right;\"><a href=\"http://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
     return $out_new;
 }
