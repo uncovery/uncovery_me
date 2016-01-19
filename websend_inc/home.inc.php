@@ -214,7 +214,7 @@ function umc_home_add($uuid, $name){
 
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
-        . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','{$UMC_USER['coords']['yaw']}');";
+        . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','0');";
     umc_mysql_query($sql, true);
 
 }
