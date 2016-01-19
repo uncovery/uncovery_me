@@ -202,7 +202,7 @@ function umc_home_add($uuid, $name){
     $count = umc_home_count();
 
     // add a prefix string to lottery home name to prevent conflict
-    $newname = umc_get_code() + '_' + $name;
+    $newname = umc_random_code_gen() + '_' + $name;
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['max_homes'][$userlevel];
 
