@@ -231,6 +231,7 @@ function umc_ws_get_vars() {
             $uuid = $json['Invoker']['UUID'];
         } else {
             // this is mostly used for pre-logins. it will check if the user exists and add them to the table if not.
+            XMPP_ERROR_trace("Getting UUID for UMC_USER array", "n/a");
             $uuid = umc_user2uuid($json['Invoker']['Name']);
         }
 
@@ -296,7 +297,7 @@ function umc_ws_get_vars() {
          */
 
         foreach ($playerlist as $player_data) {
-            $players[] = strtolower($player_data['Name']);
+            $players[$player_data['UUID']] = strtolower($player_data['Name']);
             foreach ($player_data as $type => $value) {
                 $uuid = $player_data['UUID'];
                 $player_all_data[$uuid][$type] = $value;
