@@ -291,12 +291,12 @@ function umc_lottery() {
     $uuid = umc_user2uuid($user);
 
     // give reinforcing feedback - set subtitle (not displayed)
-    $cmd1 = 'title ' + $user + ' subtitle {text:"Thanks for your vote!",color:gold }';
-    umc_ws_cmd($cmd1, 'asConsole');
+    $subtitle =  'title ' . $user . ' subtitle {text:"Thanks for your vote!",color:gold}';
+    umc_ws_cmd($subtitle, 'asConsole');
 
     // display the feedback - displays subtitle AND title
-    $cmd2 = 'title ' + $user + ' title {text:"+100 Uncs",color:gold }';
-    umc_ws_cmd($cmd2, 'asConsole');
+    $title = 'title ' . $user . ' title {text:"+100 Uncs",color:gold}';
+    umc_ws_cmd($title, 'asConsole');
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
@@ -342,6 +342,7 @@ function umc_lottery() {
             break;
         case 'additional_home':
             umc_home_add($uuid, 'lottery');
+            $item_txt = "an addtional home!!";
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
@@ -409,12 +410,13 @@ function umc_lottery() {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
     // add vote to the database
-    $service = umc_mysql_real_escape_string($UMC_USER['args'][3]);
-    $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
-    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
-        VALUES ('$uuid', NOW(), $service, $ip);";
-    umc_mysql_query($sql, true);
-    // echo "$user voted for the server and got $item_txt!;";
+    if ($user != 'uncovery') {
+        $service = umc_mysql_real_escape_string($UMC_USER['args'][3]);
+        $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+        $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`)
+            VALUES ('$uuid', NOW(), $service, $ip);";
+        umc_mysql_query($sql, true);
+    }
 }
 
 // returns an array with the item and roll value
@@ -454,6 +456,7 @@ function umc_lottery_roll_dice($chance = false) {
         $lastrank = $rank; // set lastrank to running total of chance
         $last_item = $item; // set the last item to item currently iterated
     }
+    return array('item' => $item, 'luck' => $roll);
 }
 
 /**
