@@ -486,9 +486,13 @@ function umc_lottery_lot_fix_time($datetime) {
 
 function umc_lottery_web_stats() {
     global $UMC_DOMAIN;
+
+    // get a timestamp 6 months ago
+    $old_date = date("Y-m-d H:i:s", strtotime("-6 months"));
+
     $sql = "SELECT count( vote_id ) AS vote_count, website, DATE_FORMAT(`datetime`,'%Y-%m-%d') AS date
         FROM minecraft_log.votes_log
-        WHERE website <> 'minecraftservers'
+        WHERE website <> 'minecraftservers' AND datetime > '$old_date'
         GROUP BY website, DAY( `datetime` ),MONTH( `datetime` ), YEAR( `datetime` )
         ORDER BY YEAR( `datetime` ) , MONTH( `datetime` ), DAY( `datetime` ) ";
 
