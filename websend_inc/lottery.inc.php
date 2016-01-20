@@ -255,10 +255,9 @@ function umc_lottery_show_chances() {
     foreach ($lottery as $data) {
         $chance = $data['chance'] / 10;
         $sum += $data['chance'];
-        if ($lastchance + 1 == $sum) {
-            $num_txt = $sum;
-        } else {
-            $num_txt = $lastchance + 1 . " - " . $sum;
+        $num_txt = $sum;
+        if ($lastchance + 1 <> $sum) {
+            $num_txt = $lastchance + 1 . " - " . $num_txt;
         }
         echo "<tr><td>{$data['txt']}</td><td style=\"text-align:right;\">$chance %</td><td style=\"text-align:right;\">$num_txt</td></tr>";
         $lastchance = $sum;
