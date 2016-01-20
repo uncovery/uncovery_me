@@ -59,8 +59,8 @@ $WS_INIT['homes'] = array(  // the name of the plugin
     ),
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
-            'short' => 'Update the location of a home',
-            'long' => "This will update the position of an existing home.",
+            'short' => 'Update the location of a home (/sethome also works)',
+            'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>",
             'args' => '<home name>',
         ),
         'function' => 'umc_home_update',
