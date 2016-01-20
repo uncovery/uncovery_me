@@ -264,7 +264,7 @@ function umc_lottery_show_chances() {
     }
 
     $final_sum = $sum / 10;
-    echo "<tr><td>Sum:</td><td style=\"text-align:right;\">$final_sum %</td><td></td></tr>";
+    echo "<tr><td><strong>Sum:</strong></td><td style=\"text-align:right;\"><strong>$final_sum %</strong></td><td></td></tr>";
     echo "</table>";
 
 }
