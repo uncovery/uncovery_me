@@ -254,8 +254,12 @@ function umc_lottery_show_chances() {
 
     foreach ($lottery as $data) {
         $chance = $data['chance'] / 10;
-        $sum = $lastchance + $data['chance'];
-        $num_txt = "$lastchance - $sum";
+        $sum += $data['chance'];
+        if ($lastchance + 1 == $sum) {
+            $num_txt = $sum;
+        } else {
+            $num_txt = $lastchance + 1 . " - " . $sum;
+        }
         echo "<tr><td>{$data['txt']}</td><td style=\"text-align:right;\">$chance %</td><td style=\"text-align:right;\">$num_txt</td></tr>";
         $lastchance = $sum;
     }
@@ -489,22 +493,23 @@ function umc_lottery_web_stats() {
 
     // get a timestamp 6 months ago
     $old_date = date("Y-m-d H:i:s", strtotime("-6 months"));
+    $yesterday = date("Y-m-d H:i:s", strtotime("-1 day"));
 
     $sql = "SELECT count( vote_id ) AS vote_count, website, DATE_FORMAT(`datetime`,'%Y-%m-%d') AS date
         FROM minecraft_log.votes_log
-        WHERE website <> 'minecraftservers' AND datetime > '$old_date'
+        WHERE website <> 'minecraftservers' AND datetime > '$old_date' AND datetime < '$yesterday'
         GROUP BY website, DAY( `datetime` ),MONTH( `datetime` ), YEAR( `datetime` )
         ORDER BY YEAR( `datetime` ) , MONTH( `datetime` ), DAY( `datetime` ) ";
 
     $D = umc_mysql_fetch_all($sql);
-    $out = '';
+    $out = '<h2>Voting stats for the last 6 months:</h2>';
     $maxval = 0;
     $minval = 0;
     $legend = array();
     $ydata = array();
     $sites = array();
 
-    $out .= "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
+    $out .= "\n<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
         . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
         . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
         . "<script type='text/javascript'>//<![CDATA[\n"
