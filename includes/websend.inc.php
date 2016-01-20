@@ -371,6 +371,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
  *  This is experimental and does not seem to work.
  * It requires the feature WRAP_COMMAND_EXECUTOR=true in the websend config
  * which crashes on a stackoverflow.
+ * */
 function umc_ws_plugin_comms($plugin, $cmd) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $ws = umc_ws_connect();
@@ -385,8 +386,6 @@ function umc_ws_plugin_comms($plugin, $cmd) {
     XMPP_ERROR_trace("disconnect $plugin", $check3);
     XMPP_ERROR_trigger("Done!");
 }
-
- */
 
 function umc_ws_connect() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
