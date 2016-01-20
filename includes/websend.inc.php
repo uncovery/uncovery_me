@@ -130,7 +130,7 @@ function umc_ws_eventhandler($event) {
     }
 }
 
-// returns the TOTAL points of experience of a player based on level fraction and
+// returns the TOTAL points of experience of a player based on level fraction and xp
 function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
@@ -145,34 +145,26 @@ function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
 // returns the amount of exp needed to be obtained to advance from specific level as a points value
 function umc_ws_get_xptolvl($inputlevel){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
     // reference material
     // http://minecraft.gamepedia.com/Experience
     // conversions dated 12/01/2016 - v 1.8.9 accurate
 
     $xp = 0;
-
-    if (is_numeric($inputlevel) && $inputlevel > 0){
-
+    if (is_numeric($inputlevel) && $inputlevel > 0) {
         // levels 0-16
-        if ($inputlevel <= 16 && $inputlevel > 0){
+        if ($inputlevel <= 16 && $inputlevel > 0) {
             $xp = 2 * $inputlevel + 7;
         }
-
         // levels 17-31
-        if ($inputlevel >= 17 && $inputlevel <= 31){
+        if ($inputlevel >= 17 && $inputlevel <= 31) {
             $xp = 5 * $inputlevel - 38;
         }
-
         // levels 32+
-        if ($inputlevel >= 32){
+        if ($inputlevel >= 32) {
             $xp = 9 * $inputlevel - 158;
         }
-
     }
-
     return $xp;
-
 }
 
 // returns the amount of exp points equivalent to input level
@@ -184,21 +176,17 @@ function umc_ws_convert_xplvl_to_points($inputlevel){
     // conversions dated 12/01/2016 - v 1.8.9 accurate
 
     $xp = 0;
-
-    if (is_numeric($inputlevel) && $inputlevel > 0){
-
+    if (is_numeric($inputlevel) && $inputlevel > 0) {
         // levels 0-16
-        if ($inputlevel <= 16){
+        if ($inputlevel <= 16) {
             $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
-        } else if ($inputlevel >= 17 && $inputlevel <= 31){
+        } else if ($inputlevel >= 17 && $inputlevel <= 31) {
             $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360;
-        } else if ($inputlevel >= 32){
+        } else if ($inputlevel >= 32) {
             $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220;
         }
     }
-
     return $xp;
-
 }
 
 
