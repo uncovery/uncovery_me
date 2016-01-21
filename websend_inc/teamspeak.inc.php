@@ -62,6 +62,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
  */
 $UMC_TEAMSPEAK = array(
     'ts_php_path' => '/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
+    'server_query_string_path' => "/home/includes/certificates/teamspeak_query.txt",
     'server' => false,
     'user_groups' => array(
         6 => array('Owner'),
@@ -83,10 +84,10 @@ $UMC_TEAMSPEAK = array(
  *
  * @global type $UMC_TEAMSPEAK
  */
-function umc_ts_connect() {
+function umc_ts_connect($error_reply = false) {
     global $UMC_TEAMSPEAK;
     // the server query object, including the password for it, is located outside the code.
-    $query_string = file_get_contents("/home/includes/certificates/teamspeak_query.txt");
+    $query_string = file_get_contents($UMC_TEAMSPEAK['server_query_string_path']);
 
     // only reconnect if we did not do so before
     if (!$UMC_TEAMSPEAK['server']) {
@@ -97,6 +98,9 @@ function umc_ts_connect() {
             $UMC_TEAMSPEAK['server'] = $ts_connection;
         } else {
             XMPP_ERROR_trigger('Could not connect to Teamspeak Server! Is it running?');
+            if ($error_reply) {
+                umc_error("Sorry, the teamspeak server is down, please send a /ticket!");
+            }
         }
     }
 }
@@ -215,7 +219,6 @@ function umc_ts_authorize() {
 function umc_ts_clear_rights($uuid, $echo = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     umc_echo("Trying to remove old permissions:");
-    require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
 
     // find out the TS id the user has been using from the database
@@ -232,9 +235,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
     }
 
     umc_echo("Connecting to TS server.");
-    if (!$UMC_TEAMSPEAK['server']) {
-        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }
+    umc_ts_connect(true);
 
     // find the TS user by that TS UUID
     umc_echo("Searching for you on the TS server.");
@@ -273,24 +274,8 @@ function umc_ts_clear_rights($uuid, $echo = false) {
  * @return string
  */
 function umc_ts_viewer() {
-    // required CSS:
-    /*
-        div.ts3_viewer {
-                width:190px;
-        }
-
-        .ts3_viewer span.suffix{
-                float:right;
-        }
-     */
-
-
     global $UMC_TEAMSPEAK;
-    require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
-
-    if (!$UMC_TEAMSPEAK['server']) {
-        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory("serverquery://queryclient:Uo67dWu3@74.208.45.80:10011/?server_port=9987");
-    }
+    umc_ts_connect(true);
 
     // no line breaks here!
     $pattern = "<div id='%0' class='%1 %3' summary='%2'><span class='%4'>%5</span><span class='%6' title='%7'>%8 %9</span><span class='%10'>%11%12</span></div>\n";
