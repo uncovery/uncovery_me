@@ -49,7 +49,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'short' => 'List all users on the Teamspeak server',
             'long' => "This will list all users that are currently logged in on the teamspeak server",
         ),
-        'function' => 'umc_ts_displayusers',
+        'function' => 'umc_ts_display_users',
         'security' => array(
             'level'=>'Settler',
         ),
@@ -64,6 +64,19 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'level'=>'Settler',
         ),
     ),
+    /*
+    'chat' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Send a message to the TS Channel called "In-Game Chat"',
+            'long' => 'This will send a message readable by anyone in the TS Channel called "In-Game Chat"',
+        ),
+        'function' => 'umc_ts_chat',
+        'security' => array(
+            'level'=>'Settler',
+        ),
+    ),
+     * 
+     */
 );
 
 /**
@@ -89,32 +102,12 @@ $UMC_TEAMSPEAK = array(
 );
 
 /**
- * Utility command that connects to teamspeak and returns a hopefully connected
- * Teamspeak object in the teamspeak config array.
+ * Send a private message to a teamspeak user. The teamspeak user
+ * cannot reply back however.
  *
  * @global type $UMC_TEAMSPEAK
+ * @global type $UMC_USER
  */
-function umc_ts_connect($error_reply = false) {
-    global $UMC_TEAMSPEAK;
-    // the server query object, including the password for it, is located outside the code.
-    $query_string = file_get_contents($UMC_TEAMSPEAK['server_query_string_path']);
-
-    // only reconnect if we did not do so before
-    if (!$UMC_TEAMSPEAK['server']) {
-        // include the teamspeak php frameworks
-        require_once($UMC_TEAMSPEAK['ts_php_path']);
-        $ts_connection = TeamSpeak3::factory($query_string);
-        if ($ts_connection) {
-            $UMC_TEAMSPEAK['server'] = $ts_connection;
-        } else {
-            XMPP_ERROR_trigger('Could not connect to Teamspeak Server! Is it running?');
-            if ($error_reply) {
-                umc_error("Sorry, the teamspeak server is down, please send a /ticket!");
-            }
-        }
-    }
-}
-
 function umc_ts_msg_user() {
     global $UMC_TEAMSPEAK, $UMC_USER;
     $args = $UMC_USER['args'];
@@ -125,7 +118,7 @@ function umc_ts_msg_user() {
     $message = strtolower($args[3]);
 
     // check if user exists:
-    $users = umc_ts_userlist();
+    $users = umc_ts_list_users();
     if (!in_array($target, $users)) {
         umc_error("That user does not exist on Teamspeak!");
     }
@@ -139,38 +132,23 @@ function umc_ts_msg_user() {
  *
  * @global type $UMC_TEAMSPEAK
  */
-function umc_ts_displayusers() {
-    $users = umc_ts_userlist();
+function umc_ts_display_users() {
+    $users = umc_ts_list_channels_users();
+
     $count = count($users);
-    umc_header("Teamspeak users: $count");
+    umc_header("Teamspeak Users: $count");
+    $C = array();
+    foreach ($users as $username => $channelname) {
+        $C[$channelname][] = $username;
+    }
     if ($count > 0) {
-        umc_echo(implode(", ", $users));
+        foreach ($C as $channel => $users) {
+            umc_echo("{green}$channel: {white}" . implode(", ", $users));
+        }
     } else {
         umc_echo("Nobody online...");
     }
     umc_footer();
-}
-
-/**
- * function to create an array of users on teamspeak
- * except system users
- *
- * @global type $UMC_TEAMSPEAK
- * @return type
- */
-function umc_ts_userlist() {
-    global $UMC_TEAMSPEAK;
-    umc_ts_connect();
-    $users = array();
-    foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
-        $username = $ts_Client["client_nickname"];
-        // we have 2 system users which we do not want to list
-        // they are both called "mc_bot..."
-        if (strpos($username, 'mc_bot') === false) {
-            $users[] = strtolower($ts_Client["client_nickname"]);
-        }
-    }
-    return $users;
 }
 
 function umc_ts_authorize() {
@@ -343,4 +321,75 @@ function umc_ts_viewer() {
 
     $out_new .= "<div style=\"text-align:right;\"><a href=\"http://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
     return $out_new;
+}
+
+function umc_ts_list_channels_users() {
+    global $UMC_TEAMSPEAK;
+    umc_ts_connect();
+    $ts3_Channels = $UMC_TEAMSPEAK['server']->channelList();
+    $users = array();
+    foreach ($ts3_Channels as $ts3_Channel) {
+        $channel_name = $ts3_Channel->__toString();
+        // $id = $ts3_Channel->getId();
+        $chan_users = umc_ts_list_users($ts3_Channel);
+        foreach ($chan_users as $username) {
+           $users[$username] = $channel_name;
+        }
+    }
+    return $users;
+}
+
+
+/**
+ * function to create an array of users on teamspeak
+ * except system users
+ *
+ * @global type $UMC_TEAMSPEAK
+ * @return type
+ */
+function umc_ts_list_users($channel = false) {
+    global $UMC_TEAMSPEAK;
+    umc_ts_connect();
+    $users = array();
+    if (!$channel ) {
+        $channel = $UMC_TEAMSPEAK['server'];
+    }
+
+    foreach ($channel->clientList() as $ts_Client) {
+        $username = $ts_Client["client_nickname"];
+        // we have 2 system users which we do not want to list
+        // they are both called "mc_bot..."
+        if (strpos($username, 'mc_bot') === false) {
+            $users[] = strtolower($username);
+        }
+    }
+    return $users;
+}
+
+/**
+ * Utility command that connects to teamspeak and returns a hopefully connected
+ * Teamspeak object in the teamspeak config array.
+ *
+ * @global type $UMC_TEAMSPEAK
+ * @param boolean $error_reply shall we return an in-game error if connection fails?
+ */
+function umc_ts_connect($error_reply = false) {
+    global $UMC_TEAMSPEAK;
+    // the server query object, including the password for it, is located outside the code.
+    $query_string = file_get_contents($UMC_TEAMSPEAK['server_query_string_path']);
+
+    // only reconnect if we did not do so before
+    if (!$UMC_TEAMSPEAK['server']) {
+        // include the teamspeak php frameworks
+        require_once($UMC_TEAMSPEAK['ts_php_path']);
+        $ts_connection = TeamSpeak3::factory($query_string);
+        if ($ts_connection) {
+            $UMC_TEAMSPEAK['server'] = $ts_connection;
+        } else {
+            XMPP_ERROR_trigger('Could not connect to Teamspeak Server! Is it running?');
+            if ($error_reply) {
+                umc_error("Sorry, the teamspeak server is down, please send a /ticket!");
+            }
+        }
+    }
 }
