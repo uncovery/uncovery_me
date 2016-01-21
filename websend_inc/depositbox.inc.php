@@ -100,8 +100,29 @@ $WS_INIT['depositbox'] = array(
                     .  '{white}but different senders.'
         ),
     ),
+    'check' => array(
+        'function' => 'umc_depositbox_check',
+        'help' => array(
+            'args' => '',
+            'short' => 'Get details on deposit box purchases.',
+            'long' => 'Displays detailed output relating to depositbox pricing, currently owned box counts and maximum ownable box counts.'
+        ),
+    ),
 );
 
+// settings array to hold maximum numbers of purchasable homes
+// TODO - add a buy command, depreciate depositbox_limit
+$UMC_SETTING['deposits']['max'] = array(
+    'Guest' => 0,
+    'Settler' => 5, 'SettlerDonator' => 5, 'SettlerDonatorPlus' => 5,
+    'Citizen'=> 10, 'CitizenDonator'=> 10, 'CitizenDonatorPlus'=> 10,
+    'Architect' => 20, 'ArchitectDonator' => 20, 'ArchitectDonatorPlus' => 20,
+    'Designer' => 30, 'DesignerDonator' => 30, 'DesignerDonatorPlus' => 30,
+    'Master' => 40, 'MasterDonator' => 40, 'MasterDonatorPlus' => 40,
+    'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
+    'Owner' => 9000);
+
+// original settings array holding group based depositbox limits
 $UMC_SETTING['depositbox_limit'] = array(
     'Guest' => 0,
     'Settler' => 0, 'SettlerDonator' => 1, 'SettlerDonatorPlus' => 2,
@@ -111,6 +132,63 @@ $UMC_SETTING['depositbox_limit'] = array(
     'Master' => 4, 'MasterDonator' => 5, 'MasterDonatorPlus' => 6,
     'Elder' => 5, 'ElderDonator' => 6, 'ElderDonatorPlus' => 7,
     'Owner' => 40);
+    
+// returns information about the players deposit
+function umc_depositbox_check() {
+    //XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER, $UMC_SETTING;
+    $count = umc_depositbox_count();
+    $cost = umc_depositbox_calc_costs($count + 1);
+    $userlevel = $UMC_USER['userlevel'];
+    $max_deposits = $UMC_SETTING['deposits']['max'][$userlevel];
+    $bank = umc_money_check($UMC_USER['uuid']);
+    // output the return values to the chat window
+    umc_header("Checking Depositbox Status");
+    umc_echo("You currently have $count item deposit boxes.");
+    umc_echo("Your maximum number of boxes available for purchase is $max_deposits.");
+    umc_echo("The cost to purchase your next box is $cost Uncs.");
+    umc_echo("You currently have $bank Uncs.");
+    umc_footer();
+}
+
+// returns the current number of purchased deposit slots the user has
+function umc_depositbox_count($uuid_req = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    
+    if (!$uuid_req) {
+        $uuid = $UMC_USER['uuid'];
+    } else {
+        $uuid = $uuid_req;
+    }
+    
+    /*
+    CREATE TABLE IF NOT EXISTS `deposit` (
+      `id` int(11) NOT NULL,
+      `sender_uuid` varchar(37) NOT NULL,
+      `recipient_uuid` varchar(39) NOT NULL,
+      `damage` int(11) DEFAULT NULL,
+      `amount` int(11) NOT NULL,
+      `meta` text NOT NULL,
+      `item_name` varchar(125) NOT NULL,
+      `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+    */
+    
+    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' GROUP BY recipient_uuid;";
+    $D = umc_mysql_fetch_all($sql);
+    $boxes = $D[0]['count'];
+    return $boxes;
+}
+
+
+// calculates the value of deposit boxes when going to purchase
+function umc_depositbox_calc_costs($count) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $base = 10;
+    $cost = pow($count, 3) * $base;
+    return $cost;
+}
 
 
 /**
