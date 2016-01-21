@@ -56,7 +56,7 @@ function umc_wp_init_plugins() {
     // avatars
     add_filter('avatar_defaults', 'umc_wp_add_uncovery_avatar');
     add_filter('get_avatar', 'umc_wp_get_uncovery_avatar', 1, 5);
-    
+
     add_filter('bbp_subscription_to_email', 'umc_wp_bbp_subscription_to_email');
 
     global $pagenow;
@@ -78,7 +78,7 @@ function umc_wp_init_plugins() {
 
 function umc_wp_fingerprint_call() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    require_once('/home/minecraft/server/bin/index_wp.php');
+    require_once('/home/minecraft/server/bin/core_include.php');
     $uuid = umc_wp_get_uuid_for_currentuser();
     if ($uuid) {
         $out = '
