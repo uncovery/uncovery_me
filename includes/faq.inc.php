@@ -234,7 +234,7 @@ $UMC_FAQ = array(
     32 => array(
         'question' => 'Why do users need their own lot before I can add them to mine?',
         'answer' => 'We track user activity through their lot ownership. Once a user becomes inactive, they lose their lot. This is the first indicator that they also should not be able to do a number of other things anymore.
-            We did this for a number of reasons: Active users (i.e. with a lot) started depositing large quantities of items for random inactive users and abusing the limitations
+            We did this for a several reasons: Active users (i.e. with a lot) started depositing large quantities of items for random inactive users and abusing the limitations
             on deposit space like that. Other active users thought it\'s cool to add dozens of inactive users to their lot and messed up the 2D map that way.
             Further, when a user had large amount of shop offers and became inactive, the offers stayed around and active users had less chances to sell their stuff.
             So we automatically move all shop contents of inactive users to their deposit. So if a user does not have their own lot, we don\'t allow them to be added to other lots either.',
