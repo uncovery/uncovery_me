@@ -210,7 +210,7 @@ $UMC_FAQ = array(
     ),
     29 => array(
         'question' => 'What are active/inactive users?',
-        'answer' => 'Active users are users who have their own lot. Inactive users are any other level user who does not have a lot, either because they never got one (e.g. Guests) or 
+        'answer' => 'Active users are users who have their own lot. Inactive users are any other level user who does not have a lot, either because they never got one (e.g. Guests) or
             because they lost it due to inactivity. Many thing thats you can do with other users require the other user to be an active user. This includes sending items to their deposit,
             adding them to your lot and more.',
         'categories' => array('problems', 'in-game', 'userlevels', 'rules', 'misc'),
@@ -220,16 +220,26 @@ $UMC_FAQ = array(
         'answer' => 'Unfortunately, this can happen. Item frames seem to be bugged and simply might disappear from time to time. Please do not store your most valuable items in
             item frames since the item in the frame will disappear along with the frame.',
         'categories' => array('problems', 'in-game', 'blocks', 'misc'),
-    ),   
+    ),
     31 => array(
         'question' => 'I have been griefed, what shall I do?',
         'answer' => 'Generally we want users to settle griefing issues among themselves. So first of all, you should try to find out who griefed you. If it happened on your lot,
-            and only one other person had access to your lot, ask that person if they did it. If this is not the case, or if the person refuses that they griefed you, send a message to the admin
-            with the possibly exact details: What has been done, on what coordinates, in what world and when. You will then get a message back who did it - we log almost everything.
-            You can then go and tell the person that the logfile proves that they have done the damage, and ask them kindly to undo the damage. If they refuse to repair or even to admit the 
+            and only one other person had access to your lot, ask that person if they did it. You can also check the block logs page on the website to find out who did that.
+            IF you cannot find out who did it, or if the person refuses that they griefed you, send a message to the admin with the possibly exact details:
+            What has been done, on what coordinates, in what world and when. You will then get a message back who did it - we log almost everything.
+            You can then go and tell the person that the logfile proves that they have done the damage, and ask them kindly to undo the damage. If they refuse to repair or even to admit the
             damage, please contact the admin again. We will then see if a ban is required.',
         'categories' => array('problems', 'in-game', 'blocks', 'rules'),
     ),
+    32 => array(
+        'question' => 'Why do users need their own lot before I can add them to mine?',
+        'answer' => 'We track user activity through their lot ownership. Once a user becomes inactive, they lose their lot. This is the first indicator that they also should not be able to do a number of other things anymore.
+            We did this for a number of reasons: Active users (i.e. with a lot) started depositing large quantities of items for random inactive users and abusing the limitations
+            on deposit space like that. Other active users thought it\'s cool to add dozens of inactive users to their lot and messed up the 2D map that way.
+            Further, when a user had large amount of shop offers and became inactive, the offers stayed around and active users had less chances to sell their stuff.
+            So we automatically move all shop contents of inactive users to their deposit. So if a user does not have their own lot, we don\'t allow them to be added to other lots either.',
+        'categories' => array('problems', 'in-game', 'lots', 'rules', 'commands', 'userlevels'),
+    )
 );
 
 /**
