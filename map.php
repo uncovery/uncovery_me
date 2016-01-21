@@ -461,10 +461,13 @@ if ($find_lot) {
     }
     $header .= "\n</script>\n";
 
-    $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html . "</div>\n</body>\n</html>\n";
+    $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html 
+            
+        . "</div>n</body>\n</html>\n";
+    XMPP_ERROR_trace("construction done");
     echo $out;
-    $timer['final'] = XMPP_ERROR_ptime();
-    // var_dump($timer);
+    XMPP_ERROR_trace("echo done");
+    XMPP_ERROR_trigger("map done!");
 }
 
 function umc_assemble_maps() {
@@ -653,16 +656,37 @@ function umc_disassemble_map($world = 'empire') {
 #--     )
 #-- )
 function umc_region_data($world_name) {
+    XMPP_ERROR_trace(__FUNCTION__, func_num_args());
     $world_id = umc_get_worldguard_id('world', $world_name);
     if ($world_id === null) {
         XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
         return false;
     }
-    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version
+    
+    // enumerate all lot owners
+    $owners_sql = "SELECT region.id AS region_id, UUID.username AS user_name, user.uuid as uuid,
+        region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
+        FROM minecraft_worldguard.region
+        LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
+        LEFT JOIN minecraft_worldguard.region_groups ON region.id = region_groups.region_id AND region.world_id = region_groups.world_id
+        LEFT JOIN minecraft_worldguard.`group` ON `group`.id = region_groups.group_id
+        LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
+        LEFT JOIN minecraft_srvr.UUID ON user.uuid = UUID.UUID
+        WHERE region.world_id = $world_id AND user_id IS NOT NULL;";
+    $O = umc_mysql_fetch_all($owners_sql);
+    $owners = array();
+    foreach ($O as $o) {
+        $owners[$o['region_id']][$o['uuid']] = $o;
+    }
+    
+    // enumerate all lots for drawing them
+    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version, count(user_id) as usercount
         FROM minecraft_worldguard.region
         LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id
+        LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
         LEFT JOIN minecraft_srvr.lot_version ON id=lot
-        WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id;";
+        WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id
+        GROUP BY id;";
     //echo $reg_sql;
     $D = umc_mysql_fetch_all($reg_sql);
     $region_list = array();
@@ -672,36 +696,20 @@ function umc_region_data($world_name) {
         $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
         $region_list[$region_id]['version'] = $reg_row['version'];
         $region_list[$region_id]['mint_version'] = $reg_row['mint_version'];
-
-        $sql = "SELECT region.id AS region_id, UUID.username AS user_name, user.uuid as uuid,
-            region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
-            FROM minecraft_worldguard.region
-            LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
-            LEFT JOIN minecraft_worldguard.region_groups ON region.id = region_groups.region_id AND region.world_id = region_groups.world_id
-            LEFT JOIN minecraft_worldguard.`group` ON `group`.id = region_groups.group_id
-            LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
-            LEFT JOIN minecraft_srvr.UUID ON user.uuid = UUID.UUID
-            WHERE region.world_id = $world_id
-            AND region.id= '$region_id';";
-        // echo $sql;
-        $D = umc_mysql_fetch_all($sql);
         $region_list[$region_id]['owners'] = false;
         $region_list[$region_id]['members'] = false;
-        foreach ($D as $row) {
+        
+        if ($reg_row['usercount'] == 0) {
+            continue;
+        }
+
+        $this_lot_owners = $owners[$region_id];
+        foreach ($this_lot_owners as $uuid => $row) {
             $player = $row['user_name'];
-            $uuid = $row['uuid'];
             $group = $row['group_name'];
             $player_OwnerFlag = $row['player_Owner'];
             $group_OwnerFlag = $row['group_Owner'];
 
-            /*if(!isset($region_list[$region_id])) {
-                $region_list[$region_id] = array(
-                    'owners' => array('players' => array(), 'groups' => array()),
-                    'members' => array('players' => array(), 'groups' => array()),
-                    'min' => array('x' => $row['min_x'], 'y' => $row['min_y'], 'z' => $row['min_z']),
-                    'max' => array('x' => $row['max_x'], 'y' => $row['max_y'], 'z' => $row['max_z']),
-                );
-            }*/
             if (strlen($group) > 0) {
                 if ($group_OwnerFlag == 1) {
                     $region_list[$region_id]['owners'][] = "group:$group";
