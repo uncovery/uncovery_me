@@ -56,7 +56,12 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
     ),
 );
 
+/**
+ * Teamspeak data. The numbers come from the internally given groupd ID on the teamspeak
+ * server.
+ */
 $UMC_TEAMSPEAK = array(
+    'ts_php_path' => '/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
     'server' => false,
     'user_groups' => array(
         6 => array('Owner'),
@@ -72,22 +77,42 @@ $UMC_TEAMSPEAK = array(
     ),
 );
 
+/**
+ * Utility command that connects to teamspeak and returns a hopefully connected
+ * Teamspeak object in the teamspeak config array.
+ *
+ * @global type $UMC_TEAMSPEAK
+ */
 function umc_ts_connect() {
     global $UMC_TEAMSPEAK;
+    // the server query object, including the password for it, is located outside the code.
     $query_string = file_get_contents("/home/includes/certificates/teamspeak_query.txt");
-    require_once('/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
 
+    // only reconnect if we did not do so before
     if (!$UMC_TEAMSPEAK['server']) {
-        $UMC_TEAMSPEAK['server'] = TeamSpeak3::factory($query_string);
+        // include the teamspeak php frameworks
+        require_once($UMC_TEAMSPEAK['ts_php_path']);
+        $ts_connection = TeamSpeak3::factory($query_string);
+        if ($ts_connection) {
+            $UMC_TEAMSPEAK['server'] = $ts_connection;
+        } else {
+            XMPP_ERROR_trigger('Could not connect to Teamspeak Server! Is it running?');
+        }
     }
 }
-
+/**
+ * List all users on the TS server, except system users
+ *
+ * @global type $UMC_TEAMSPEAK
+ */
 function umc_ts_listusers() {
     global $UMC_TEAMSPEAK;
     umc_ts_connect();
     $users = array();
     foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
         $username = $ts_Client["client_nickname"];
+        // we have 2 system users which we do not want to list
+        // they are both called "mc_bot..."
         if (strpos($username, 'mc_bot') === false) {
             $users[] = $ts_Client["client_nickname"];
         }
@@ -179,18 +204,6 @@ function umc_ts_authorize() {
     umc_footer("Done!");
 }
 
-/*
-
-PHP Fatal error:  Uncaught exception 'TeamSpeak3_Adapter_ServerQuery_Exception' with message 'database empty result set' in /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php:319
- * Stack trace:
- * #0 /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php(91): TeamSpeak3_Adapter_ServerQuery_Reply->fetchError(Object(TeamSpeak3_Helper_String))
- * #1 /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery.php(141): TeamSpeak3_Adapter_ServerQuery_Reply->__construct(Array, 'clientdbfind pa...', Object(TeamSpeak3_Node_Host), true)
- * #2 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Abstract.php(73): TeamSpeak3_Adapter_ServerQuery->request('clientdbfind pa...', true)
- * #3 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Server.php(90): TeamSpeak3_Node_Abstract->request('clientdbfind pa...', true)
- * #4 /home/includes/teamspeak_php/libraries/TeamSpeak3/Node/Abstract.php(97): TeamSpeak3_Node_Server->request('clientdbfind pa...')
- * #5 /home/includes/teamspeak_php/libraries/ in /home/includes/teamspeak_php/libraries/TeamSpeak3/Adapter/ServerQuery/Reply.php on line 319
-
-*/
 /**
  * Reset TS user rights to "Guest" for a specific user
  * This can be done even if the user is not online
@@ -204,8 +217,6 @@ function umc_ts_clear_rights($uuid, $echo = false) {
     umc_echo("Trying to remove old permissions:");
     require_once('/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php');
     global $UMC_TEAMSPEAK;
-
-
 
     // find out the TS id the user has been using from the database
     $check_sql = "SELECT ts_uuid FROM minecraft_srvr.UUID WHERE UUID='$uuid';";
