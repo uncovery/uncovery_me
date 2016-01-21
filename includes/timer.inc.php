@@ -210,4 +210,3 @@ function umc_time_until_restart() {
     $out .= $interval->i . " min";
     return $out;
 }
-
