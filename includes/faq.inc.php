@@ -237,7 +237,7 @@ $UMC_FAQ = array(
             We did this for a several reasons: Active users (i.e. with a lot) started depositing large quantities of items for random inactive users and abusing the limitations
             on deposit space like that. Other active users thought it\'s cool to add dozens of inactive users to their lot and messed up the 2D map that way.
             Further, when a user had large amount of shop offers and became inactive, the offers stayed around and active users had less chances to sell their stuff.
-            So we automatically move all shop contents of inactive users to their deposit. So if a user does not have their own lot, we don\'t allow them to be added to other lots either.',
+            So we automatically move all shop contents of inactive users to their deposit. So we treat users without lots as inactive users and don\'t allow them to interact with in-game systems until they get a lot.',
         'categories' => array('problems', 'in-game', 'lots', 'rules', 'commands', 'userlevels'),
     )
 );
