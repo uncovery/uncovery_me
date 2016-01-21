@@ -85,19 +85,28 @@ function umc_wsplg_dispatch($module) {
 
     if (isset($command['function']) && function_exists($command['function'])) {
         if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
-            // This command is restricted to the named worlds
+            
+            // restricts command to the named worlds
             if(isset($command['security']['worlds'])) {
                 if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
                     umc_error("{red}That command is restricted to the following worlds: {yellow}".join(", ",$command['security']['worlds']));
                 }
             }
 
-            // This command is restricted to a user level or higher
+            // restricts command to a minimum user level or higher
             if(isset($command['security']['level'])) {
                 if(!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($command['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $command['security']['users'])) {
+                    umc_error('{red}That command is restricted');
+                }
+            }
+            
         }
         $function = $command['function'];
         $function();
