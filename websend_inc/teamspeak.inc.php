@@ -49,7 +49,17 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'short' => 'List all users on the Teamspeak server',
             'long' => "This will list all users that are currently logged in on the teamspeak server",
         ),
-        'function' => 'umc_ts_listusers',
+        'function' => 'umc_ts_displayusers',
+        'security' => array(
+            'level'=>'Settler',
+        ),
+    ),
+    'msg' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Send a privat message to a TS user',
+            'long' => "This will send a private text message to a TS user. Please note that TS users cannot send private messages back.",
+        ),
+        'function' => 'umc_ts_msg_user',
         'security' => array(
             'level'=>'Settler',
         ),
@@ -104,23 +114,33 @@ function umc_ts_connect($error_reply = false) {
         }
     }
 }
+
+function umc_ts_msg_user() {
+    global $UMC_TEAMSPEAK, $UMC_USER;
+    $args = $UMC_USER['args'];
+    $username = $UMC_USER['username'];
+    umc_ts_connect();
+
+    $target = $args[2];
+    $message = strtolower($args[3]);
+
+    // check if user exists:
+    $users = umc_ts_userlist();
+    if (!in_array($target, $users)) {
+        umc_error("That user does not exist on Teamspeak!");
+    }
+
+    $ts3_Client = $UMC_TEAMSPEAK['server']->clientGetByName($target);
+    $ts3_Client->message("[B]Priv. msg from $username:[/B] $message");
+}
+
 /**
- * List all users on the TS server, except system users
+ * Diaplay a list of all users on the TS server
  *
  * @global type $UMC_TEAMSPEAK
  */
-function umc_ts_listusers() {
-    global $UMC_TEAMSPEAK;
-    umc_ts_connect();
-    $users = array();
-    foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
-        $username = $ts_Client["client_nickname"];
-        // we have 2 system users which we do not want to list
-        // they are both called "mc_bot..."
-        if (strpos($username, 'mc_bot') === false) {
-            $users[] = $ts_Client["client_nickname"];
-        }
-    }
+function umc_ts_displayusers() {
+    $users = umc_ts_userlist();
     $count = count($users);
     umc_header("Teamspeak users: $count");
     if ($count > 0) {
@@ -129,6 +149,28 @@ function umc_ts_listusers() {
         umc_echo("Nobody online...");
     }
     umc_footer();
+}
+
+/**
+ * function to create an array of users on teamspeak
+ * except system users
+ *
+ * @global type $UMC_TEAMSPEAK
+ * @return type
+ */
+function umc_ts_userlist() {
+    global $UMC_TEAMSPEAK;
+    umc_ts_connect();
+    $users = array();
+    foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
+        $username = $ts_Client["client_nickname"];
+        // we have 2 system users which we do not want to list
+        // they are both called "mc_bot..."
+        if (strpos($username, 'mc_bot') === false) {
+            $users[] = strtolower($ts_Client["client_nickname"]);
+        }
+    }
+    return $users;
 }
 
 function umc_ts_authorize() {
