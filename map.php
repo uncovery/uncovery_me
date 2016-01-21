@@ -689,7 +689,7 @@ function umc_region_data($world_name) {
     $D = umc_mysql_fetch_all($reg_sql);
     $region_list = array();
     foreach ($D as $reg_row) {
-        $region_id = $reg_row['id'];
+        $region_id = $reg_row['region_id'];
         $region_list[$region_id]['min'] = array('x' => $reg_row['min_x'], 'y' => $reg_row['min_y'], 'z' => $reg_row['min_z']);
         $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
         $region_list[$region_id]['version'] = $reg_row['version'];
