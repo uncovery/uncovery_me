@@ -30,8 +30,8 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
     'default' => array(
         'help' => array(
             'title' => 'Teamspeak',  // give it a friendly title
-            'short' => 'Manage your teamspeak rights',  // a short description
-            'long' => "Allows you to give yourself teamspeak Settler level", // a long add-on to the short  description
+            'short' => 'An interface to various Teamspeak-related features.',  // a short description
+            'long' => "Allows you to give yourself teamspeak Settler level, list teamspeak users etc.", // a long add-on to the short  description
             ),
     ),
     'auth' => array( // this is the base command if there are no other commands
