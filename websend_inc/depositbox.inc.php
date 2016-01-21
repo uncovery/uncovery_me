@@ -161,20 +161,7 @@ function umc_depositbox_count($uuid_req = false) {
     } else {
         $uuid = $uuid_req;
     }
-    
-    /*
-    CREATE TABLE IF NOT EXISTS `deposit` (
-      `id` int(11) NOT NULL,
-      `sender_uuid` varchar(37) NOT NULL,
-      `recipient_uuid` varchar(39) NOT NULL,
-      `damage` int(11) DEFAULT NULL,
-      `amount` int(11) NOT NULL,
-      `meta` text NOT NULL,
-      `item_name` varchar(125) NOT NULL,
-      `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-    */
-    
+        
     $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' GROUP BY recipient_uuid;";
     $D = umc_mysql_fetch_all($sql);
     $boxes = $D[0]['count'];
@@ -605,3 +592,16 @@ function umc_depositbox_consolidate() {
         umc_echo("{yellow}[?]{gray} Unable to consolidate depositbox, no compatible items found.");
     }
 }
+
+/*
+CREATE TABLE IF NOT EXISTS `deposit` (
+  `id` int(11) NOT NULL,
+  `sender_uuid` varchar(37) NOT NULL,
+  `recipient_uuid` varchar(39) NOT NULL,
+  `damage` int(11) DEFAULT NULL,
+  `amount` int(11) NOT NULL,
+  `meta` text NOT NULL,
+  `item_name` varchar(125) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+*/
