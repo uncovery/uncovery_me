@@ -38,7 +38,8 @@ $WS_INIT['lot'] = array(
         'help' => array(
             'short' => 'Add features to your lot;',
             'args' => '<lot> <member|snow|ice> [user] [user2]...',
-            'long' => 'Add a member so thet they can build on your lot or add snow accumulation or ice forming. You can list several users, separated with spaces.;',
+            'long' => 'Add a member so thet they can build on your lot or add snow accumulation or ice forming. You can list several users, separated with spaces.
+                The added user needs to own a lot as well. See FAQ #32 for info.',
         ),
         'function' => 'umc_lot_addrem',
     ),
