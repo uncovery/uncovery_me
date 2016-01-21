@@ -44,7 +44,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'level'=>'Settler',
         ),
     ),
-    'list' => array( // this is the base command if there are no other commands
+    'who' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'List all users on the Teamspeak server',
             'long' => "This will list all users that are currently logged in on the teamspeak server",
@@ -75,7 +75,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
             'level'=>'Settler',
         ),
     ),
-     * 
+     *
      */
 );
 
