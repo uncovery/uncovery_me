@@ -284,7 +284,7 @@ function umc_lot_addrem() {
                     umc_error("You cannnot add Guests to your lot!;");
                 } else if (!in_array($target, $active_users)) {
                     XMPP_ERROR_trigger("$player tried to add $target to his lot $lot, but $target is not an active member!");
-                    umc_error("$target is not an active user! You can only add people who have their own lot!");
+                    umc_error("$target is not an active user! You can only add people who have their own lot! See FAQ entry #32 please.");
                 }
             }
 
