@@ -112,7 +112,7 @@ $WS_INIT['depositbox'] = array(
 
 // settings array to hold maximum numbers of purchasable homes
 // TODO - add a buy command, depreciate depositbox_limit
-$UMC_SETTING['max_deposit_slots'] = array(
+$UMC_SETTING['deposits']['max'] = array(
     'Guest' => 0,
     'Settler' => 5, 'SettlerDonator' => 5, 'SettlerDonatorPlus' => 5,
     'Citizen'=> 10, 'CitizenDonator'=> 10, 'CitizenDonatorPlus'=> 10,
@@ -140,7 +140,7 @@ function umc_depositbox_check() {
     $count = umc_depositbox_count();
     $cost = umc_depositbox_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
-    $max_deposits = $UMC_SETTING['max_deposit_slots'][$userlevel];
+    $max_deposits = $UMC_SETTING['deposits']['max'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
     // output the return values to the chat window
     umc_header("Checking Depositbox Status");
@@ -152,7 +152,7 @@ function umc_depositbox_check() {
 }
 
 // returns the current number of purchased deposit slots the user has
-function umc_depositbox_count($uuid_req = false) { {
+function umc_depositbox_count($uuid_req = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     
@@ -175,11 +175,12 @@ function umc_depositbox_count($uuid_req = false) { {
     ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
     */
     
-    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE sender_uuid='$uuid';";
+    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' GROUP BY recipient_uuid;";
     $D = umc_mysql_fetch_all($sql);
     $boxes = $D[0]['count'];
     return $boxes;
 }
+
 
 // calculates the value of deposit boxes when going to purchase
 function umc_depositbox_calc_costs($count) {
