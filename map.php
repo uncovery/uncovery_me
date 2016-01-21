@@ -664,15 +664,14 @@ function umc_region_data($world_name) {
     }
     
     // enumerate all lot owners
-    $owners_sql = "SELECT region.id AS region_id, UUID.username AS user_name, user.uuid as uuid,
+    $owners_sql = "SELECT region_players.region_id AS region_id, UUID.username AS user_name, user.uuid as uuid,
         region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
-        FROM minecraft_worldguard.region
-        LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
-        LEFT JOIN minecraft_worldguard.region_groups ON region.id = region_groups.region_id AND region.world_id = region_groups.world_id
+		FROM minecraft_worldguard.region_players
+        LEFT JOIN minecraft_worldguard.region_groups ON region_players.region_id = region_groups.region_id AND region_players.world_id = region_groups.world_id
         LEFT JOIN minecraft_worldguard.`group` ON `group`.id = region_groups.group_id
         LEFT JOIN minecraft_worldguard.user ON user.id = region_players.user_id
         LEFT JOIN minecraft_srvr.UUID ON user.uuid = UUID.UUID
-        WHERE region.world_id = $world_id AND user_id IS NOT NULL;";
+        WHERE region_players.world_id = $world_id AND user_id IS NOT NULL";
     $O = umc_mysql_fetch_all($owners_sql);
     $owners = array();
     foreach ($O as $o) {
@@ -680,13 +679,12 @@ function umc_region_data($world_name) {
     }
     
     // enumerate all lots for drawing them
-    $reg_sql = "SELECT region.id, region.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version, count(user_id) as usercount
-        FROM minecraft_worldguard.region
-        LEFT JOIN minecraft_worldguard.region_cuboid ON region.id = region_cuboid.region_id AND region.world_id = region_cuboid.world_id
-        LEFT JOIN minecraft_worldguard.region_players ON region.id = region_players.region_id AND region.world_id = region_players.world_id
-        LEFT JOIN minecraft_srvr.lot_version ON id=lot
-        WHERE region.world_id = $world_id AND region_cuboid.world_id=$world_id
-        GROUP BY id;";
+    $reg_sql = "SELECT region_cuboid.region_id, region_cuboid.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version, count(user_id) as usercount
+        FROM minecraft_worldguard.region_cuboid
+        LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id = region_players.region_id
+        LEFT JOIN minecraft_srvr.lot_version ON region_cuboid.region_id=lot
+        WHERE region_cuboid.world_id=$world_id
+        GROUP BY region_cuboid.region_id";
     //echo $reg_sql;
     $D = umc_mysql_fetch_all($reg_sql);
     $region_list = array();
