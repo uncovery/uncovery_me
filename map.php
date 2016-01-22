@@ -461,16 +461,14 @@ if ($find_lot) {
     }
     $header .= "\n</script>\n";
 
-    $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html 
-            
+    $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
         . "</div>n</body>\n</html>\n";
     XMPP_ERROR_trace("construction done");
     echo $out;
-    XMPP_ERROR_trace("echo done");
-    XMPP_ERROR_trigger("map done!");
 }
 
 function umc_assemble_maps() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
     // create lots
     $worlds = $UMC_SETTING['world_data'];
@@ -497,16 +495,18 @@ function umc_assemble_maps() {
         $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
         $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
         $destination = $UMC_SETTING['path']['server'] .  "/maps";
-        echo "$world: ";
+        echo "$world: \n";
         // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
         $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
         exec($command);
-        echo "chunk maps rendered";
+        echo "chunk maps rendered\n";
+        XMPP_ERROR_trace(__FUNCTION__, "chunk maps rendered");
 
         // compress map to new map
         $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
         exec($command1);
-        echo ", map compressed";
+        echo "map compressed\n";
+        XMPP_ERROR_trace(__FUNCTION__, "map compressed");
 
         $file_1 = "$destination/{$world}_large.jpg";
         $file_2 = "$destination/{$world}.jpg";
@@ -514,12 +514,14 @@ function umc_assemble_maps() {
         $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
         $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
         exec($command2);
-        echo ", cropped map to border size {$size}x{$size}+{$border}+{$border}";
+        XMPP_ERROR_trace(__FUNCTION__, "cropped map to border size {$size}x{$size}+{$border}+{$border}");
+        echo ", cropped map to border size {$size}x{$size}+{$border}+{$border}\n";
         //umc_assemble_tmc_map($world);
         //echo ", Single file map assembled";
         // create lot maps
         umc_disassemble_map($world);
-        echo ", Lot maps cut, done!";
+        echo ", Lot maps cut, done!\n";
+        XMPP_ERROR_trace(__FUNCTION__, "Lot maps cut, done!");
 
         // umc_heatmap($world);
         // echo ", heat map rendered\n";
@@ -539,10 +541,11 @@ function umc_assemble_maps() {
         exec($command);
     }
     */
-
+    XMPP_ERROR_trigger("Map assembly done!");
 }
 
 function umc_disassemble_map($world = 'empire') {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_PATH_MC;
     $dim = $UMC_SETTING['world_data'][$world];
     $source = "$UMC_PATH_MC/server/maps";
@@ -584,6 +587,7 @@ function umc_disassemble_map($world = 'empire') {
             $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/$lot.png\"";
             // echo $command . "\n";
             exec($command);
+            XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
         }
     } else {
         $lot_size = $dim['lot_size'];
@@ -594,6 +598,7 @@ function umc_disassemble_map($world = 'empire') {
         $command = "convert \"$source/$world.jpg\" +repage -crop $lot_size". "x". "$lot_size +repage \"$source/lots/$world/$world.png\" ";
         // echo $command . "\n";
         exec($command);
+        XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
 
         // rename the files
         $lot_array = array();
@@ -620,7 +625,7 @@ function umc_disassemble_map($world = 'empire') {
             $lot_coords = array();
             preg_match('#^([a-zA-Z]*)(\d*)#', $lot_str[1], $lot_coords);
             if (!isset($lot_coords[1]) || !isset($lot_coords[2])) {
-                XMPP_ERROR_send_msg("Disassemble $world failed: " . var_export($lot_coords, true));
+                XMPP_ERROR_trigger("Disassemble $world failed: " . var_export($lot_coords, true));
             }
             $lot_letter = $lot_coords[1];
             $lot_number = $lot_coords[2];
@@ -635,6 +640,7 @@ function umc_disassemble_map($world = 'empire') {
             // echo "renaming {$world}-$index.png -> $lot.png\n";
             if (file_exists("$source/lots/$world/{$world}-$index.png")) {
                 rename("$source/lots/$world/{$world}-$index.png", "$source/lots/$world/$lot.png");
+                XMPP_ERROR_trace(__FUNCTION__, "Done renaming the $world pieces to lot names");
             } else {
                 echo "File $source/lots/$world/{$world}-$index.png not found \n";
             }
@@ -662,7 +668,7 @@ function umc_region_data($world_name) {
         XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
         return false;
     }
-    
+
     // enumerate all lot owners
     $owners_sql = "SELECT region_players.region_id AS region_id, UUID.username AS user_name, user.uuid as uuid,
         region_players.Owner AS player_Owner, region_groups.Owner AS group_Owner, `group`.`name` AS group_name
@@ -677,7 +683,7 @@ function umc_region_data($world_name) {
     foreach ($O as $o) {
         $owners[$o['region_id']][$o['uuid']] = $o;
     }
-    
+
     // enumerate all lots for drawing them
     $reg_sql = "SELECT region_cuboid.region_id, region_cuboid.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version, count(user_id) as usercount
         FROM minecraft_worldguard.region_cuboid
@@ -696,7 +702,7 @@ function umc_region_data($world_name) {
         $region_list[$region_id]['mint_version'] = $reg_row['mint_version'];
         $region_list[$region_id]['owners'] = false;
         $region_list[$region_id]['members'] = false;
-        
+
         if ($reg_row['usercount'] == 0) {
             continue;
         }
