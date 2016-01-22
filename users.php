@@ -234,9 +234,9 @@ function umc_users_active_lastlogin_and_level() {
         GROUP BY username
         ORDER BY username;";
     // XMPP_ERROR_trace($sql);
-    $rst = umc_mysql_query($sql_1);
+    $D = umc_mysql_fetch_all($sql_1);
     $lastlogins = array('abandone-0000-0000-0000-000000000000' => array('username' => '_abandoned_', 'userlevel' => 'Guest', 'lastlogin' => '2010-01-01 00:00:00'));
-    while ($row = umc_mysql_fetch_array($rst)) {
+    foreach ($D as $row) {
         $lastlogins[$row['uuid']]['lastlogin'] = $row['lastlogin'];
         $lastlogins[$row['uuid']]['username'] = $row['username'];
         $lastlogins[$row['uuid']]['userlevel'] = $row['userlevel'];
@@ -495,7 +495,7 @@ function umc_user_getlots($uuid, $world = false) {
     $out = array();
     //echo $sql;
     foreach ($R as $row) {
-        $link = umc_user_get_lot_tile($row['region_id'], $row['name']);
+        $link = umc_lot_get_tile($row['region_id'], $row['name']);
         if (!$link) {
             $link = '';
         }
@@ -686,7 +686,7 @@ function umc_user_directory() {
             if (!isset($O[$world])) {
                 $O[$world] = '';
             }
-            $O[$world] .= "<div class=\"imagebox\">" . $data['image'] . "<br>"  . $data['lot'] . "</div>\n";
+            $O[$world] .= $data['image'];
         }
 
         $donator_level = umc_users_donators($uuid);
