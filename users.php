@@ -752,7 +752,7 @@ function umc_user_directory() {
                     $link = $row['id'];
                     $title = $row['title'];
                 }
-                $O['Forum'] .= "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>";
+                $O['Forum'] .= "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>\n";
             }
             $O['Forum'] .= "</ul>\n";
         }
