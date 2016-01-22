@@ -325,13 +325,13 @@ a .widget .bbp-author-name {
 .street_lot_a {
     width: 15px;
     height: 256px;
-    background-position: -256px 0pc;
+    background-position: -256px 0px;
 }
 
 .street_lot_b {
     width: 15px;
     height: 15px;
-    background-position: -256px -256pc;
+    background-position: -256px -256px;
 }
 
 .street_lot_c {
