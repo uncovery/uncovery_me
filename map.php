@@ -497,7 +497,7 @@ function umc_assemble_maps() {
         $destination = $UMC_SETTING['path']['server'] .  "/maps";
         echo "$world: \n";
         // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
-        $command = "java -jar $mapper_folder/TMCMR.jar $folder -debug -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
+        $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
         exec($command);
         echo "$world chunk maps rendered\n";
         XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered");
