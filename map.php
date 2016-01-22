@@ -498,13 +498,13 @@ function umc_assemble_maps() {
         echo "$world: \n";
         // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
         $command = "java -jar $mapper_folder/TMCMR.jar $folder -debug -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
-        // exec($command);
+        exec($command);
         echo "$world chunk maps rendered\n";
         XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered");
 
         // compress map to new map
         $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
-        // exec($command1);
+        exec($command1);
         echo "$world map compressed\n";
         XMPP_ERROR_trace(__FUNCTION__, "$world map compressed");
 
@@ -513,10 +513,10 @@ function umc_assemble_maps() {
         $size = $UMC_SETTING['world_img_dim'][$world]['max_coord'] * 2;
         $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
         $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
-        // exec($command2);
+        exec($command2);
         XMPP_ERROR_trace(__FUNCTION__, "$world cropped map to border size {$size}x{$size}+{$border}+{$border}");
         echo "$world cropped map to border size {$size}x{$size}+{$border}+{$border}\n";
-        //umc_assemble_tmc_map($world);
+        // umc_assemble_tmc_map($world);
         //echo ", Single file map assembled";
         // create lot maps
         umc_disassemble_map($world);
