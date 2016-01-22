@@ -149,12 +149,21 @@ function umc_show_help($args = false) {
             umc_echo($command['help']['long'], true);
             foreach ($WS_INIT[$command_name] as $cmd => $cmd_data) {
                 if (!in_array($cmd, $non_commands)) {
+                    
                     // This command is restricted to a user level or higher
                     if (isset($cmd_data['security']['level']) && $player != 'uncovery') {
                         if (!umc_rank_check($userlevel, $cmd_data['security']['level'])) {
                             continue;
                         }
                     }
+                    
+                    // restricts command to specific users (for testing / debug / collaboration)
+                    if(isset($cmd_data['security']['users'])) {
+                        if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
+                            continue;
+                        }
+                    }
+                    
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
                         $plugin_name = $command_name . ' ';
                     }
@@ -187,12 +196,21 @@ function umc_show_help($args = false) {
         }
     } else { // Show general help.
         foreach ($WS_INIT as $plugin => $cmd_data) {
+            
             // This command is restricted to a user level or higher
             if (isset($cmd_data['default']['security']['level']) && $player != 'uncovery') {
                 if(!umc_rank_check($userlevel, $cmd_data['default']['security']['level'])) {
                     continue;
                 }
             }
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($cmd_data['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
+                    continue;
+                }
+            }
+            
             umc_echo("{green}/$plugin{gray} - " . $cmd_data['default']['help']['short'], true);
         }
         umc_echo("{gray}Use {yellow}/helpme <command>{gray} for more details.", true);
@@ -240,6 +258,14 @@ function umc_plugin_web_help($one_plugin = false) {
                 continue;
             }
             $sec = '';
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($value['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $value['security']['users'])) {
+                    continue;
+                }
+            }
+            
             if (isset($value['security']['level'])) {
                 if(!umc_rank_check($userlevel, $value['security']['level'])) {
                     continue;
@@ -247,6 +273,7 @@ function umc_plugin_web_help($one_plugin = false) {
                     $sec = "\n<br><smaller>Required Userlevel: {$value['security']['level']}</smaller>";
                 }
             }
+            
             $args = '';
             if (isset($value['help']['args'])) {
                 $args = htmlentities($value['help']['args']);
