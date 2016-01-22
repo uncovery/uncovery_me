@@ -576,6 +576,7 @@ function umc_web_tabs($tabs_menu, $current_page, $tab_content) {
 
 /**
  * returns likely accounts shared by UUIDs
+ * and donations given after the user last logged in
  *
  */
 function umc_web_usercheck() {
@@ -605,6 +606,13 @@ function umc_web_usercheck() {
         }
         $out .= umc_web_table($table_name, 0, $out_arr, "<h2>$table_name</h2>");
     }
+
+    $sql_donations = 'SELECT id as d_id, amount, UUID.username, email, date as d_date, lastlogin, userlevel, lot_count '
+        . 'FROM minecraft_srvr.donations '
+        . 'LEFT JOIN minecraft_srvr.UUID on minecraft_srvr.donations.uuid=UUID.UUID '
+        . 'WHERE UUID.lastlogin < date ';
+    $C = umc_mysql_fetch_all($sql_donations);
+    $out .= umc_web_table('Late Donations', 0, $C, "<h2>Late Donations</h2>");
     return $out;
 }
 
