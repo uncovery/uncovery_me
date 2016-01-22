@@ -85,19 +85,28 @@ function umc_wsplg_dispatch($module) {
 
     if (isset($command['function']) && function_exists($command['function'])) {
         if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
-            // This command is restricted to the named worlds
+            
+            // restricts command to the named worlds
             if(isset($command['security']['worlds'])) {
                 if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
                     umc_error("{red}That command is restricted to the following worlds: {yellow}".join(", ",$command['security']['worlds']));
                 }
             }
 
-            // This command is restricted to a user level or higher
+            // restricts command to a minimum user level or higher
             if(isset($command['security']['level'])) {
                 if(!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($command['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $command['security']['users'])) {
+                    umc_error('{red}That command is restricted');
+                }
+            }
+            
         }
         $function = $command['function'];
         $function();
@@ -140,12 +149,21 @@ function umc_show_help($args = false) {
             umc_echo($command['help']['long'], true);
             foreach ($WS_INIT[$command_name] as $cmd => $cmd_data) {
                 if (!in_array($cmd, $non_commands)) {
+                    
                     // This command is restricted to a user level or higher
                     if (isset($cmd_data['security']['level']) && $player != 'uncovery') {
                         if (!umc_rank_check($userlevel, $cmd_data['security']['level'])) {
                             continue;
                         }
                     }
+                    
+                    // restricts command to specific users (for testing / debug / collaboration)
+                    if(isset($cmd_data['security']['users'])) {
+                        if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
+                            continue;
+                        }
+                    }
+                    
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
                         $plugin_name = $command_name . ' ';
                     }
@@ -178,12 +196,21 @@ function umc_show_help($args = false) {
         }
     } else { // Show general help.
         foreach ($WS_INIT as $plugin => $cmd_data) {
+            
             // This command is restricted to a user level or higher
             if (isset($cmd_data['default']['security']['level']) && $player != 'uncovery') {
                 if(!umc_rank_check($userlevel, $cmd_data['default']['security']['level'])) {
                     continue;
                 }
             }
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($cmd_data['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
+                    continue;
+                }
+            }
+            
             umc_echo("{green}/$plugin{gray} - " . $cmd_data['default']['help']['short'], true);
         }
         umc_echo("{gray}Use {yellow}/helpme <command>{gray} for more details.", true);
@@ -231,6 +258,14 @@ function umc_plugin_web_help($one_plugin = false) {
                 continue;
             }
             $sec = '';
+            
+            // restricts command to specific users (for testing / debug / collaboration)
+            if(isset($value['security']['users'])) {
+                if(!in_array($UMC_USER['username'], $value['security']['users'])) {
+                    continue;
+                }
+            }
+            
             if (isset($value['security']['level'])) {
                 if(!umc_rank_check($userlevel, $value['security']['level'])) {
                     continue;
@@ -238,6 +273,7 @@ function umc_plugin_web_help($one_plugin = false) {
                     $sec = "\n<br><smaller>Required Userlevel: {$value['security']['level']}</smaller>";
                 }
             }
+            
             $args = '';
             if (isset($value['help']['args'])) {
                 $args = htmlentities($value['help']['args']);
