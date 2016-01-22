@@ -956,6 +956,46 @@ function umc_get_lot_costs($lot) {
     return $cost;
 }
 
+function umc_lot_get_tile($lot, $world = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_DOMAIN;
+    if (!$world) { // world is not given, find world name from the string until the first _
+        global $UMC_SETTING;
+        $lot_split = explode("_", $lot);
+        $prefix = $lot_split[0];
+        foreach ($UMC_SETTING['world_data'] as $one_world => $data) {
+            if ($prefix == $data['prefix']) {
+                $world = $one_world;
+                break; // found it, bail
+            }
+        }
+    }
+    // kingdom and draftlands shows street lots with the main lot. We need to add another class for each type of street lot
+    $street_worlds = array('kingdom', 'draftlands');
+    $class = $world . '_lot';
+    $lot_filename = $lot;
+    $matches = false;
+    if (in_array($world, $street_worlds)) {
+        // do we have a street lot?
+        $pattern = "/(.*)_([abc]{1}$)/";
+        $check = preg_match($pattern, $lot, $matches);
+        $match_sublot = '_none';
+        $main_lot = $lot;
+        if ($check) { // yes, apply the appropriate CSS
+            $match_sublot = "_" . $matches[2];
+            $main_lot = $matches[1];
+        }
+        $class = "street_lot" . $match_sublot;
+        $lot_filename = $main_lot . "_full";
+    }
+
+    $out = "<div class=\"imagebox\">\n"
+        . "    <div class=\"$class\" style=\"background-image: url('$UMC_DOMAIN/map/lots/$world/$lot_filename.png');\"></div>\n"
+        . "    $lot\n"
+        . "</div>\n";
+    return $out;
+}
+
 /**
  * Adds or removes a player to a region.  Works for Owners (default) as well as members.
  * must ensure beforehand that the user and the lot and the world esists
