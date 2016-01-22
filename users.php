@@ -665,9 +665,6 @@ function umc_user_directory() {
         if (umc_user_is_banned($uuid)) {
             $O['User'] .= "<p><strong>User is BANNED!</strong></p>\n";
             return;
-        } else {
-            umc_promote_citizen($username);
-            umc_donation_level($username);
         }
 
         // get userlevel
