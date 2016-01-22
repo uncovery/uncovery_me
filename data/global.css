@@ -317,3 +317,35 @@ a .widget .bbp-author-name {
 .lot_tile {
     background: #000000;
 }
+.street_lot_none {
+    width: 256px;
+    height: 256px;
+}
+
+.street_lot_a {
+    width: 15px;
+    height: 256px;
+    background-position: -256px 0pc;
+}
+
+.street_lot_b {
+    width: 15px;
+    height: 15px;
+    background-position: -256px -256pc;
+}
+
+.street_lot_c {
+    width: 256px;
+    height: 15px;
+    background-position: 0px -256px;
+}
+
+.empire_lot, .flatlands_lot, .skyblock_lot {
+    width: 128px;
+    height: 128px;
+}
+
+.aether_lot {
+    width: 192px;
+    height: 192px;
+}
