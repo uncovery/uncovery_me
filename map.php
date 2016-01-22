@@ -497,31 +497,31 @@ function umc_assemble_maps() {
         $destination = $UMC_SETTING['path']['server'] .  "/maps";
         echo "$world: \n";
         // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
-        $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
-        exec($command);
-        echo "chunk maps rendered\n";
-        XMPP_ERROR_trace(__FUNCTION__, "chunk maps rendered");
+        $command = "java -jar $mapper_folder/TMCMR.jar $folder -debug -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
+        // exec($command);
+        echo "$world chunk maps rendered\n";
+        XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered");
 
         // compress map to new map
         $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
-        exec($command1);
-        echo "map compressed\n";
-        XMPP_ERROR_trace(__FUNCTION__, "map compressed");
+        // exec($command1);
+        echo "$world map compressed\n";
+        XMPP_ERROR_trace(__FUNCTION__, "$world map compressed");
 
         $file_1 = "$destination/{$world}_large.jpg";
         $file_2 = "$destination/{$world}.jpg";
         $size = $UMC_SETTING['world_img_dim'][$world]['max_coord'] * 2;
         $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
         $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
-        exec($command2);
-        XMPP_ERROR_trace(__FUNCTION__, "cropped map to border size {$size}x{$size}+{$border}+{$border}");
-        echo ", cropped map to border size {$size}x{$size}+{$border}+{$border}\n";
+        // exec($command2);
+        XMPP_ERROR_trace(__FUNCTION__, "$world cropped map to border size {$size}x{$size}+{$border}+{$border}");
+        echo "$world cropped map to border size {$size}x{$size}+{$border}+{$border}\n";
         //umc_assemble_tmc_map($world);
         //echo ", Single file map assembled";
         // create lot maps
         umc_disassemble_map($world);
-        echo ", Lot maps cut, done!\n";
-        XMPP_ERROR_trace(__FUNCTION__, "Lot maps cut, done!");
+        echo "$world Lot maps cut, done!\n";
+        XMPP_ERROR_trace(__FUNCTION__, "$world Lot maps cut, done!");
 
         // umc_heatmap($world);
         // echo ", heat map rendered\n";
@@ -571,24 +571,30 @@ function umc_disassemble_map($world = 'empire') {
         $source = "$UMC_PATH_MC/server/maps";
         foreach ($D as $row) {
             $lot = $row['lot'];
-            if ($lot == "__global__") {
+
+            // we skip the street lots, lots ending in _a _b _c
+            $pattern = "/.*_[abc]{1}$/";
+            $check = preg_match($pattern, $lot);
+            if ($check || $lot == '__global__') {
                 continue;
             }
+
             $x1 = conv_x($row['min_x'], $map);
-            $x2 = conv_x($row['max_x'], $map);
+            $x2 = conv_x($row['max_x'], $map) + 15; // add street lots
             $z1 = conv_z($row['min_z'], $map);
-            $z2 = conv_z($row['max_z'], $map);
+            $z2 = conv_z($row['max_z'], $map) + 15; // add street lots
 
             $base_x = min($x1, $x2);
             $base_z = min($z1, $z2);
             $size_x = max($x1, $x2) - $base_x;
             $size_z = max($z1, $z2) - $base_z;
 
-            $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/$lot.png\"";
-            // echo $command . "\n";
+            $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/{$lot}_full.png\"";
+            // $command . "\n";
             exec($command);
-            XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
+            XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot");
         }
+        XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
     } else {
         $lot_size = $dim['lot_size'];
         $world_lots = $dim['lot_number'];
@@ -640,11 +646,13 @@ function umc_disassemble_map($world = 'empire') {
             // echo "renaming {$world}-$index.png -> $lot.png\n";
             if (file_exists("$source/lots/$world/{$world}-$index.png")) {
                 rename("$source/lots/$world/{$world}-$index.png", "$source/lots/$world/$lot.png");
-                XMPP_ERROR_trace(__FUNCTION__, "Done renaming the $world pieces to lot names");
+
             } else {
                 echo "File $source/lots/$world/{$world}-$index.png not found \n";
             }
+            XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot");
         }
+        XMPP_ERROR_trace(__FUNCTION__, "Done renaming the $world pieces to lot names");
     }
 }
 
