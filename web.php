@@ -491,12 +491,12 @@ function umc_jquery_tabs($data) {
     $i = 0;
     foreach ($data as $tab => $tab_html) {
         // if the tab is externally loaded, use the HTML as URL instead
-        if (strstr($tab_html, "http://")) {
-            $tab_link = $tab_html;
-        } else {
+        //if (strpos($tab_html, "http://") == 0) {
+        //    $tab_link = $tab_html;
+        //} else {
             $tab_link = "#tab$i";
-        }
-        $out .= "<li><a href='$tab_link'><span>$tab</span></a></li>";
+        //}
+        $out .= "<li><a href='$tab_link'><span>$tab</span></a></li>\n";
         $i += 1;
     }
     $out .= "</ul>\n";
@@ -504,9 +504,9 @@ function umc_jquery_tabs($data) {
     # Set up tab content <div>s
     $i = 0;
     foreach ($data as $tab => $tab_html) {
-        if (!strstr($tab_html, "http://")) {
+        //if (strpos($tab_html, "http://") === false) {
             $out .= "<div id='tab$i'>\n$tab_html\n</div>";
-        }
+        //}
         $i += 1;
     }
     $out .= "</div>\n";
