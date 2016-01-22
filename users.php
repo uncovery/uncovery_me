@@ -680,6 +680,10 @@ function umc_user_directory() {
         $lots = umc_user_getlots($uuid);
         foreach ($lots as $data) {
             $world = ucwords($data['world']);
+            $combined_worlds = array('Empire', 'Flatlands', 'Skyblock');
+            if (in_array($world, $combined_worlds)) {
+                $world = 'Small lots';
+            }
             if (!isset($O[$world])) {
                 $O[$world] = '';
             }
