@@ -34,10 +34,10 @@ if ($UMC_DONATION['sandbox']) {
     $UMC_DONATION['button_id'] = 'CB6ZLXTFB3XG2';
 } else {
     $UMC_DONATION['paypal_url'] = "https://www.paypal.com/cgi-bin/webscr";
-    $UMC_DONATION['business_email'] = 'minecraft@uncovery.me';  
+    $UMC_DONATION['business_email'] = 'minecraft@uncovery.me';
     $UMC_DONATION['button_id'] = '39TSUWZ9XPW5G';
 }
-        
+
 function umc_donationform() {
     global $UMC_SETTING, $UMC_USER;
     $out = umc_donation_stats();
@@ -84,7 +84,7 @@ function umc_users_donators($uuid = false) {
 
 function umc_donation_chart() {
     global $UMC_SETTING, $UMC_USER, $UMC_DONATION;
-    
+
     if (!$UMC_USER) {
         $out = "Please <a href=\"{$UMC_SETTING['path']['url']}/wp-admin/profile.php\">login</a> to buy donator status!"
         . "<a href=\"{$UMC_SETTING['path']['url']}/wp-admin/profile.php\"><img src=\"https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif\"></a>";
@@ -144,22 +144,22 @@ function umc_donation_chart() {
 /**
  * Parse the donation result and automatically record it in the database
  * Uses Paypal IDN https://developer.paypal.com/docs/classic/products/instant-payment-notification/
- * 
+ *
  * @global type $UMC_SETTING
  * @return type
  */
 function umc_process_donation() {
     global $UMC_USER, $UMC_DONATION;
-    
+
     // only continue for logged-in users
     if (!$UMC_USER) {
         return;
     }
-    
+
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     XMPP_ERROR_trigger("Donation Process form was accessed!");
-    
+
     // Read POST data
     // reading posted data directly from $_POST causes serialization
     // issues with array data in POST. Reading raw POST data from input stream instead.
@@ -207,12 +207,12 @@ function umc_process_donation() {
     // Set TCP timeout to 30 seconds
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
-    
+
     // CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
     // of the certificate as shown below. Ensure the file is readable by the webserver.
     // This is mandatory for some environments.
     curl_setopt($ch, CURLOPT_CAINFO, $UMC_DONATION['cert_path']);
-    
+
     $res_raw = curl_exec($ch);
     if (curl_errno($ch) != 0) {
         XMPP_ERROR_trace("Can't connect to PayPal to validate IPN message: ", curl_error($ch));
@@ -223,7 +223,7 @@ function umc_process_donation() {
         XMPP_ERROR_trace("HTTP request of validation request:", curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: REQuest: $req \n\n RESponse: $res_raw");
         curl_close($ch);
     }
-    
+
     // Inspect IPN validation result and act accordingly
     // Split response headers and payload, a better way for strcmp
     $tokens = explode("\r\n\r\n", trim($res_raw));
@@ -235,7 +235,8 @@ function umc_process_donation() {
     } else if (strcmp ($res, "INVALID") == 0) {
         // verficiation failed, request assistance
         XMPP_ERROR_trigger("Invalid IPN result: $res");
-        return "There was an issue verifying your payment. Please contact an admin at minecraft@uncovery.me to resolve this issue";
+        echo "There was an issue verifying your payment. Please contact an admin at minecraft@uncovery.me to resolve this issue";
+        return;
     }
 
     // process payment
@@ -258,8 +259,8 @@ function umc_process_donation() {
     // TODO check that txn_id has not been previously processed
     // OK check that receiver_email is your PayPal email
     // TODO check that payment_amount/payment_currency are correct
-    // assign posted variables to local variables    
-    
+    // assign posted variables to local variables
+
     $verify_entries = array(
         'payment_status' => 'Completed',
         'business' => $UMC_DONATION['business_email'],
@@ -308,7 +309,7 @@ function umc_process_donation() {
         $mailtext = "Dear $username, \r\n\r\nWe have just received your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
             . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
             . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
-            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";   
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
         mail("minecraft@uncovery.me", "Donation failed!", $mailtext, $headers);
     }
     mail($s_post['payer_email'], $subject, $mailtext, $headers);
@@ -551,7 +552,7 @@ function umc_donation_level($user, $debug = false) {
 
     $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid='$uuid';";
     $level = umc_get_uuid_level($uuid);
-    
+
     if ($level == 'Owner') {
         return false;
     }
@@ -648,7 +649,7 @@ function umc_donation_level($user, $debug = false) {
 }
 
 /**
- * 
+ *
  CREATE TABLE IF NOT EXISTS `donations` (
   `id` int(11) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
