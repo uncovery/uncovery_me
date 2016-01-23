@@ -152,13 +152,14 @@ function umc_ts_display_users() {
 }
 
 function umc_ts_authorize() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_TEAMSPEAK;
     umc_ts_connect();
 
     // get client by name
     $uuid = $UMC_USER['uuid'];
     $userlevel = $UMC_USER['userlevel'];
-    $username = $UMC_USER['username'];
+    $username = strtolower($UMC_USER['username']);
 
     // get required servergroup
     foreach ($UMC_TEAMSPEAK['user_groups'] as $g_id => $usergroups) {
@@ -167,23 +168,29 @@ function umc_ts_authorize() {
             break;
         }
     }
+    XMPP_ERROR_trace("target group", $target_group);
 
-    // first, we see if there is a current user logged in
-    $ts_Client = false;
     umc_header();
 
     // first, we clean out old clients that are registered with minecraft
     umc_ts_clear_rights($uuid, true);
+    XMPP_ERROR_trace("Done clearing old rights");
 
     // then, we try to find a new user on the TS server to give rights to
     umc_echo("Your TS level is " . $UMC_TEAMSPEAK['ts_groups'][$target_group]);
+    XMPP_ERROR_trace("User TS level is ", $UMC_TEAMSPEAK['ts_groups'][$target_group]);
     umc_echo("Looking for user $username in TS...");
+    $users = umc_ts_list_users();
     $found = 0;
-    foreach ($UMC_TEAMSPEAK['server']->clientList() as $ts_Client) {
-        if ($ts_Client["client_nickname"] == $username) {
+    // iterate all users to make sure that there are not 2 with the same nickname
+    foreach ($users as $user) {
+        XMPP_ERROR_trace("comparing user $username to ", $user);
+        if ($user == $username) {
             $found++;
+            XMPP_ERROR_trace("found user ", $user);
         }
     }
+    XMPP_ERROR_trace("found no if users: ", $found);
 
     if ($found == 0) {
         umc_echo("You need to logon to Teamspeak with the EXACT same username (\"$username\")");
@@ -199,7 +206,7 @@ function umc_ts_authorize() {
     }
 
     // we have a user
-    umc_echo("Found TS user " . $ts_Client["client_nickname"]);
+    $ts_Client = $UMC_TEAMSPEAK['server']->clientGetByName($username);
     $ts_dbid = $ts_Client["client_database_id"];
     // remove all groups
     $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($ts_dbid));
@@ -226,6 +233,7 @@ function umc_ts_authorize() {
     umc_mysql_query($ins_sql, true);
     umc_echo("Adding TS ID $ts_uuid to database");
     umc_footer("Done!");
+    
 }
 
 /**
@@ -253,22 +261,32 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         umc_echo("Found old permissions.");
         $ts_uuid = $D[0]['ts_uuid'];
     }
+    XMPP_ERROR_trace("ts_uuid", $ts_uuid);
 
     umc_echo("Connecting to TS server.");
     umc_ts_connect(true);
 
     // find the TS user by that TS UUID
     umc_echo("Searching for you on the TS server.");
-    $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
+    
+    try {
+        $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
+    } catch (TeamSpeak3_Exception $e) {
+        XMPP_ERROR_trace("Error ", $e->getCode() . ": " . $e->getMessage());
+        $ts_Clients_match = 0;
+    }
     if (count($ts_Clients_match) > 0) {
+        XMPP_ERROR_trace("ts_Clients_match", $ts_Clients_match);
         umc_echo("Found user entries on TS server");
         $client_dbid = $ts_Clients_match[0];
         // enumerate all the groups the user is part of
         $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($client_dbid));
+        XMPP_ERROR_trace("servergroups", $servergroups);
         // remove all servergroups except 8 (Guest)
         umc_echo("Removing all old usergroups:");
         foreach ($servergroups as $sgid) {
             if ($sgid != 8) {
+                XMPP_ERROR_trace("Deleting group", $sgid);
                 $UMC_TEAMSPEAK['server']->serverGroupClientDel($sgid, $client_dbid);
                 if ($echo) {
                     umc_echo("Old Client: Removing Group " . $UMC_TEAMSPEAK['ts_groups'][$sgid]);
@@ -277,9 +295,11 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         }
         // also remove TS UUID from DB
         $ins_sql = "UPDATE minecraft_srvr.UUID SET ts_uuid='' WHERE ts_uuid='$ts_uuid';";
+        XMPP_ERROR_trace("removing uuid from DB", $ts_uuid);
         umc_mysql_query($ins_sql, true);
         return true;
     } else {
+        XMPP_ERROR_trace("Prev UUID not found");
         if ($echo) {
             umc_echo("Old Client: Previous TS UUID was invalid, nothing to do");
         }
@@ -294,6 +314,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
  * @return string
  */
 function umc_ts_viewer() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
     umc_ts_connect(true);
 
@@ -324,6 +345,7 @@ function umc_ts_viewer() {
 }
 
 function umc_ts_list_channels_users() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
     umc_ts_connect();
     $ts3_Channels = $UMC_TEAMSPEAK['server']->channelList();
@@ -348,6 +370,7 @@ function umc_ts_list_channels_users() {
  * @return type
  */
 function umc_ts_list_users($channel = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
     umc_ts_connect();
     $users = array();
@@ -374,6 +397,7 @@ function umc_ts_list_users($channel = false) {
  * @param boolean $error_reply shall we return an in-game error if connection fails?
  */
 function umc_ts_connect($error_reply = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
     // the server query object, including the password for it, is located outside the code.
     $query_string = file_get_contents($UMC_TEAMSPEAK['server_query_string_path']);
