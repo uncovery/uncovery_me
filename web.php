@@ -631,14 +631,23 @@ function umc_web_set_fingerprint() {
 
 function umc_web_userstats() {
     global $UMC_DOMAIN;
-    $sql = 'SELECT count(ID) as sign_ons, DATE_FORMAT(user_registered,"%Y-%u") as date FROM `wp_users` GROUP BY(DATE_FORMAT(user_registered,"%Y-%u"))';
-    $D = umc_mysql_fetch_all($sql);
-    $out = '<h2>Signons per week:</h2>';
-    $maxval = 0;
-    $minval = 0;
-    $legend = array();
-    $ydata = array();
-    $sites = array();
+    $X = array();
+    
+    $sqls = array(
+        'sign_ons' => 'SELECT count(ID) as count, DATE_FORMAT(user_registered,"%Y-%u") as date FROM minecraft.wp_users GROUP BY(DATE_FORMAT(user_registered,"%Y-%u"))',
+        'promotions' =>  "SELECT  count(log_id) as count, DATE_FORMAT(date,'%Y-%u') as date  FROM minecraft_log.universal_log WHERE `plugin` LIKE 'settler_test' AND `action` LIKE 'promotion' GROUP BY(DATE_FORMAT(date,'%Y-%u'))",
+    );
+
+    foreach ($sqls as $dataset => $sql) {
+        $D = umc_mysql_fetch_all($sql);
+        foreach ($D as $row) {
+            $X[$row['date']][$dataset] = $row['count'];
+        }
+    }
+    
+    $out = '<h2>User stats:</h2>';
+    //$maxval = 0;
+    //$minval = 0;
 
     $out .= "\n<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
         . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
@@ -646,21 +655,12 @@ function umc_web_userstats() {
         . "<script type='text/javascript'>//<![CDATA[\n"
         . "var chart;\n"
         . "var chartData = [\n";
-    //
-    foreach ($D as $row) {
-        $maxval = max($maxval, $row['sign_ons']);
-        $minval = min($minval, $row['sign_ons']);
-        $date = $row['date'];
-        $legend[$date] = $date;
-        // $sites[$site] = $site;
-        $ydata[$date] = $row['sign_ons']; // [$site]
-    }
 
-    foreach ($ydata as $date => $sign_ons) {
+    foreach ($X as $date => $data_set) {
         $out .= "{\"date\": \"$date\", ";
-        //foreach ($date_sites as $date_site => $count) {
-            $out .= "\"sign_ons\": $sign_ons,";
-        //}
+        foreach ($data_set as $date_site => $count) {
+            $out .= "\"$date_site\": $count,";
+        }
         $out .= "},\n";
     }
     $out .= "];\n";
@@ -687,17 +687,17 @@ function umc_web_userstats() {
     valueAxis.title = "Sign-ons";
     chart.addValueAxis(valueAxis);';
 
-    //foreach ($sites as $site) {
+    foreach ($sqls as $dataset => $sql) {
         $out .= "\nvar graph = new AmCharts.AmGraph();
             graph.type = \"line\";
             graph.hidden = false;
-            graph.title = \"sign_ons\";
-            graph.valueField = \"sign_ons\";
+            graph.title = \"$dataset\";
+            graph.valueField = \"$dataset\";
             graph.lineAlpha = 1;
             graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-            graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>sign_ons: <b>[[value]]</b></span>\";
+            graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$dataset: <b>[[value]]</b></span>\";
             chart.addGraph(graph);\n";
-    //}
+    }
 
     $out .= '// LEGEND
         var legend = new AmCharts.AmLegend();
