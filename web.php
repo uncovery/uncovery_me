@@ -630,19 +630,19 @@ function umc_web_set_fingerprint() {
 }
 
 function umc_web_userstats() {
-    global $UMC_DOMAIN;
-    $X = array();
+    global $UMC_DOMAIN, $UMC_SETTING;
     
-    $sqls = array(
-        'sign_ons' => 'SELECT count(ID) as count, DATE_FORMAT(user_registered,"%Y-%u") as date FROM minecraft.wp_users GROUP BY(DATE_FORMAT(user_registered,"%Y-%u"))',
-        'promotions' =>  "SELECT  count(log_id) as count, DATE_FORMAT(date,'%Y-%u') as date  FROM minecraft_log.universal_log WHERE `plugin` LIKE 'settler_test' AND `action` LIKE 'promotion' GROUP BY(DATE_FORMAT(date,'%Y-%u'))",
-    );
+    $sql = 'SELECT count(UUID) as count, SUBSTRING(userlevel,1,1) as level, DATE_FORMAT(firstlogin, "%Y-%u") as date FROM minecraft_srvr.UUID WHERE firstlogin > 0 GROUP BY SUBSTRING(userlevel,1,1), DATE_FORMAT(firstlogin,"%Y-%u")';
+    $D = umc_mysql_fetch_all($sql);
+    $X = array();
 
-    foreach ($sqls as $dataset => $sql) {
-        $D = umc_mysql_fetch_all($sql);
-        foreach ($D as $row) {
-            $X[$row['date']][$dataset] = $row['count'];
+    foreach ($D as $row) {
+        if ($row['level'] == 'G') {
+            $level = 'Guest';
+        } else {
+            $level = 'Settler';
         }
+        $X[$row['date']][$level] = $row['count'];
     }
     
     $out = '<h2>User stats:</h2>';
@@ -687,15 +687,16 @@ function umc_web_userstats() {
     valueAxis.title = "Sign-ons";
     chart.addValueAxis(valueAxis);';
 
-    foreach ($sqls as $dataset => $sql) {
+    $levels = array('Guest','Settler'); // $UMC_SETTING['ranks'];
+    foreach ($levels as $level) {
         $out .= "\nvar graph = new AmCharts.AmGraph();
             graph.type = \"line\";
             graph.hidden = false;
-            graph.title = \"$dataset\";
-            graph.valueField = \"$dataset\";
+            graph.title = \"$level\";
+            graph.valueField = \"$level\";
             graph.lineAlpha = 1;
             graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-            graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$dataset: <b>[[value]]</b></span>\";
+            graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$level: <b>[[value]]</b></span>\";
             chart.addGraph(graph);\n";
     }
 
