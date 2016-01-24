@@ -1085,9 +1085,9 @@ function umc_lot_rem_player($player, $lot, $owner) {
     }
     $sql = "DELETE FROM minecraft_worldguard.region_players
         WHERE region_id='$lot' AND world_id='$world_id' AND user_id=$user_id AND owner=$owner;";
-    umc_mysql_query($sql, true);
+    $count = umc_mysql_execute_query($sql);
     umc_log('lot_manager', 'remove player', "$player was removed from lot $lot; Owner: $owner");
-    if (mysql_affected_rows() == 1) {
+    if ($count > 0) {
         return true;
     } else {
         XMPP_ERROR_trigger("Could not remove $player from $lot in $world (id $world_id), entry not found (umc_lot_rem_player)");
