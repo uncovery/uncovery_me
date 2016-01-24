@@ -97,8 +97,7 @@ function umc_timer_set($user, $type, $days = 0, $hours = 0, $minutes = 0) {
         umc_log('timer', 'update', "$type timer from $today to $timeout for $user");
     }
     // umc_echo($sql);
-    $rst = umc_mysql_query($sql);
-    $count = umc_mysql_affected_rows(true);
+    $count = umc_mysql_execute_query($sql);
     return $count;
 }
 /*
