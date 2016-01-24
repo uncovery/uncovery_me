@@ -789,8 +789,8 @@ function umc_hunger_removeplayer($died = true) {
         $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='dead', death=NOW()
             WHERE game_id=$game_id AND uuid='$uuid';";
     }
-    $rst = umc_mysql_query($sql);
-    if (umc_mysql_affected_rows($rst, true) == 0) {
+    $row_count = umc_mysql_execute_query($sql);
+    if ($row_count == 0) {
         return;
     }
 
