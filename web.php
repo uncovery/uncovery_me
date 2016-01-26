@@ -631,7 +631,7 @@ function umc_web_set_fingerprint() {
 
 function umc_web_userstats() {
     global $UMC_DOMAIN, $UMC_SETTING;
-    
+
     $sql = 'SELECT count(UUID) as count, SUBSTRING(userlevel,1,1) as level, DATE_FORMAT(firstlogin, "%Y-%u") as date FROM minecraft_srvr.UUID WHERE firstlogin > 0 GROUP BY SUBSTRING(userlevel,1,1), DATE_FORMAT(firstlogin,"%Y-%u")';
     $D = umc_mysql_fetch_all($sql);
     $X = array();
@@ -644,7 +644,7 @@ function umc_web_userstats() {
         }
         $X[$row['date']][$level] = $row['count'];
     }
-    
+
     $out = '<h2>User stats:</h2>';
     //$maxval = 0;
     //$minval = 0;
@@ -725,6 +725,6 @@ function umc_web_userstats() {
         });
         //]]></script>';
 
-    return $out;    
-    
+    return $out;
+
 }
