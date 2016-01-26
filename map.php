@@ -473,7 +473,7 @@ if ($find_lot) {
 
     $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
         . "</div>n</body>\n</html>\n";
-    XMPP_ERROR_trigger("construction done");
+    // XMPP_ERROR_trigger("construction done");
     echo $out;
 }
 
@@ -814,19 +814,24 @@ function umc_display_markers() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $UMC_ENV = 'markers';
 
-    if (isset($_GET['world'])) {
-        $world = $_GET['world'];
+    $get_world = filter_input(INPUT_GET, 'world', FILTER_SANITIZE_STRING);
+    if ($get_world != NULL) {
+        $world = $get_world;
     } else {
         $world = 'city';
     }
-    if (isset($_GET['track_user'])) {
-        $user = $_GET['track_user'];
+    $track_user = filter_input(INPUT_GET, 'track_user', FILTER_SANITIZE_STRING);
+    $identify_user = filter_input(INPUT_GET, 'identify_user', FILTER_SANITIZE_STRING);
+    $get_format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_STRING);
+    
+    if (!is_null($track_user)) {
+        $user = $track_user;
         return umc_read_markers_file('track_user', $world, $user);
-    } else if (isset($_GET['identify_user'])) {
-        $user = $_GET['identify_user'];
+    } else if (!is_null($identify_user)) {
+        $user = $identify_user;
         return umc_read_markers_file('identify_user', $world, $user);
-    } else if (isset($_GET['format'])) {
-        $format = $_GET['format'];
+    } else if (!is_null($get_format)) {
+        $format = $get_format;
     } else {
         $format = 'html';
     }
