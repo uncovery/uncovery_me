@@ -370,10 +370,28 @@ function umc_home_count($name = false, $uuid_req = false) {
 function umc_home_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
-    $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' ORDER BY world, name;";
+
+    $homes = umc_homes_array($UMC_USER['uuid'], false);
+
+    umc_header("Your home list");
+    $count = 0;
+    foreach ($homes as $world => $worldhomes) {
+        $count += count($worldhomes);
+        $out = "{red}$world: {white}" . implode("{red},{white} ", $worldhomes);
+        umc_echo($out);
+    }
+    umc_pretty_bar("darkblue", "-", "Your Homecount: $count", 49, true);
+}
+
+function umc_homes_array($uuid, $world = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if ($world) {
+        $world_filter = " AND world=" . umc_mysql_real_escape_string($world);
+    }
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
+
+    $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid=$uuid_sql $world_filter ORDER BY world, name;";
     $D = umc_mysql_fetch_all($sql);
-    $count = count($D);
-    umc_header("Your home list ($count homes)");
 
     $homes = array();
     foreach ($D as $d) {
@@ -381,12 +399,7 @@ function umc_home_list() {
         $name = $d['name'];
         $homes[$world][] = $name;
     }
-
-    foreach ($homes as $world => $worldhomes) {
-        $out = "{red}$world: {white}" . implode("{red},{white} ", $worldhomes);
-        umc_echo($out);
-    }
-    umc_footer();
+    return $homes;
 }
 
 // import current homes from the essential plugin
