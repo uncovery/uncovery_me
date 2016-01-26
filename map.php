@@ -28,9 +28,14 @@ $UMC_FUNCTIONS['create_map'] = 'umc_create_map';
 $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
 
 function umc_create_map() {
-    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_ENV;
+    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER, $UMC_ENV;
     $timer = array();
-    $UMC_ENV = '2Dmap';
+    if (!isset($UMC_ENV)) {
+        $UMC_ENV = '2Dmap';
+    }
+
+    require_once($UMC_SETTING['path']['wordpress'] . '/wp-load.php');
+    umc_wp_get_vars();
 
     $file = $UMC_SETTING['map_css_file'];
     $css = "\n" . '<style type="text/css">' . file_get_contents($file) . "\n";
@@ -52,6 +57,11 @@ function umc_create_map() {
         }
     } else {
         $world = 'empire';
+    }
+
+    if ($UMC_USER) { // is a user logged in on wordpress?
+        // get homes for this user in the current world
+        $homes = umc_home_2d_map($UMC_USER['uuid'], $world);
     }
     // get donators
     $donators = umc_users_donators();
@@ -463,7 +473,7 @@ if ($find_lot) {
 
     $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
         . "</div>n</body>\n</html>\n";
-    XMPP_ERROR_trace("construction done");
+    XMPP_ERROR_trigger("construction done");
     echo $out;
 }
 
@@ -742,11 +752,12 @@ function umc_region_data($world_name) {
 }
 
 function umc_map_menu($worlds, $current_world, $freeswitch) {
-    global $UMC_DOMAIN, $UMC_PATH_MC;
+    global $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER;
     $freevalue = 'false';
     if ($freeswitch) {
         $freevalue = 'true';
     }
+    $username = $UMC_USER['username'];
     $this_uc_map = ucwords($current_world);
     $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
         . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
@@ -780,7 +791,7 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     $date_obj = $datetime = DateTime::createFromFormat('U', filemtime($image));
     $date_diff = umc_timer_format_diff($date_obj);
 
-    $menu .= " <small>($current_world map image was updated $date_diff ago)</small>";
+    $menu .= " <small>($current_world map image was updated $date_diff ago)</small> $username";
 
     return $menu;
 }
@@ -855,6 +866,23 @@ function umc_read_data_files($world = 'city', $map = '') {
     return array('html'=>$html, 'css'=>$css);
 }
 
+/**
+ * Converts in-game X & Z cvariables into 2D-map X&Z variables
+ *
+ * @global type $UMC_SETTING
+ * @param type $x
+ * @param type $z
+ * @param type $world
+ * @return type
+ */
+function umc_map_convert_coorindates($x, $z, $world) {
+    global $UMC_SETTING;
+    $map = $UMC_SETTING['world_img_dim'][$world];
+    $new_z = conv_z($z, $map);
+    $new_x = conv_x($x, $map);
+    return array('x' => $new_x, 'z' => $new_z);
+}
+
 
 function umc_read_markers_file($format = 'html', $world = 'empire', $user = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -897,8 +925,9 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         $x = $marker->x;
         $x_text = round($x);
         $z_text = round($z);
-        $top = conv_z($marker->z, $map);// + $map['img_top_offset'];
-        $left = conv_x($marker->x, $map);// + $map['img_left_offset'];
+        $map_coords = umc_map_convert_coorindates($x, $z, $world);
+        $top = $map_coords['z'];// + $map['img_top_offset'];
+        $left = $map_coords['x'];// + $map['img_left_offset'];
         $username = strtolower($marker->msg);
         $playerworld = $marker->world;
         if ($username == 'uncovery') {
