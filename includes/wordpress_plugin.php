@@ -169,18 +169,20 @@ add_action('login_enqueue_scripts', 'umc_wp_login_stylesheet');
  * @param type $arg2
  */
 function umc_wp_notify_new_comment($comment_id, $arg2){
-
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $comment = get_comment( $comment_id, 'ARRAY_A' );
     $author = $comment['comment_author'];
     $parent = $comment['comment_post_ID'];
 
-    $post = get_post( $parent, 'ARRAY_A');
+    $post = get_post($parent, 'ARRAY_A');
     $title = $post['post_title'];
+    $post_link = get_permalink($post['ID']);
 
-    $cmd = "ch qm n New Comment on Post &a$title &fby $author&f";
+    $cmd1 = "ch qm n New Comment on Post &a$title &fby $author&f";
+    $cmd2 = "ch qm u Link: &a$post_link&f";
     require_once('/home/minecraft/server/bin/index_wp.php');
-    umc_exec_command($cmd, 'asConsole');
+    umc_exec_command($cmd1, 'asConsole');
+    umc_exec_command($cmd2, 'asConsole');
 }
 
 /**
