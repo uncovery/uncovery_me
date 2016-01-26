@@ -456,3 +456,24 @@ function umc_mod_warp_lot() {
     $y = 70;
     umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
 }
+
+function umc_mod_command($player) {
+    $chances = array(
+        'trick' => array(
+            "smite $player 2" => "$player was struck by lightning!",
+            "burn $player" => "$player has caught fire!",
+            "kick $player" => "$player as been kicked!",
+            "spawnmob creeper 3 $player" => "$player is suddenly in VERY bad company!",
+            "spawnmob zombie  3 $player" => "$player is suddenly in bad company!",
+            "tempban $player 5 minutes" => "$player was banned for 5 minutes!",
+            "tjail $player 10 minutes" => "$player was jailed for 10 minutes!",
+        ),
+        'treat' => array(
+            "heal player" => "$player was healed!",
+            "feed player" => "$player was fed!",
+            "exp $player give 50 " => "$player received 50 XP!",
+            "spawnmob cat 1 $player" => "$player has a new cat!",
+            "spawnmob dog 1 $player" => "$player has a new dog!",
+        ),
+    );
+}
