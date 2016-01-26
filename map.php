@@ -785,6 +785,9 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     */
 
     $menu .= umc_read_markers_file('scrollto', $current_world);
+    if ($UMC_USER) {
+        $menu .= umc_home_2d_map($UMC_USER['uuid'], $current_world);
+    }
 
     // get file date
     $image = "$UMC_PATH_MC/server/maps/$current_world.jpg";
