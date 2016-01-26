@@ -110,7 +110,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
      */
 );
 
-$UMC_SETTING['max_homes'] = array(
+$UMC_SETTING['homes']['max_homes'] = array(
     'Guest' => 1,
     'Settler' => 6, 'SettlerDonator' => 6, 'SettlerDonatorPlus' => 6,
     'Citizen' => 8, 'CitizenDonator' => 8, 'CitizenDonatorPlus' => 8,
@@ -120,6 +120,7 @@ $UMC_SETTING['max_homes'] = array(
     'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
     'Owner' => 100,
 );
+$UMC_SETTING['homes']['icon_url'] = "http://uncovery.me/admin/img/home.png";
 
 // returns information about the players homes
 function umc_home_check() {
@@ -130,7 +131,7 @@ function umc_home_check() {
 
     $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
-    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
 
     // output the return values to the chat window
@@ -153,7 +154,6 @@ function umc_home_warp() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
 
-    $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
     $player = $UMC_USER['username'];
 
@@ -201,7 +201,7 @@ function umc_home_add($uuid, $name, $force = false){
     // add a prefix string to lottery home name to prevent conflict
     if (!$force) {
         $userlevel = umc_get_uuid_level($uuid);
-        $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+        $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
 
         if ($count >= $max_homes) {
             umc_error("You already reached your maximum home count ($max_homes)!");
@@ -225,7 +225,7 @@ function umc_home_buy() {
     $count = umc_home_count();
     $cost = $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
-    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
 
     // sanitise input and check if home name valid
     if (isset($args[2])) {
@@ -401,6 +401,18 @@ function umc_homes_array($uuid, $world = false) {
         $homes[$world][$name] = array('x' => $d['x'], 'y' => $d['y'], 'z' => $d['z']);
     }
     return $homes;
+}
+
+function umc_home_2d_map($uuid, $world) {
+    $homes = umc_homes_array($uuid, $world);
+
+    $out = '';
+    foreach ($homes as $world => $world_homes) {
+        foreach ($world_homes as $home => $coords) {
+            $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
+
+        }
+    }
 }
 
 // import current homes from the essential plugin
