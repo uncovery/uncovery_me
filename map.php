@@ -757,9 +757,14 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     if ($freeswitch) {
         $freevalue = 'true';
     }
-    $username = $UMC_USER['username'];
     $this_uc_map = ucwords($current_world);
-    $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
+    if ($UMC_USER) {
+        $title = $UMC_USER['username'] . "'s $this_uc_map map";
+    } else {
+        $title = "Uncovery $this_uc_map map";
+    }
+
+    $menu = "\n<!-- Menu -->\n<strong>$title</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
         . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
         . " Choose world:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
         . "        <input type='hidden' name='freeonly' value='$freevalue'>\n"
@@ -791,7 +796,7 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     $date_obj = $datetime = DateTime::createFromFormat('U', filemtime($image));
     $date_diff = umc_timer_format_diff($date_obj);
 
-    $menu .= " <small>($current_world map image was updated $date_diff ago)</small> $username";
+    $menu .= " <small>($current_world map image was updated $date_diff ago)</small>";
 
     return $menu;
 }
