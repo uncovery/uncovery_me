@@ -35,8 +35,8 @@ $WS_INIT['money'] = array(  // the name of the plugin
     'status' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Check account status - shorthand command /uncs',
-            'long' => 'This command shows you how much money you have in your account.;' 
-            		. '/uncs will also show how much money you currently have;'
+            'long' => 'This command shows you how much money you have in your account. ' 
+                . 'You can as well user the command /uncs'
         ),
         'function' => 'umc_money_status',
     ),
