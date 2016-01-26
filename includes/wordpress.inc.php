@@ -31,7 +31,7 @@ function umc_wp_get_vars() {
 
     if ($UMC_ENV !== 'wordpress') {
         XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
-        die('umc_wp_get_vars');
+        die();
     }
     get_currentuserinfo();
     if (!isset($user_login) || ($user_login == '') || ($user_email == '')) {
@@ -79,7 +79,7 @@ function umc_wp_get_vars() {
 /**
  * When banning a users, reset the users password in the WP database to something
  * random and log the user out of the system
- * 
+ *
  * @param type $uuid
  */
 function umc_wp_ban_user($uuid) {
