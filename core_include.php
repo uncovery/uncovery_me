@@ -216,8 +216,8 @@ function conv_z($z, $map) {
     if (isset($map['top_offset'])) {
         $offset = $map['top_offset'];
     }
-    $y = $z + $offset + $map['max_coord'];
-    return $y;
+    $new_z = $z + $offset + $map['max_coord'];
+    return $new_z;
 }
 
 function conv_x($x, $map) {
@@ -225,8 +225,8 @@ function conv_x($x, $map) {
     if (isset($map['left_offset'])) {
         $offset = $map['left_offset'];
     }
-    $x = $x + $map['max_coord'] + $offset;
-    return $x;
+    $new_x = $x + $map['max_coord'] + $offset;
+    return $new_x;
 }
 
 
