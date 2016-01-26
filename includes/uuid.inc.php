@@ -517,7 +517,8 @@ function umc_uuid_mojang_usernames($uuid) {
     $json_data = json_decode($json_result, true);
     if (count($json_data) == 0) {
         $text = var_export($json_data, true);
-        XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url ($text)");
+        XMPP_ERROR_trace("JSON Reply:", $text);
+        XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url");
         return false; // invalid uuid or too long username
     }
     return $json_data;
