@@ -31,7 +31,7 @@ function umc_wp_get_vars() {
 
     if ($UMC_ENV !== 'wordpress') {
         XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
-        die();
+        // die();
     }
     get_currentuserinfo();
     if (!isset($user_login) || ($user_login == '') || ($user_email == '')) {
