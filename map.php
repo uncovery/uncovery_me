@@ -894,7 +894,7 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         ["y"]=> float(50)
         ["x"]=> float(448.69999998808)
     */
-    global $UMC_SETTING, $UMC_PATH_MC;
+    global $UMC_PATH_MC;
     $file = "$UMC_PATH_MC/server/bin/data/markers.json"; // $UMC_SETTING['markers_file'];
     $text = file_get_contents($file);
     if (!$file ) {
@@ -906,7 +906,6 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         return '';
     }
     $out_arr = array();
-    $map = $UMC_SETTING['world_img_dim'][$world];
 
     if (count($m) == 0) {
         return '';
