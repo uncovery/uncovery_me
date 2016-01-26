@@ -174,7 +174,7 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
 
     $cmd1 = "ch qm n New Comment on Post &a$title &fby $author&f";
     $cmd2 = "ch qm n Link: &a$post_link&f";
-    $cmd3 = "ch qm n Type &a/web read {$post['ID']}&f to read in-game";
+    $cmd3 = "ch qm n Type &a/web read c$comment_id&f to read in-game";
     require_once('/home/minecraft/server/bin/index_wp.php');
     umc_exec_command($cmd1, 'asConsole');
     umc_exec_command($cmd2, 'asConsole');
