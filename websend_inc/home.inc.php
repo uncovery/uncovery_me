@@ -377,14 +377,15 @@ function umc_home_list() {
     $count = 0;
     foreach ($homes as $world => $worldhomes) {
         $count += count($worldhomes);
-        $out = "{red}$world: {white}" . implode("{red},{white} ", $worldhomes);
+        $out = "{red}$world: {white}" . implode("{red},{white} ", array_keys($worldhomes));
         umc_echo($out);
     }
-    umc_pretty_bar("darkblue", "-", "Your Homecount: $count", 49, true);
+    umc_pretty_bar("darkblue", "-", " {white}Your Homecount: $count{darkblue} ", 49, true);
 }
 
 function umc_homes_array($uuid, $world = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $world_filter = '';
     if ($world) {
         $world_filter = " AND world=" . umc_mysql_real_escape_string($world);
     }
@@ -397,7 +398,7 @@ function umc_homes_array($uuid, $world = false) {
     foreach ($D as $d) {
         $world = $d['world'];
         $name = $d['name'];
-        $homes[$world][] = $name;
+        $homes[$world][$name] = array('x' => $d['x'], 'y' => $d['y'], 'z' => $d['z']);
     }
     return $homes;
 }
