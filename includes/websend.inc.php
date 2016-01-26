@@ -570,8 +570,12 @@ function umc_header($string = 'Uncovery Minecraft', $silent = false) {
  *
  * @param type $silent
  */
-function umc_footer($silent = false) {
-    umc_pretty_bar("darkblue", "-", "", 49, $silent);
+function umc_footer($silent = false, $footer_text = false) {
+    $footer = '';
+    if ($footer_text) {
+        $footer = " {blue}$footer_text{darkblue} ";
+    }
+    umc_pretty_bar("darkblue", "-", $footer, 49, $silent);
 }
 
 function umc_announce($string, $channel = 't') {
