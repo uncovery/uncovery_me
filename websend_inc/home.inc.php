@@ -120,7 +120,7 @@ $UMC_SETTING['homes']['max_homes'] = array(
     'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
     'Owner' => 100,
 );
-$UMC_SETTING['homes']['icon_url'] = "http://uncovery.me/admin/img/home.png";
+$UMC_SETTING['homes']['icon_url'] = "http://uncovery.me/admin/img/home_icon.png";
 
 // returns information about the players homes
 function umc_home_check() {
@@ -409,17 +409,16 @@ function umc_home_2d_map($uuid, $world) {
     $homes = umc_homes_array($uuid, $world);
 
     $icon = $UMC_SETTING['homes']['icon_url'];
-    $out = '';
+    $out = "\n";
     foreach ($homes as $world => $world_homes) {
         foreach ($world_homes as $home => $coords) {
             $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
             $top = $map_coords['z'];
             $left = $map_coords['x'];
-            $out .= '<span class="marker"  style="z-index:100; top:'.$top.'px; left:'.$left
-                . "px;\"><img src='$icon' alt='Home $home'></span>";
+            $out .= "<img class='marker' style='width:20px; height:20px; z-index:99; top:{$top}px; left:{$left}px;' src='$icon' alt='Home $home'>\n";
         }
     }
-    return $home;
+    return $out;
 }
 
 // import current homes from the essential plugin
