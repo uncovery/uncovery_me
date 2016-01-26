@@ -759,7 +759,7 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     }
     $this_uc_map = ucwords($current_world);
     if ($UMC_USER) {
-        $title = $UMC_USER['username'] . "'s $this_uc_map map";
+        $title = ucwords($UMC_USER['username']) . "'s $this_uc_map map";
     } else {
         $title = "Uncovery $this_uc_map map";
     }
