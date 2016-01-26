@@ -95,12 +95,6 @@ function umc_wp_fingerprint_call() {
     }
 }
 
-function umc_wp_bbp_subscription_to_email($test = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    return 'oliver@uncovery.net';
-}
-
-
 /**
  * Validate password resets for banned users
  *
@@ -176,13 +170,15 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
 
     $post = get_post($parent, 'ARRAY_A');
     $title = $post['post_title'];
-    $post_link = get_permalink($post['ID']);
+    $post_link = "http://uncovery.me/?p=" . $post['ID'];
 
     $cmd1 = "ch qm n New Comment on Post &a$title &fby $author&f";
     $cmd2 = "ch qm u Link: &a$post_link&f";
+    $cmd3 = "ch qm n Type &a/web read {$post['ID']}&f to read in-game";
     require_once('/home/minecraft/server/bin/index_wp.php');
     umc_exec_command($cmd1, 'asConsole');
     umc_exec_command($cmd2, 'asConsole');
+    umc_exec_command($cmd3, 'asConsole');
 }
 
 /**
@@ -195,7 +191,7 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($old_status != 'publish' && $new_status == 'publish' ) {
         $post_title = $post->post_title;
-        $post_link = get_permalink($post->ID);
+        $post_link = "http://uncovery.me/?p=" . $post->ID;
         $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
             $cmd1 = "ch qm u New Blog Post: &a$post_title&f";
