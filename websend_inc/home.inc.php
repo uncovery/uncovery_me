@@ -404,15 +404,22 @@ function umc_homes_array($uuid, $world = false) {
 }
 
 function umc_home_2d_map($uuid, $world) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_SETTING;
     $homes = umc_homes_array($uuid, $world);
 
+    $icon = $UMC_SETTING['homes']['icon_url'];
     $out = '';
     foreach ($homes as $world => $world_homes) {
         foreach ($world_homes as $home => $coords) {
             $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
-
+            $top = $map_coords['z'];
+            $left = $map_coords['x'];
+            $out .= '<span class="marker"  style="z-index:100; top:'.$top.'px; left:'.$left
+                . "px;\"><img src='$icon' alt='Home $home'></span>";
         }
     }
+    return $home;
 }
 
 // import current homes from the essential plugin
