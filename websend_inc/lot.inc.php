@@ -342,16 +342,18 @@ function umc_lot_warp() {
 
     if (!in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
-    } else {
+    } else if (isset($args[2])) {
         $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
         if (!in_array($target_world, $allowed_worlds)) {
-            umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
+            umc_error('Sorry, you need to enter a lot name from the empire or flatlands!');
         }
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
         }
+    } else{
+        umc_error("Sorry, you need to enter the lot name after /lot warp!");
     }
 
     $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
