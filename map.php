@@ -59,10 +59,6 @@ function umc_create_map() {
         $world = 'empire';
     }
 
-    if ($UMC_USER) { // is a user logged in on wordpress?
-        // get homes for this user in the current world
-        $homes = umc_home_2d_map($UMC_USER['uuid'], $world);
-    }
     // get donators
     $donators = umc_users_donators();
 
@@ -186,6 +182,10 @@ function umc_create_map() {
         $html .= umc_read_markers_file('html', $heatworld);
     } else {
         $html .= umc_read_markers_file('html', $world);
+    }
+    // add home markers if user is logged in
+    if ($UMC_USER) {
+        $html .= umc_home_2d_map($UMC_USER['uuid'], $world);
     }
 
     //$repl_arr = array(',','-');
@@ -785,9 +785,6 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
     */
 
     $menu .= umc_read_markers_file('scrollto', $current_world);
-    if ($UMC_USER) {
-        $menu .= umc_home_2d_map($UMC_USER['uuid'], $current_world);
-    }
 
     // get file date
     $image = "$UMC_PATH_MC/server/maps/$current_world.jpg";
