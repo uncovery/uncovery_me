@@ -367,6 +367,11 @@ function umc_home_count($name = false, $uuid_req = false) {
     return $homes;
 }
 
+/**
+ * List the homes for the current user in-game
+ *
+ * @global type $UMC_USER
+ */
 function umc_home_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
@@ -383,6 +388,13 @@ function umc_home_list() {
     umc_pretty_bar("darkblue", "-", " {white}Your Homecount: $count{darkblue} ", 49, true);
 }
 
+/**
+ * Create an array with home data for a user, optionally only for one world
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
 function umc_homes_array($uuid, $world = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $world_filter = '';
@@ -403,6 +415,14 @@ function umc_homes_array($uuid, $world = false) {
     return $homes;
 }
 
+/**
+ * Create a list of homes that will be displayed on the 2D map.
+ *
+ * @global array $UMC_SETTING
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
 function umc_home_2d_map($uuid, $world) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
