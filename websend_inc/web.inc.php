@@ -44,7 +44,19 @@ function umc_web_read() {
     global $UMC_USER;
     $args = $UMC_USER['args'];
 
-    $id = $args[2];
+    $id = strtolower($args[2]);
+    
+    if (strpos($id, "c") == 0) {
+        $comment_id = substr($id, 1);
+        $C = get_comment($comment_id, ARRAY_A);
+        $author = $C['comment_author'];
+        $comment = $C['comment_content'];
+        umc_header("Comment by $author");
+        umc_echo($comment);
+        umc_footer(true);
+        return;
+    } 
+    
     $P = get_post($id, 'ARRAY_A');
     if ($P && $P['post_status'] == "publish") {
         umc_header($P['post_title']);
