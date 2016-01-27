@@ -52,16 +52,16 @@ function umc_db_take_item($table, $id, $amount, $player) {
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
             
             // if not a player to player transaction
-            if ($sid='cancel00-depo-0000-0000-000000000000' ||
-                $sid='cancel00-item-0000-0000-000000000000' ||
-                $sid='cancel00-sell-0000-0000-000000000000' ||
-                $sid='reset000-lot0-0000-0000-000000000000' ||
-                $sid='lottery0-lot0-0000-0000-000000000000' ||
-                $sid='abandone-0000-0000-0000-000000000000' ||
-                $sid='contest0-refu-0000-0000-000000000000' ||
-                $sid='shop0000-0000-0000-0000-000000000000' ||
-                $sid='Console0-0000-0000-0000-000000000000' ||
-                $sid='Server00-0000-0000-0000-000000000000') {
+            if ($sid=='cancel00-depo-0000-0000-000000000000' ||
+                $sid=='cancel00-item-0000-0000-000000000000' ||
+                $sid=='cancel00-sell-0000-0000-000000000000' ||
+                $sid=='reset000-lot0-0000-0000-000000000000' ||
+                $sid=='lottery0-lot0-0000-0000-000000000000' ||
+                $sid=='abandone-0000-0000-0000-000000000000' ||
+                $sid=='contest0-refu-0000-0000-000000000000' ||
+                $sid=='shop0000-0000-0000-0000-000000000000' ||
+                $sid=='Console0-0000-0000-0000-000000000000' ||
+                $sid=='Server00-0000-0000-0000-000000000000') {
             
                 $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
                 
