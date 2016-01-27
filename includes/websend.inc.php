@@ -238,7 +238,7 @@ function umc_ws_get_vars() {
             // xp converted to points value obtained total. JSON returns fractional value.
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             $UMC_USER['xpfraction'] = $json['Invoker']['XP'];
-            $UMC_USER['xp'] = umc_ws_convert_xp($json['Invoker']['XP'], $json['Invoker']['XPLevel']);
+            $UMC_USER['xp'] = umc_plugin_eventhandler('ws_user_init_xp', array('xp' => $json['Invoker']['XP'], 'xplevel' => $json['Invoker']['XPLevel']));
 
             //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
@@ -256,7 +256,7 @@ function umc_ws_get_vars() {
     }
     // import command arguments
     foreach ($_POST['args'] as $arg) {
-        $UMC_USER["args"] = filter_var(trim($arg), FILTER_SANITIZE_STRING);
+        $UMC_USER["args"][] = filter_var(trim($arg), FILTER_SANITIZE_STRING);
     }
 
     // online players; we do not retrieve userlevels etc here yet
