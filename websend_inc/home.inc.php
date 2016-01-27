@@ -318,7 +318,7 @@ function umc_home_update() {
     $name_update = '';
     if (isset($args[3])) {
         // check if the name already exists
-        $name_check = umc_home_count(trim($args[2]));
+        $name_check = umc_home_count(trim($args[3]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home with that name!");
         }
