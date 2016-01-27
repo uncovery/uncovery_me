@@ -304,29 +304,30 @@ function umc_home_update() {
     global $UMC_USER;
     $args = $UMC_USER['args'];
 
-    // check if replacing home is legit
+    // check if the home exists
     if (isset($args[2])) {
         // check if the name actually exists to replace
         $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
-            umc_error("{red}You do not have a home called " . $replacing . " to replace!");
+            umc_error("{red}You do not have a home called " . trim($args[2]) . " to replace!");
         }
         $replacing = umc_mysql_real_escape_string(trim($args[2]));
+    } else {
+        umc_error("{red}You need to specify the name of the home you want to update home!");
     }
 
     // change the home name as well?
     $name_update = '';
+    $log_addon = '';
     if (isset($args[3])) {
         // check if the name already exists
         $name_check = umc_home_count(trim($args[3]));
-        if ($name_check <> 1) {
-            umc_error("{red}You do not have a home with that name!");
+        if ($name_check == 1) {
+            umc_error("{red}You do already have a home with that name!");
         }
         $new_name = umc_mysql_real_escape_string(trim($args[3]));
         $name_update = " `name`=$new_name,";
         $log_addon = " and the name of the home was changed to " . $args[3];
-    } else {
-        umc_error("{red}You need to specify the name of your new home!");
     }
 
     $sql = "UPDATE minecraft_srvr.`homes` SET $name_update `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
