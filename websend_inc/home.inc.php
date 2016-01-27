@@ -61,7 +61,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         'help' => array(
             'short' => 'Update the location of a home (/sethome also works)',
             'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>",
-            'args' => '<home name>',
+            'args' => '<home name> <replacing home>',
         ),
         'function' => 'umc_home_update',
         'security' => array(
@@ -302,6 +302,21 @@ function umc_home_update() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
+    
+    // check if replacing home is legit
+    if (isset($args[3])) {
+        
+        // sanitise the input
+        $replacing= umc_mysql_real_escape_string(trim($args[3]));
+        
+        // check if the name actually exists to replace
+        $name_check = umc_home_count($replacing);
+        if ($name_check <> 1) {
+            umc_error("{red}You do not have a home called " . $replacing . " to replace!");
+        }
+        
+    }
+    
     // home name
     if (isset($args[2])) {
         $name = umc_mysql_real_escape_string(trim($args[2]));
@@ -313,8 +328,16 @@ function umc_home_update() {
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
-    $sql = "UPDATE minecraft_srvr.`homes` SET `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
+    
+    // either replace or update the db entry
+    if (isset($args[3])) {
+        $sql = "UPDATE minecraft_srvr.`homes` SET `name`='$name',`world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
+        . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
+    } else {
+        $sql = "UPDATE minecraft_srvr.`homes` SET `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$name LIMIT 1;";
+    }
+    
     umc_mysql_query($sql, true);
     umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]}!");
     umc_echo("The coordinates of home {$args[2]} were updated to the current location!");
