@@ -539,7 +539,18 @@ function umc_donation_monthly_target() {
     return $out;
 }
 
-function umc_donation_level($user, $debug = false) {
+/**
+ * Check and update the donation level for a user.
+ * WE have a down_only choice here so that absent users can have their donations
+ * expired, but they cannot be upgraded after their last login
+ *
+ * @global type $UMC_SETTING
+ * @param type $user
+ * @param boolean $debug
+ * @param type $down_only
+ * @return boolean
+ */
+function umc_donation_level($user, $debug = false, $down_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $U = umc_uuid_getboth($user);
@@ -616,14 +627,17 @@ function umc_donation_level($user, $debug = false) {
         $debug_txt .= "User has right level, nothing to do\n";
         return false; // bail if no change needed
     } else {
-        // we have a change in level, let's get an error report
+        // we have a change in level
         $debug = true;
+    }
+    if ($change > 0 && $down_only) {
+        // we do not allow upgrades this time, only downgrades
+        return false;
     }
 
     $debug_txt .= "User will change $change levels\n";
 
     // get currect rank index
-
     $debug_txt .= "Current Rank index = $cur_lvl\n";
 
     // calculate base level
