@@ -565,10 +565,9 @@ function umc_do_deposit_internal($all = false) {
  * @param type $userlevel
  * @return type
  */
-function umc_depositbox_checkspace($uuid, $userlevel = false) {
-    global $UMC_SETTING;
-    // don't we use the userlevel?
-    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
+function umc_depositbox_checkspace($uuid) {
+    $sql = "SELECT * FROM minecraft_iconomy.deposit 
+        WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
     $data = umc_mysql_fetch_all($sql);
     $count = count($data);
     return $count;
