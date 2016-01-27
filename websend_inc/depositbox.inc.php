@@ -118,7 +118,8 @@ $WS_INIT['depositbox'] = array(
         'top' => true,
         'security' => array(
             'users' => array( 'uncovery'),
-         ),
+        ),
+    ),
 );
 
 // settings array to hold maximum numbers of purchasable homes
@@ -566,7 +567,7 @@ function umc_do_deposit_internal($all = false) {
  */
 function umc_depositbox_checkspace($uuid, $userlevel = false) {
     global $UMC_SETTING;
-
+    // don't we use the userlevel?
     $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
     $data = umc_mysql_fetch_all($sql);
     $count = count($data);
@@ -580,8 +581,7 @@ function umc_depositbox_convert() {
     $all_active_users = umc_get_active_members();
     
     // iterate each user
-    foreach ($all_active_members as $uuid => username) {
-        
+    foreach ($all_active_users as $uuid => $username) {
         $userlevel = umc_get_uuid_level($uuid);
         $currentmax = $UMC_SETTING['depositbox_limit'][$userlevel];
         
@@ -592,11 +592,10 @@ function umc_depositbox_convert() {
         
         // add extra slots if required to bring up to maximum
         while ($count < $currentmax){
-            
             // create blank reusable entries
             $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
                     VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql, true);
             $count++;
             
         }
