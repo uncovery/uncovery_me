@@ -222,12 +222,11 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $members_form = umc_get_member_form($lot, $form);
         $flags_form = umc_get_flag_form($lot, $form);
         $lot_change_form = umc_get_lot_change_form($lot, $form);
-        $image = $lot_data['tile'];
+        $image = umc_lot_get_tile($lot);
 
-        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" class=\"lotform$class\" method=\"POST\">\n"
+        $out .= "<a name=\"$lot\"></a><form style=\"overflow:auto;\" action=\"#$lot\" class=\"lotform$class\" method=\"POST\">\n"
             . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div class=\"imgdiv\" style=\"width:{$lot_size}px; height:{$lot_size}px;\">$image</div>\n"
-            . "<div style=\"margin-left:{$lot_size}px; min-height:{$lot_size}px;\"><p><strong>Lot:</strong> $lot$button</p>\n"
+            . "<div>$image<p><strong>Lot:</strong> $lot$button</p>\n"
             . "<p><strong>Members:</strong> $members_form</p>\n"
             . "<p><strong>Flags:</strong> $flags_form</p>\n"
             . "<p>$lot_change_form</p></div>\n"
@@ -242,13 +241,12 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $form = false;
         $button = "<input class=\"submitbutton\" type=\"submit\" name=\"delete_dib\" value=\"Cancel dibs on $lot\">";
         $class = '';
-        $image = $lot_data['tile'];
+        $image = umc_lot_get_tile($lot);
         $action = $lot_data['action'];
 
         $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" class=\"lotform\" method=\"POST\">\n"
             . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div class=\"imgdiv\" style=\"width:{$lot_size}px; height:{$lot_size}px;\">$image</div>\n"
-            . "<div style=\"margin-left:{$lot_size}px; min-height:{$lot_size}px;\"><p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
+            . "<div>$image<p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
             . "<p><strong>Action:</strong> $action</p></div>\n"
             . "</form>\n";
     }
@@ -1377,7 +1375,7 @@ function umc_lot_reset_process() {
                 'dest_world' => "$dest_path/$world",
                 'remove_users' => true,
                 'reset_to' => $lot,
-                'user_shop_clean' => $owner_uuid,
+                'user_shop_clean' => false, // we do that via plugin-event
                 'dibs' => $lot_dibs,
                 'version_sql' => false,
                 'del_skyblock_inv' => false,
