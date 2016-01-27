@@ -96,7 +96,7 @@ function umc_users_downgrade_donators() {
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
     foreach ($result as $D) {
-        umc_donation_level($R[$D['uuid']], false, true);
+        umc_donation_level($D['uuid'], false, true);
     }
     return $R;
 }
