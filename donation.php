@@ -87,11 +87,9 @@ function umc_users_donators($uuid = false) {
  */
 function umc_users_downgrade_donators() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $uuid_str = "AND uuid <> void";
-
     $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
-        WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 $uuid_str
+        WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 AND uuid <> void
         GROUP BY uuid
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
