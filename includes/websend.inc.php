@@ -254,7 +254,10 @@ function umc_ws_get_vars() {
             $UMC_USER['current_item'] = $json['Invoker']['CurrentItemIndex'];
         }
     }
-    $UMC_USER["args"] = $_POST['args'];
+    foreach ($_POST['args'] as $arg) {
+        $UMC_USER["args"] = filter_var($arg, FILTER_SANITIZE_STRING);
+    }
+
     // online players; we do not retrieve userlevels etc here yet
     $players = array();
     if (isset($json['ServerStatus']['OnlinePlayers'])) {
