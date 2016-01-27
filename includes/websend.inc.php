@@ -120,66 +120,6 @@ function umc_ws_eventhandler($event) {
     }
 }
 
-// returns the TOTAL points of experience of a player based on level fraction and xp
-function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
-    $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
-    $total_xp_as_points = $points_in_levels + $points_in_fraction;
-    //XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
-    return $total_xp_as_points;
-
-}
-
-// returns the amount of exp needed to be obtained to advance from specific level as a points value
-function umc_ws_get_xptolvl($inputlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    // reference material
-    // http://minecraft.gamepedia.com/Experience
-    // conversions dated 12/01/2016 - v 1.8.9 accurate
-
-    $xp = 0;
-    if (is_numeric($inputlevel) && $inputlevel > 0) {
-        // levels 0-16
-        if ($inputlevel <= 16 && $inputlevel > 0) {
-            $xp = 2 * $inputlevel + 7;
-        }
-        // levels 17-31
-        if ($inputlevel >= 17 && $inputlevel <= 31) {
-            $xp = 5 * $inputlevel - 38;
-        }
-        // levels 32+
-        if ($inputlevel >= 32) {
-            $xp = 9 * $inputlevel - 158;
-        }
-    }
-    return $xp;
-}
-
-// returns the amount of exp points equivalent to input level
-function umc_ws_convert_xplvl_to_points($inputlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    // reference material
-    // http://minecraft.gamepedia.com/Experience
-    // conversions dated 12/01/2016 - v 1.8.9 accurate
-
-    $xp = 0;
-    if (is_numeric($inputlevel) && $inputlevel > 0) {
-        // levels 0-16
-        if ($inputlevel <= 16) {
-            $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
-        } else if ($inputlevel >= 17 && $inputlevel <= 31) {
-            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360;
-        } else if ($inputlevel >= 32) {
-            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220;
-        }
-    }
-    return $xp;
-}
-
-
 /**
  * This retrieves the websend environment variables and returns them
  */
@@ -498,7 +438,7 @@ function umc_ws_get_inv($inv_data) {
             } else if ($name == 'Durability') {
                 $name = 'data';
                 if ($value == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
-                    umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
+                    // umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
                     umc_echo("{red}You had a bugged item in your inventory, it had to be removed!");
                     XMPP_ERROR_trigger("Invalid item with -1 damage found!");
                 } else {
