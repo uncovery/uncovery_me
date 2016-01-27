@@ -52,38 +52,16 @@ function umc_db_take_item($table, $id, $amount, $player) {
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
             
             // if not a player to player transaction
-            if ($sid=='cancel00-depo-0000-0000-000000000000' ||
-                $sid=='cancel00-item-0000-0000-000000000000' ||
-                $sid=='cancel00-sell-0000-0000-000000000000' ||
-                $sid=='reset000-lot0-0000-0000-000000000000' ||
-                $sid=='lottery0-lot0-0000-0000-000000000000' ||
-                $sid=='abandone-0000-0000-0000-000000000000' ||
-                $sid=='contest0-refu-0000-0000-000000000000' ||
-                $sid=='shop0000-0000-0000-0000-000000000000' ||
-                $sid=='Console0-0000-0000-0000-000000000000' ||
-                $sid=='Server00-0000-0000-0000-000000000000') {
-            
-                $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
-                
+            if (strpos($sid, '-0000-0000-000000000000')) {
+                $del_sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+                umc_mysql_execute_query($del_sql);
             } else {
-            
                 $new_sender_uuid = 'reusable-0000-0000-0000-000000000000';
-                $date = date();
+                $update_sql = "UPDATE minecraft_iconomy.deposit 
+                    SET sender_uuid='$new_sender_uuid', damage=0, amount=0, meta='', item_name='', date=NOW()
+                    WHERE id=$id LIMIT 1";
+                umc_mysql_execute_query($update_sql);
                 
-                $action = "UPDATE minecraft_iconomy.deposit ";
-                $details = "SET "
-                    . "sender_uuid='$new_sender_uuid',"
-                    . "damage=0,"
-                    . "amount=0,"
-                    . "meta='',"
-                    . "item_name='',"
-                    . "date=NOW ";
-                
-                $condition = "WHERE id=$id ";
-                $limit = 'LIMIT 1';
-                
-                $sql = $action . $details . $condition . $limit;
-            
                 //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
                 umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
             }
