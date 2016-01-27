@@ -23,7 +23,7 @@
 
 global $UMC_SETTING, $WS_INIT;
 
-$WS_INIT['bottlexp'] = array(  // the name of the plugin
+$WS_INIT['xp'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => false,
     'default' => array(
