@@ -2,6 +2,8 @@
 
 include('/home/minecraft/server/bin/index_wp.php');
 
+umc_users_downgrade_donators();
+
 // reset all user lots
 umc_lot_reset_process();
 
