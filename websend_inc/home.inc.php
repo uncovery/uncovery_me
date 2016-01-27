@@ -305,25 +305,26 @@ function umc_home_update() {
     $args = $UMC_USER['args'];
 
     // check if replacing home is legit
-    if (isset($args[3])) {
+    if (isset($args[2])) {
         // check if the name actually exists to replace
-        $name_check = umc_home_count(trim($args[3]));
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home called " . $replacing . " to replace!");
         }
-        $replacing= umc_mysql_real_escape_string(trim($args[3]));
+        $replacing = umc_mysql_real_escape_string(trim($args[2]));
     }
 
     // change the home name as well?
     $name_update = '';
-    if (isset($args[2])) {
+    if (isset($args[3])) {
         // check if the name already exists
         $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home with that name!");
         }
-        $new_name = umc_mysql_real_escape_string(trim($args[2]));
+        $new_name = umc_mysql_real_escape_string(trim($args[3]));
         $name_update = " `name`=$new_name,";
+        $log_addon = " and the name of the home was changed to " . $args[3];
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -332,8 +333,8 @@ function umc_home_update() {
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
 
     umc_mysql_query($sql, true);
-    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]}!");
-    umc_echo("The coordinates of home {$args[2]} were updated to the current location!");
+    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]} $log_addon!");
+    umc_echo("The coordinates of home {$args[2]} were updated to the current location $log_addon!");
 }
 
 function umc_home_rename() {
