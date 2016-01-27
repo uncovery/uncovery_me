@@ -61,7 +61,7 @@ function umc_users_donators($uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid_str = '';
     if ($uuid) {
-        $uuid_str = "AND uuid='$uuid' ";
+        $uuid_str = "AND uuid=" . umc_mysql_real_escape_string($uuid);
     }
     $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
