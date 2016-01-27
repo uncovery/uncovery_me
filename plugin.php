@@ -85,7 +85,7 @@ function umc_wsplg_dispatch($module) {
 
     if (isset($command['function']) && function_exists($command['function'])) {
         if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
-            
+
             // restricts command to the named worlds
             if(isset($command['security']['worlds'])) {
                 if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
@@ -99,14 +99,14 @@ function umc_wsplg_dispatch($module) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($command['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $command['security']['users'])) {
                     umc_error('{red}That command is restricted');
                 }
             }
-            
+
         }
         $function = $command['function'];
         $function();
@@ -149,21 +149,21 @@ function umc_show_help($args = false) {
             umc_echo($command['help']['long'], true);
             foreach ($WS_INIT[$command_name] as $cmd => $cmd_data) {
                 if (!in_array($cmd, $non_commands)) {
-                    
+
                     // This command is restricted to a user level or higher
                     if (isset($cmd_data['security']['level']) && $player != 'uncovery') {
                         if (!umc_rank_check($userlevel, $cmd_data['security']['level'])) {
                             continue;
                         }
                     }
-                    
+
                     // restricts command to specific users (for testing / debug / collaboration)
                     if(isset($cmd_data['security']['users'])) {
                         if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
                             continue;
                         }
                     }
-                    
+
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
                         $plugin_name = $command_name . ' ';
                     }
@@ -196,21 +196,21 @@ function umc_show_help($args = false) {
         }
     } else { // Show general help.
         foreach ($WS_INIT as $plugin => $cmd_data) {
-            
+
             // This command is restricted to a user level or higher
             if (isset($cmd_data['default']['security']['level']) && $player != 'uncovery') {
                 if(!umc_rank_check($userlevel, $cmd_data['default']['security']['level'])) {
                     continue;
                 }
             }
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($cmd_data['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
                     continue;
                 }
             }
-            
+
             umc_echo("{green}/$plugin{gray} - " . $cmd_data['default']['help']['short'], true);
         }
         umc_echo("{gray}Use {yellow}/helpme <command>{gray} for more details.", true);
@@ -258,14 +258,14 @@ function umc_plugin_web_help($one_plugin = false) {
                 continue;
             }
             $sec = '';
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($value['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $value['security']['users'])) {
                     continue;
                 }
             }
-            
+
             if (isset($value['security']['level'])) {
                 if(!umc_rank_check($userlevel, $value['security']['level'])) {
                     continue;
@@ -273,7 +273,7 @@ function umc_plugin_web_help($one_plugin = false) {
                     $sec = "\n<br><smaller>Required Userlevel: {$value['security']['level']}</smaller>";
                 }
             }
-            
+
             $args = '';
             if (isset($value['help']['args'])) {
                 $args = htmlentities($value['help']['args']);
@@ -300,4 +300,50 @@ function umc_plugin_web_help($one_plugin = false) {
     return $out;
 }
 
-?>
+function umc_plugin_eventhandler($event, $parameters = false) {
+    global $WS_INIT;
+    // define list of available events for security
+    $available_events = array(
+        // server events
+        'server_pre_reboot',
+        'server_reboot',
+        'server_post_reboot',
+        // user events
+        'user_delete',
+        'user_banned',
+        'user_registered',
+        'user_inactive',
+        // websend events, do not have parameters usually since
+        // websend sends stuff via $UMC_USER
+        'PlayerPreLoginEvent',
+        'PlayerJoinEvent',
+        'PlayerQuitEvent',
+        'PlayerChangedWorldEvent',
+        'PlayerGameModeChangeEvent',
+        'PlayerPortalEvent',
+        'PlayerRespawnEvent',
+        'PlayerDeathEvent',
+        'EntityDeathEvent',
+        'AsyncPlayerPreLoginEvent',
+    );
+    if (!in_array($event, $available_events)) {
+        XMPP_ERROR_trigger("received incoming event $event which is not available");
+        // return false;
+    }
+    foreach ($WS_INIT as $data) {
+        // check if there is a setting for the current event
+        if (($data['events'] != false) && (isset($data['events'][$event]))) {
+            // execute function
+            $function = $data['events'][$event];
+            if (!is_string($function) || !function_exists($function)) {
+                XMPP_ERROR_trigger("plugin eventhandler failed event $event");
+            }
+            // execute the function, optionally with parameters
+            if ($parameters) {
+                $function($parameters);
+            } else {
+                $function();
+            }
+        }
+    }
+}
