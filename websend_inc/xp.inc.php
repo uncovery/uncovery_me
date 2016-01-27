@@ -42,6 +42,7 @@ $WS_INIT['bottlexp'] = array(  // the name of the plugin
         'security' => array(
             'worlds' => array('empire', 'kingdom', 'skylands', 'aether', 'the_end'),
         ),
+        'top' => true,
     ),
     /*'buyxp' => array( // this is the base command if there are no other commands
         'help' => array(
