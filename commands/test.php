@@ -1,9 +1,11 @@
 <?php
 
 // /home/minecraft/server/chunk/copychunk /home/minecraft/server/bukkit/city /home/minecraft/server/bukkit_admin/kingdom -22 -82 100 25 138 -119 260 -12
-include_once('/home/minecraft/server/bin/index_wp.php');
-umc_restore_from_backup();
 
+include_once('/home/minecraft/server/bin/index_wp.php');
+// umc_restore_from_backup();
+$cmd = "ch qm n This is a test&f";
+umc_exec_command($cmd, 'asConsole');
 /*
     $good_map = "/disk2/backup/bukkit_164/empire";
     $bad_map = "/home/minecraft/server/bukkit/empire";
