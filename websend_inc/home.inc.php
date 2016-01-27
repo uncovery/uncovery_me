@@ -60,8 +60,9 @@ $WS_INIT['homes'] = array(  // the name of the plugin
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Update the location of a home (/sethome also works)',
-            'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>",
-            'args' => '<home name> <replacing home>',
+            'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>."
+                . " You can rename the home at the same time by optionally adding a new name after the current name.",
+            'args' => '<home name> [new name]',
         ),
         'function' => 'umc_home_update',
         'security' => array(
@@ -71,7 +72,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
     'rename' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Change the name of a home',
-            'long' => "This will update the name of an existing home.",
+            'long' => "This will change the name of an existing home.",
             'args' => '<home name> <new name>',
         ),
         'function' => 'umc_home_rename',
@@ -169,11 +170,11 @@ function umc_home_warp() {
             $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' LIMIT 1;";
         }
     } else {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
-        $home_count = umc_home_count($name);
+        $home_count = umc_home_count(trim($args[2]));
         if ($home_count < 1) {
             umc_error("{red}You do not have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
         $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' AND name=$name;";
     }
 
@@ -229,12 +230,12 @@ function umc_home_buy() {
 
     // sanitise input and check if home name valid
     if (isset($args[2])) {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
-        $name_check = umc_home_count($name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check > 0) {
             umc_error("{red}You already have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -278,11 +279,11 @@ function umc_home_sell() {
     if (!isset($args[2])) {
         umc_error("{red}You need to specify which home you wish to sell");
     } else {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
-        $name_check = umc_home_count($name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check == 0) {
             umc_error("{red}You do not have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
     }
 
     umc_money(false, $UMC_USER['uuid'], $cost);
@@ -302,42 +303,34 @@ function umc_home_update() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
-    
+
     // check if replacing home is legit
     if (isset($args[3])) {
-        
-        // sanitise the input
-        $replacing= umc_mysql_real_escape_string(trim($args[3]));
-        
         // check if the name actually exists to replace
-        $name_check = umc_home_count($replacing);
+        $name_check = umc_home_count(trim($args[3]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home called " . $replacing . " to replace!");
         }
-        
+        $replacing= umc_mysql_real_escape_string(trim($args[3]));
     }
-    
-    // home name
+
+    // change the home name as well?
+    $name_update = '';
     if (isset($args[2])) {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
-        $name_check = umc_home_count($name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home with that name!");
         }
+        $new_name = umc_mysql_real_escape_string(trim($args[2]));
+        $name_update = " `name`=$new_name,";
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
-    
-    // either replace or update the db entry
-    if (isset($args[3])) {
-        $sql = "UPDATE minecraft_srvr.`homes` SET `name`='$name',`world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
+
+    $sql = "UPDATE minecraft_srvr.`homes` SET $name_update `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
-    } else {
-        $sql = "UPDATE minecraft_srvr.`homes` SET `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
-        . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$name LIMIT 1;";
-    }
-    
+
     umc_mysql_query($sql, true);
     umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]}!");
     umc_echo("The coordinates of home {$args[2]} were updated to the current location!");
@@ -349,17 +342,17 @@ function umc_home_rename() {
     $args = $UMC_USER['args'];
     // home name
     if (isset($args[2]) && isset($args[3])) {
-        $old_name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
-        $name_check = umc_home_count($old_name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home with that name!");
         }
-        $new_name = umc_mysql_real_escape_string(trim($args[3]));
-        $new_name_check = umc_home_count($new_name);
+        $old_name = umc_mysql_real_escape_string(trim($args[2]));
+        $new_name_check = umc_home_count(trim($args[3]));
         if ($new_name_check == 1) {
             umc_error("{red}You already have a home with that name!");
         }
+        $new_name = umc_mysql_real_escape_string(trim($args[3]));
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -382,7 +375,7 @@ function umc_home_count($name = false, $uuid_req = false) {
     global $UMC_USER;
     $name_sql = '';
     if ($name) {
-        $name_sql = "AND name=$name";
+        $name_sql = "AND name=" . umc_mysql_real_escape_string($name);
     }
     $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='$uuid' $name_sql;";
     $D = umc_mysql_fetch_all($sql);
