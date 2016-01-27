@@ -303,7 +303,7 @@ function umc_plugin_web_help($one_plugin = false) {
 function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WS_INIT;
-    // define list of available events for security
+    // define list of available events for security, it's questionable if we need this list.
     $available_events = array(
         // server events
         'server_pre_reboot',
@@ -319,6 +319,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         'PlayerPreLoginEvent',
         'PlayerJoinEvent',
         'PlayerQuitEvent',
+        'PlayerKickEvent',
         'PlayerChangedWorldEvent',
         'PlayerGameModeChangeEvent',
         'PlayerPortalEvent',
@@ -326,6 +327,8 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         'PlayerDeathEvent',
         'EntityDeathEvent',
         'AsyncPlayerPreLoginEvent',
+        // websend custom events
+        'ws_user_init_xp',
     );
     if (!in_array($event, $available_events)) {
         XMPP_ERROR_trigger("received incoming event $event which is not available");
@@ -341,12 +344,12 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             }
             // execute the function, optionally with parameters
             if ($parameters) {
-                $function($parameters);
+                return $function($parameters);
                 $params_txt = implode(", ", $parameters);
                 umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
             } else {
                 umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
-                $function();
+                return $function();
             }
         }
     }
