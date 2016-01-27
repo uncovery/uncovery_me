@@ -658,7 +658,7 @@ function umc_donation_level($user, $debug = false, $down_only = false) {
     umc_log('Donations', 'User Level de/promotion', "User $username upgraded from $level to $new_rank");
 
     if ($debug) {
-        XMPP_ERROR_send_msg($debug_txt);
+        XMPP_ERROR_trigger($debug_txt);
     }
     return $donation_level_rounded; // . "($donation_level $current - $future - $change)";
 }
