@@ -566,10 +566,10 @@ function umc_do_deposit_internal($all = false) {
  * @return type
  */
 function umc_depositbox_checkspace($uuid) {
-    $sql = "SELECT * FROM minecraft_iconomy.deposit 
+    $sql = "SELECT count(id) as counter FROM minecraft_iconomy.deposit 
         WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
-    $data = umc_mysql_fetch_all($sql);
-    $count = count($data);
+    $D = umc_mysql_fetch_all($sql);
+    $count = $D[0]['counter'];
     return $count;
 }
 
