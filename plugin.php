@@ -301,6 +301,7 @@ function umc_plugin_web_help($one_plugin = false) {
 }
 
 function umc_plugin_eventhandler($event, $parameters = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WS_INIT;
     // define list of available events for security
     $available_events = array(
@@ -341,7 +342,10 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             // execute the function, optionally with parameters
             if ($parameters) {
                 $function($parameters);
+                $params_txt = implode(", ", $parameters);
+                umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
             } else {
+                umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
                 $function();
             }
         }
