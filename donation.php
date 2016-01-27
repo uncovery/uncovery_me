@@ -59,9 +59,9 @@ function umc_donationform() {
  */
 function umc_users_donators($uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $uuid_str = '';
+    $uuid_str = "AND uuid <> void";
     if ($uuid) {
-        $uuid_str = "AND uuid=" . umc_mysql_real_escape_string($uuid);
+        $uuid_str = "AND uuid = " . umc_mysql_real_escape_string($uuid);
     }
     $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
@@ -318,7 +318,8 @@ function umc_process_donation() {
 function umc_donation_java_chart() {
     global $UMC_SETTING;
 
-    $sql_chart = "SELECT SUM(amount) as monthly, year(date) as date_year, month(date) as date_month FROM minecraft_srvr.`donations` GROUP BY YEAR(date), MONTH(date);";
+    $sql_chart = "SELECT SUM(amount) as monthly, year(date) as date_year, month(date) as date_month
+        FROM minecraft_srvr.`donations` GROUP BY YEAR(date), MONTH(date);";
     $D = umc_mysql_fetch_all($sql_chart);
 
     $lastdate = "2010-11";
