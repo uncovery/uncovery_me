@@ -47,13 +47,52 @@ function umc_db_take_item($table, $id, $amount, $player) {
         }
     } else { // take from deposit
         if ($newstock == 0) {
-            $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
-            umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
+            
+            $sid = $amount_row['sender_uuid'];
+            //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+            
+            // if not a player to player transaction
+            if ($sid=='cancel00-depo-0000-0000-000000000000' ||
+                $sid=='cancel00-item-0000-0000-000000000000' ||
+                $sid=='cancel00-sell-0000-0000-000000000000' ||
+                $sid=='reset000-lot0-0000-0000-000000000000' ||
+                $sid=='lottery0-lot0-0000-0000-000000000000' ||
+                $sid=='abandone-0000-0000-0000-000000000000' ||
+                $sid=='contest0-refu-0000-0000-000000000000' ||
+                $sid=='shop0000-0000-0000-0000-000000000000' ||
+                $sid=='Console0-0000-0000-0000-000000000000' ||
+                $sid=='Server00-0000-0000-0000-000000000000') {
+            
+                $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+                
+            } else {
+            
+                $new_sender_uuid = 'reusable-0000-0000-0000-000000000000';
+                $date = date();
+                
+                $action = "UPDATE minecraft_iconomy.deposit ";
+                $details = "SET "
+                    . "sender_uuid='$new_sender_uuid',"
+                    . "damage=0,"
+                    . "amount=0,"
+                    . "meta='',"
+                    . "item_name='',"
+                    . "date=NOW "
+                $condition = "WHERE id=$id ";
+                $limit = 'LIMIT 1';
+                
+                $sql = $action . $details . $condition . $limit;
+            
+                //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
+                umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
+            }
+        
         } else {
             $sql = "UPDATE minecraft_iconomy.deposit SET amount=$newstock WHERE id='$id';";
             umc_log('shop', 'deposit_adjust', "Changed deposit level for ID $id from {$amount_row['amount']} to $newstock");
         }
     }
+    
     umc_mysql_query($sql,true);
 
     // check stock levels
