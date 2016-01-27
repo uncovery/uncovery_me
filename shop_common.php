@@ -53,15 +53,13 @@ function umc_db_take_item($table, $id, $amount, $player) {
             
             // if not a player to player transaction
             if ($sid !== 'reusable-0000-0000-0000-000000000000' && strpos($sid, '-0000-0000-000000000000')) {
-                $del_sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+                $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
                 umc_mysql_execute_query($del_sql);
             } else {
                 $new_sender_uuid = 'reusable-0000-0000-0000-000000000000';
-                $update_sql = "UPDATE minecraft_iconomy.deposit 
+                $sql = "UPDATE minecraft_iconomy.deposit 
                     SET sender_uuid='$new_sender_uuid', damage=0, amount=0, meta='', item_name='', date=NOW()
                     WHERE id=$id LIMIT 1";
-                umc_mysql_execute_query($update_sql);
-                
                 //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
                 umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
             }
@@ -72,7 +70,7 @@ function umc_db_take_item($table, $id, $amount, $player) {
         }
     }
     
-    umc_mysql_query($sql,true);
+    umc_mysql_execute_query($sql);
 
     // check stock levels
 
