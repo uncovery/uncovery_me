@@ -63,11 +63,11 @@ function umc_users_donators($uuid = false) {
     if ($uuid) {
         $uuid_str = "AND uuid='$uuid' ";
     }
-    $sql = 'SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover '
-        . 'FROM minecraft_srvr.donations '
-        . 'WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 ' . $uuid_str
-        . 'GROUP BY uuid '
-        . 'ORDER BY `leftover` DESC';
+    $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
+        FROM minecraft_srvr.donations
+        WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 $uuid_str
+        GROUP BY uuid
+        ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
     if ($uuid && count($result) == 0) {
         return false;
