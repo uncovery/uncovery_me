@@ -580,9 +580,9 @@ function umc_depositbox_convert() {
     $all_active_users = umc_get_active_members();
     
     // iterate each user
-    foreach ($all_active_members as $member_uuid) {
+    foreach ($all_active_members as $uuid => username) {
         
-        $userlevel = umc_get_uuid_level($member_uuid);
+        $userlevel = umc_get_uuid_level($uuid);
         $currentmax = $UMC_SETTING['depositbox_limit'][$userlevel];
         
         // get the current number of deposit slots with contents
@@ -595,7 +595,7 @@ function umc_depositbox_convert() {
             
             // create blank reusable entries
             $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
-                    VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$member_uuid', 0, '');";
+                    VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');";
             umc_mysql_query($sql, true);
             $count++;
             
