@@ -88,24 +88,14 @@ function umc_websend_main() {
  * This handles automated WSEVENTS events for plugins.
  */
 function umc_ws_eventhandler($event) {
-    global $WS_INIT, $UMC_USER;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $player  = $UMC_USER['username'];
+    
+    // run plugin events
+    umc_plugin_eventhandler($event);
 
-    // iterate all plugins
-    foreach ($WS_INIT as $data) {
-        // check if there is a setting for the current event
-        if (($data['events'] != false) && (isset($data['events'][$event]))) {
-            // execute function
-            $function = $data['events'][$event];
-            if (!is_string($function)) {
-                XMPP_ERROR_trigger("plugin eventhandler failed event $event");
-            }
-            // execute the function
-            $function();
-        }
-    }
     // non-plugin events
     switch ($event) {
         case 'PlayerQuitEvent':
