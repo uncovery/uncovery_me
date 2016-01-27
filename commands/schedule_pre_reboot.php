@@ -2,6 +2,8 @@
 
 include('/home/minecraft/server/bin/index_wp.php');
 
+umc_plugin_eventhandler('server_pre_reboot');
+
 umc_users_downgrade_donators();
 
 // reset all user lots
