@@ -25,7 +25,7 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['xp'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array('ws_user_init_xp' => 'umc_xp_init_user'),
     'default' => array(
         'help' => array(
             'title' => 'Bottle XP',  // give it a friendly title
@@ -86,6 +86,69 @@ function umc_xp_bottle(){
     umc_echo("{green} You deposited $bottle_count bottles into your deposit box.");
 
 }
+
+// returns the TOTAL points of experience of a player based on level fraction and xp
+function umc_xp_init_user($params){
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $rawlevelfraction = $params['xp'];
+    $rawlevel= $params['xplevel'];
+    
+    $points_in_levels = umc_xp_lvl_to_points($rawlevel);
+    $points_in_fraction = round(umc_xp_pointstolvl($rawlevel) * $rawlevelfraction);
+    $total_xp_as_points = $points_in_levels + $points_in_fraction;
+    //XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
+    return $total_xp_as_points;
+}
+
+
+// returns the amount of exp needed to be obtained to advance from specific level as a points value
+function umc_xp_pointstolvl($inputlevel){
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // reference material
+    // http://minecraft.gamepedia.com/Experience
+    // conversions dated 12/01/2016 - v 1.8.9 accurate
+
+    $xp = 0;
+    if (is_numeric($inputlevel) && $inputlevel > 0) {
+        // levels 0-16
+        if ($inputlevel <= 16 && $inputlevel > 0) {
+            $xp = 2 * $inputlevel + 7;
+        }
+        // levels 17-31
+        if ($inputlevel >= 17 && $inputlevel <= 31) {
+            $xp = 5 * $inputlevel - 38;
+        }
+        // levels 32+
+        if ($inputlevel >= 32) {
+            $xp = 9 * $inputlevel - 158;
+        }
+    }
+    return $xp;
+}
+
+
+// returns the amount of exp points equivalent to input level
+function umc_xp_lvl_to_points($inputlevel){
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    // reference material
+    // http://minecraft.gamepedia.com/Experience
+    // conversions dated 12/01/2016 - v 1.8.9 accurate
+
+    $xp = 0;
+    if (is_numeric($inputlevel) && $inputlevel > 0) {
+        // levels 0-16
+        if ($inputlevel <= 16) {
+            $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
+        } else if ($inputlevel >= 17 && $inputlevel <= 31) {
+            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360;
+        } else if ($inputlevel >= 32) {
+            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220;
+        }
+    }
+    return $xp;
+}
+
 
 /**
  * Buy XP in-game // function is still working with usernames instead of UUID since
