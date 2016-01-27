@@ -255,7 +255,7 @@ function umc_ws_get_vars() {
         }
     }
     foreach ($_POST['args'] as $arg) {
-        $UMC_USER["args"] = filter_var($arg, FILTER_SANITIZE_STRING);
+        $UMC_USER["args"] = filter_var(trim($arg), FILTER_SANITIZE_STRING);
     }
 
     // online players; we do not retrieve userlevels etc here yet
