@@ -254,6 +254,7 @@ function umc_ws_get_vars() {
             $UMC_USER['current_item'] = $json['Invoker']['CurrentItemIndex'];
         }
     }
+    // import command arguments
     foreach ($_POST['args'] as $arg) {
         $UMC_USER["args"] = filter_var(trim($arg), FILTER_SANITIZE_STRING);
     }
