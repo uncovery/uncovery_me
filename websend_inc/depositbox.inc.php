@@ -108,6 +108,17 @@ $WS_INIT['depositbox'] = array(
             'long' => 'Displays detailed output relating to depositbox pricing, currently owned box counts and maximum ownable box counts.'
         ),
     ),
+    'convert' => array(
+        'function' => 'umc_depositbox_convert',
+        'help' => array(
+            'args' => '',
+            'short' => 'converts db;',
+            'long' => 'converts db to new format;'
+        ),
+        'top' => true,
+        'security' => array(
+            'users' => array( 'uncovery'),
+         ),
 );
 
 // settings array to hold maximum numbers of purchasable homes
@@ -162,7 +173,19 @@ function umc_depositbox_count($uuid_req = false) {
         $uuid = $uuid_req;
     }
         
-    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' GROUP BY recipient_uuid;";
+    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' "
+        . "AND sender_uuid<>'cancel00-depo-0000-0000-000000000000' "
+        . "AND sender_uuid<>'cancel00-item-0000-0000-000000000000' "
+        . "AND sender_uuid<>'cancel00-sell-0000-0000-000000000000' "
+        . "AND sender_uuid<>'reset000-lot0-0000-0000-000000000000' "
+        . "AND sender_uuid<>'lottery0-lot0-0000-0000-000000000000' "
+        . "AND sender_uuid<>'abandone-0000-0000-0000-000000000000' "
+        . "AND sender_uuid<>'contest0-refu-0000-0000-000000000000' "
+        . "AND sender_uuid<>'shop0000-0000-0000-0000-000000000000' "
+        . "AND sender_uuid<>'Console0-0000-0000-0000-000000000000' "
+        . "AND sender_uuid<>'Server00-0000-0000-0000-000000000000' "
+        . "GROUP BY recipient_uuid;";
+        
     $D = umc_mysql_fetch_all($sql);
     $boxes = $D[0]['count'];
     return $boxes;
@@ -207,7 +230,7 @@ function umc_show_depotlist($silent = false) {
         $web = true;
     }
 
-    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid' ORDER BY id, damage, amount DESC;";
+    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND sender_uuid<>'reusable-0000-0000-0000-000000000000' ORDER BY id, damage, amount DESC;";
     $D = umc_mysql_fetch_all($sql);
     $num_rows = count($D);
     $web_arr = array();
@@ -544,15 +567,42 @@ function umc_do_deposit_internal($all = false) {
 function umc_depositbox_checkspace($uuid, $userlevel = false) {
     global $UMC_SETTING;
 
-    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';";
+    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
     $data = umc_mysql_fetch_all($sql);
     $count = count($data);
-    if (!$userlevel) {
-        $userlevel = umc_get_uuid_level($uuid);
+    return $count;
+}
+
+function umc_depositbox_convert() {
+    global $UMC_SETTING;
+    
+    // retrieve all users
+    $all_active_users = umc_get_active_members();
+    
+    // iterate each user
+    foreach ($all_active_members as $member_uuid) {
+        
+        $userlevel = umc_get_uuid_level($member_uuid);
+        $currentmax = $UMC_SETTING['depositbox_limit'][$userlevel];
+        
+        // get the current number of deposit slots with contents
+        $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';";
+        $data = umc_mysql_fetch_all($sql);
+        $count = count($data);
+        
+        // add extra slots if required to bring up to maximum
+        while ($count < $currentmax){
+            
+            // create blank reusable entries
+            $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+                    VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$member_uuid', 0, '');";
+            umc_mysql_query($sql, true);
+            $count++;
+            
+        }
+        
     }
-    $allowed = $UMC_SETTING['depositbox_limit'][$userlevel];
-    $remaining = $allowed - $count;
-    return $remaining;
+    
 }
 
 
