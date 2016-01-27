@@ -215,6 +215,7 @@ function umc_mod_ban() {
     umc_echo("Thanks for the ban! An email with a logfile has been sent to the admin.", true);
     umc_footer(true);
     umc_user_ban($uuid, $reason);
+    // trigger plugin-even userban
 }
 
 
