@@ -623,7 +623,7 @@ function umc_depositbox_consolidate() {
 		    AND damage='{$row['damage']}
 		    AND meta='{$row['meta']}
 		    AND recipient_uuid='$uuid'
-		    AND sender_uuid !='$uuid';;";
+		    AND sender_uuid !='$uuid';";
             $fix_data = umc_mysql_fetch_all($sql_fix);
             if (count($fix_data) > 0) {
                 $target_boxes++;
