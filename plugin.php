@@ -344,9 +344,9 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             }
             // execute the function, optionally with parameters
             if ($parameters) {
-                return $function($parameters);
                 $params_txt = implode(", ", $parameters);
                 umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
+                return $function($parameters);
             } else {
                 umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
                 return $function();
