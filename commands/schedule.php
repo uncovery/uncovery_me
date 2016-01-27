@@ -2,6 +2,8 @@
 
 include('/home/minecraft/server/bin/index_wp.php');
 
+umc_plugin_eventhandler('server_post_reboot');
+
 run_umc_scheduler();
 
 function run_umc_scheduler() {
