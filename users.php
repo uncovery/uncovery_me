@@ -651,9 +651,6 @@ function umc_user_directory() {
             return "User is not active!";
         }
 
-        // check user for downgrade in donator status
-        umc_donation_level($uuid, false, true);
-
         // user icon
         $O['User'] = get_avatar($wordpress_id, $size = '96')
             . "<p><strong>Username:</strong> $username</p>\n"
