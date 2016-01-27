@@ -54,7 +54,6 @@ function umc_db_take_item($table, $id, $amount, $player) {
             // if not a player to player transaction
             if ($sid !== 'reusable-0000-0000-0000-000000000000' && strpos($sid, '-0000-0000-000000000000')) {
                 $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
-                umc_mysql_execute_query($del_sql);
             } else {
                 $new_sender_uuid = 'reusable-0000-0000-0000-000000000000';
                 $sql = "UPDATE minecraft_iconomy.deposit 
