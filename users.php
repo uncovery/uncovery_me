@@ -474,6 +474,15 @@ function umc_user_email($username) {
 }
 
 // get all user lots and the image link
+/**
+ * this function is deprecated and moved to the lots plugin
+ * IF you find this function to be used anywhere, please point to the new function instead.
+ * Also please do not update/change this, instead use the new function in lot.inc.php
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
 function umc_user_getlots($uuid, $world = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // worldguard stores everything in lower case.
