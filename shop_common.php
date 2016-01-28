@@ -34,7 +34,7 @@
 function umc_db_take_item($table, $id, $amount, $player) {
     // $uuid = umc_uuid_getone($player, 'uuid');
 
-    $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
+    $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
     $amount_row = $D[0];
     $newstock = $amount_row['amount'] - $amount;
     if ($table == 'stock') {
@@ -47,28 +47,28 @@ function umc_db_take_item($table, $id, $amount, $player) {
         }
     } else { // take from deposit
         if ($newstock == 0) {
-            
+
             $sid = $amount_row['sender_uuid'];
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
-            
+
             // if not a player to player transaction
             if ($sid !== 'reusable-0000-0000-0000-000000000000' && strpos($sid, '-0000-0000-000000000000')) {
                 $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
             } else {
                 $new_sender_uuid = 'reusable-0000-0000-0000-000000000000';
-                $sql = "UPDATE minecraft_iconomy.deposit 
+                $sql = "UPDATE minecraft_iconomy.deposit
                     SET sender_uuid='$new_sender_uuid', damage=0, amount=0, meta='', item_name='', date=NOW()
                     WHERE id=$id LIMIT 1";
                 //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
                 umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
             }
-        
+
         } else {
             $sql = "UPDATE minecraft_iconomy.deposit SET amount=$newstock WHERE id='$id';";
             umc_log('shop', 'deposit_adjust', "Changed deposit level for ID $id from {$amount_row['amount']} to $newstock");
         }
     }
-    
+
     umc_mysql_execute_query($sql);
 
     // check stock levels
@@ -136,7 +136,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
-    
+
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
@@ -152,7 +152,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
             return false;
         }
     }
-    
+
     // if item name is not set at all
     if (!isset($UMC_DATA[$item_name])) {
         XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text");
@@ -166,7 +166,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
     $damage_spacer = '';
     $mc_name = $item_name;
     $icon_ext = strtolower(pathinfo($item_arr['icon_url'], PATHINFO_EXTENSION));
-    
+
     if (isset($item_arr['damage'])) {
         $damage = umc_goods_damage_calc($item_data, $item_arr['damage']);
         if ($damage) {
@@ -177,7 +177,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
         $mc_name = $item_arr['subtypes'][$item_data]['name'];
         $icon_ext = strtolower(pathinfo($item_arr['subtypes'][$item_data]['icon_url'], PATHINFO_EXTENSION));
     }
-    
+
     $nice_name = umc_pretty_name($mc_name);
 
     $icon_file = "icons/$mc_name.$icon_ext";
