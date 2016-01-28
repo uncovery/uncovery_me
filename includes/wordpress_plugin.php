@@ -45,7 +45,9 @@ function umc_wp_init_plugins() {
     // make notification when new comment is made on post
     add_action('comment_post', 'umc_wp_notify_new_comment', 10, 2);
     // add additional CSS and JS
-    add_action( 'wp_enqueue_scripts', 'umc_wp_add_css_and_js' );
+    add_action('wp_enqueue_scripts', 'umc_wp_add_css_and_js');
+    add_action('admin_enqueue_scripts', 'umc_wp_add_css_and_js');
+
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     add_action('wp_footer', 'umc_wp_fingerprint_call');
