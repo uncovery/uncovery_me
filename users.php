@@ -622,9 +622,7 @@ function umc_user_ban($user, $reason) {
     $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `uuid`) VALUES ('$username','$reason', '$admin', '$uuid');";
     umc_mysql_query($sql, true);
     // remove shop inventory
-    umc_shop_cleanout_olduser($uuid);
-    // remove from teamspeak
-    umc_ts_clear_rights($uuid);
+    umc_plugin_eventhandler('user_banned', $uuid);
     umc_wp_ban_user($uuid);
 
     umc_log('mod', 'ban', "$admin banned $username/$uuid because of $reason");
