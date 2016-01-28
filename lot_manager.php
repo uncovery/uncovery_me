@@ -1563,11 +1563,9 @@ function umc_lot_manager_reset_lot($lot, $a) {
     // reset all lots
     $debug .= "Lot ready for reset!";
     $source_lot = $lot;
-    if ($a['user_shop_clean']) {
-        $debug .= " Shop cleanout user " . $a['user_shop_clean']. ", ";
-        umc_shop_cleanout_olduser($a['user_shop_clean']);
-        // also remove teamspeak priviledges
-        umc_ts_clear_rights($a['user_shop_clean'], false);
+    if ($a['user_shop_clean']) { // this is the UUID or false
+        // plugin event on user inactiviy
+        umc_plugin_eventhandler('user_inactive', $a['user_shop_clean']);
     }
     if ($a['remove_users']) {
         $debug .= " Removing all users ";
