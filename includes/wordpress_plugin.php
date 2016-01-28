@@ -48,6 +48,9 @@ function umc_wp_init_plugins() {
     add_action('wp_enqueue_scripts', 'umc_wp_add_css_and_js');
     add_action('admin_enqueue_scripts', 'umc_wp_add_css_and_js');
 
+    // what happens when a user gets deleted
+    add_action('delete_user', 'umc_wp_user_delete');
+
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     add_action('wp_footer', 'umc_wp_fingerprint_call');
@@ -76,6 +79,24 @@ function umc_wp_init_plugins() {
       }
 
     }
+}
+
+/**
+ * action that is run when WP deletes a user
+ *
+ * @param type $wp_user_id
+ */
+function umc_wp_user_delete($wp_user_id) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    require_once('/home/minecraft/server/bin/core_include.php');
+    // let's get more info about the user
+    $user_obj = get_userdata($wp_user_id);
+    $username = $user_obj->display_name;
+    $uuid = umc_wp_get_uuid_for_currentuser($user_obj);
+    if ($uuid) { // if there is no UUID, nothing to do
+        umc_plugin_eventhandler('user_delete', $uuid);
+    }
+    XMPP_ERROR_trigger("User $username / $uuid has been deleted!");
 }
 
 function umc_wp_fingerprint_call() {
@@ -109,7 +130,7 @@ function umc_wp_password_reset_check($errors, $user_obj) {
     $check = umc_user_is_banned($user_obj->user_login);
     if ($check) {
         // user is banned
-        $errors->add( 'user_is_banned', 'ERROR: You are banned from this server. Password request denied.' );
+        $errors->add('user_is_banned', 'ERROR: You are banned from this server. Password request denied.');
         XMPP_ERROR_send_msg("Banned User " . $user_obj->user_login . " attempted password reset");
     }
 }
