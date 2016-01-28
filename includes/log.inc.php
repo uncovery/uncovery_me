@@ -77,22 +77,13 @@ function umc_log($plugin, $action, $text) {
         $player = 'system';
     }
 
-    /*
-     * File log
-     */
-    //$logfolder = "/home/minecraft/server/logs/";
-    //$logfile = $logfolder . $plugin . ".log";
-    //$date_now = umc_datetime();
-    //$now = $date_now->format("Y-m-d H:i:s");
-    //$logtext = "$now | $action | $text\n";
-    //file_put_contents($logfile, $logtext, FILE_APPEND);
-    /*
-     * database log
-     */
     $sqlaction = umc_mysql_real_escape_string($action);
     $sqltext = umc_mysql_real_escape_string($text);
+    $sql_plugin = umc_mysql_real_escape_string($plugin);
+    $sql_player = umc_mysql_real_escape_string($player);
+
     $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
-        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', $sqlaction, $sqltext);";
+        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),$sql_plugin, $sql_player, $sqlaction, $sqltext);";
     umc_mysql_query($sql, true);
 }
 
