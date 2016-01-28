@@ -20,9 +20,9 @@
 /*
  * This plugin manages the user commands for the deposit boxes. This plugin is required
  * for the shop plugin and several others that push items into the deposit.
- * The only way to find out which functions use this is to do a search for the 
- * below function names. 
- * 
+ * The only way to find out which functions use this is to do a search for the
+ * below function names.
+ *
  * ToDo: Rename the "umc_do... " into "umc_deposit_do..." functions throughout the system.
  */
 
@@ -30,7 +30,7 @@ global $UMC_SETTING, $WS_INIT, $UMC_USER;
 
 $WS_INIT['depositbox'] = array(
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_ban' => 'umc_deposit_wipe', 'user_delete' => 'umc_deposit_wipe'),
     'default'   => array(
         'help' => array(
             'title' => 'Virtual Deposit Boxes',
@@ -144,7 +144,7 @@ $UMC_SETTING['depositbox_limit'] = array(
     'Master' => 4, 'MasterDonator' => 5, 'MasterDonatorPlus' => 6,
     'Elder' => 5, 'ElderDonator' => 6, 'ElderDonatorPlus' => 7,
     'Owner' => 40);
-    
+
 // returns information about the players deposit
 function umc_depositbox_check() {
     //XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -167,13 +167,13 @@ function umc_depositbox_check() {
 function umc_depositbox_count($uuid_req = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
-    
+
     if (!$uuid_req) {
         $uuid = $UMC_USER['uuid'];
     } else {
         $uuid = $uuid_req;
     }
-        
+
     $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' "
         . "AND sender_uuid<>'cancel00-depo-0000-0000-000000000000' "
         . "AND sender_uuid<>'cancel00-item-0000-0000-000000000000' "
@@ -186,7 +186,7 @@ function umc_depositbox_count($uuid_req = false) {
         . "AND sender_uuid<>'Console0-0000-0000-0000-000000000000' "
         . "AND sender_uuid<>'Server00-0000-0000-0000-000000000000' "
         . "GROUP BY recipient_uuid;";
-        
+
     $D = umc_mysql_fetch_all($sql);
     $boxes = $D[0]['count'];
     return $boxes;
@@ -566,7 +566,7 @@ function umc_do_deposit_internal($all = false) {
  * @return type
  */
 function umc_depositbox_checkspace($uuid) {
-    $sql = "SELECT count(id) as counter FROM minecraft_iconomy.deposit 
+    $sql = "SELECT count(id) as counter FROM minecraft_iconomy.deposit
         WHERE recipient_uuid='$uuid' AND sender_uuid='reusable-0000-0000-0000-000000000000';";
     $D = umc_mysql_fetch_all($sql);
     $count = $D[0]['counter'];
@@ -575,20 +575,20 @@ function umc_depositbox_checkspace($uuid) {
 
 function umc_depositbox_convert() {
     global $UMC_SETTING;
-    
+
     // retrieve all users
     $all_active_users = umc_get_active_members();
-    
+
     // iterate each user
     foreach ($all_active_users as $uuid => $username) {
         $userlevel = umc_get_uuid_level($uuid);
         $currentmax = $UMC_SETTING['depositbox_limit'][$userlevel];
-        
+
         // get the current number of deposit slots with contents
         $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';";
         $data = umc_mysql_fetch_all($sql);
         $count = count($data);
-        
+
         // add extra slots if required to bring up to maximum
         while ($count < $currentmax){
             // create blank reusable entries
@@ -596,11 +596,11 @@ function umc_depositbox_convert() {
                     VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');";
             umc_mysql_execute_query($sql, true);
             $count++;
-            
+
         }
-        
+
     }
-    
+
 }
 
 
@@ -639,6 +639,18 @@ function umc_depositbox_consolidate() {
     } else {
         umc_echo("{yellow}[?]{gray} Unable to consolidate depositbox, no compatible items found.");
     }
+}
+
+/**
+ * This function is run when a user gets deleted or banned.
+ * We wipe all deposits to this user.
+ *
+ * @param type $uuid
+ */
+function umc_deposit_wipe($uuid) {
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
+    $sql = "DELETE FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid_sql'";
+    umc_mysql_execute_query($sql);
 }
 
 /*
