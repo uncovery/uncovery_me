@@ -26,7 +26,7 @@ global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_banned' => 'umc_ts_clear_rights'),
     'default' => array(
         'help' => array(
             'title' => 'Teamspeak',  // give it a friendly title
@@ -233,7 +233,7 @@ function umc_ts_authorize() {
     umc_mysql_query($ins_sql, true);
     umc_echo("Adding TS ID $ts_uuid to database");
     umc_footer("Done!");
-    
+
 }
 
 /**
@@ -268,7 +268,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
 
     // find the TS user by that TS UUID
     umc_echo("Searching for you on the TS server.");
-    
+
     try {
         $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
     } catch (TeamSpeak3_Exception $e) {
