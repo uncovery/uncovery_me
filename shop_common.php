@@ -34,10 +34,11 @@
 function umc_db_take_item($table, $id, $amount, $player) {
     // $uuid = umc_uuid_getone($player, 'uuid');
 
-    $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
-    $amount_row = $D[0];
-    $newstock = $amount_row['amount'] - $amount;
+
     if ($table == 'stock') {
+        $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
+        $amount_row = $D[0];
+        $newstock = $amount_row['amount'] - $amount;
         if ($newstock == 0) {
             $sql = "DELETE FROM minecraft_iconomy.stock WHERE id='$id';";
             umc_log('shop', 'stock_adjust', "Cleared all content from stock for ID $id by withdrawing {$amount_row['amount']}");
@@ -47,7 +48,9 @@ function umc_db_take_item($table, $id, $amount, $player) {
         }
     } else { // take from deposit
         if ($newstock == 0) {
-
+            $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
+            $amount_row = $D[0];
+            $newstock = $amount_row['amount'] - $amount;
             $sid = $amount_row['sender_uuid'];
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
 
