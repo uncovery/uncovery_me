@@ -360,16 +360,25 @@ function umc_lot_manager_process() {
  * @return string
  */
 function umc_lot_manager_dib_delete($uuid, $lot = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "DELETE FROM minecraft_srvr.lot_reservation WHERE uuid='$uuid' AND lot='$lot' LIMIT 1;";
-    umc_mysql_query($sql);
-
     global $UMC_USER;
-    $world = umc_get_lot_world($lot);
-    unset($UMC_USER['lots'][$world]['dib_list'][$lot]);
-    $out = "Removed dib for lot $lot;";
-    XMPP_ERROR_send_msg("User $uuid removed dibs for lot $lot in world $world");
-    return $out;
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $lot_sql = '';
+    if ($lot) {
+        $lot_sql = "AND lot=" . umc_mysql_real_escape_string($lot);
+        $world = umc_get_lot_world($lot);
+        if ($UMC_USER && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
+            unset($UMC_USER['lots'][$world]['dib_list'][$lot]);
+        }
+        $log_msg = "for lot $lot in world $world";
+    } else { // we remove all dibs, so we
+        $log_msg = "for all lots";
+    }
+
+    $sql = "DELETE FROM minecraft_srvr.lot_reservation WHERE uuid='$uuid' $lot_sql;";
+    $count = umc_mysql_execute_query($sql);
+
+    XMPP_ERROR_send_msg("User $uuid removed $count dibs $log_msg");
+    umc_log("Lot", "wipe_user_dibs", "$count dibs removed from $uuid");
 }
 
 /**
