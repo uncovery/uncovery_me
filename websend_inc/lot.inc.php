@@ -26,7 +26,7 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['lot'] = array(
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_ban' => 'umc_lot_wipe_user', 'user_delete' => 'umc_lot_wipe_user'),
     'default' => array(
         'help' => array(
             'title' => 'Lot Management',
@@ -375,4 +375,59 @@ function umc_lot_warp() {
     umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to lot $lot");
     umc_echo("You are now in the center of lot $lot!");
     umc_footer();
+}
+
+function umc_lot_wipe_user($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // delete all dibs the user has
+    umc_lot_manager_dib_delete($uuid);
+
+    // get all lots of that user
+    $lots = umc_lot_by_owner($uuid);
+    foreach ($lots as $world => $L) {
+    // remove that user from the lots
+        $lot = $L['lot'];
+        umc_lot_rem_player($player, $lot, 1);
+
+    // check if someone else has dibs for that lot
+
+    }
+}
+
+/**
+ * returns all lots of a specific user
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
+function umc_lot_by_owner($uuid, $world = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // worldguard stores everything in lower case.
+    $filter = '';
+    if ($world) {
+        if (is_array($world)){
+            $worlds = implode("','", $world);
+            $filter = "AND world.name IN('$worlds')";
+        } else {
+            $filter = "AND world.name = '$world'";
+        }
+    }
+
+    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players`
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id
+        LEFT JOIN minecraft_worldguard.world ON world_id = world.id
+        WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
+    $R = umc_mysql_fetch_all($sql);
+    $out = array();
+    //echo $sql;
+    foreach ($R as $row) {
+        $link = umc_lot_get_tile($row['region_id'], $row['name']);
+        if (!$link) {
+            $link = '';
+        }
+        $lot = $row['region_id'];
+        $out[$lot] = array('world' => $row['name'], 'lot' => $lot, 'image' => $link);
+    }
+    return $out;
 }
