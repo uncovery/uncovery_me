@@ -33,8 +33,6 @@
  */
 function umc_db_take_item($table, $id, $amount, $player) {
     // $uuid = umc_uuid_getone($player, 'uuid');
-
-
     if ($table == 'stock') {
         $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
         $amount_row = $D[0];
