@@ -59,6 +59,14 @@ function umc_error_log() {
     return $out;
 }
 
+/**
+ * Make an entry into the universal logfile
+ *
+ * @global type $UMC_USER
+ * @param type $plugin
+ * @param type $action
+ * @param type $text
+ */
 function umc_log($plugin, $action, $text) {
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -480,6 +488,7 @@ function umc_log_logblock() {
     }
 
     $uuid = $UMC_USER['uuid'];
+    $types = array('blocks' => false, 'kills' => '-kills'); // 'chest' => '-chest',
     $worlds = array('empire', 'kingdom');
     $lots = umc_user_getlots($uuid, $worlds);
     if (count($lots) == 0 ) {
@@ -489,6 +498,7 @@ function umc_log_logblock() {
     $post_lot = filter_input(INPUT_POST, 'lot', FILTER_SANITIZE_STRING);
     $post_line = filter_input(INPUT_POST, 'line', FILTER_SANITIZE_STRING);
     $post_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+    $post_type = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING);
 
     // world filter
     if (!is_null($post_lot)) {
@@ -500,14 +510,34 @@ function umc_log_logblock() {
         list($post_lot, $lot_data) = each($lots);
     }
 
+    // type filter
+    if (!isset($types[$post_type])) {
+        $post_type = 'blocks';
+    }
+    // switch fields for kills vs blocks
+    $player_field = 'playerid';
+    if ($post_type == 'kills') {
+        $player_field = 'killer';
+    }
+
+    $type_filter = '';
+    if ($types[$post_type]) {// don't do anything for blocks
+        $type_filter = $types[$post_type];
+    }
+
     $post_world = $lots[$post_lot]['world'];
     $lot_filter = umc_logblock_get_coord_filter_from_lot($post_lot);
-    $world_filter = "lb-$post_world";
+    $world_filter = "lb-$post_world" . $type_filter;
 
     // user filter
-    $username_filter = "AND UUID <> '$uuid'";
+    $username_filter = "AND `lb-players`.UUID <> '$uuid'";
     if (isset($post_username) && $post_username != 'none') {
         $username_filter = "AND playername='$post_username'";
+    }
+
+    $kill_join = '';
+    if ($post_type == 'kills') {
+        $kill_join = " LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`victim`=`killers`.`playerid`" ;
     }
 
     // line filter
@@ -517,7 +547,7 @@ function umc_log_logblock() {
 
     $nodata = false;
     $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
-        LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+        LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
         WHERE 1 $username_filter $lot_filter;";
     $C = umc_mysql_fetch_all($count_sql);
     if (count($C) > 0) {
@@ -530,7 +560,11 @@ function umc_log_logblock() {
     }
 
     $out .= "<form action=\"\" method=\"post\">\n"
-        . "Lot: <select name=\"lot\">";
+        . "Type: <select name=\"types\">";
+    foreach ($types as $type => $type_data) {
+        $out .= umc_log_dropdown_preselect($type, $type, $post_type);
+    }
+    $out .= "</select> Lot: <select name=\"lot\">";
     foreach ($lots as $one_lot => $lot_data) {
         $out .= umc_log_dropdown_preselect($one_lot, $one_lot, $post_lot);
     }
@@ -557,7 +591,8 @@ function umc_log_logblock() {
     $yesterday = '';
 
     $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
-            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
+            $kill_join
             WHERE 1 $username_filter $lot_filter
 	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     $D = umc_mysql_fetch_all($sql);
@@ -570,13 +605,15 @@ function umc_log_logblock() {
 
         if ($row['replaced'] == 0) {
             $remove_item = "";
-        } else {
+        } else if (isset($row['replaced'])) {
             $remove_item = umc_logores_item_name($row['replaced']);
         }
-        if ($row['type'] == 0) {
-            $place_item = "XXX";
-        } else {
-            $place_item = umc_logores_item_name($row['type'], $row['data']);
+        if (isset($row['type'])) {
+            if ($row['type'] == 0) {
+                $place_item = "XXX";
+            } else {
+                $place_item = umc_logores_item_name($row['type'], $row['data']);
+            }
         }
 
         $one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
