@@ -16,6 +16,8 @@ jQuery(document).ready(function(jQuery) {
 
     // Fade in sections that we wanted to pre-render
     jQuery('.umc_fade_in').fadeIn('fast');
+
+    jQuery('.user-nickname-wrap,.user-nickname-wrap').css('display','none');
 });
 
 // this should be in the footer to work
