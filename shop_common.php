@@ -45,10 +45,10 @@ function umc_db_take_item($table, $id, $amount, $player) {
             umc_log('shop', 'stock_adjust', "Changed stock level for ID $id from {$amount_row['amount']} to $newstock");
         }
     } else { // take from deposit
+        $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
+        $amount_row = $D[0];
+        $newstock = $amount_row['amount'] - $amount;        
         if ($newstock == 0) {
-            $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
-            $amount_row = $D[0];
-            $newstock = $amount_row['amount'] - $amount;
             $sid = $amount_row['sender_uuid'];
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
 
@@ -63,7 +63,6 @@ function umc_db_take_item($table, $id, $amount, $player) {
                 //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
                 umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
             }
-
         } else {
             $sql = "UPDATE minecraft_iconomy.deposit SET amount=$newstock WHERE id='$id';";
             umc_log('shop', 'deposit_adjust', "Changed deposit level for ID $id from {$amount_row['amount']} to $newstock");
