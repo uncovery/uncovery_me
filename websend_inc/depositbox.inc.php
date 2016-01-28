@@ -503,8 +503,8 @@ function umc_do_deposit_internal($all = false) {
         // check if recipient has space
         $userlevel = umc_get_uuid_level($recipient_uuid);
         $allowed = $UMC_SETTING['depositbox_limit'][$userlevel];
-        $remaining = umc_depositbox_checkspace($recipient_uuid, $userlevel);
-        $count = $allowed - $remaining;
+        $count = umc_depositbox_checkspace($recipient_uuid, $userlevel);
+        // $count = $allowed - $remaining;
         // umc_echo("Group: $userlevel Allowed: $allowed Remaining $remaining");
 
         $sql = "SELECT * FROM minecraft_iconomy.deposit
