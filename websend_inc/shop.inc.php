@@ -4,7 +4,7 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['shop'] = array(
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_banned' => 'umc_shop_cleanout_olduser', 'user_inactive' => 'umc_shop_cleanout_olduser'),
     'default' => array(
         'help' => array(
             'title' => 'Virtual Shop',
@@ -750,20 +750,20 @@ function umc_do_search() {
         umc_error("{red}You need at least 3 letters to search for!;");
     }
 
-    $term = $args[2];
+    $term_raw = $args[2];
     $pageindex = 1;
 
     // check for multiple search terms, or if it is just a pagination index
     if (isset($args[3])) {
         if(!is_numeric($args[3])){
-            umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
+            umc_error("You can search only for one term such as '$term_raw', not for '$term_raw {$args[3]}'!");
         } else {
             $pageindex = ($args[3]);
         }
     }
 
     // cast to lowercase so case doesn't remove results
-    $term = strtolower($term);
+    $term = strtolower($term_raw);
 
     // chat formatting of results
     umc_header();
@@ -771,7 +771,6 @@ function umc_do_search() {
     umc_echo("{green}Item name => {blue} Alias{grey},{blue}...");
 
     $finds = array();
-    $count = 0;
 
     // populate array with found results
     foreach ($ITEM_SEARCH as $name => $data) {
