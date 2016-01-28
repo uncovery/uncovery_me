@@ -162,15 +162,20 @@ function umc_wp_get_username_from_uuid($uuid) {
 
 /**
  * Get a UUID from the wp_username
+ * optionally for a passed user object
  *
  * @param string $uuid
  * @return string
  */
-function umc_wp_get_uuid_for_currentuser() {
+function umc_wp_get_uuid_for_currentuser($user_obj = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $current_user = wp_get_current_user();
-    $username = $current_user->display_name;
+    if (!$user_obj) {
+        $current_user = wp_get_current_user();
+    } else {
+        $current_user = $user_obj;
+    }
 
+    $username = $current_user->display_name;
     if ($username == '') {
         // we have a guest, get UUID from system instead
         return false;
