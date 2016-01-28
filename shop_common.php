@@ -49,7 +49,7 @@ function umc_db_take_item($table, $id, $amount, $player) {
         $amount_row = $D[0];
         $newstock = $amount_row['amount'] - $amount;        
         if ($newstock == 0) {
-            $sid = $amount_row['sender_uuid'];
+            //$sid = $amount_row['sender_uuid'];
             //$sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
 
             // if not a player to player transaction
