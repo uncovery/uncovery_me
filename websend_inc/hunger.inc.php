@@ -830,7 +830,7 @@ function umc_hunger_removeplayer($died = true) {
 // Check if the win condition has been met.
 
 function umc_hunger_check_winner() {
-    global $HUNGER, $UMC_PLAYER;
+    global $HUNGER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     umc_hunger_find_current_game();
@@ -843,7 +843,7 @@ function umc_hunger_check_winner() {
         $winner_uuid = key($player_list);
         XMPP_ERROR_send_msg("Found winner! $winner_uuid");
         $winner = current($player_list);
-        if (!in_array($winner, $UMC_PLAYER['online_players']['alive'])) {
+        if (!in_array($winner, $HUNGER['current_game']['players']['alive'])) {
             $sql_game = "UPDATE minecraft_iconomy.`hunger_games`
                 SET status='aborted', end=NOW() WHERE id = $id;";
             umc_mysql_query($sql_game, true);
