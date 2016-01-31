@@ -321,3 +321,26 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         return $amount_left;
     }
 }
+
+/**
+ * Reset a user's world inventory, used in various applications
+ * 
+ * @global type $UMC_PATH_MC
+ * @param type $uuid
+ * @param type $world
+ */
+function umc_inventory_delete_world($uuid, $world) {
+    global $UMC_PATH_MC;
+    $username = umc_uuid_getone($uuid, 'username');
+
+    $inv_yml = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.yml';
+    if (file_exists($inv_yml)) {
+        unlink($inv_yml);
+        umc_log('mod_event', 'inventory-reset', "$inv_yml was deleted");
+    }
+    $inv_json = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.json';
+    if (file_exists($inv_json)) {
+        unlink($inv_json);
+        umc_log('mod_event', 'inventory-reset', "$inv_json was deleted");
+    }
+}
