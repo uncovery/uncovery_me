@@ -367,6 +367,9 @@ function umc_do_find() {
             // catch all undefined args
             default:
                 if (is_numeric($arg)) {
+                    if (!isset($UMC_DATA_ID2NAME[$arg])) {
+                        umc_error("Could not find this item");
+                    }
                     $arg = $UMC_DATA_ID2NAME[$arg];
                 }
 
