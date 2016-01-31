@@ -107,6 +107,20 @@ $WS_INIT['depositbox'] = array(
             'short' => 'Get details on deposit box purchases.',
             'long' => 'Displays detailed output relating to depositbox pricing, currently owned box counts and maximum ownable box counts.'
         ),
+        'security' => array(
+            'users' => array('uncovery','psiber'),
+        ),
+    ),
+    'buy' => array(
+        'function' => 'umc_depositbox_purchase',
+        'help' => array(
+            'args' => '',
+            'short' => 'Purchase a deposit box',
+            'long' => 'Purchase a deposit box that is used to virtually store goods.'
+        ),
+        'security' => array(
+            'users' => array('uncovery','psiber'),
+        ),
     ),
     'convert' => array(
         'function' => 'umc_depositbox_convert',
@@ -123,7 +137,7 @@ $WS_INIT['depositbox'] = array(
 );
 
 // settings array to hold maximum numbers of purchasable homes
-// TODO - add a buy command, depreciate depositbox_limit
+// TODO - add a buy command
 $UMC_SETTING['deposits']['max'] = array(
     'Guest' => 0,
     'Settler' => 5, 'SettlerDonator' => 5, 'SettlerDonatorPlus' => 5,
@@ -145,62 +159,95 @@ $UMC_SETTING['depositbox_limit'] = array(
     'Elder' => 5, 'ElderDonator' => 6, 'ElderDonatorPlus' => 7,
     'Owner' => 40);
 
-// returns information about the players deposit
+/**
+ * attempt a purchase of the next depositbox
+ * 
+ * @global type $UMC_USER
+ * @global array $UMC_SETTING
+ */
+function umc_depositbox_purchase(){
+    
+    global $UMC_USER, $UMC_SETTING;
+    $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
+    $userlevel = $UMC_USER['userlevel'];
+    $purchased = umc_depositbox_realcount($uuid, 'purchased');
+    $next = $purchased + 1;
+    $max_deposits = $UMC_SETTING['deposits']['max'][$userlevel];
+    $bank = umc_money_check($UMC_USER['uuid']);
+    $cost = umc_depositbox_calc_costs($next);
+    
+    // check player is not box capped
+    if ($next >= $max_deposits) {
+        umc_error("You already reached your maximum deposit count for your rank ($max_deposits)!");
+    }
+
+    // check if the user has the cash to afford their new home
+    if ($bank < $cost) {
+        umc_error("You do not have enough cash to buy another deposit box! You have only $bank Uncs. You need $cost Uncs.");
+    }
+
+    // transfer the money
+    umc_money($uuid, false, $cost);
+    
+    // create blank reusable entries
+    umc_depositbox_create(0,'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');
+
+    // create log of action taken
+    $text = "$player bought deposit box $next for $cost uncs";
+    umc_log('depositbox','purchase',$text);
+    
+    // provide user feedback
+    umc_echo("{gold}[!] {green}You bought your next deposit box ($next) for $cost uncs!");
+}
+
+/**
+ * debugging command to return data relating to depositbox usage.
+ * to be simplified for final release once debugging completed.
+ * 
+ * @global type $UMC_USER
+ * @global array $UMC_SETTING
+ */
 function umc_depositbox_check() {
     //XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
-    $count = umc_depositbox_count();
-    $cost = umc_depositbox_calc_costs($count + 1);
+    
+    $used = umc_depositbox_realcount($UMC_USER['uuid'], 'total');
+    $purchased = umc_depositbox_realcount($UMC_USER['uuid'], 'purchased');
+    $system = umc_depositbox_realcount($UMC_USER['uuid'], 'system');
+    $empty = umc_depositbox_realcount($UMC_USER['uuid'], 'empty');
+    $occupied = umc_depositbox_realcount($UMC_USER['uuid'], 'occupied');
+    $cost = umc_depositbox_calc_costs($purchased + 1);
+    
     $userlevel = $UMC_USER['userlevel'];
     $max_deposits = $UMC_SETTING['deposits']['max'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
+    
     // output the return values to the chat window
     umc_header("Checking Depositbox Status");
-    umc_echo("You currently have $count item deposit boxes.");
+    umc_echo("You currently have $purchased owned boxes.");
+    umc_echo("$empty entries are owned, empty boxes.");
+    umc_echo("$occupied entries are owned and have contents inside.");
+    umc_echo("$system entries are unowned, recieved from system users.");
+    umc_echo("You are currently using $used deposit boxes.");
     umc_echo("Your maximum number of boxes available for purchase is $max_deposits.");
     umc_echo("The cost to purchase your next box is $cost Uncs.");
     umc_echo("You currently have $bank Uncs.");
     umc_footer();
 }
 
-// returns the current number of purchased deposit slots the user has
-function umc_depositbox_count($uuid_req = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER;
-
-    if (!$uuid_req) {
-        $uuid = $UMC_USER['uuid'];
-    } else {
-        $uuid = $uuid_req;
-    }
-
-    $sql = "SELECT count(id) as count FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' "
-        . "AND sender_uuid<>'cancel00-depo-0000-0000-000000000000' "
-        . "AND sender_uuid<>'cancel00-item-0000-0000-000000000000' "
-        . "AND sender_uuid<>'cancel00-sell-0000-0000-000000000000' "
-        . "AND sender_uuid<>'reset000-lot0-0000-0000-000000000000' "
-        . "AND sender_uuid<>'lottery0-lot0-0000-0000-000000000000' "
-        . "AND sender_uuid<>'abandone-0000-0000-0000-000000000000' "
-        . "AND sender_uuid<>'contest0-refu-0000-0000-000000000000' "
-        . "AND sender_uuid<>'shop0000-0000-0000-0000-000000000000' "
-        . "AND sender_uuid<>'Console0-0000-0000-0000-000000000000' "
-        . "AND sender_uuid<>'Server00-0000-0000-0000-000000000000' "
-        . "GROUP BY recipient_uuid;";
-
-    $D = umc_mysql_fetch_all($sql);
-    $boxes = $D[0]['count'];
-    return $boxes;
-}
-
-
-// calculates the value of deposit boxes when going to purchase
+/**
+ * calculates the cost of deposit box number passed to purchase
+ * 
+ * @param type $count
+ * @return type
+ */
 function umc_depositbox_calc_costs($count) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $base = 10;
     $cost = pow($count, 3) * $base;
     return $cost;
 }
-
 
 /**
  * Show a list of deposit box contents
@@ -283,7 +330,7 @@ function umc_show_depotlist($silent = false) {
             }
         }
         if (!$web) {
-            $allowed = $UMC_SETTING['depositbox_limit'][$userlevel];
+            $allowed = umc_depositbox_realcount($uuid, 'purchased');
             umc_pretty_bar("darkblue", "-", " {green}$count / $allowed slots used ");
             umc_echo("{cyan}[*] {green}Withdraw with {yellow}/withdraw <Depot-Id>");
             umc_footer();
@@ -343,10 +390,10 @@ function umc_do_withdraw() {
             umc_log('deposit', 'withdraw', "$player tried to {$find_item['item_name']}:0");
         }
 
-        $D = umc_mysql_fetch_all($sql);
-        if (count($D) > 0) {
+        $D2 = umc_mysql_fetch_all($sql);
+        if (count($D2) > 0) {
             $all_items = array();
-            foreach ($D as $row) {
+            foreach ($D2 as $row) {
                 $id = $row['id'];
                 $item_name = $row['item_name'];
                 if($amount == 'max') {
@@ -375,7 +422,6 @@ function umc_do_withdraw() {
     }
 }
 
-
 // deposit
 function umc_do_deposit() {
     umc_do_deposit_internal();
@@ -387,7 +433,7 @@ function umc_do_depositall() {
 }
 
 /**
- * Put an item into the deposit of the recipient
+ * Force an item into the deposit of the recipient, irrespective of empty boxes
  *
  * @param type $recipient
  * @param type $item_name
@@ -419,12 +465,12 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
         AND damage='$data' AND meta='$meta' AND sender_uuid='$sender_uuid';";
     $D = umc_mysql_fetch_all($sql);
 
-        // check first if item already is being sold
+        // check first if some of item from same source is already in deposit
     if (count($D) > 0) {
         $row = $D[0];
         $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+$amount WHERE `id`={$row['id']} LIMIT 1;";
     } else {
-        // create a new deposit box
+        // otherwise create a new deposit box
         $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
             VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
     }
@@ -432,14 +478,22 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     umc_mysql_query($sql, true);
 }
 
+/**
+ * primary deposit gateway function
+ * 
+ * @global type $UMC_USER
+ * @global type $UMC_DATA
+ * @param type $all
+ */
 function umc_do_deposit_internal($all = false) {
-    global $UMC_USER, $UMC_SETTING, $UMC_DATA;
+    global $UMC_USER, $UMC_DATA;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
-
-    // make sure user holds item
     $all_inv = $UMC_USER['inv'];
+    $allowed = umc_depositbox_realcount($uuid, 'purchased');
+    
+    // if all not specified, get item in current slot
     if(!$all) {
         $item_slot = $UMC_USER['current_item'];
         if (!isset($all_inv[$item_slot])) {
@@ -450,29 +504,38 @@ function umc_do_deposit_internal($all = false) {
     $sent_out_of_space_msg = 0;
     $seen = array();
 
+    // iterate through whole inventory 
     foreach ($all_inv as $slot) {
         $item_id = $slot['item_name'];
+        
+        // check for bugs
         if (!isset($UMC_DATA[$item_id])) {
             XMPP_ERROR_trigger("Invalid item deposit cancelled!");
             umc_error("Sorry, the item in your inventory is bugged, uncovery was notfied and this should be fixed soon. IF you want to speed it up, please send a ticket with as much detail as possible.");
         }
+        
+        // deal with item metadata
         $data = $slot['data'];
         if ($slot['meta']) {
             $meta = serialize($slot['meta']);
         } else {
             $meta = false;
         }
-        // don't assign the same twice
+        
+        // don't assign the same item twice
         $item = umc_goods_get_text($slot['item_name'], $slot['data'], $slot['meta']);
         if (isset($seen[$item['full']])) {
             continue;
         }
+        
+        // check for more bugs
         $inv = umc_check_inventory($slot['item_name'], $slot['data'], $slot['meta']);
         if ($inv == 0) {
             XMPP_ERROR_trigger("Item held could not be found in inventory: {$slot['item_name']}, {$slot['data']}, " . var_export($slot['meta'], true));
             umc_error("There was a system error. The admin has been notified. Deposit aborted.");
         }
 
+        // decide who the reciever is
         if (isset($args[2]) && $args[2] != 'lot_reset') {
             $recipient = umc_sanitize_input($args[2], 'player');
             $recipient_uuid = umc_user2uuid($recipient);
@@ -486,6 +549,8 @@ function umc_do_deposit_internal($all = false) {
                 umc_echo("{yellow}[!]{gray} No recipient given. Depositing for {gold}$player");
             }
         }
+        
+        // check for quantity argument
         if (!$all && isset($args[3])) {
             $amount = umc_sanitize_input($args[3], 'amount');
             $amount_str = $amount;
@@ -499,14 +564,8 @@ function umc_do_deposit_internal($all = false) {
             $amount_str = $inv;
         }
         umc_echo("{yellow}[!]{gray} You have {yellow}$inv{gray} items in your inventory, depositing {yellow}$amount");
-
-        // check if recipient has space
-        $userlevel = umc_get_uuid_level($recipient_uuid);
-        $allowed = $UMC_SETTING['depositbox_limit'][$userlevel];
-        $count = umc_depositbox_checkspace($recipient_uuid, $userlevel);
-        // $count = $allowed - $remaining;
-        // umc_echo("Group: $userlevel Allowed: $allowed Remaining $remaining");
-
+        
+        // retrieve the data from the db
         $sql = "SELECT * FROM minecraft_iconomy.deposit
             WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid'
             AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
@@ -514,110 +573,250 @@ function umc_do_deposit_internal($all = false) {
 
         // create the seen entry so we do not do this again
         $seen[$item['full']] = 1;
+        
+        // get amount of empty deposit boxes reciever has
+        $emptyboxes = umc_depositbox_realcount($uuid, 'empty');
 
         // check first if item already is being sold
         if (count($D) > 0) {
             $row = $D[0];
             umc_echo("{green}[+]{gray} You already have {$item['full']}{gray} in the deposit for {gold}$recipient{gray}, adding {yellow}$amount{gray}.");
             $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
+            umc_mysql_query($sql, true);
         } else {
+            
             //check if recipient has space
-            if ($count >= $allowed && $player != 'uncovery' && $recipient != 'lot_reset') {
+            if ($emptyboxes > 0 && $player != 'uncovery' && $recipient != 'lot_reset') {
                 if(!$sent_out_of_space_msg) {
-                    umc_echo("{red}[!] {gold}$recipient{gray} does not have any more deposit spaces left "
-                        . "(Used {white}$count of $allowed{gray} available for group {white}$userlevel{gray})!");
+                    umc_echo("{red}[!] {gold}$recipient{gray} does not have any more deposit spaces left");
                     $sent_out_of_space_msg = 1;
                 }
                 continue;
             }
+            
             // check if recipient is an active user
             $target_active = umc_user_countlots($recipient);
             if ($target_active == 0 && $recipient != 'lot_reset') {
                 umc_error("{red}[!] {gold}$recipient{gray} is not an active user, so you cannot deposit items for them!");
             }
-            // create a new deposit box
-
+            
+            // catch more bugs
             if (strlen($item['item_name']) < 3) {
                 XMPP_ERROR_trigger("Error depositing, item name too short!");
                 umc_error("There was an error with the deposit. Please send a ticket to the admin so this can be fixed.");
             }
+            
+            // provide feedback
             $text = "{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient";
             umc_echo($text);
-            $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
-                    VALUES ('$data', '$uuid', '{$item['item_name']}', '$recipient_uuid', '$amount', '$meta');";
-            $count++;
+            
+            // create a new deposit box
+            umc_depositbox_create($data, $uuid,$item['item_name'], $recipient_uuid, $amount, $meta);
             umc_log("Deposit","do_deposit", $text);
+            
         }
-        umc_mysql_query($sql, true);
+        
         umc_clear_inv($item['item_name'], $data, $amount, $meta);
     }
+    
+    // allow unlimited deposits for lot resets
     if($recipient == 'lot_reset') {
         $allowed = 'unlimited';
     }
+    
+    // get players occupied box count
+    $count = umc_depositbox_realcount($uuid, 'occupied');
+    
     umc_echo("{green}[+]{gray} You have now used {white}$count of $allowed{gray} deposit boxes");
 }
 
 /**
- * Check how much space someone has left in their deposit, depending on their user level
- *
- * @global array $UMC_SETTING
+ * ONLY ADDS a new deposit into the deposit database table
+ * 
+ * @param type $damage
+ * @param type $sender_uuid
+ * @param type $item_name
+ * @param type $recipient_uuid
+ * @param type $amount
+ * @param type $meta
+ */
+function umc_depositbox_create($damage,$sender_uuid,$item_name, $recipient_uuid, $amount, $meta) {
+    
+    $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+                    VALUES ('$damage', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
+    umc_mysql_query($sql, true);
+   
+}
+
+/**
+ * Check how much space someone has left in their deposit
+ * 
  * @param type $uuid
- * @param type $userlevel
  * @return type
  */
 function umc_depositbox_checkspace($uuid) {
-    $sql = "SELECT count(id) as counter FROM minecraft_iconomy.deposit
-        WHERE recipient_uuid='$uuid';"; // AND sender_uuid='reusable-0000-0000-0000-000000000000';";
-    $D = umc_mysql_fetch_all($sql);
-    $count = $D[0]['counter'];
+    $count = umc_depositbox_realcount($uuid, 'empty');
     return $count;
 }
 
+/**
+ * takes a UUID value and returns true if it is a system UUID (ie shop, deposit etc)
+ * 
+ * @param type $uuid
+ * @return boolean
+ */
+function umc_depositbox_system_UUID_check($uuid) {
+    
+    if (strpos($uuid, '-0000-0000-000000000000') == true ) {
+        return true;
+    }
+    
+    return false;
+    
+}
+
+/**
+ * flexible depositbox counting routine.
+ * 
+ * @param type $uuid
+ * @param type $searchtype
+ * 'empty' 'total' 'purchased' 'system' 'occupied'
+ * @return int
+ */
+function umc_depositbox_realcount($uuid, $searchtype = false) {
+    
+    // fetch all entries targeting suplied uuid
+    $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';");
+    
+    // establish fresh counts for each type
+    $empty_count = 0;
+    $system_count = 0;
+    $total_count = 0;
+    $occupied_count = 0;
+    $purchased_count = 0;
+    
+    // iterate through entries and remove system entries from tally
+    foreach ($D as $row) {
+        
+        $total_count++;        
+        $sid = $row['sender_uuid'];
+        $amount = $row['amount'];
+        
+        if ($searchtype == 'purchased') {
+            // if a system entry, its not purchased.
+            if (umc_depositbox_system_UUID_check($sid) != false){
+                continue;
+            }
+            // if it is non system, it is purchased.
+            $purchased_count++;
+        }
+        
+        if ($searchtype == 'empty') {
+            if ($amount == 0) {
+                $empty_count++; // if amount is zero, slot empty
+                continue;
+            }
+        }
+        
+        if ($searchtype == 'system') {
+            if (strpos($sid, '-0000-0000-000000000000') == true ) {
+                $system_count++; // this is a system entry
+            }
+            if ($sid == 'reusable-0000-0000-0000-000000000000') {
+                $system_count--; // this is a reusable entry but invalidly included in above
+            }
+            continue;
+        }
+        
+        if ($searchtype == 'occupied') {
+            if ($amount != 0) {
+                $occupied_count++; // if amount is zero, slot empty
+                continue;
+            }
+        }
+        
+    }
+    
+    switch($searchtype){
+        case 'empty':
+            return $empty_count;
+        case 'system':
+            return $system_count;
+        case 'occupied':
+            return $occcupied_count;
+        case 'purchased':
+            return $purchased_count;
+        case 'total':
+        default:
+            return $total_count;
+    }
+    
+}
+
+/**
+ * 
+ * converts existing active users to have a full count of deposit slots inline with their userlevel
+ * 
+ * @global array $UMC_SETTING
+ */
 function umc_depositbox_convert() {
     global $UMC_SETTING;
 
-    // retrieve all users
+    // retrieve all active users
     $all_active_users = umc_get_active_members();
 
     // iterate each user
     foreach ($all_active_users as $uuid => $username) {
+        
+        // get their current user rank on the server
         $userlevel = umc_get_uuid_level($uuid);
+        
+        // get the current maximum of boxes they can have (not just occupied)
         $currentmax = $UMC_SETTING['depositbox_limit'][$userlevel];
 
-        // get the current number of deposit slots with contents
-        $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';";
-        $data = umc_mysql_fetch_all($sql);
-        $count = count($data);
-
-        // add extra slots if required to bring up to maximum
-        while ($count < $currentmax){
+        // get the current number of current, non system deposit slots
+        $count = umc_depositbox_realcount($uuid, 'purchased');
+      
+        // get the number of slots to add
+        $addcount = $currentmax - $count;
+        
+        // add the extra slots if required
+        while ($addcount > 0){
+            
             // create blank reusable entries
-            $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
-                    VALUES (0, 'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');";
-            umc_mysql_execute_query($sql, true);
-            $count++;
-
+            umc_depositbox_create(0,'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');
+            
+            $addcount--;
         }
 
     }
 
 }
 
-
+/**
+ * consolidates existing deposit boxes with similar contents into a single entry
+ * 
+ * @global type $UMC_USER
+ */
 function umc_depositbox_consolidate() {
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
-    // find all doupliecate entries
-    $sql_doubles = " SELECT count(id) AS counter, item_name, damage, meta
+    
+    // find all duplicate entries
+    $sql_doubles = " SELECT count(id) AS counter, item_name, damage, meta, sender_uuid
         FROM minecraft_iconomy.deposit
         WHERE recipient_uuid='$uuid'
         GROUP BY item_name, damage, meta HAVING COUNT(id) > 1";
+    
     $doubles = umc_mysql_fetch_all($sql_doubles);
     $source_boxes = count($doubles);
     $target_boxes = 0;
+    
+    // iterate returned set
     if ($source_boxes > 0) {
         foreach ($doubles as $row) {
             // then we take each entry that is not created by the user and move it to a box created by the user
+            // existing entry must be made by user
             $sql_fix = "SELECT * FROM minecraft_iconomy.deposit
                 WHERE item_name='{$row['item_name']}'
 		    AND damage='{$row['damage']}
@@ -625,7 +824,17 @@ function umc_depositbox_consolidate() {
 		    AND recipient_uuid='$uuid'
 		    AND sender_uuid !='$uuid';";
             $fix_data = umc_mysql_fetch_all($sql_fix);
+            
             if (count($fix_data) > 0) {
+                
+                // if sender is system, don't create a new box. do a checkspace instead
+                if (umc_depositbox_system_UUID_check($row['sender_uuid'])) {
+                    // check empty box count to ensure they have space
+                    if(umc_depositbox_realcount($uuid, 'empty') <= 0) {
+                        umc_error("{red}You have no free deposit slots to consolidate into. Free some space and try again.;");
+                    }
+                }
+                
                 $target_boxes++;
                 foreach ($fix_data as $fix_row) {
                     umc_db_take_item('deposit', $fix_row['id'], $fix_row['amount'], $uuid);
@@ -634,6 +843,8 @@ function umc_depositbox_consolidate() {
             }
         }
     }
+    
+    // provide user feedback based on results
     if($source_boxes > 0) {
         umc_echo("{green}[+]{gray} Found {yellow}$source_boxes{gray} items spread over several boxes consolidated them to $target_boxes deposit boxes!.");
     } else {
@@ -653,6 +864,9 @@ function umc_deposit_wipe($uuid) {
     umc_mysql_execute_query($sql);
 }
 
+/**
+ * Deposit database schema for reference purposes
+ */
 /*
 CREATE TABLE IF NOT EXISTS `deposit` (
   `id` int(11) NOT NULL,
