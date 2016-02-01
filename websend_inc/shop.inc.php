@@ -477,6 +477,9 @@ function umc_do_offer_internal($deposit) {
     $inv = $UMC_USER['inv'];
 
     if ($deposit) {
+        if (!isset($args[2])) {
+            umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
+        }
 	$id = $args[2];
 	array_splice($args, 2, 1);
 
