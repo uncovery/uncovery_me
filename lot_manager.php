@@ -1064,12 +1064,30 @@ function umc_lot_remove_all($lot) {
     }
     //  Remove all players
     $sql1 = "DELETE FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND world_id = $world_id";
-    umc_mysql_query($sql1, true);
+    umc_mysql_execute_query($sql1);
 
-    $sql2 = "DELETE FROM minecraft_worldguard.region_flag WHERE region_id = '$lot' AND world_id = $world_id";
-    umc_mysql_query($sql2, true);
-    umc_log('lot_manager', 'remove all', "All users and flags have been removed from lot $lot");
+    // now set default flags
+    umc_lot_flags_set_defaults($lot);
+    
+    umc_log('lot_manager', 'remove all', "All users and flags have been reset for  lot $lot");
     return true;
+}
+
+function umc_lot_flags_set_defaults($lot) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $lot_sql = umc_mysql_real_escape_string($lot);
+    $world = umc_get_lot_world($lot, true);
+    $world_id = umc_get_worldguard_id('world', $world, false);
+    
+    $sql2 = "DELETE FROM minecraft_worldguard.region_flag WHERE region_id = '$lot' AND world_id = $world_id";
+    umc_mysql_execute_query($sql2);    
+    
+    $sql = "INSERT INTO `region_flag` (`region_id`, `world_id`, `flag`, `value`) VALUES
+        ($lot_sql, $world_id, 'use', 'allow\n'),
+        ($lot_sql, $world_id, 'chest-access', 'deny\n'),
+        ($lot_sql, $world_id, 'chest-access-group', 'NON_MEMBERS\n');";
+    umc_mysql_execute_query($sql);
+    umc_ws_cmd('regions load -w ' . $world);
 }
 
 /*
@@ -1294,9 +1312,12 @@ function umc_check_lot_owner($lot, $uuid = false) {
 
     if ($uuid) {
         $uuid = umc_uuid_getone($uuid, 'uuid');
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+        $lot_sql = umc_mysql_real_escape_string($lot);
+                
         $sql = "SELECT region_id FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
-            WHERE Owner=1 AND user.uuid='$uuid' AND region_id='$lot';";
+            WHERE Owner=1 AND user.uuid=$uuid_sql AND region_id=$lot_sql;";
         $D = umc_mysql_fetch_all($sql);
         // echo $sql;
         if (count($D) == 1) {
@@ -1305,7 +1326,7 @@ function umc_check_lot_owner($lot, $uuid = false) {
     } else {
         $sql = "SELECT uuid FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
-            WHERE Owner=1 AND region_id='$lot';";
+            WHERE Owner=1 AND region_id=$lot_sql;";
         $data = umc_mysql_fetch_all($sql);
         if (count($data) == 0) {
             return false;
