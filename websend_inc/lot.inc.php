@@ -29,7 +29,7 @@ $WS_INIT['lot'] = array(
     'events' => array(
         'user_ban' => 'umc_lot_wipe_user', 
         'user_delete' => 'umc_lot_wipe_user',
-        'PlayerQuitEvent'  => 'umc_lot_end_wipe_inventory',
+        'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory',
     ),
     'default' => array(
         'help' => array(
@@ -86,6 +86,14 @@ $WS_INIT['lot'] = array(
         ),
         'function' => 'umc_lot_warp',
     ),
+    'resetflags' => array(
+        'help' => array(
+            'short' => 'Resets the usage flags on your lot',
+            'args' => '<lot>',
+            'long' => 'This will reset all flags on your lot. It will also remove all snowfall and iceform flgs. Use this in case people cannot use your doors and buttons.',
+        ),
+        'function' => 'umc_lot_reset_flags',
+    ) //
 );
 
 function umc_lot_mod() {
@@ -209,7 +217,8 @@ function umc_lot_addrem() {
             }
             $owner_switch = 0;
             // check if player is Owner of lot
-            $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
+            $sql = "SELECT * FROM minecraft_worldguard.region_players 
+                WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
             $D = umc_mysql_fetch_all($sql);
             $num = count($D);
             if ($num != 1) {
@@ -446,4 +455,25 @@ function umc_lot_end_wipe_inventory() {
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     umc_inventory_delete_world($uuid, 'the_end');
+}
+
+
+function umc_lot_reset_flags() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    $args = $UMC_USER['args'];
+    $lot = $args[2];
+    
+    $username = $UMC_USER['username'];
+    if ($username != '@console') {
+        $check = umc_check_lot_owner($lot, $uuid);
+        if (!$check) {
+            umc_error("You $username are not the owner of that lot!");
+        }    
+    }
+            
+    umc_check_lot_owner($lot, $uuid);
+    umc_lot_flags_set_defaults($lot);
+    umc_echo("The flags for lot $lot have been reset!");
 }
