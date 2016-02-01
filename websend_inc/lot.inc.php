@@ -436,7 +436,11 @@ function umc_lot_by_owner($uuid, $world = false) {
     return $out;
 }
 
+/**
+ * On user login, we need to wipe the inventory to make sure end reset is not abused.
+ * 
+ * @param type $uuid
+ */
 function umc_lot_end_wipe_inventory($uuid) {
     umc_inventory_delete_world($uuid, 'the_end');
-    umc_log('lot', 'inv_wipe', "User $uuid end inventory was wiped");
 }
