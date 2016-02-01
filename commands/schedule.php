@@ -97,23 +97,24 @@ function run_umc_scheduler() {
     }
 
     // execute last day's off-commands
-    $cmds = $schedule_arr[$yesterday]['off_cmd'];
+    $cmds1 = $schedule_arr[$yesterday]['off_cmd'];
     // var_dump($cmds);
-    umc_schedule_exec($cmds);
+    
+    $default_commands = array(
+        "mv gamerule doDaylightCycle false darklands",
+        "time 00:00 darklands",
+        "mv gamerule naturalRegeneration false deathlands",
+    );
+    umc_schedule_exec($default_commands);    
+    
+    umc_schedule_exec($cmds1);
     umc_log('scheduler', "yesterday", "executing commands for yesterday: $yesterday");
 
     // execute todays on-commands
     $cmds = $schedule_arr[$today]['on_cmd'];
     umc_log('scheduler', "today", "executing commands for yesterday: $today");
-    umc_schedule_exec($cmds);
 
-    $default_commands = array(
-        "mv gamerule doDaylightCycle false darklands",
-        "mv gamerule naturalRegeneration false deathlands",
-    );
-    foreach ($default_commands as $cmd) {
-        umc_exec_command($cmd);
-    }
+    umc_schedule_exec($cmds);
 
     umc_ban_to_database();
     // make a new ID file in case item data has changed
@@ -126,5 +127,3 @@ function umc_schedule_exec($cmds) {
         umc_exec_command($command);
     }
 }
-
-?>
