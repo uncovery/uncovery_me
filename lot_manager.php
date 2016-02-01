@@ -1073,6 +1073,11 @@ function umc_lot_remove_all($lot) {
     return true;
 }
 
+/**
+ * reset all lot flags to the defaults
+ * 
+ * @param type $lot
+ */
 function umc_lot_flags_set_defaults($lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $lot_sql = umc_mysql_real_escape_string($lot);
