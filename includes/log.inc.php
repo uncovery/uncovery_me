@@ -549,7 +549,7 @@ function umc_log_logblock() {
     } else {
         $count_sql = "SELECT count(`lb-$post_world-chest`.id) AS counter
             FROM minecraft_log.`lb-$post_world-chest` 
-            LEFT JOIN minecraft_log.`lb-empire` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
+            LEFT JOIN minecraft_log.`lb-$post_world` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
             LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
             WHERE 1 $username_filter $lot_filter";
     }
