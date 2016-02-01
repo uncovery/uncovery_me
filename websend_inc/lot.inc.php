@@ -26,7 +26,11 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['lot'] = array(
     'disabled' => false,
-    'events' => array('user_ban' => 'umc_lot_wipe_user', 'user_delete' => 'umc_lot_wipe_user'),
+    'events' => array(
+        'user_ban' => 'umc_lot_wipe_user', 
+        'user_delete' => 'umc_lot_wipe_user',
+        'PlayerQuitEvent'  => 'umc_lot_end_wipe_inventory',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Lot Management',
@@ -430,4 +434,9 @@ function umc_lot_by_owner($uuid, $world = false) {
         $out[$lot] = array('world' => $row['name'], 'lot' => $lot, 'image' => $link);
     }
     return $out;
+}
+
+function umc_lot_end_wipe_inventory($uuid) {
+    umc_inventory_delete_world($uuid, 'the_end');
+    umc_log('lot', 'inv_wipe', "User $uuid end inventory was wiped");
 }
