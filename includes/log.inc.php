@@ -112,6 +112,11 @@ function umc_log_get_usernames() {
 }
 
 function umc_log_web_display() {
+    
+    /*
+     * 
+     */
+    
     global $UMC_USER, $UMC_DOMAIN;
     $out = '';
     if (!$UMC_USER) {
@@ -479,7 +484,7 @@ function umc_log_logblock() {
     }
 
     $uuid = $UMC_USER['uuid'];
-    $types = array('blocks' => false, 'kills' => '-kills'); // 'chest' => '-chest',
+    $types = array('blocks' => false, 'kills' => '-kills', 'chest' => '-chest',); // 
     $worlds = array('empire', 'kingdom');
     $lots = umc_user_getlots($uuid, $worlds);
     if (count($lots) == 0 ) {
@@ -537,9 +542,18 @@ function umc_log_logblock() {
     }
 
     $nodata = false;
-    $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
-        LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
-        WHERE 1 $username_filter $lot_filter;";
+    if ($post_type != 'chest') {
+        $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
+            WHERE 1 $username_filter $lot_filter;";
+    } else {
+        $count_sql = "SELECT count(`lb-$post_world-chest`.id) AS counter
+            FROM minecraft_log.`lb-$post_world-chest` 
+            LEFT JOIN minecraft_log.`lb-empire` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
+            LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
+            WHERE 1 $username_filter $lot_filter";
+    }
+    
     $C = umc_mysql_fetch_all($count_sql);
     if (count($C) > 0) {
         $num_rows = $C[0]['counter'];
@@ -578,14 +592,26 @@ function umc_log_logblock() {
         $out .= "<input type=\"submit\" name=\"proposebutton\" value=\"Check\"></form>There is no data for this lot!";
         return $out;
     }
-    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th><th>Removed</th><th>Placed</th><th>Lot</th><th>Coordinates</th></tr>\n";
+    $chest_headers = '<th>Removed</th><th>Placed</th>';
+    if ($post_type == 'chest') {
+        $chest_headers = "<th>Block</th><th>Source</th><td>Amount</td>";
+    }    
+    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th>$chest_headers<th>Lot</th><th>Coordinates</th></tr>\n";
     $yesterday = '';
 
-    $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
-            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
-            $kill_join
-            WHERE 1 $username_filter $lot_filter
-	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+    if ($post_type != 'chest') {
+        $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
+                LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
+                $kill_join
+                WHERE 1 $username_filter $lot_filter
+                ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+    } else {
+        $sql = "SELECT `lb-$post_world-chest`.id as id, playername, uuid, itemtype as replaced, itemamount, itemdata as data, type, x,y,z, date 
+            FROM minecraft_log.`lb-$post_world-chest` 
+            LEFT JOIN minecraft_log.`lb-empire` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
+            LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
+            WHERE 1 $username_filter $lot_filter";
+    }
     $D = umc_mysql_fetch_all($sql);
     foreach ($D as $row) {
         $row_style = '';
@@ -606,10 +632,14 @@ function umc_log_logblock() {
                 $place_item = umc_logores_item_name($row['type'], $row['data']);
             }
         }
+        $chest_line = '';
+        if ($post_type == 'chest') {
+            $chest_line = "<td>{$row['itemamount']}</td>";
+        }
 
         $one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
 
-        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td><td>$one_lot</td><td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
+        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td>$chest_line<td>$one_lot</td><td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
 	$yesterday = $date_arr[0];
     }
     $out .= "</table>\n";
