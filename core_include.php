@@ -67,6 +67,7 @@ require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_search.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/item_id2name.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
