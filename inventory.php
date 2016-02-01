@@ -330,6 +330,7 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
  * @param type $world
  */
 function umc_inventory_delete_world($uuid, $world) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
     $username = umc_uuid_getone($uuid, 'username');
 
