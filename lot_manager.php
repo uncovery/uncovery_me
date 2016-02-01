@@ -1199,6 +1199,34 @@ function umc_get_lot_members($lot, $owner = false) {
     return $members;
 }
 
+/**
+ * Gets an array of only members of a lot
+ * If $owner = true, gets only the owners
+ *
+ * @param type $lot
+ * @param type $owner
+ * @return type
+ */
+function umc_lot_get_group_members($lot, $owner = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $owner_val = 0;
+    if ($owner) {
+        $owner_val = 1;
+    }
+    $sql = "SELECT group.id as id, group.name FROM minecraft_worldguard.group
+        LEFT JOIN minecraft_worldguard.region_groups ON group.id=region_groups.group_id
+        WHERE region_id='$lot' AND owner=$owner_val;";
+    $D = umc_mysql_fetch_all($sql);
+    $members = false;
+    if (count($D) > 0) {
+        $members = array();
+        foreach ($D as $row) {
+            $members[$row['id']] = $row['name'];
+        }
+    }
+    return $members;
+}
+
 function umc_get_lot_flags($lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT `flag`, `value` FROM minecraft_worldguard.region_flag WHERE region_id='$lot';";
