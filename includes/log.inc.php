@@ -620,10 +620,12 @@ function umc_log_logblock() {
             $row_style = ' style="background-color:#CCCCCC;"';
         }
 
-        if ($row['replaced'] == 0) {
+        if (isset($row['replaced']) && $row['replaced'] == 0) {
             $remove_item = "";
         } else if (isset($row['replaced'])) {
             $remove_item = umc_logores_item_name($row['replaced']);
+        } else {
+            $remove_item = "";
         }
         $place_item = '-';
         if (isset($row['type'])) {
