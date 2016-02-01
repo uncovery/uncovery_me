@@ -333,14 +333,18 @@ function umc_inventory_delete_world($uuid, $world) {
     global $UMC_PATH_MC;
     $username = umc_uuid_getone($uuid, 'username');
 
+    $status = false;
     $inv_yml = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.yml';
     if (file_exists($inv_yml)) {
         unlink($inv_yml);
         umc_log('mod_event', 'inventory-reset', "$inv_yml was deleted");
+        $status = true;
     }
     $inv_json = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.json';
     if (file_exists($inv_json)) {
         unlink($inv_json);
         umc_log('mod_event', 'inventory-reset', "$inv_json was deleted");
+        $status = true;
     }
+    return $status;
 }
