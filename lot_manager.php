@@ -1082,7 +1082,7 @@ function umc_lot_flags_set_defaults($lot) {
     $sql2 = "DELETE FROM minecraft_worldguard.region_flag WHERE region_id = '$lot' AND world_id = $world_id";
     umc_mysql_execute_query($sql2);    
     
-    $sql = "INSERT INTO `region_flag` (`region_id`, `world_id`, `flag`, `value`) VALUES
+    $sql = "INSERT INTO minecraft_worldguard.`region_flag` (`region_id`, `world_id`, `flag`, `value`) VALUES
         ($lot_sql, $world_id, 'use', 'allow\n'),
         ($lot_sql, $world_id, 'chest-access', 'deny\n'),
         ($lot_sql, $world_id, 'chest-access-group', 'NON_MEMBERS\n');";
