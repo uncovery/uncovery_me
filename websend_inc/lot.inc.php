@@ -351,7 +351,7 @@ function umc_lot_warp() {
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
         if (!in_array($target_world, $allowed_worlds)) {
-            umc_error('Sorry, you need to enter a lot name from the empire or flatlands!');
+            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
         }
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
