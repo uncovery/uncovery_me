@@ -441,6 +441,9 @@ function umc_lot_by_owner($uuid, $world = false) {
  * 
  * @param type $uuid
  */
-function umc_lot_end_wipe_inventory($uuid) {
+function umc_lot_end_wipe_inventory() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
     umc_inventory_delete_world($uuid, 'the_end');
 }
