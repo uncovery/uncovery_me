@@ -1315,10 +1315,10 @@ function umc_get_worldguard_id($type, $name, $add = false) {
 function umc_check_lot_owner($lot, $uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
+    $lot_sql = umc_mysql_real_escape_string($lot);
     if ($uuid) {
         $uuid = umc_uuid_getone($uuid, 'uuid');
         $uuid_sql = umc_mysql_real_escape_string($uuid);
-        $lot_sql = umc_mysql_real_escape_string($lot);
                 
         $sql = "SELECT region_id FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
