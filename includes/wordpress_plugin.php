@@ -479,57 +479,58 @@ function umc_wp_register_addWhitelist($user_id){
 }
 
 function umc_wp_add_uncovery_avatar( $avatar_defaults ) {
-        $avatar_defaults['uncovery'] = 'Minecraft Avatar';
-        return $avatar_defaults;
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $avatar_defaults['uncovery'] = 'Minecraft Avatar';
+    return $avatar_defaults;
 }
 
 function umc_wp_get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
-        XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-        if ($default == 'uncovery') {
-            $filename = '/home/minecraft/server/bin/core_include.php';
-            require_once($filename);
-            if (!function_exists('umc_user_ban')) {
-                XMPP_ERROR_trigger("Failed to include $filename!");
-            }
-            //Alternative text
-            if (false === $alt) {
-                $safe_alt = '';
-            } else {
-                $safe_alt = esc_attr($alt);
-            }
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if ($default == 'uncovery') {
+        $filename = '/home/minecraft/server/bin/core_include.php';
+        require_once($filename);
+        if (!function_exists('umc_user_ban')) {
+            XMPP_ERROR_trigger("Failed to include $filename!");
+        }
+        //Alternative text
+        if (false === $alt) {
+            $safe_alt = '';
+        } else {
+            $safe_alt = esc_attr($alt);
+        }
 
-            //Get username
-            if (is_numeric($id_or_email)) {
-                $id = (int) $id_or_email;
+        //Get username
+        if (is_numeric($id_or_email)) {
+            $id = (int) $id_or_email;
+            $user = get_userdata($id);
+            if ($user) {
+                $username = $user->user_login;
+            } else {
+                return false; // user cannot be found, probably deleted
+            }
+        } else if (is_object($id_or_email)) {
+            if (!empty($id_or_email->user_id)) {
+                $id = (int) $id_or_email->user_id;
                 $user = get_userdata($id);
                 if ($user) {
                     $username = $user->user_login;
                 } else {
-                    return false; // user cannot be found, probably deleted
+                    return '';
                 }
-            } else if (is_object($id_or_email)) {
-                if (!empty($id_or_email->user_id)) {
-                    $id = (int) $id_or_email->user_id;
-                    $user = get_userdata($id);
-                    if ($user) {
-                        $username = $user->user_login;
-                    } else {
-                        return '';
-                    }
-                } else if (!empty($id_or_email->comment_author)) {
-                    $username = $id_or_email->comment_author;
-                }
-            } else if (strstr($id_or_email, '@')) { // email
-                require_once(ABSPATH . WPINC . '/ms-functions.php');
-                $user = get_user_by('email', $id_or_email);
-                $username = $user->user_login;
-            } else { // by displayname
-                $username = $id_or_email;
+            } else if (!empty($id_or_email->comment_author)) {
+                $username = $id_or_email->comment_author;
             }
-
-            $uuid = umc_wp_get_uuid_from_userlogin($username);
-            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
-            $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
+        } else if (strstr($id_or_email, '@')) { // email
+            require_once(ABSPATH . WPINC . '/ms-functions.php');
+            $user = get_user_by('email', $id_or_email);
+            $username = $user->user_login;
+        } else { // by displayname
+            $username = $id_or_email;
         }
-        return $avatar;
+
+        $uuid = umc_wp_get_uuid_from_userlogin($username);
+        $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
+        $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
     }
+    return $avatar;
+}
