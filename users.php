@@ -522,10 +522,8 @@ function umc_user_countlots($user) {
         FROM minecraft_worldguard.`region_players`
         LEFT JOIN minecraft_worldguard.user ON user_id=user.id
         WHERE owner=1 AND user.uuid='$uuid';";
-    $rst = umc_mysql_query($sql);
-    $row = umc_mysql_fetch_array($rst);
-    umc_mysql_free_result($rst);
-    $out = $row['counter'];
+    $D = umc_mysql_fetch_all($sql);
+    $out = $D[0]['counter'];
     return $out;
 }
 
