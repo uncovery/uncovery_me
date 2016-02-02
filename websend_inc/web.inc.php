@@ -37,6 +37,14 @@ $WS_INIT['web'] = array(  // the name of the plugin
         ),
         'function' => 'umc_web_read',
     ),
+    'list' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'list recent posts',
+            'long' => "Lists you recent posts from the website.", // Types can be [P]osts, [C]omments of [F]orum",
+            // 'args' => '<type>',
+        ),
+        'function' => 'umc_web_list',
+    ),
 );
 
 function umc_web_read() {
@@ -71,4 +79,25 @@ function umc_web_read() {
     } else {
         umc_error("Invalid Post ID!");
     }
+}
+
+
+function umc_web_list() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $args = array(
+	'posts_per_page'   => 15,
+	'offset'           => 0,
+	'orderby'          => 'date',
+	'order'            => 'DESC',
+	'post_type'        => 'post',
+	'post_status'      => 'publish',
+	'suppress_filters' => true 
+    );
+    $posts_array = get_posts($args);
+    $count = count($posts_array);
+    umc_header("$count Recent Posts");
+    foreach($posts_array as $P) {
+        umc_echo($P->ID . " > " . $P->post_title);
+    }
+    umc_footer("Type &a/web read ID&f to read in-game");
 }
