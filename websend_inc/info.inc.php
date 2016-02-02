@@ -173,6 +173,8 @@ function umc_info_whereami() {
     $lot = umc_lot_get_from_coords($x, $z, $world);
     $lot_members = umc_get_lot_members($lot, false);
     $lot_owners = umc_get_lot_members($lot, true);
+    // $lot_group_members = umc_lot_get_group_members($lot, false);
+    // $lot_group_owners = umc_lot_get_group_members($lot, true);
     if (!$lot) {
         $lot = 'No lot here';
     }
