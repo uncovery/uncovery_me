@@ -39,8 +39,8 @@ $WS_INIT['web'] = array(  // the name of the plugin
     ),
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
-            'short' => 'list recent posts',
-            'long' => "Lists you recent posts from the website.", // Types can be [P]osts, [C]omments of [F]orum",
+            'short' => 'List recent website posts',
+            'long' => "Lists recent posts from the website with an ID so you can read them in-game.", // Types can be [P]osts, [C]omments of [F]orum",
             // 'args' => '<type>',
         ),
         'function' => 'umc_web_list',
