@@ -149,6 +149,7 @@ function umc_uuid_record_lotcount($user = false) {
  * @param type $uuid
  */
 function umc_uuid_check_usernamechange($uuid) {
+    return false;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
@@ -508,6 +509,12 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
     }
 }
 
+/**
+ * Get historical usernames from Mojang
+ * 
+ * @param type $uuid
+ * @return boolean
+ */
 function umc_uuid_mojang_usernames($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid_raw = str_replace("-", "", $uuid);
