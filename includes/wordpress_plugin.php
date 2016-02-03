@@ -213,8 +213,6 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
 function umc_wp_notify_new_post($new_status, $old_status, $post) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
-    $valid_forum_types = array('Post', "Reply");
-    
     if ($old_status != 'publish' && $new_status == 'publish' ) {
         $post_title = $post->post_title;
         $post_link = "http://uncovery.me/?p=" . $post->ID;
@@ -225,6 +223,7 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $cmd3 = "ch qm u Type &a/web read $id&f to read in-game";
         } else {
             $type = ucwords($post->post_type);
+            $valid_forum_types = array('Post', "Reply");
             if (in_array($type, $valid_forum_types)) {
                 if ($type == 'Reply') {
                     $parent = get_post($post->post_parent);
