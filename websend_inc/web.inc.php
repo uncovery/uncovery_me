@@ -81,7 +81,11 @@ function umc_web_read() {
     }
 }
 
-
+/**
+ * Allow in-game listing of recent posts and comments
+ * 
+ * @global type $UMC_USER
+ */
 function umc_web_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
