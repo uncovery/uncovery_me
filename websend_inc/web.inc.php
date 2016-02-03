@@ -40,8 +40,8 @@ $WS_INIT['web'] = array(  // the name of the plugin
     'list' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'List recent website posts',
-            'long' => "Lists recent posts from the website with an ID so you can read them in-game.", // Types can be [P]osts, [C]omments of [F]orum",
-            // 'args' => '<type>',
+            'long' => "Lists recent posts from the website with an ID so you can read them in-game. Types can be [p]osts, [c]omments of [c]orum",
+            'args' => '<type>',
         ),
         'function' => 'umc_web_list',
     ),
@@ -84,20 +84,54 @@ function umc_web_read() {
 
 function umc_web_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $args = array(
-	'posts_per_page'   => 15,
-	'offset'           => 0,
-	'orderby'          => 'date',
-	'order'            => 'DESC',
-	'post_type'        => 'post',
-	'post_status'      => 'publish',
-	'suppress_filters' => true 
-    );
-    $posts_array = get_posts($args);
-    $count = count($posts_array);
-    umc_header("$count Recent Posts");
-    foreach($posts_array as $P) {
-        umc_echo($P->ID . " > " . $P->post_title);
+    
+    $valid_types = array("p", "c");
+    
+    global $UMC_USER;
+    $args = $UMC_USER['args'];
+    if (!in_array($args[2], $valid_types)) {
+        umc_error("You need to give a valid type (" . implode(",", $valid_types) . ")");
+    }
+    $type = $args[2];
+    
+    if ($type == 'p') {
+        $args = array(
+            'posts_per_page'   => 25,
+            'offset'           => 0,
+            'orderby'          => 'date',
+            'order'            => 'DESC',
+            'post_type'        => 'post',
+            'post_status'      => 'publish',
+            'suppress_filters' => true 
+        );
+        $posts_array = get_posts($args);
+        $count = count($posts_array);
+        umc_header("$count Recent Posts");
+        foreach($posts_array as $P) {
+            umc_echo($P->ID . " > " . $P->post_title);
+        }
+    } else if ($type == 'c') {
+        $args = array(
+            'number' => 25,
+            'order' => 'DESC',
+            'date_query' => array(
+                'after' => '4 week ago',
+                'before' => 'tomorrow',
+                'inclusive' => true,
+            ),    
+        );
+        $posts_array = get_comments($args);
+        $count = count($posts_array);
+        umc_header("$count Recent Comments");
+        foreach($posts_array as $P) {
+            // comment length shortening
+            $comment = $P->comment_content;
+            if (strlen($P->comment_content) > 30) {
+                $comment = substr($P->comment_content, 0, 27) . "...";
+            }
+            umc_echo("c" . $P->comment_ID  . " ({$P->comment_author}) $comment");
+        }
     }
     umc_footer("Type &a/web read ID&f to read in-game");
+    
 }
