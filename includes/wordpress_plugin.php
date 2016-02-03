@@ -212,6 +212,9 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
  */
 function umc_wp_notify_new_post($new_status, $old_status, $post) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    $valid_forum_types = array('Post', "Reply");
+    
     if ($old_status != 'publish' && $new_status == 'publish' ) {
         $post_title = $post->post_title;
         $post_link = "http://uncovery.me/?p=" . $post->ID;
@@ -222,18 +225,18 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $cmd3 = "ch qm u Type &a/web read $id&f to read in-game";
         } else {
             $type = ucwords($post->post_type);
-            if ($type == 'Reply') {
-                $parent = get_post($post->post_parent);
-                $post_title = $parent->post_title;
-            } else if ($type == 'Page') {
-                return; //die('umc_wp_notify_new_post');
+            if (in_array($type, $valid_forum_types)) {
+                if ($type == 'Reply') {
+                    $parent = get_post($post->post_parent);
+                    $post_title = $parent->post_title;
+                }
+                $author_id = $post->post_author;
+                $user = get_userdata($author_id);
+                $username = $user->display_name;
+                $cmd1 = "ch qm n New Forum $type: &a$post_title &fby $username&f";
+                $cmd2 = "ch qm n Link: &a$post_link&f";
+                $cmd3 = "ch qm n Type &a/web read $id&f to read in-game";
             }
-            $author_id = $post->post_author;
-            $user = get_userdata($author_id);
-            $username = $user->display_name;
-            $cmd1 = "ch qm n New Forum $type: &a$post_title &fby $username&f";
-            $cmd2 = "ch qm n Link: &a$post_link&f";
-            $cmd3 = "ch qm n Type &a/web read $id&f to read in-game";
         }
         require_once('/home/minecraft/server/bin/index_wp.php');
         umc_exec_command($cmd1, 'asConsole');
