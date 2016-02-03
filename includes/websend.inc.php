@@ -363,14 +363,14 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     $return = true;
     // if a command is executed by console, return messages back to console instead
     // of trying to echo to player
-    if (strtolower($fromplayer) == '@console' && $how == 'toPlayer') {
+    if ($UMC_USER['username'] == '@console' && $how == 'toPlayer') {
         $how = 'toConsole';
     } else if (strtolower($fromplayer) == '@console' && $how == 'asPlayer') {
         $how = 'asConsole';
     }
     // remove colons, just in case
     $cmd = str_replace(';', '', $cmd_raw);
-
+    
     // this is debugging info
     if (!$silent) {
         $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
