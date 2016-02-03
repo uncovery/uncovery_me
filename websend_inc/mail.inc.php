@@ -112,6 +112,7 @@ $WS_INIT['mail'] = array(  // the name of the plugin
 );
 
 function umc_mail_new_check() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $result = umc_mail_check($uuid);
@@ -121,10 +122,12 @@ function umc_mail_new_check() {
 }
 
 function umc_mail_ticket() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     umc_mail_new('uncovery');
 }
 
 function umc_mail_new($recipient = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
@@ -173,6 +176,7 @@ function umc_mail_new($recipient = false) {
  * add text to an email
  */
 function umc_mail_text() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
 
@@ -199,6 +203,7 @@ function umc_mail_text() {
  * send the current draft email
  */
 function umc_mail_send() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $id = umc_mail_draft_existing();
     if (!$id) {
         umc_error("You need to create a new message using {green}/mail new <recipient> <title>{white} first!");
@@ -222,6 +227,7 @@ function umc_mail_send() {
  * @param type $sender
  */
 function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // user "Server" in case none is given
     if (!$sender_uuid) {
         $sender_uuid = 'Server00-0000-0000-0000-000000000000';
@@ -240,6 +246,7 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
  * show the current draft email
  */
 function umc_mail_draft() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $id = umc_mail_draft_existing();
     umc_mail_display($id);
 }
@@ -248,6 +255,7 @@ function umc_mail_draft() {
  * display a full email to a user
  */
 function umc_mail_display($id) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
@@ -296,6 +304,7 @@ function umc_mail_display($id) {
  * check for new mail
  */
 function umc_mail_check($uuid = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $user_filter = '';
     $check = false;
     if ($uuid) {
@@ -333,6 +342,7 @@ function umc_mail_check($uuid = false) {
  * this checks if there is a draft email for the current user. returns the ID if true, otherwise false
  */
 function umc_mail_draft_existing() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
 
@@ -351,6 +361,7 @@ function umc_mail_draft_existing() {
  * read the next unread email
  */
 function umc_mail_read() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
@@ -375,6 +386,7 @@ function umc_mail_read() {
 }
 
 function umc_mail_delete() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
@@ -408,6 +420,7 @@ function umc_mail_delete() {
 }
 
 function umc_mail_list() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
@@ -473,6 +486,7 @@ function umc_mail_list() {
 }
 
 function umc_test_mail() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $recipient = "web-87iyhC@mail-tester.com";
     $sender = "minecraft@uncovery.me";
     $headers = "From:$sender <$sender>\r\n" .
@@ -481,7 +495,6 @@ function umc_test_mail() {
     $mail_title = "Test mail";
     $body = "This is a test mail";
 
-    $check = mail($recipient, $mail_title, $body, $headers);
     $check = mail($recipient, $mail_title, $body, $headers);
     var_dump($check);
 }
@@ -802,6 +815,7 @@ function umc_mail_web() {
 }
 
 function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $subject_raw, $action, $msg_id = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $recipient = umc_mysql_real_escape_string($recipient_uuid);
     $sender = umc_mysql_real_escape_string($sender_uuid);
     $message = umc_mysql_real_escape_string($message_raw);
@@ -834,6 +848,7 @@ function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $sub
  * @param string $value
  */
 function umc_mail_web_formats($column, $row) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     switch ($column) {
         case 'status':
