@@ -93,9 +93,9 @@ function umc_github_wordpress_update() {
         }
     }
 
-    $out = "This is a daily update on the status of the work done behind the scenes. You can see the complete status <a href=\"$page\">here</a>.\n "
+    $out = "This is a daily update on the status of the work done behind the scenes.\n "
         . "Our webserver is completely open source, hosted on GitHub. You can help improve the server by fixing issues "
-        . "<a href=\"https://github.com/uncovery/uncovery_me/issues\">here</a>.\n<ul>\n";
+        . "<a href=\"{$GITHUB['page_direct_issues']}\">here</a>.\n<ul>\n";
     foreach ($issue_arr as $section => $lines) {
         $section_str = ucwords($section);
         $out .= "    <li><strong>Issues $section_str:</strong>\n";
