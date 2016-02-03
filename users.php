@@ -254,21 +254,25 @@ function umc_users_active_lastlogin_and_level() {
 }
 
 /**
- * returns an array of all players that own a lot right now.
- *
+ * returns a list of all users that own lots.
+ * The output can be either "name" or "counter" to output either
+ * the username or the lot count. The key is always the UUID
+ * 
+ * @param type $output
  * @return type
  */
-function umc_get_active_members() {
+function umc_get_active_members($output = 'name') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $active_members = array();
-    $sql = "SELECT user.uuid as user_uuid, lower(username) as name FROM minecraft_worldguard.region_players
+    $sql = "SELECT user.uuid as user_uuid, lower(username) as name, count(region_players.region_id) as counter
+        FROM minecraft_worldguard.region_players
         LEFT JOIN minecraft_worldguard.user ON user_id=id
         LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
         WHERE owner=1 AND user.uuid IS NOT NULL AND username IS NOT NULL
         GROUP BY user_uuid ORDER BY name";
     $data = umc_mysql_fetch_all($sql);
     foreach ($data as $row) {
-        $active_members[$row['user_uuid']] = $row['name'];
+        $active_members[$row['user_uuid']] = $row[$output];
     }
     return $active_members;
 }
