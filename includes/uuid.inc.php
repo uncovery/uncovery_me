@@ -136,8 +136,12 @@ function umc_uuid_record_lotcount($user = false) {
         $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$lots WHERE UUID='$uuid';";
         umc_mysql_query($sql);
     } else {
-
-
+        // get all lot counts
+        $data = umc_get_active_members('counter');
+        foreach ($data as $uuid => $counter) {
+            $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$counter WHERE UUID='$uuid';";
+            umc_mysql_query($sql);
+        }
     }
 }
 
