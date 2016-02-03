@@ -20,7 +20,6 @@
  USERNAME='uncovery'
  WORLD='city'
  MCPATH='/home/minecraft/server/bukkit'
- BACKUPPATH='/media/remote.share/minecraft.backup'
  MAXHEAP='5G'
  MINHEAP='20G'
  CPU_COUNT=12
@@ -60,14 +59,14 @@
    if pgrep -u $USERNAME -f $SERVICE > /dev/null
    then
      echo "$SERVICE is running... suspending saves"
-     as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER BACKUP STARTING. Server going readonly...\"\015'"
+#     as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER BACKUP STARTING. Server going readonly...\"\015'"
      as_user "screen -p 0 -S minecraft -X eval 'stuff \"save-off\"\015'"
      as_user "screen -p 0 -S minecraft -X eval 'stuff \"save-all\"\015'"
      sync
      sleep 10
      rsync -aPvzl --delete /home/minecraft /data/mirror/home
      as_user "screen -p 0 -S minecraft -X eval 'stuff \"save-on\"\015'"
-     as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER BACKUP ENDED. Server going read-write...\"\015'"
+#     as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER BACKUP ENDED. Server going read-write...\"\015'"
    else
      echo "$SERVICE is not running. Not suspending saves."
    fi
