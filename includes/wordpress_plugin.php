@@ -218,14 +218,13 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
         return;
     }
     
+    $cmds = array();
     if ($old_status != 'publish' && $new_status == 'publish') {
         $post_title = $post->post_title;
         $post_link = "http://uncovery.me/?p=" . $post->ID;
         $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
-            $cmd1 = "ch qm u New Blog Post: &a$post_title&f";
-            $cmd2 = "ch qm u Link: &a$post_link&f";
-            $cmd3 = "ch qm u Type &a/web read $id&f to read in-game";
+            $cmds[] = "ch qm u New Blog Post: &a$post_title&f";
         } else {
             $type = ucwords($post->post_type);
             if ($type == 'Reply') {
@@ -235,14 +234,14 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $author_id = $post->post_author;
             $user = get_userdata($author_id);
             $username = $user->display_name;
-            $cmd1 = "ch qm n New Forum $type: &a$post_title &fby $username&f";
-            $cmd2 = "ch qm n Link: &a$post_link&f";
-            $cmd3 = "ch qm n Type &a/web read $id&f to read in-game";
+            $cmd[] = "ch qm n New Forum $type: &a$post_title &fby $username&f";
         }
+        $cmd[] = "ch qm u Link: &a$post_link&f";
+        $cmd[] = "ch qm u Type &a/web read $id&f to read in-game";
         require_once('/home/minecraft/server/bin/index_wp.php');
-        umc_exec_command($cmd1, 'asConsole');
-        umc_exec_command($cmd2, 'asConsole');
-        umc_exec_command($cmd3, 'asConsole');
+        foreach ($cmds as $cmd) {
+            umc_exec_command($cmd, 'asConsole');
+        }
     }
 }
 
