@@ -30,6 +30,7 @@ $WS_INIT['lot'] = array(
         'user_ban' => 'umc_lot_wipe_user', 
         'user_delete' => 'umc_lot_wipe_user',
         'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory',
+        'server_reboot' => 'umc_uuid_record_lotcount',
     ),
     'default' => array(
         'help' => array(
