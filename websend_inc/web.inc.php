@@ -93,7 +93,7 @@ function umc_web_list() {
     
     global $UMC_USER;
     $args = $UMC_USER['args'];
-    if (!in_array($args[2], $valid_types)) {
+    if (!isset($args[2]) || !in_array($args[2], $valid_types)) {
         umc_error("You need to give a valid type (" . implode(",", $valid_types) . ")");
     }
     $type = $args[2];
