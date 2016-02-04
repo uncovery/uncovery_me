@@ -54,7 +54,7 @@ function umc_web_read() {
 
     $id = strtolower($args[2]);
 
-    if (strpos($id, "c") == 1) {
+    if (strpos($id, "c") === 0) {
         $comment_id = substr($id, 1);
         $C = get_comment($comment_id, ARRAY_A);
         $author = $C['comment_author'];
