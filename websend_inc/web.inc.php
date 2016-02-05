@@ -89,7 +89,7 @@ function umc_web_read() {
 function umc_web_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     
-    $valid_types = array("p", "c");
+    $valid_types = array("p", "c", "f");
     
     global $UMC_USER;
     $args = $UMC_USER['args'];
@@ -114,6 +114,22 @@ function umc_web_list() {
         foreach($posts_array as $P) {
             umc_echo($P->ID . " > " . $P->post_title);
         }
+    } else if ($type == 'f') {
+        $args = array(
+            'posts_per_page'   => 25,
+            'offset'           => 0,
+            'orderby'          => 'date',
+            'order'            => 'DESC',
+            'post_type'        => 'topic',
+            'post_status'      => 'publish',
+            'suppress_filters' => true 
+        );
+        $posts_array = get_posts($args);
+        $count = count($posts_array);
+        umc_header("$count Recent Forum Posts");
+        foreach($posts_array as $P) {
+            umc_echo("f" . $P->ID . " > " . $P->post_title);
+        }        
     } else if ($type == 'c') {
         $args = array(
             'number' => 25,
