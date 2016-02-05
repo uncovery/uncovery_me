@@ -153,7 +153,6 @@ function umc_uuid_record_lotcount($user = false) {
  * @param type $uuid
  */
 function umc_uuid_check_usernamechange($uuid) {
-    return false;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
@@ -470,7 +469,7 @@ function umc_uuid_get_from_logfile($query) {
 function umc_uuid_get_from_mojang($username, $timer = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    if(strlen($username) < 17) {
+    if (strlen($username) < 17) {
         if (!preg_match('/^[A-Za-z_\d ]{1,16}$/', $username)) {
             return false;
         }
@@ -525,14 +524,18 @@ function umc_uuid_mojang_usernames($uuid) {
     // https://api.mojang.com/user/profiles/a0130adc42ad4e619da2f90a5bc310d3/names
     $url = "https://api.mojang.com/user/profiles/$uuid_raw/names";
     $json_result = file_get_contents($url, false);
-    $json_data = json_decode($json_result, true);
-    if (count($json_data) == 0) {
-        $text = var_export($json_data, true);
+    $data_array = json_decode($json_result, true);
+    if (count($data_array) == 0) {
+        $text = var_export($data_array, true);
         XMPP_ERROR_trace("JSON Reply:", $text);
         XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url");
         return false; // invalid uuid or too long username
     }
-    return $json_data;
+    // insert into database
+    $sql = "UPDATE minecraft_srvr.UUID SET username_history=" . umc_mysql_real_escape_string(serialize($data_array))
+        . "WHERE uuid=" .     umc_mysql_real_escape_string($uuid);
+    umc_mysql_execute_query($sql);
+    return $data_array;
 }
 
 function umc_uuid_username_history($uuid) {
