@@ -917,7 +917,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // check if the lot is owned already by someone
     $occupied_check = umc_check_lot_owner($new_lot, false);
     if ($occupied_check) {
-        XMPP_ERROR_send_msg("User $username tried to get $new_lot but someone else owns it! (umc_assign_new_lot)");
+        XMPP_ERROR_trigger("User $username tried to get $new_lot but someone else owns it! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "This lot is owned by someone else already!", 'cost' => $cost);
         return $result;
     }
