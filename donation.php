@@ -87,9 +87,10 @@ function umc_users_donators($uuid = false) {
  */
 function umc_users_downgrade_donators() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
+    $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
-        WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 AND uuid <> 'void'
+        LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
+        WHERE userlevel LIKE '%Plus' AND amount - (DATEDIFF(NOW(), `date`) / 30) > 0 AND donations.uuid <> 'void' 
         GROUP BY uuid
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
@@ -579,6 +580,8 @@ function umc_donation_level($user, $debug = false, $down_only = false) {
     global $UMC_SETTING;
     $date_now = new DateTime("now");
 
+    // we should make a query that eliminates expired donations already in the SQL
+    // see umc_users_downgrade_donators()
     $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid='$uuid';";
     $level = umc_get_uuid_level($uuid);
 
