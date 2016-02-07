@@ -22,8 +22,7 @@
  */
 
 /**
- * This cuntion iterates the plugin folder and includes
- * all the modules in there.
+ * handles the inclusion of all available plugins in the folder
  */
 function umc_plg_include() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -41,6 +40,14 @@ function umc_plg_include() {
     }
 }
 
+/**
+ * looks for the existance of a called command in plugin definitions
+ * 
+ * @global type $WS_INIT
+ * @global type $UMC_USER
+ * @param type $name
+ * @return type
+ */
 function umc_wsplg_find_command($name) {
     global $WS_INIT, $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -66,7 +73,15 @@ function umc_wsplg_find_command($name) {
    return $command;
 }
 
-
+/**
+ * handles the execution of plugin commands
+ * 
+ * @global type $UMC_USER
+ * @global type $WS_INIT
+ * @global type $UMC_SETTING
+ * @param type $module
+ * @return boolean
+ */
 function umc_wsplg_dispatch($module) {
     global $UMC_USER, $WS_INIT, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -116,6 +131,14 @@ function umc_wsplg_dispatch($module) {
     }
 }
 
+/**
+ * show the in-game help for a plugin
+ * 
+ * @global type $UMC_USER
+ * @global type $WS_INIT
+ * @param type $args
+ * @return boolean
+ */
 function umc_show_help($args = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $WS_INIT;
@@ -220,7 +243,9 @@ function umc_show_help($args = false) {
 }
 
 /**
- * Displays the help for all plugins or one specific one on the website.
+ * Displays the help for all plugins or one specific one in HTML for use on the website.
+ * TODO: The css for this should be improved and moved into a separate CSS file where
+ * all plugin CSS are stored.
  *
  * @global type $WS_INIT
  * @global type $UMC_USER
@@ -300,6 +325,19 @@ function umc_plugin_web_help($one_plugin = false) {
     return $out;
 }
 
+/**
+ * Central event handler. Any function can trigger an event of name $event by calling this
+ * function and passing optional parameters. This function then iterates all plugins and 
+ * looks if there is one that recognizes the event. The plugin that recognize the event has 
+ * another function name configured and this event handler then executes the plugins' function
+ * and passes the parameters to it. The plugin function can then return the result back to whatever
+ * triggered the event.
+ * 
+ * @global type $WS_INIT
+ * @param string $event event name
+ * @param array $parameters event parameters
+ * @return misc
+ */
 function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WS_INIT;
@@ -344,7 +382,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             }
             // execute the function, optionally with parameters
             if ($parameters) {
-                $params_txt = implode(", ", $parameters);
+                //$params_txt = implode(", ", $parameters);
                 //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
                 return $function($parameters);
             } else {
