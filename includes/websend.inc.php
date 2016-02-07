@@ -299,6 +299,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
         //$check = $ws->writeOutputToConsole("error");
     }
     $ws->disconnect();
+    return $check;
 }
 
 /*
@@ -372,12 +373,12 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     $cmd = str_replace(';', '', $cmd_raw);
     
     // this is debugging info
-    if (!$silent) {
+    /* if (!$silent) {
         $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
-        // $log_cmd = str_replace($color_arr, '', $cmd);
-        // print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
-    }
-
+        $log_cmd = str_replace($color_arr, '', $cmd);
+        print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
+    } */
+    
     switch ($how) {
         case 'asConsole':
             print("/Command/ExecuteConsoleCommand:" . $cmd . ";");
