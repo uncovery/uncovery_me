@@ -898,7 +898,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/f/fb/Grid_Cactus.png',
     ),
-    'clay' => array(
+    'clayblock' => array(
         'id' => 82,
         'stack' => 64,
         'avail' => true,
@@ -3599,4 +3599,5 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'record_10' => 'record_ward',
     'monster_egg' => 'spawn_egg',
     'melon' => 'melonslice',
+    'clay' => 'clayblock',
 );
