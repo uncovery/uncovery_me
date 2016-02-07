@@ -102,7 +102,7 @@ function run_umc_scheduler() {
     
     $default_commands = array(
         "mv gamerule doDaylightCycle false darklands",
-        "time 00:00 darklands",
+        "time set 00:00 darklands",
         "mv gamerule naturalRegeneration false deathlands",
     );
     umc_schedule_exec($default_commands);    
