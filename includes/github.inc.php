@@ -44,6 +44,7 @@ function umc_github_client_connect($owner, $repo) {
 
 /**
  * Post an update to the website with the recent updates of Github issues
+ * this should happen on server restart by event
  * 
  * @global array $GITHUB
  * @return type
