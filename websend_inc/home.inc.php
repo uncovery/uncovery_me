@@ -252,6 +252,10 @@ function umc_home_buy() {
     }
     $leftover = $bank - $cost;
 
+    if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
+        umc_error("Sorry, you cannot set a home this high in the nether!");
+    }    
+    
     // transfer the money
     umc_money($UMC_USER['uuid'], false, $cost);
 
@@ -328,6 +332,9 @@ function umc_home_update() {
         $new_name = umc_mysql_real_escape_string(trim($args[3]));
         $name_update = " `name`=$new_name,";
         $log_addon = " and the name of the home was changed to " . $args[3];
+    }
+    if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
+        umc_error("Sorry, you cannot set a home this high in the nether!");
     }
 
     $sql = "UPDATE minecraft_srvr.`homes` SET $name_update `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
