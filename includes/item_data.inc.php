@@ -230,8 +230,8 @@ $ENCH_ITEMS = array(
     'ARROW_KNOCKBACK'         =>array('short'=> 'Punch',  'name'=>'Punch', 'items'=>   array(261), 'max'=>2),
     'ARROW_FIRE'              =>array('short'=> 'Flame',  'name'=>'Flame', 'items'=>   array(261), 'max'=>1),
     'ARROW_INFINITE'          =>array('short'=> 'Inf',    'name'=>'Infinity', 'items'=>array(261), 'max'=>1),
-    'LURE'                    =>array('short'=> 'Lure',   'name'=>'Luck', 'items'=>   array(346), 'max'=>1),
-    'LUCK'                    =>array('short'=> 'Luck',   'name'=>'Lure', 'items'=>array(346), 'max'=>1),
+    'LURE'                    =>array('short'=> 'Lure',   'name'=>'Lure', 'items'=>   array(346), 'max'=>1),
+    'LUCK'                    =>array('short'=> 'Luck',   'name'=>'Luck', 'items'=>array(346), 'max'=>1),
 );
 
 
