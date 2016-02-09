@@ -1821,6 +1821,12 @@ $UMC_DATA = array(
         'avail' => false,
         'icon_url' => '/e/e2/Grid_Dark_Oak_Door.png',
     ),
+    'end_rod' => array(
+        'id' => 198,
+        'stack' => 64,
+        'avail' => false,
+        'icon_url' => '/0/0b/End_Rod.png',
+    ),    
     'chorus_plant' => array(
         'id' => 199,
         'stack' => 64,
@@ -1869,6 +1875,24 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/e/ea/End_Stone_Bricks.png',
     ),
+    'grass_path' => array(
+        'id' => 208,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/a/a9/Grass_Path.png',
+    ),    
+    'end_gateway' => array(
+        'id' => 209,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/6/6e/End_Gateway_(block).png',
+    ),      
+    'frosted_ice' => array(
+        'id' => 212,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/77/Ice.png',
+    ),         
 
     /*************************************************/
     /*                ITEMS                          */
@@ -2896,6 +2920,7 @@ $UMC_DATA = array(
             66 => array('name' => 'witch_egg', 'avail' => true, 'icon_url' => '/7/7c/Grid_Spawn_Witch.png'),
             67 => array('name' => 'endermite_egg', 'avail' => true, 'icon_url' => '/a/af/Grid_Spawn_Endermite.png'),
             68 => array('name' => 'guardian_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'),
+            69 => array('name' => 'shulker_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'), //TODO: fix icon
             90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'),
             91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'),
             92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'),
@@ -2999,6 +3024,7 @@ $UMC_DATA = array(
             2 => array('name' => 'zombie_head', 'avail' => true, 'icon_url' => '/6/6f/Grid_Zombie_Head.png'),
             3 => array('name' => 'head', 'avail' => true, 'icon_url' => '/5/55/Grid_Head.png'),
             4 => array('name' => 'creeper_head', 'avail' => true, 'icon_url' => '/c/c7/Grid_Creeper_Head.png'),
+            5 => array('name' => 'dragon_head', 'avail' => true, 'icon_url' => '/b/b6/Dragon_Head.png'),
         ),
     ),
     'carrot_on_a_stick' => array(
@@ -3192,6 +3218,12 @@ $UMC_DATA = array(
         'stack' => 16,
         'avail' => true,
         'icon_url' => '/2/24/Grid_White_Banner.png',
+    ),
+    'end_crystal' => array(
+        'id' => 426,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/2/24/Grid_White_Banner.png', // TODO Fix icon
     ),
     'spruce_door' => array(
         'id' => 427,
