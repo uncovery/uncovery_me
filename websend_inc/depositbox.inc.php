@@ -759,7 +759,7 @@ function umc_depositbox_realcount($uuid, $searchtype = false) {
         case 'system':
             return $system_count;
         case 'occupied':
-            return $occcupied_count;
+            return $occupied_count;
         case 'purchased':
             return $purchased_count;
         case 'total':
