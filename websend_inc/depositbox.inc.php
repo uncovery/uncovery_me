@@ -194,7 +194,7 @@ function umc_depositbox_purchase(){
     umc_depositbox_create(0,'reusable-0000-0000-0000-000000000000', '', '$uuid', 0, '');
 
     // create log of action taken
-    $text = "$player bought deposit box $next for $cost uncs";
+    $text = "$player ($uuid) bought deposit box $next for $cost uncs";
     umc_log('depositbox','purchase',$text);
     
     // provide user feedback
@@ -224,7 +224,7 @@ function umc_depositbox_check() {
     $bank = umc_money_check($UMC_USER['uuid']);
     
     // output the return values to the chat window
-    umc_header("Checking Depositbox Status");
+    umc_header("Your Depositbox Status");
     umc_echo("You currently have $purchased owned boxes.");
     umc_echo("$empty entries are owned, empty boxes.");
     umc_echo("$occupied entries are owned and have contents inside.");
@@ -238,6 +238,7 @@ function umc_depositbox_check() {
 
 /**
  * calculates the cost of deposit box number passed to purchase
+ * TODO: Make the costs a part of the configuration instead of hard-coding it.
  * 
  * @param type $count
  * @return type
@@ -250,7 +251,7 @@ function umc_depositbox_calc_costs($count) {
 }
 
 /**
- * Show a list of deposit box contents
+ * Show a list of deposit box contents, ignores empty deposit boxes.
  *
  * @global type $UMC_USER
  * @global array $UMC_SETTING
@@ -278,7 +279,10 @@ function umc_show_depotlist($silent = false) {
         $web = true;
     }
 
-    $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND sender_uuid<>'reusable-0000-0000-0000-000000000000' ORDER BY id, damage, amount DESC;";
+    $sql = "SELECT * FROM minecraft_iconomy.deposit 
+        WHERE (sender_uuid = '$uuid' OR recipient_uuid = '$uuid') 
+        AND sender_uuid <> 'reusable-0000-0000-0000-000000000000' 
+        ORDER BY id, damage, amount DESC;";
     $D = umc_mysql_fetch_all($sql);
     $num_rows = count($D);
     $web_arr = array();
@@ -460,6 +464,7 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     $recipient_uuid = umc_uuid_getone($recipient, 'uuid');
     $sender_uuid = umc_uuid_getone($sender, 'uuid');
 
+    // TODO: just get a count here instead of all lines. Also only get the field we need
     $sql = "SELECT * FROM minecraft_iconomy.deposit
         WHERE item_name='$item_name' AND recipient_uuid='$recipient_uuid'
         AND damage='$data' AND meta='$meta' AND sender_uuid='$sender_uuid';";
@@ -468,18 +473,22 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
         // check first if some of item from same source is already in deposit
     if (count($D) > 0) {
         $row = $D[0];
-        $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+$amount WHERE `id`={$row['id']} LIMIT 1;";
+        $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+$amount
+            WHERE `id`={$row['id']} LIMIT 1;";
     } else {
         // otherwise create a new deposit box
-        $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
-            VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
+        $sql = "INSERT INTO minecraft_iconomy.`deposit` 
+            (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+            VALUES 
+            ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
     }
     //umc_echo($sql);
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql, true);
 }
 
 /**
  * primary deposit gateway function
+ * TODO rename this function to umc_deposit_?
  * 
  * @global type $UMC_USER
  * @global type $UMC_DATA
@@ -577,12 +586,13 @@ function umc_do_deposit_internal($all = false) {
         // get amount of empty deposit boxes reciever has
         $emptyboxes = umc_depositbox_realcount($uuid, 'empty');
 
-        // check first if item already is being sold
+        // check first if item is already in the inventoryso we dont need additional boxes
         if (count($D) > 0) {
             $row = $D[0];
             umc_echo("{green}[+]{gray} You already have {$item['full']}{gray} in the deposit for {gold}$recipient{gray}, adding {yellow}$amount{gray}.");
-            $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
-            umc_mysql_query($sql, true);
+            $sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount'
+                WHERE `id`={$row['id']} LIMIT 1;";
+            umc_mysql_execute_query($sql, true);
         } else {
             
             //check if recipient has space
@@ -595,6 +605,7 @@ function umc_do_deposit_internal($all = false) {
             }
             
             // check if recipient is an active user
+            // TODO we should checks this outside of the loop, otherwise we check multiple times
             $target_active = umc_user_countlots($recipient);
             if ($target_active == 0 && $recipient != 'lot_reset') {
                 umc_error("{red}[!] {gold}$recipient{gray} is not an active user, so you cannot deposit items for them!");
@@ -611,11 +622,12 @@ function umc_do_deposit_internal($all = false) {
             umc_echo($text);
             
             // create a new deposit box
-            umc_depositbox_create($data, $uuid,$item['item_name'], $recipient_uuid, $amount, $meta);
+            umc_depositbox_create($data, $uuid, $item['item_name'], $recipient_uuid, $amount, $meta);
             umc_log("Deposit","do_deposit", $text);
             
         }
         
+        // take the stuff out of the users inventory
         umc_clear_inv($item['item_name'], $data, $amount, $meta);
     }
     
@@ -631,7 +643,8 @@ function umc_do_deposit_internal($all = false) {
 }
 
 /**
- * ONLY ADDS a new deposit into the deposit database table
+ * ONLY ADDS a new deposit into the deposit database table, with contents.
+ * TODO: make this function always create an empty one, make other values optional.
  * 
  * @param type $damage
  * @param type $sender_uuid
@@ -640,11 +653,13 @@ function umc_do_deposit_internal($all = false) {
  * @param type $amount
  * @param type $meta
  */
-function umc_depositbox_create($damage,$sender_uuid,$item_name, $recipient_uuid, $amount, $meta) {
+function umc_depositbox_create($damage, $sender_uuid, $item_name, $recipient_uuid, $amount, $meta) {
     
-    $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
-                    VALUES ('$damage', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
-    umc_mysql_query($sql, true);
+    $sql = "INSERT INTO minecraft_iconomy.`deposit` 
+        (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
+        VALUES 
+        ('$damage', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
+    umc_mysql_execute_query($sql, true);
    
 }
 
@@ -686,7 +701,8 @@ function umc_depositbox_system_UUID_check($uuid) {
 function umc_depositbox_realcount($uuid, $searchtype = false) {
     
     // fetch all entries targeting suplied uuid
-    $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';");
+    $sql = "SELECT amount, sender_uuid FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid';";
+    $D = umc_mysql_fetch_all($sql);
     
     // establish fresh counts for each type
     $empty_count = 0;
