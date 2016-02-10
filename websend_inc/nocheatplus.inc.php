@@ -10,24 +10,129 @@ global $UMC_SETTING;
 $UMC_SETTING['nocheatplus']['logfile'] = '/home/minecraft/server/bukkit/plugins/NoCheatPlus/nocheatplus.log';
 
 function umc_nocheatplus_web() {
-    // get actions
-    $sql = "SELECT action, count(log_id) as counter FROM minecraft_log.nocheatplus GROUP BY action ORDER BY action;";
-    $A = umc_mysql_fetch_all($sql);
-    $data = array();
+    global $UMC_DOMAIN;
+    $drop_sql = 'SELECT count(log_id) as counter, `action`
+        FROM minecraft_log.nocheatplus
+        GROUP BY `action`';
+    $A = umc_mysql_fetch_all($drop_sql);
+    $drop_data = array();
     foreach ($A as $row) {
-        $data[strtolower($row['action'])] = $row['action'] . " (" . $row['counter'] . ")";
+        $drop_data[$row['action']] = ucwords($row['action']) . " (" . $row['counter'] . ")";
     }
     
-    $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
-    if (!isset($data[$action])) {
+    $post_action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
+    if (is_null($post_action)) {
         $action = 'passable';
+    } else {
+        $action = $post_action;
     }
     
-    $out = umc_web_dropdown($data, "action", $action, true);
+    $out = "<form action=\"\" method=\"post\">\n";
+    $out .= umc_web_dropdown($drop_data, "action", $action, true);
     
+    $sql_action = umc_mysql_real_escape_string($action);
+    $sql = "SELECT count(log_id) AS hit_count, DATE_FORMAT(`date`,'%Y-%u') AS date, sum(level)/count(log_id) as average
+        FROM minecraft_log.nocheatplus
+        WHERE action=$sql_action
+        GROUP BY `action`, DATE_FORMAT(`date`,'%Y-%u')
+        ORDER BY `date` ASC";
+    $D = umc_mysql_fetch_all($sql);
     
+    $data_arr = array();
+    foreach ($D as $d) {
+        $data_arr[$d['date']]["hit_count"] = $d['hit_count'];
+        $data_arr[$d['date']]["average"] = $d['average'];
+    }
     
+    $out .= "\n<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
+        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
+        . "<div id=\"chartdiv\" style=\"width: 100%; height: 400px;\"></div>\n"
+        . "<script type='text/javascript'>//<![CDATA[\n"
+        . "var chart;\n"
+        . "var chartData = [\n";
     
+    $actions = array();
+    foreach ($data_arr as $date => $action_data) {
+        $out .= "{\"date\": \"$date\",";
+        foreach ($action_data as $action => $count) {
+            $out .= "\"$action\": $count,";
+            $actions[$action] = $action;
+        }
+        $out .= "},\n";
+    }
+    $out .= "];\n";
+
+    $out .= 'AmCharts.ready(function () {
+    // SERIAL CHART
+    chart = new AmCharts.AmSerialChart();
+    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
+    chart.dataProvider = chartData;
+    chart.marginTop = 10;
+    chart.categoryField = "date";
+
+    // AXES
+    // Category
+    var categoryAxis = chart.categoryAxis;
+    categoryAxis.gridAlpha = 0.07;
+    categoryAxis.axisColor = "#DADADA";
+    categoryAxis.startOnAxis = true;
+
+    // Value
+    var valueAxis = new AmCharts.ValueAxis();
+    // valueAxis.stackType = "regular"; // this line makes the chart "stacked"
+    valueAxis.gridAlpha = 0.07;
+    valueAxis.title = "Average";
+    valueAxis.id = "average";
+    valueAxis.position = "left";
+    chart.addValueAxis(valueAxis);
+    
+    var valueAxis = new AmCharts.ValueAxis();
+    // valueAxis.stackType = "regular"; // this line makes the chart "stacked"
+    valueAxis.gridAlpha = 0.07;
+    valueAxis.title = "Hitcount";
+    valueAxis.id = "hit_count";
+    valueAxis.position = "right";
+    chart.addValueAxis(valueAxis);';           
+
+    foreach ($actions as $action) {
+        $out .= "\nvar graph = new AmCharts.AmGraph();
+        graph.type = \"line\";
+        graph.hidden = false;
+        graph.title = \"$action\";
+        graph.valueField = \"$action\";
+        graph.valueAxis = \"$action\",
+        graph.lineAlpha = 1;
+        graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
+        graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$action: <b>[[value]]</b></span>\";
+        chart.addGraph(graph);";
+    }
+
+    $out .= '// LEGEND
+        var legend = new AmCharts.AmLegend();
+        legend.position = "top";
+        legend.valueText = "[[value]]";
+        legend.valueWidth = 100;
+        legend.valueAlign = "left";
+        legend.equalWidths = false;
+        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
+        chart.addLegend(legend);
+
+        // CURSOR
+        var chartCursor = new AmCharts.ChartCursor();
+        chartCursor.cursorAlpha = 0;
+        chart.addChartCursor(chartCursor);
+
+        // SCROLLBAR
+        var chartScrollbar = new AmCharts.ChartScrollbar();
+        chartScrollbar.color = "#FFFFFF";
+        chart.addChartScrollbar(chartScrollbar);
+
+        // WRITE
+        chart.write("chartdiv");
+        });
+        //]]></script>';  
+    
+    $out .= "</form>";
     return $out;
 }
 
