@@ -821,7 +821,7 @@ function umc_depositbox_consolidate() {
     // find all duplicate entries
     $sql_doubles = " SELECT count(id) AS counter, item_name, damage, meta, sender_uuid
         FROM minecraft_iconomy.deposit
-        WHERE recipient_uuid='$uuid'
+        WHERE recipient_uuid='$uuid' AND sender_uuid <> 'reusable-0000-0000-0000-000000000000'
         GROUP BY item_name, damage, meta HAVING COUNT(id) > 1";
     
     $doubles = umc_mysql_fetch_all($sql_doubles);
