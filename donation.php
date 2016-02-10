@@ -90,7 +90,7 @@ function umc_users_downgrade_donators() {
     $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
         LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
-        WHERE userlevel LIKE '%Plus' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 1 AND donations.uuid <> 'void' 
+        WHERE userlevel LIKE '%Plus' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void' 
         GROUP BY uuid
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
