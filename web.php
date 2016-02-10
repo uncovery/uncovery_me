@@ -530,10 +530,12 @@ function umc_web_sphere_generator() {
 }
 
 /**
- * Create a dropdown for all active users
- *
- * @param type $fieldname
- * @param type $presel_uuid
+ * Create a generic dropdown
+ * 
+ * @param type $data in the form of array('key' => 'value')
+ * @param type $fieldname is the form field to be used in POST
+ * @param type $presel_key an optional key to have the dropdown be preselected on
+ * @param type $submit_on_change use onchange="this.form.submit()"
  * @return string
  */
 function umc_web_dropdown($data, $fieldname, $presel_key = false, $submit_on_change = false) {
