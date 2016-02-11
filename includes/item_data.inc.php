@@ -2920,7 +2920,7 @@ $UMC_DATA = array(
             66 => array('name' => 'witch_egg', 'avail' => true, 'icon_url' => '/7/7c/Grid_Spawn_Witch.png'),
             67 => array('name' => 'endermite_egg', 'avail' => true, 'icon_url' => '/a/af/Grid_Spawn_Endermite.png'),
             68 => array('name' => 'guardian_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'),
-            69 => array('name' => 'shulker_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'), //TODO: fix icon
+            69 => array('name' => 'shulker_egg', 'avail' => true, 'icon_url' => '/c/c7/Grid_Spawn_Shulker.png'),
             90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'),
             91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'),
             92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'),
@@ -3223,7 +3223,7 @@ $UMC_DATA = array(
         'id' => 426,
         'stack' => 64,
         'avail' => true,
-        'icon_url' => '/2/24/Grid_White_Banner.png', // TODO Fix icon
+        'icon_url' => '/d/d3/Ender_Crystal.gif',
     ),
     'spruce_door' => array(
         'id' => 427,
