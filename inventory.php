@@ -324,7 +324,7 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
 
 /**
  * Reset a user's world inventory, used in various applications
- * 
+ *
  * @global type $UMC_PATH_MC
  * @param type $uuid
  * @param type $world
@@ -348,4 +348,102 @@ function umc_inventory_delete_world($uuid, $world) {
         $status = true;
     }
     return $status;
+}
+
+function umc_inventory_import() {
+    $path_root = '/home/minecraft/server/bukkit/plugins/Multiverse-Inventories';
+    // enderchest content path: /groups/enderchest
+    $paths = array(
+        'groups/invshares',
+        'groups/enderchest',
+        'groups/creative',
+        'groups/xpshares',
+        'worlds/aether',
+        'worlds/city',
+        'worlds/darklands',
+        'worlds/deathlands',
+        'worlds/draftlands',
+        'worlds/empire',
+        'worlds/flatlands',
+        'worlds/hunger',
+        'worlds/kingdom',
+        'worlds/nether',
+        'worlds/skyblock',
+        'worlds/the_end',
+        'players',
+    );
+    foreach ($paths as $path) {
+        $inv = file_get_contents("$path_root/$path/uncovery.json");
+        $inv_array = json_decode($inv, true);
+        XMPP_ERROR_trace("$path Inv:", $inv_array);
+    }
+
+    $active_users = umc_get_active_members('name');
+
+    $sql = "TRUNCATE minecraft_iconomy.multiinv_multiinv;";
+    umc_mysql_execute_query($sql);
+
+    $usernames = array();
+
+    $dirs = array("$path_root/groups/xpshares", "$path_root/groups/invshares");
+    foreach ($dirs as $dir) {
+        $files = array_diff(scandir($dir), array('..', '.'));
+        foreach ($files as $userfile) {
+            $username = strtolower(substr($userfile, 0, -5));
+            $usernames[$username] = $userfile;
+        }
+    }
+
+    $empty_str = 'AIR,0,0,0;';
+    $new_inv = '';
+    // IRON_SWORD,1,0,0;
+    // CLAY,2,0,0;
+    // BOW,1,0,ARROW_DAMAGE-10000#ARROW_FIRE-10000#DURABILITY-10000#ARROW_INFINITE-10000,#NM#NQ2h1Y2sgTm9ycmlzJyBHdW4=#L#R0;
+    // WOOD_SPADE,1,6,0;
+    // DIRT,6,0,0;
+    // SEEDS,1,0,0;
+
+
+    // STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0:DIAMOND_BOOTS,1,0,0;DIAMOND_LEGGINGS,1,0,0;DIAMOND_CHESTPLATE,1,0,0;DIAMOND_HELMET,1,0,0
+    //foreach ($active_users as $uuid => $username) {
+        $username = 'uncovery';
+        $real_name = $usernames[$username];
+        //$XP = file_get_contents("$path_root/groups/xpshares/$real_name");
+        $INV = file_get_contents("$path_root/groups/invshares/$real_name");
+
+        if (!$XP || !$INV) {
+            XMPP_ERROR_trigger("$username / $uuid file could nto be found!");
+        }
+        $inv_array = json_decode($INV, true);
+        //$xp_array = json_decode($XP, true);
+        $inv_root = $inv_array['SURVIVAL']['inventoryContents'];
+        for ($i=0; $i<=39; $i++) {
+            if (isset($inv_root[$i])) {
+                $item_name = $inv_root[$i]['type'];
+                $damage = '0';
+                if (isset($inv_root[$i]['damage'])) {
+                    $damage = $inv_root[$i]['damage'];
+                }
+                $amount = '1';
+                if (isset($inv_root[$i]['amount'])) {
+                    $amount = $inv_root[$i]['amount'];
+                }
+                $ench_txt = '0';
+                if (isset($inv_root[$i]['meta'])) {
+                    $enchs = $inv_root[$i]['meta']['enchants'];
+                    foreach ($enchs as $ench => $strength) {
+                        $ench_arr[] = $ench . "-" . $strength;
+                    }
+                    $ench_txt = implode("#",$ench_arr);
+                }
+                $new_inv .= "$item_name,$amount,$damage,$ench_txt;";
+            } else {
+                $new_inv .= $empty_str;
+            }
+        }
+
+        XMPP_ERROR_trace("$username Inv:", $inv_array);
+        XMPP_ERROR_trace("$username New Inv:", $new_inv);
+        return;
+    //}
 }
