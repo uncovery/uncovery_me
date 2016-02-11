@@ -112,11 +112,11 @@ function umc_log_get_usernames() {
 }
 
 function umc_log_web_display() {
-    
+
     /*
-     * 
+     *
      */
-    
+
     global $UMC_USER, $UMC_DOMAIN;
     $out = '';
     if (!$UMC_USER) {
@@ -484,7 +484,7 @@ function umc_log_logblock() {
     }
 
     $uuid = $UMC_USER['uuid'];
-    $types = array('blocks' => false, 'kills' => '-kills', 'chest' => '-chest',); // 
+    $types = array('blocks' => false, 'kills' => '-kills', 'chest' => '-chest',); //
     $worlds = array('empire', 'kingdom');
     $lots = umc_user_getlots($uuid, $worlds);
     if (count($lots) == 0 ) {
@@ -548,12 +548,12 @@ function umc_log_logblock() {
             WHERE 1 $username_filter $lot_filter;";
     } else {
         $count_sql = "SELECT count(`lb-$post_world-chest`.id) AS counter
-            FROM minecraft_log.`lb-$post_world-chest` 
+            FROM minecraft_log.`lb-$post_world-chest`
             LEFT JOIN minecraft_log.`lb-$post_world` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
             LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
             WHERE 1 $username_filter $lot_filter";
     }
-    
+
     $C = umc_mysql_fetch_all($count_sql);
     if (count($C) > 0) {
         $num_rows = $C[0]['counter'];
@@ -595,7 +595,7 @@ function umc_log_logblock() {
     $chest_headers = '<th>Removed</th><th>Placed</th>';
     if ($post_type == 'chest') {
         $chest_headers = "<th>Block</th><th>Source</th><td>Amount</td>";
-    }    
+    }
     $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th>$chest_headers<th>Lot</th><th>Coordinates</th></tr>\n";
     $yesterday = '';
 
@@ -606,8 +606,8 @@ function umc_log_logblock() {
                 WHERE 1 $username_filter $lot_filter
                 ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
     } else {
-        $sql = "SELECT `lb-$post_world-chest`.id as id, playername, uuid, itemtype as replaced, itemamount, itemdata as data, type, x,y,z, date 
-            FROM minecraft_log.`lb-$post_world-chest` 
+        $sql = "SELECT `lb-$post_world-chest`.id as id, playername, uuid, itemtype as replaced, itemamount, itemdata as data, type, x,y,z, date
+            FROM minecraft_log.`lb-$post_world-chest`
             LEFT JOIN minecraft_log.`lb-$post_world` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
             LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
             WHERE 1 $username_filter $lot_filter";
@@ -669,110 +669,6 @@ function umc_logores_item_name($type, $data = 0) {
         return "$type:$data";
     }
     return $item_arr['name'];
-}
-
-function umc_universal_web_stats() {
-    global $UMC_DOMAIN;
-    $sql = "SELECT `date`, COUNT( DISTINCT username) AS users
-        FROM minecraft_log.universal_log
-        WHERE (plugin,action) IN (('system','login'))
-        GROUP BY `date`
-        ORDER BY `date`;";
-
-    $out = '<h2>Unique user logins per day</h2>';
-    $maxval = 0;
-    $minval = 0;
-    $legend = array();
-    $ydata = array();
-    $sites = array();
-
-    // Some data (line 1):
-    foreach ($sites as $site) {
-        $g->set_data($ydata[$site]);
-        // $g->line( 1, '#0000FF', $site, 10 );
-        $g->area_hollow( 2, 3, 25, '#CC3399' );
-    }
-    $out .= "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
-    //
-    $D = umc_mysql_fetch_all($sql);
-    foreach ($D as $row) {
-        $maxval = max($maxval, $row['users']);
-        $minval = min($minval, $row['users']);
-        $date = $row['date'];
-        $legend[$date] = $date;
-        $ydata[$date] = $row['users'];
-    }
-
-    foreach ($ydata as $date => $count) {
-        $out .= "{\"Date\": \"$date\",";
-        $out .= "\"Users\": $count,";
-        $out .= "},\n";
-    }
-    $out .= "];\n";
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "Date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Value
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.stackType = "regular"; // this line makes the chart "stacked"
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Users";
-    chart.addValueAxis(valueAxis);';
-
-    $out .= "var graph = new AmCharts.AmGraph();
-        graph.type = \"line\";
-        graph.hidden = false;
-        graph.title = \"Users\";
-        graph.valueField = \"Users\";
-        graph.lineAlpha = 1;
-        graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-        graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>Logins: <b>[[value]]</b></span>\";
-        chart.addGraph(graph);";
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
-
-    return $out;
 }
 
 function umc_log_kill_display() {
