@@ -651,15 +651,15 @@ function umc_web_userstats() {
     }
 
     $out = "<h2>User stats:</h2>\n"
-        . umc_web_javachart($X, 'userstats', 'weeks', 'regular', false);
+        . umc_web_javachart($X, 'weeks', 'regular', false);
     return $out;
 }
 
 /**
- * Generic 2D Chart generator.
+ * Generic 2D Chart generator. Supports multiple axis
  *
  * @global type $UMC_DOMAIN
- * @param array $data as in array('Jan 2016' => array('row1' => 1, 'row2' => 2);
+ * @param array $data as in array('Jan 2016' => array('row1' => 1, 'row2' => 2), ..) ;
  * @param string $y_axis_name name for the Y-axis
  * @param string $stacktype any of "none", "regular", "100%", "3d".
  * @param array $axis_groups as in array('row1' => 'left', 'row2' => right) or false
@@ -667,7 +667,6 @@ function umc_web_userstats() {
  * @return string
  */
 function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart') {
-    global $UMC_DOMAIN;
     $out = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>'
