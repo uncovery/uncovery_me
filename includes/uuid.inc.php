@@ -506,6 +506,23 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
 }
 
 /**
+ * checks if the username history exists. If not, we update it.
+ * 
+ * @param type $uuid
+ */
+function umc_uuid_check_history($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT username_history FROM minecraft_srvr.UUID
+        WHERE UUID=$sql_uuid
+	LIMIT 1;";
+    $D = umc_mysql_fetch_all($sql);
+    if ($D[0]['username_history'] == '') {
+        umc_uuid_mojang_usernames($uuid);
+    }
+} 
+
+/**
  * Get historical usernames from Mojang
  * 
  * @param type $uuid
