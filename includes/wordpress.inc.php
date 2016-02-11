@@ -51,7 +51,9 @@ function umc_wp_get_vars() {
             $UMC_USER['uuid'] = $uuid;
             $UMC_USER['userlevel'] = 'Guest';
         } else { // there is a logged-in user
-            umc_uuid_check_usernamechange($uuid);
+            // we do not check here since we do not know if the username is correct 
+            // also we do not want to check at mojang every time.
+            // umc_uuid_check_usernamechange($uuid, $UMC_USER['username']);
             $UMC_USER['email'] = $user_email;
             $UMC_USER['username'] = umc_uuid_getone($uuid, 'username');
             $UMC_USER['uuid'] = $uuid;
