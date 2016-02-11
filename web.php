@@ -531,7 +531,7 @@ function umc_web_sphere_generator() {
 
 /**
  * Create a generic dropdown
- * 
+ *
  * @param type $data in the form of array('key' => 'value')
  * @param type $fieldname is the form field to be used in POST
  * @param type $presel_key an optional key to have the dropdown be preselected on
@@ -632,101 +632,122 @@ function umc_web_set_fingerprint() {
 }
 
 function umc_web_userstats() {
-    global $UMC_DOMAIN, $UMC_SETTING;
+    global $UMC_DOMAIN;
 
-    $sql = 'SELECT count(UUID) as count, SUBSTRING(userlevel,1,1) as level, DATE_FORMAT(firstlogin, "%Y-%u") as date FROM minecraft_srvr.UUID WHERE firstlogin > 0 GROUP BY SUBSTRING(userlevel,1,1), DATE_FORMAT(firstlogin,"%Y-%u")';
+    $sql = 'SELECT count(UUID) as count, SUBSTRING(userlevel,1,1) as level, DATE_FORMAT(firstlogin, "%Y-%u") as date
+        FROM minecraft_srvr.UUID
+        WHERE firstlogin > 0
+        GROUP BY SUBSTRING(userlevel,1,1), DATE_FORMAT(firstlogin,"%Y-%u")';
     $D = umc_mysql_fetch_all($sql);
-    $X = array();
 
+    $X = array();
     foreach ($D as $row) {
         if ($row['level'] == 'G') {
-            $level = 'Guest';
+            $level = 'guest';
         } else {
-            $level = 'Settler';
+            $level = 'settler';
         }
         $X[$row['date']][$level] = $row['count'];
     }
 
-    $out = '<h2>User stats:</h2>';
-    //$maxval = 0;
-    //$minval = 0;
+    $out = "<h2>User stats:</h2>\n"
+        . umc_web_javachart($X, 'userstats', 'weeks', 'regular', false);
+    return $out;
+}
 
-    $out .= "\n<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
+/**
+ * Generic 2D Chart generator.
+ *
+ * @global type $UMC_DOMAIN
+ * @param array $data as in array('Jan 2016' => array('row1' => 1, 'row2' => 2);
+ * @param string $y_axis_name name for the Y-axis
+ * @param string $stacktype any of "none", "regular", "100%", "3d".
+ * @param array $axis_groups as in array('row1' => 'left', 'row2' => right) or false
+ * @param string $name to name the whole chart. Needed when we have several in one page.
+ * @return string
+ */
+function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart') {
+    global $UMC_DOMAIN;
+    $out = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>'
+       . "\n<div style=\"width: 100%; height: 500px; font-size: 11px;\" id=\"$name\"></div>\n";
 
-    foreach ($X as $date => $data_set) {
-        $out .= "{\"date\": \"$date\", ";
-        foreach ($data_set as $date_site => $count) {
-            $out .= "\"$date_site\": $count,";
+    $out .= "<script type=\"text/javascript\">
+        var chart = AmCharts.makeChart(\"$name\", {"
+        . '
+        "type": "serial",
+        "theme": "none",
+        "marginRight":30,
+        "legend": {
+            "equalWidths": false,
+            "periodValueText": "total: [[value.sum]]",
+            "position": "top",
+            "valueAlign": "left",
+            "valueWidth": 100
+        },
+        "dataProvider": ['. "\n";
+
+    $graphs = array();
+    foreach ($data as $row => $line) {
+        $out .= "{";
+        $out .= "\"$y_axis_name\": \"$row\",";
+        foreach ($line as $field => $value) {
+            $graphs[$field] = ucwords($field);
+            $out .= " \"$field\": $value,";
         }
         $out .= "},\n";
     }
-    $out .= "];\n";
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Value
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.stackType = "regular"; // this line makes the chart "stacked"
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Sign-ons";
-    chart.addValueAxis(valueAxis);';
-
-    $levels = array('Guest','Settler'); // $UMC_SETTING['ranks'];
-    foreach ($levels as $level) {
-        $out .= "\nvar graph = new AmCharts.AmGraph();
-            graph.type = \"line\";
-            graph.hidden = false;
-            graph.title = \"$level\";
-            graph.valueField = \"$level\";
-            graph.lineAlpha = 1;
-            graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-            graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$level: <b>[[value]]</b></span>\";
-            chart.addGraph(graph);\n";
+    $out .='],
+        "valueAxes": [{
+            "stackType": "'.$stacktype.'",
+            "gridAlpha": 0.07,
+            "position": "left",
+            "title": "Amount"
+        }],
+        "graphs": [' ."\n";
+    $valaxis = '';
+    foreach ($graphs as $graph => $title) {
+        $graphaxis = '';
+        if ($axis_groups) {
+            if (isset($axis_groups[$graph])) {
+                $valaxis .= '{"id": "'.$graph.'", "title": "'.$title.'", "position": "'.$axis_groups[$graph].'"},';
+                $graphaxis = ',"valueAxis": "'.$graph.'",';
+            }
+        }
+        $out .= "{
+            \"title\": \"$title\",
+            \"valueField\": \"$graph\",
+            \"fillAlphas\": 0.6,
+            \"balloonText\": \"$title: [[value]]\"
+            $graphaxis, },\n";
     }
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
+    $out .= '
+        ],
+        "plotAreaBorderAlpha": 0,
+        "marginTop": 10,
+        "marginLeft": 0,
+        "marginBottom": 0,
+        "chartScrollbar": {},
+        "chartCursor": {
+            "cursorAlpha": 0
+        },
+        "categoryField": "'.$y_axis_name.'",
+        "categoryAxis": {
+            "startOnAxis": true,
+            "axisColor": "#DADADA",
+            "gridAlpha": 0.07,
+            "title": "'.ucwords($y_axis_name).'",
+        },' . "\n";
+    if ($axis_groups) {
+        $out .= "\"valueAxes\": [$valaxis],\n";
+    }
+    $out .= '
+        "export": {
+            "enabled": true
+        }
+    });
+</script>';
 
     return $out;
-
 }
