@@ -47,7 +47,7 @@ function umc_settler_new() {
             'minimaps' => false,
             'xray_and_cheats' => true,
             'not_reading_the_website' => true,
-            'swearing' => true,
+            'excessive_swearing' => true,
             'walls_around_your_lot' => true,
             'shaders' => false,
         ),
