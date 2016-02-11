@@ -91,7 +91,7 @@ function umc_ws_eventhandler($event) {
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    $player  = $UMC_USER['username'];
+    $player = $UMC_USER['username'];
     
     // run plugin events
     umc_plugin_eventhandler($event);
@@ -103,7 +103,7 @@ function umc_ws_eventhandler($event) {
             umc_uuid_record_usertimes('lastlogout');
             break;
         case 'PlayerJoinEvent':
-            umc_uuid_check_usernamechange($UMC_USER['uuid']);
+            umc_uuid_check_usernamechange($UMC_USER['uuid'], $UMC_USER['username']);
             umc_donation_level($player);
             umc_promote_citizen($player, false);
             umc_log('system', 'login', "$player logged in");
@@ -121,11 +121,16 @@ function umc_ws_eventhandler($event) {
 }
 
 /**
- * This retrieves the websend environment variables and returns them
+ * This command runs on every user interaction with websend.
+ * It fills all the user variables so we can use them in other functions.
+ * 
+ * @global type $UMC_ENV
+ * @global type $UMC_USER
+ * @global type $UMC_USERS
  */
 function umc_ws_get_vars() {
     // make sure we are on websend
-    global $UMC_ENV, $UMC_USER, $UMC_USERS;
+    global $UMC_ENV, $UMC_USER; //, $UMC_USERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($UMC_ENV !== 'websend') {
         XMPP_ERROR_trigger("Tried to get websend vars, but environment did not match: " . var_export($UMC_ENV, true));
