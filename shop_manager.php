@@ -190,7 +190,6 @@ function umc_shopmgr_items() {
 }
 
 function umc_shopmgr_item_stats($item, $type) {
-    global $UMC_DOMAIN;
     $sql = "SELECT `damage`, AVG(cost / amount) AS price, `meta`, `item_name`, DATE_FORMAT(`date`,'%Y-%u') AS week
         FROM minecraft_iconomy.transactions
         WHERE item_name='$item' AND damage='$type'
@@ -201,89 +200,17 @@ function umc_shopmgr_item_stats($item, $type) {
         GROUP BY week ";
     $D = umc_mysql_fetch_all($sql);
 
-    $out = "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
-    //
-    $sum = 0;
     $count = count($D);
     if ($count == 0) {
         return "No data found";
     }
 
+    $L = array();
     foreach ($D as $d) {
-        //$maxval_amount = max($maxval_amount, $row['amount']);
-        //$maxval_value = max($maxval_value, $row['value']);
-        $date = $d['week'];
-        $price = $d['price'];
-        // {"date": "2013-15","Amount": 121304,"Value": 72679,},
-        $out .= "{\"date\": \"$date\",\"price\": \"$price\"},\n";
-        $sum += $price;
+        $L[$d['week']]['item'] = $d['price'];
     }
-    $out .= "];\n";
 
-    // $average = $sum / $count;
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Amount
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.id = "Avg Price per week";
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Price";
-    valueAxis.position = "right";
-    chart.addValueAxis(valueAxis);
-    var graph = new AmCharts.AmGraph();
-    graph.valueAxis = "price"
-    graph.type = "line";
-    graph.hidden = false;
-    graph.title = "Avg Price per week";
-    graph.valueField = "price";
-    graph.lineAlpha = 1;
-    graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-    graph.balloonText = "<span style=\'font-size:12px; color:#000000;\'>[[date]]: <b>[[price]]</b> Uncs</span>";
-    chart.addGraph(graph);';
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
+    $out = umc_web_javachart($L, 'weeks', 'regular', false);
     return $out;
 }
 
