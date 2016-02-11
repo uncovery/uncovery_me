@@ -239,7 +239,16 @@ $UMC_FAQ = array(
             Further, when a user had large amount of shop offers and became inactive, the offers stayed around and active users had less chances to sell their stuff.
             So we automatically move all shop contents of inactive users to their deposit. So we treat users without lots as inactive users and don\'t allow them to interact with in-game systems until they get a lot.',
         'categories' => array('problems', 'in-game', 'lots', 'rules', 'commands', 'userlevels'),
-    )
+    ),
+    33 => array(
+        'question' => 'Why can\'t I build a nether portal in my empire lot?',
+        'answer' => 'It is NOT possible to build a working nether portal on your lot. The nether can be only reached through the portal in the spawn area. This is a technical matter. Reasons are:
+            The normal world is size limited. Since the nether is at a larger scale than normal worlds, 100 blocks there is 800 blocks in the empire. If you walk only a couple of hundred blocks away from the nether spawn, you would already be far out from the borders of the normal map due to the size ratios 1:8.
+            Creating a nether portal in the normal world makes one in the nether, and making one in the nether either outside of the empire limits or at best in the middle of someone’s lot and building.
+            Also, the nether is not that far away. You can type /spawn and walk a few steps to get to the nether portal, so it’s not as if it was hard to reach the nether
+            However, you can create a nether portal (standard with obsidian and flint & steel) when in the nether, and that portal will bring you to the darklands. The nether scales to the darklands 1:8 so you can make a portal in the nether every 100 blocks which will bring you 800 blocks further in the darklands. HOWEVER, you cannot go back through these portals! They are a one-way street into the darklands!',
+        'categories' => array('worlds', 'in-game', 'lots', 'rules'),
+    ),
 );
 
 /**
