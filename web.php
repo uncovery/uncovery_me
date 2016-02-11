@@ -632,16 +632,14 @@ function umc_web_set_fingerprint() {
 }
 
 function umc_web_userstats() {
-    global $UMC_DOMAIN;
-
     $sql = 'SELECT count(UUID) as count, SUBSTRING(userlevel,1,1) as level, DATE_FORMAT(firstlogin, "%Y-%u") as date
         FROM minecraft_srvr.UUID
         WHERE firstlogin > 0
         GROUP BY SUBSTRING(userlevel,1,1), DATE_FORMAT(firstlogin,"%Y-%u")';
-    $D = umc_mysql_fetch_all($sql);
+    $D1 = umc_mysql_fetch_all($sql);
 
     $X = array();
-    foreach ($D as $row) {
+    foreach ($D1 as $row) {
         if ($row['level'] == 'G') {
             $level = 'guest';
         } else {
@@ -650,9 +648,24 @@ function umc_web_userstats() {
         $X[$row['date']][$level] = $row['count'];
     }
 
-    $out = "<h2>User stats:</h2>\n"
-        . umc_web_javachart($X, 'weeks', 'regular', false);
+    $out = "<h2>Guest to Settler conversion stats:</h2>\n"
+        . umc_web_javachart($X, 'weeks', 'regular', false, 'settlers');
+
+    $sql2 = "SELECT `date`, COUNT( DISTINCT username) AS users
+        FROM minecraft_log.universal_log
+        WHERE (plugin,action) IN (('system','login'))
+        GROUP BY `date`
+        ORDER BY `date`;";
+
+    $D2 = umc_mysql_fetch_all($sql2);
+    $L = array();
+    foreach ($D2 as $row) {
+        $L[$row['date']]['users'] = $row['users'];
+    }
+    $out .= "<h2>Unique user logins per day:</h2>\n"
+        . umc_web_javachart($L, 'weeks', 'regular', false, 'userlogins');
     return $out;
+
 }
 
 /**
