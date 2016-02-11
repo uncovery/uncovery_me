@@ -475,7 +475,6 @@ function umc_shopmgr_show_help_shop() {
  * shows a graphic of the shop trading volume in pieces and values over time
  */
 function umc_shopmgr_stats() {
-    global $UMC_DOMAIN;
     $sql = "SELECT DATE_FORMAT(`date`,'%Y-%u') AS week, SUM(amount) AS amount, SUM(cost) AS value
         FROM minecraft_iconomy.transactions
         WHERE date>'2012-03-00 00:00:00'
@@ -483,108 +482,14 @@ function umc_shopmgr_stats() {
 	    AND buyer_uuid NOT LIKE 'cancel%'
 	GROUP BY week;";
     $D = umc_mysql_fetch_all($sql);
-    //$maxval_amount = 0;
-    //$maxval_value = 0;
-    //$minval = 0;
+
     $ydata = array();
-    $lines = array('Amount', 'Value');
-
-    $out = "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
-    //
     foreach ($D as $row) {
-        //$maxval_amount = max($maxval_amount, $row['amount']);
-        //$maxval_value = max($maxval_value, $row['value']);
         $date = $row['week'];
-        $ydata[$date]['Amount'] = $row['amount'];
-        $ydata[$date]['Value'] = round($row['value']);
+        $ydata[$date]['value'] = round($row['value']);
+        $ydata[$date]['amount'] = $row['amount'];
     }
 
-    foreach ($ydata as $date => $date_sites) {
-        $out .= "{\"date\": \"$date\",";
-        foreach ($date_sites as $date_site => $count) {
-            $out .= "\"$date_site\": $count,";
-        }
-        $out .= "},\n";
-    }
-    $out .= "];\n";
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Value
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.id = "Amount";
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Amount";
-    valueAxis.position = "left";
-    chart.addValueAxis(valueAxis);
-
-    // Amount
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.id = "Value";
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Value";
-    valueAxis.position = "right";
-    chart.addValueAxis(valueAxis);';
-
-    foreach ($lines as $line) {
-        if ($line == 'Value') {
-            $index = 'Uncs';
-        } else {
-            $index = 'Units';
-        }
-        $out .= "var graph = new AmCharts.AmGraph();
-        graph.valueAxis = \"$line\"
-        graph.type = \"line\";
-        graph.hidden = false;
-        graph.title = \"$line\";
-        graph.valueField = \"$line\";
-        graph.lineAlpha = 1;
-        graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-        graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'><b>[[value]]</b> $index</span>\";
-        chart.addGraph(graph);";
-    }
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
+    $out = umc_web_javachart($ydata, 'weeks', 'none', array('amount' => 'left', 'value' => 'right'), 'userlogins');
     return $out;
 }
