@@ -667,6 +667,14 @@ function umc_web_userstats() {
  * @return string
  */
 function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart') {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    // check the stack type
+    $valid_stacktypes = array("none", "regular", "100%", "3d");
+    if (!in_array($stacktype, $valid_stacktypes)) {
+        XMPP_ERROR_trigger('Invalid stacktype!');
+    }
+
     $out = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>'
