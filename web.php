@@ -679,7 +679,7 @@ function umc_web_userstats() {
  * @param string $name to name the whole chart. Needed when we have several in one page.
  * @return string
  */
-function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart') {
+function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart', $sum = true, $height = 500) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check the stack type
@@ -691,22 +691,24 @@ function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false
     $out = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>'
-       . "\n<div style=\"width: 100%; height: 500px; font-size: 11px;\" id=\"$name\"></div>\n";
+       . "\n<div style=\"width: 100%; height: {$height}px; font-size: 11px;\" id=\"$name\"></div>\n";
 
     $out .= "<script type=\"text/javascript\">
         var chart = AmCharts.makeChart(\"$name\", {"
         . '
         "type": "serial",
         "theme": "none",
-        "marginRight":30,
-        "legend": {
-            "equalWidths": false,
-            "periodValueText": "total: [[value.sum]]",
-            "position": "top",
-            "valueAlign": "left",
-            "valueWidth": 100
-        },
-        "dataProvider": ['. "\n";
+        "marginRight":30,' . "\n";
+    if ($sum) {
+            $out .= '"legend": {
+                "equalWidths": false,
+                "periodValueText": "total: [[value.sum]]",
+                "position": "top",
+                "valueAlign": "left",
+                "valueWidth": 100
+            },' . "\n";
+    }
+    $out .= '"dataProvider": ['. "\n";
 
     $graphs = array();
     foreach ($data as $row => $line) {
