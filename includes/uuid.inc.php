@@ -188,7 +188,7 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
         
         $change = true;
     }
-    // log the complete username history
+    // log the complete username history since it changed
     if ($change) {
         umc_uuid_mojang_usernames($uuid);
     }
@@ -507,6 +507,7 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
 
 /**
  * checks if the username history exists. If not, we update it.
+ * returns the history
  * 
  * @param type $uuid
  */
@@ -518,12 +519,17 @@ function umc_uuid_check_history($uuid) {
 	LIMIT 1;";
     $D = umc_mysql_fetch_all($sql);
     if ($D[0]['username_history'] == '') {
-        umc_uuid_mojang_usernames($uuid);
+        // no record available let's get from mojang
+        $previous_names = umc_uuid_mojang_usernames($uuid);
+    } else {
+        $previous_names = unserialize($D[0]['username_history']);
     }
 } 
 
 /**
- * Get historical usernames from Mojang
+ * Get historical usernames from Mojang and update the database
+ * Should be only executed when we know that the username changed
+ * or when we do not have a record on file
  * 
  * @param type $uuid
  * @return boolean
@@ -549,7 +555,7 @@ function umc_uuid_mojang_usernames($uuid) {
 }
 
 function umc_uuid_username_history($uuid) {
-    $previous_names = umc_uuid_mojang_usernames($uuid);
+    $previous_names = umc_uuid_check_history($uuid);
 
     if (count($previous_names) > 1) {
         $names = array();
