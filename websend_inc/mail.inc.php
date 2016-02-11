@@ -274,8 +274,8 @@ function umc_mail_display($id) {
     $sender_uuid = $row['sender_uuid'];
     $sender = umc_user2uuid($sender_uuid);
     $status = $row['status'];
-    $title = stripslashes($row['title']);
-    $message = stripslashes($row['message']);
+    $title = stripslashes(html_entity_decode($row['title']));
+    $message = stripslashes(html_entity_decode($row['message']));
 
     umc_echo("{green}Message ID:{white} $id {green}Sender:{white} $sender {green}Recipient: {white}$recipient");
     umc_echo("{green}Title:{white} $title");
