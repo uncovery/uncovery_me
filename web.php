@@ -719,7 +719,7 @@ function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false
             \"valueField\": \"$graph\",
             \"fillAlphas\": 0.6,
             \"balloonText\": \"$title: [[value]]\"
-            $graphaxis, },\n";
+            $graphaxis},\n";
     }
     $out .= '
         ],
@@ -746,7 +746,6 @@ function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false
             "enabled": true
         }
     });
-</script>';
-
+</script>' . "\n";
     return $out;
 }
