@@ -90,7 +90,7 @@ function umc_users_downgrade_donators() {
     $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
         LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
-        WHERE userlevel LIKE '%Plus' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void' 
+        WHERE userlevel LIKE '%Plus' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void'
         GROUP BY uuid
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
@@ -333,82 +333,26 @@ function umc_process_donation() {
     mail($s_post['payer_email'], $subject, $mailtext, $headers);
 }
 
+/**
+ * Make a chart of all donations in the past
+ *
+ * @return type
+ */
 function umc_donation_java_chart() {
-    global $UMC_SETTING;
-
-    $sql_chart = "SELECT SUM(amount) as monthly, year(date) as date_year, month(date) as date_month
-        FROM minecraft_srvr.`donations` GROUP BY YEAR(date), MONTH(date);";
+    $sql_chart = 'SELECT SUM(amount)-135 as monthly, DATE_FORMAT(`date`, "%Y-%m") as \'month\'
+        FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, "%Y-%m")';
     $D = umc_mysql_fetch_all($sql_chart);
 
-    $lastdate = "2010-11";
     $ydata = array();
-    $legend = array();
-    $minval = $maxval = 0;
     $sum = 0;
 
     foreach ($D as $row) {
-        $month = sprintf("%02d", $row['date_month']);
-        $date = $row['date_year'] . '-' .  $month;
-
-        $datetime1 = new DateTime("$lastdate-01");
-        $datetime2 = new DateTime("$date-01");
-        $interval = $datetime1->diff($datetime2);
-        $int = $interval->format('%m');
-        $int--;
-        for ($i = $int; $i > 0; $i--) {
-            // echo "$i $int - ";
-            $e_date = date("Y-m", mktime(0, 0, 0, $row['date_month'] - $i, 01, $row['date_year']));
-            // $e_month = $row['date_month'] - $i;
-            // $e_date = $row['date_year'] . '-' . $e_month;
-            $sum = $sum - 135;
-            $ydata[] = $sum;
-            //echo $e_date . ": " . $sum . "<br>";
-            $legend[] = $e_date . "-01";
-            $maxval = max($sum, $maxval);
-            $minval = min($sum, $minval);
-
-        }
-        $sum = $sum + $row['monthly'] - 135;
-        //echo $date . ": " . $sum . "<br>";
-        $ydata[] = $sum;
-        $legend[] = $date . "-01";
-        $lastdate = $date;
-        $maxval = max($sum, $maxval);
-        $minval = min($sum, $minval);
+        $sum += $row['monthly'];
+        $ydata[$row['month']]['value'] = $sum;
     }
     $outstanding = $sum * -1;
-
-    require_once($UMC_SETTING['path']['html'] . '/admin/flash/open-flash-chart.php');
-    $g = new graph();
-    //$g->title("Donation Stats", '{font-size: 15px; color: #000000}');
-    $g->bg_colour = '#FFFFFF';
-
-    // Some data (line 1):
-    $g->set_data($ydata);
-    $legend1 = "Cost vs. donations balance in USD";
-    $g->line( 1, '#0000FF', $legend1, 10 );
-    // $g->set_y_legend( $legend1, 12, '#0000FF' );
-    $g->set_y_max( $maxval );
-    $g->set_y_min( $minval );
-    $g->y_axis_colour( '#0000FF', '#DFDFDF' );
-
-    $g->x_axis_colour( '#DFDFDF', '#FFFFFF' );
-    $g->set_x_legend( 'Uncovery Minecraft Server uptime', 12, '#000000' );
-
-    // The X Axis labels are the time, 00:00, 01:00, 02:00 etc...
-    $g->set_x_labels( $legend );
-    $g->set_x_label_style( 8, '#000000', 1, 1, '#DFDFDF' ); // lines in the background
-
-    $g->y_label_steps( 10 );
-
-    $g->set_width( '100%' );
-    $g->set_height( 300 );
-
-    $g->set_output_type('js');
-    $g->set_js_path('/admin/flash/');
-    $g->set_swf_path('/admin/flash/');
-
-    return array('chart' => $g->render(), 'outstanding' => $outstanding);
+    $out = umc_web_javachart($ydata, 'Month', 'none', false, 'amchart', false, 300);
+    return array('chart' => $out, 'outstanding' => $outstanding);;
 }
 
 function umc_donation_calc_average() {
