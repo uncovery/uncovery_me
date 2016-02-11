@@ -161,13 +161,8 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
     // step one: check if the displayname matches the wordpress meta UUID
     $wp_username = umc_uuid_get_from_wordpress($uuid);
     if ($wp_username != $username) {
-        // first we get the worpress ID so we can update it
-        $sql = "SELECT user_login FROM minecraft.`wp_users`
-            LEFT JOIN minecraft.wp_usermeta ON ID=wp_usermeta.user_id
-            LEFT JOIN minecraft_srvr.UUID ON UUID.UUID=wp_usermeta.meta_value
-            WHERE meta_key='minecraft_uuid' AND meta_value='$uuid';";
-        $D = umc_mysql_fetch_all($sql);        
-        $wp_login = $D[0]['user_login'];
+        // first we get the worpress ID so we can update it       
+        $wp_login = umc_wp_get_login_from_uuid($uuid);
         $sql_wp_login = umc_mysql_real_escape_string($wp_login);
         $sql_username = umc_mysql_real_escape_string($username);
         $u_sql_wp = "UPDATE minecraft.wp_users SET display_name=$sql_username WHERE user_login=$sql_wp_login;";
