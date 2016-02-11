@@ -104,6 +104,7 @@ function umc_ws_eventhandler($event) {
             break;
         case 'PlayerJoinEvent':
             umc_uuid_check_usernamechange($UMC_USER['uuid'], $UMC_USER['username']);
+            umc_uuid_check_history($UMC_USER['uuid']);
             umc_donation_level($player);
             umc_promote_citizen($player, false);
             umc_log('system', 'login', "$player logged in");
