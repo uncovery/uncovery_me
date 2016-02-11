@@ -677,6 +677,8 @@ function umc_web_userstats() {
  * @param string $stacktype any of "none", "regular", "100%", "3d".
  * @param array $axis_groups as in array('row1' => 'left', 'row2' => right) or false
  * @param string $name to name the whole chart. Needed when we have several in one page.
+ * @param bool $sum Do we should the sum of all items on the top?
+ * @param int $hight pixel height of the chart
  * @return string
  */
 function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false, $name = 'amchart', $sum = true, $height = 500) {
@@ -750,7 +752,7 @@ function umc_web_javachart($data, $y_axis_name, $stacktype, $axis_groups = false
         "marginTop": 10,
         "marginLeft": 0,
         "marginBottom": 0,
-        "chartScrollbar": {},
+        "chartScrollbar": {"dragIconHeight": 15, "scrollbarHeight": 10},
         "chartCursor": {
             "cursorAlpha": 0
         },
