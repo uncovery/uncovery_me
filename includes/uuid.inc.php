@@ -157,6 +157,7 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $username = strtolower($username_raw);
+    $change = false;
     
     // step one: check if the displayname matches the wordpress meta UUID
     $wp_username = umc_uuid_get_from_wordpress($uuid);
@@ -166,10 +167,12 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
         $sql_wp_login = umc_mysql_real_escape_string($wp_login);
         $sql_username = umc_mysql_real_escape_string($username);
         $u_sql_wp = "UPDATE minecraft.wp_users SET display_name=$sql_username WHERE user_login=$sql_wp_login;";
+        umc_mysql_execute_query($u_sql_wp);
+        
         $logtext = "User $uuid changed username from $wp_username to $username in Wordpress";
         XMPP_ERROR_send_msg($logtext);
         umc_log('UUID', 'Username Change', $logtext);
-        umc_mysql_execute_query($u_sql_wp, true);
+        $change = true;
     }
     
     // step two: check if the UUID table has the right username
@@ -177,10 +180,17 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
     if ($utable_username != $username) {
         $sql_username = umc_mysql_real_escape_string($username);
         $u_sql_uuid = "UPDATE minecraft_srvr.UUID SET username=$sql_username WHERE UUID='$uuid'";
+        umc_mysql_execute_query($u_sql_uuid);
         $logtext = "User $uuid changed username from $utable_username to $username in UUID table";
+        
         XMPP_ERROR_send_msg($logtext);
         umc_log('UUID', 'Username Change', $logtext);
-        umc_mysql_execute_query($u_sql_uuid, true);
+        
+        $change = true;
+    }
+    // log the complete username history
+    if ($change) {
+        umc_uuid_mojang_usernames($uuid);
     }
 }
 
