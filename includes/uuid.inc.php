@@ -157,6 +157,12 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $username = strtolower($username_raw);
+    // safety check
+    if (strlen($uuid) < 17 || strlen($username_raw) < 2) {
+        XMPP_ERROR_trigger("Username change error!");
+        return;
+    }
+    
     $change = false;
     
     // step one: check if the displayname matches the wordpress meta UUID
