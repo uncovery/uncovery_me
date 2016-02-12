@@ -26,7 +26,23 @@
  * Then we re-balance all the
  */
 
-global $UMC_SETTING;
+global $UMC_SETTING, $WS_INIT;
+
+$WS_INIT['userlevel'] = array(  // the name of the plugin
+    'disabled' => false,
+    'events' => array(
+        'PlayerJoinEvent' => 'umc_userlevel_player_check',
+        'server_pre_reboot' => 'umc_userlevel_donation_update_all',
+    ),
+    'default' => array(
+        'help' => array(
+            'title' => 'Userlevl commands',  // give it a friendly title
+            'short' => 'Various Userlevel functions.',  // a short description
+            'long' => "Please see the commands for further info.", // a long add-on to the short  description
+        ),
+    ),
+);
+
 
 $UMC_SETTING['userlevels'] = array(
     'base_levels' => array(
@@ -39,6 +55,20 @@ $UMC_SETTING['userlevels'] = array(
         6 => 'Elder'
     ),
 );
+
+/**
+ * this function is executed on player join event
+ * it makes sure that people have the right citizen and donator status
+ *
+ * @global type $UMC_USER
+ */
+function umc_userlevel_player_check() {
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+
+    umc_userlevel_citizen_update($uuid);
+    umc_userlevel_donator_update($uuid);
+}
 
 /**
  * Get the userlevel of a user
@@ -179,6 +209,23 @@ function umc_userlevel_get_base($userlevel) {
 }
 
 /**
+ * go through all donators and make sure that they are downgraded if required
+ */
+function umc_userlevel_donation_update_all() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
+        FROM minecraft_srvr.donations
+        LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
+        WHERE userlevel LIKE '%Donator%' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void'
+        GROUP BY uuid
+        ORDER BY `leftover` DESC";
+    $result = umc_mysql_fetch_all($sql);
+    foreach ($result as $D) {
+        umc_userlevel_donator_update($D['uuid']);
+    }
+}
+
+/**
  * update the donator status user depending on their past donations.
  *
  * @param type $uuid
@@ -249,4 +296,19 @@ function umc_userlevel_donation_remains($uuid) {
     } else {
         return false;
     }
+}
+
+/**
+ * return an array of all current donators
+ *
+ * @return type
+ */
+function umc_userlevel_donators_list() {
+    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%DonatorPlus';";
+    $D = umc_mysql_fetch_all($sql);
+    $out_arr = array();
+    foreach($D as $row) {
+        $out_arr[] = $row['uuid'];
+    }
+    return $out_arr;
 }
