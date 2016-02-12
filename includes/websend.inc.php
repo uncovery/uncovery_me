@@ -92,7 +92,7 @@ function umc_ws_eventhandler($event) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $player = $UMC_USER['username'];
-    
+
     // run plugin events
     umc_plugin_eventhandler($event);
 
@@ -105,8 +105,6 @@ function umc_ws_eventhandler($event) {
         case 'PlayerJoinEvent':
             umc_uuid_check_usernamechange($UMC_USER['uuid'], $UMC_USER['username']);
             umc_uuid_check_history($UMC_USER['uuid']);
-            umc_donation_level($player);
-            umc_promote_citizen($player, false);
             umc_log('system', 'login', "$player logged in");
             umc_uuid_record_usertimes('lastlogin');
             // check if the user has a skin stored, if not, get it
@@ -124,7 +122,7 @@ function umc_ws_eventhandler($event) {
 /**
  * This command runs on every user interaction with websend.
  * It fills all the user variables so we can use them in other functions.
- * 
+ *
  * @global type $UMC_ENV
  * @global type $UMC_USER
  * @global type $UMC_USERS
@@ -377,14 +375,14 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     }
     // remove colons, just in case
     $cmd = str_replace(';', '', $cmd_raw);
-    
+
     // this is debugging info
     /* if (!$silent) {
         $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
         $log_cmd = str_replace($color_arr, '', $cmd);
         print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
     } */
-    
+
     switch ($how) {
         case 'asConsole':
             print("/Command/ExecuteConsoleCommand:" . $cmd . ";");
