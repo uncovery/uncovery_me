@@ -67,9 +67,9 @@ function umc_nocheatplus_logimport() {
         'runs the command',
     );
     $required_str = '[INFO]';
-    $line = 0;
+    $line_count = 0;
     foreach (new SplFileObject($file_path) as $line) {
-        $line ++;
+        $line_count ++;
         if (!strpos($line, $required_str)) {
             continue;
         }
@@ -95,7 +95,7 @@ function umc_nocheatplus_logimport() {
          */
         if (count($M) < 6) {
             XMPP_ERROR_trace("Matches for $line:", $M);
-            XMPP_ERROR_trigger("line $line not recognized: $line");
+            XMPP_ERROR_trigger("line $line_count not recognized: $line");
             break;
         }
         $date = umc_mysql_real_escape_string(trim($M[1]));
