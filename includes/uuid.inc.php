@@ -394,7 +394,7 @@ function umc_uuid_get_from_logfile($query) {
 
     $str_query = strtolower($query);
     // TODO: this is often too large for memory, we should do this line-by-line
-    $text_path = file("/home/minecraft/server/bukkit/logs/latest.log");
+    $text_path = "/home/minecraft/server/bukkit/logs/latest.log";
     // reverse
     $pattern = '/\[id=(.*),name=(.*),/U';
     $pattern2 = '/UUID of player (.*) is (.*)/';
