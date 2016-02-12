@@ -265,11 +265,6 @@ function umc_server_status() {
                 $out .= "nobody";
             }
             $out = rtrim($out, ", ");
-            // $out .= "<br>". umc_donation_stats();
-            $dlevel = umc_donation_level($UMC_USER['username']);
-            if ($dlevel) {
-                $out .= "<br><strong>Your donation lasts</strong>  $dlevel more months.";
-            }
         } else {
             $out = 'Please login!';
         }
