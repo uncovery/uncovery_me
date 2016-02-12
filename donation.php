@@ -401,7 +401,7 @@ function umc_donation_top_table($outstanding) {
     $sql = "SELECT SUM(amount) as sum, uuid FROM minecraft_srvr.`donations` GROUP BY uuid ORDER by sum DESC LIMIT 25;";
     $D = umc_mysql_fetch_all($sql);
     $out = "<h2>Top 25 Donators</h2>If you are on this list and would like to be named, please tell me.\n<table>";
-    $out .= "\n    <tr><td style=\"text-align:right\">". $outstanding . " USD</td><td style=\"text-align:right\">Uncovery</td></tr>\n";
+    $out .= "\n    <tr><td style=\"text-align:right\">". money_format('%.2n', $outstanding) . " USD</td><td style=\"text-align:right\">Uncovery</td></tr>\n";
     foreach ($D as $row) {
         if ((isset($show_users[$row['uuid']])) && ($uuid == $row['uuid'])) {
             $user = $username . " (You)";
