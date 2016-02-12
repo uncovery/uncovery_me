@@ -60,7 +60,7 @@ function umc_create_map() {
     }
 
     // get donators
-    $donators = umc_users_donators();
+    $donators = umc_userlevel_donators_list();
 
     $track_player_icon = '';
     $find_lot = false;
@@ -285,9 +285,9 @@ function umc_create_map() {
             $owner_username = $opt['owners'][$owner_uuid];
 
             // donation level
-            $donation_level = false;
-            if (isset($donators[$owner_uuid])) {
-                $donation_level = $donators[$owner_uuid];
+            $is_donator = false;
+            if (in_array($owner_uuid, $donators)) {
+                $is_donator = true;
             }
 
             // find out who can keep their lot longer than 1 months
@@ -316,13 +316,13 @@ function umc_create_map() {
                 // $box_color = ' background: rgba(0, 255, 255, 0.2);';
             }
 
-            if ($retain_lot && ($owner_lastlogin < $two_months_ago) && $donation_level < 2) { // too late
+            if ($retain_lot && ($owner_lastlogin < $two_months_ago) && !$is_donator) { // too late
                 $class .= ' red' . $border;
-            } else if ($retain_lot && ($owner_lastlogin < $one_months_ago) && $donation_level < 2) { // still yellow
+            } else if ($retain_lot && ($owner_lastlogin < $one_months_ago) && $is_donator) { // still yellow
                 $class .= ' yellow' . $border;
-            } else if (!$retain_lot && ($owner_lastlogin < $two_months_ago) && ($world == 'aether') && $donation_level < 1) {
+            } else if (!$retain_lot && ($owner_lastlogin < $two_months_ago) && ($world == 'aether') && !$is_donator) {
                 $class .= ' red' . $border;
-            } else if (!$retain_lot && ($owner_lastlogin < $one_months_ago) && $donation_level < 1) {
+            } else if (!$retain_lot && ($owner_lastlogin < $one_months_ago) && !$is_donator) {
                 $class .= ' red'  . $border;
             } else {
                 if (isset($new_choices[$lowercase_lot]) && !in_array($new_choices[$lowercase_lot]['choice'], array('keep', 'reset'))) {
@@ -823,7 +823,7 @@ function umc_display_markers() {
     $track_user = filter_input(INPUT_GET, 'track_user', FILTER_SANITIZE_STRING);
     $identify_user = filter_input(INPUT_GET, 'identify_user', FILTER_SANITIZE_STRING);
     $get_format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_STRING);
-    
+
     if (!is_null($track_user)) {
         $user = $track_user;
         return umc_read_markers_file('track_user', $world, $user);
