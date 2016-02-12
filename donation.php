@@ -51,36 +51,6 @@ function umc_donationform() {
     return $out;
 }
 
-/**
- * returns an array of all people who are currently ++ status and how long they have left (in months / 30 days)
- *
- * @param type $uuid
- * @return type array
- */
-function umc_users_donators($uuid = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $uuid_str = "AND uuid <> 'void'";
-    if ($uuid) {
-        $uuid_str = "AND uuid = " . umc_mysql_real_escape_string($uuid);
-    }
-    $sql = "SELECT sum(`amount`), `uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
-        FROM minecraft_srvr.donations
-        WHERE amount - (DATEDIFF(NOW(), `date`) / 30) > 0 $uuid_str
-        GROUP BY uuid
-        ORDER BY `leftover` DESC";
-    $result = umc_mysql_fetch_all($sql);
-    if ($uuid && count($result) == 0) {
-        return false;
-    } else if ($uuid) {
-        return $result[0]['leftover'];
-    }
-    $R = array();
-    foreach ($result as $D) {
-        $R[$D['uuid']] = $D['leftover'];
-    }
-    return $R;
-}
-
 function umc_donation_chart() {
     global $UMC_SETTING, $UMC_USER, $UMC_DONATION;
 
