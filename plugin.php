@@ -42,7 +42,7 @@ function umc_plg_include() {
 
 /**
  * looks for the existance of a called command in plugin definitions
- * 
+ *
  * @global type $WS_INIT
  * @global type $UMC_USER
  * @param type $name
@@ -75,7 +75,7 @@ function umc_wsplg_find_command($name) {
 
 /**
  * handles the execution of plugin commands
- * 
+ *
  * @global type $UMC_USER
  * @global type $WS_INIT
  * @global type $UMC_SETTING
@@ -133,7 +133,7 @@ function umc_wsplg_dispatch($module) {
 
 /**
  * show the in-game help for a plugin
- * 
+ *
  * @global type $UMC_USER
  * @global type $WS_INIT
  * @param type $args
@@ -327,12 +327,13 @@ function umc_plugin_web_help($one_plugin = false) {
 
 /**
  * Central event handler. Any function can trigger an event of name $event by calling this
- * function and passing optional parameters. This function then iterates all plugins and 
- * looks if there is one that recognizes the event. The plugin that recognize the event has 
+ * function and passing optional parameters. This function then iterates all plugins and
+ * looks if there is one that recognizes the event. The plugin that recognize the event has
  * another function name configured and this event handler then executes the plugins' function
  * and passes the parameters to it. The plugin function can then return the result back to whatever
  * triggered the event.
- * 
+ *
+ *
  * @global type $WS_INIT
  * @param string $event event name
  * @param array $parameters event parameters
@@ -372,6 +373,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         XMPP_ERROR_trigger("received incoming event $event which is not available");
         // return false;
     }
+    $return_vars = array();
     foreach ($WS_INIT as $data) {
         // check if there is a setting for the current event
         if (($data['events'] != false) && (isset($data['events'][$event]))) {
@@ -384,11 +386,16 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             if ($parameters) {
                 //$params_txt = implode(", ", $parameters);
                 //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
-                return $function($parameters);
+                $return_vars[] = $function($parameters);
             } else {
                 //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
-                return $function();
+                $return_vars[] = $function();
             }
         }
+    }
+    if (count($return_vars) == 1) {
+        return $return_vars[0];
+    } else {
+        return $return_vars;
     }
 }
