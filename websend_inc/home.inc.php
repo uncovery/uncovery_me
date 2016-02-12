@@ -31,7 +31,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'long' => "This command allows you to warp to pre-defined locations (homes). "
                 . "It also allows you to buy additional homes locations, depending on your userlevel. "
                 . "Home prices increase with each additional home. We use the formula: cost = (no_of_homes ^ 3) x 10.", // a long add-on to the short  description
-            ),
+        ),
     ),
     'home' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -254,8 +254,8 @@ function umc_home_buy() {
 
     if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
         umc_error("Sorry, you cannot set a home this high in the nether!");
-    }    
-    
+    }
+
     // transfer the money
     umc_money($UMC_USER['uuid'], false, $cost);
 
