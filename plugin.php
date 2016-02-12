@@ -332,7 +332,9 @@ function umc_plugin_web_help($one_plugin = false) {
  * another function name configured and this event handler then executes the plugins' function
  * and passes the parameters to it. The plugin function can then return the result back to whatever
  * triggered the event.
- *
+ * 
+ * We do not support a plugin to have several ections for the same event. If there are several things
+ * that need to happen for one event and one plugin, this needs to be handled in the plugin itself.
  *
  * @global type $WS_INIT
  * @param string $event event name
