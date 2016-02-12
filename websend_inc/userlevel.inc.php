@@ -63,6 +63,7 @@ $UMC_SETTING['userlevels'] = array(
  * @global type $UMC_USER
  */
 function umc_userlevel_player_check() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
 
@@ -78,6 +79,7 @@ function umc_userlevel_player_check() {
  * @return boolean|string
  */
 function umc_userlevel_get($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // did we query a username instead of a uuid?
     if (strlen($uuid) < 35) {
@@ -125,8 +127,7 @@ function umc_userlevel_get($uuid) {
 function umc_userlevel_citizen_update($uuid, $userlevel = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (!$userlevel) {
-        $userlevels = umc_userlevel_get($uuid);
-        $userlevel = $userlevels[$uuid];
+        $userlevel = umc_userlevel_get($uuid);
     }
     if (strpos($userlevel, 'Settler')) {
         $online_hours = umc_get_online_hours($uuid);
@@ -174,6 +175,7 @@ function umc_userlevel_promote_onelevel($uuid) {
  * @param type $newlevel
  */
 function umc_userlevel_assign_level($uuid, $newlevel) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // upgrade on the server
     $check = umc_exec_command("pex user $uuid group set $newlevel");
     // if the server was not online, we need to do it in the database directly.
@@ -232,6 +234,7 @@ function umc_userlevel_donation_update_all() {
  * @return boolean
  */
 function umc_userlevel_donator_update($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $is_donator = umc_userlevel_donation_remains($uuid);
 
     $userlevel = umc_userlevel_get($uuid);
@@ -262,13 +265,14 @@ function umc_userlevel_donator_update($uuid) {
  * @return boolean
  */
 function umc_userlevel_donation_remains($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // we assume that they are not a donator
 
     // today's date
     $date_now = new DateTime("now");
     // lets get all the donations
     $sql_uuid = umc_mysql_real_escape_string($uuid);
-    $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid='$sql_uuid';";
+    $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid=$sql_uuid;";
     $D = umc_mysql_fetch_all($sql);
     // no donations, not donator
     if (count($D) == 0) {
@@ -279,6 +283,7 @@ function umc_userlevel_donation_remains($uuid) {
     // the problem here is that if a user donated 2 USD twice 3 months ago
     // he is still a donator. we have to be aware about overlapping donations
     // that extend further into the future due to the overlap
+    $donation_level = 0;
     foreach ($D as $row) {
         $date_donation = new DateTime($row['date']);
         $interval = $date_donation->diff($date_now);
@@ -289,7 +294,7 @@ function umc_userlevel_donation_remains($uuid) {
         if ($donation_leftover < 0) {
             $donation_leftover = 0; // do not create negative carryforward
         }
-        $donation_level = $donation_level + $donation_leftover;
+        $donation_level += $donation_leftover;
     }
     if ($donation_level > 0) {
         return $donation_level;
@@ -304,6 +309,7 @@ function umc_userlevel_donation_remains($uuid) {
  * @return type
  */
 function umc_userlevel_donators_list() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%DonatorPlus';";
     $D = umc_mysql_fetch_all($sql);
     $out_arr = array();
