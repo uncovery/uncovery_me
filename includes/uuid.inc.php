@@ -182,6 +182,7 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
     $username = $U['username'];
  *
  * @param string $query
+ * @param boolean $existing_only looks only for already known users
  * @return array('uuid'=> $uuid, 'user'=>$username)
  */
 function umc_uuid_getboth($query, $existing_only = false) {
@@ -202,6 +203,7 @@ function umc_uuid_getboth($query, $existing_only = false) {
  * get's either the uuid or username, depending on format
  * @param string $query username or uuid
  * @param string $format of array('username', 'uuid')
+ * @param boolean $existing_only looks only for already known users
  * @return string
  */
 function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
@@ -223,7 +225,7 @@ function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
  * retrieves current uuid from username and vice-versa from various sources
  *
  * @param string $query either uuid or username
- * @param boolean $critical if critical, an error would be thrown if the user cannot be found
+ * @param boolean $existing_only looks only for already known users
  * @return string either username or uuid
  */
 function umc_user2uuid($query, $existing_only = false) {
