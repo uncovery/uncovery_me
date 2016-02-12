@@ -1068,14 +1068,14 @@ function umc_lot_remove_all($lot) {
 
     // now set default flags
     umc_lot_flags_set_defaults($lot);
-    
+
     umc_log('lot_manager', 'remove all', "All users and flags have been reset for  lot $lot");
     return true;
 }
 
 /**
  * reset all lot flags to the defaults
- * 
+ *
  * @param type $lot
  */
 function umc_lot_flags_set_defaults($lot) {
@@ -1083,10 +1083,10 @@ function umc_lot_flags_set_defaults($lot) {
     $lot_sql = umc_mysql_real_escape_string($lot);
     $world = umc_get_lot_world($lot, true);
     $world_id = umc_get_worldguard_id('world', $world, false);
-    
+
     $sql2 = "DELETE FROM minecraft_worldguard.region_flag WHERE region_id = '$lot' AND world_id = $world_id";
-    umc_mysql_execute_query($sql2);    
-    
+    umc_mysql_execute_query($sql2);
+
     $sql = "INSERT INTO minecraft_worldguard.`region_flag` (`region_id`, `world_id`, `flag`, `value`) VALUES
         ($lot_sql, $world_id, 'use', 'allow\n'),
         ($lot_sql, $world_id, 'chest-access', 'deny\n'),
@@ -1319,7 +1319,7 @@ function umc_check_lot_owner($lot, $uuid = false) {
     if ($uuid) {
         $uuid = umc_uuid_getone($uuid, 'uuid');
         $uuid_sql = umc_mysql_real_escape_string($uuid);
-                
+
         $sql = "SELECT region_id FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
             WHERE Owner=1 AND user.uuid=$uuid_sql AND region_id=$lot_sql;";
@@ -1361,7 +1361,7 @@ function umc_lot_reset_process() {
     $banned_users = umc_banned_users();
     // var_dump($banned_users);
     // donators UUID => leftover days
-    $donators = umc_users_donators();
+    $donators = umc_userlevel_donators_list();
 
     $dibs = umc_lot_manager_dibs_get_all();
 
@@ -1413,7 +1413,7 @@ function umc_lot_reset_process() {
         }
 
         // we do not reset active donators, except those who are banned
-        if (isset($donators[$owner_uuid]) && !isset($banned_users[$owner_uuid])) {
+        if (in_array($owner_uuid, $donators) && !isset($banned_users[$owner_uuid])) {
             continue;
         }
 
