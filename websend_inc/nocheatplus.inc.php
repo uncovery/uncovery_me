@@ -6,6 +6,20 @@
  * and open the template in the editor.
  */
 
+$WS_INIT['ncp'] = array(  // the name of the plugin
+    'disabled' => false,
+    'events' => array(
+        'server_pre_reboot' => 'umc_nocheatplus_logimport',
+    ),
+    'default' => array(
+        'help' => array(
+            'title' => 'NoCheatPlus',  // give it a friendly title
+            'short' => 'NoCheatplus checks user bahvior for suspicious activity ',  // a short description
+            'long' => "NoCheatPlus checks if your behavior online is hitting some set limits. ",
+        ),
+    ),
+);
+
 global $UMC_SETTING;
 $UMC_SETTING['nocheatplus']['logfile'] = '/home/minecraft/server/bukkit/plugins/NoCheatPlus/nocheatplus.log';
 
