@@ -185,28 +185,6 @@ function umc_sanitize_input(&$value, $type) {
 
 }
 
-
-
-function in_arrayi($needle, $haystack) {
-    $found = false;
-    foreach($haystack as $value) {
-        if(strtolower($value) == strtolower($needle)) {
-            $found = true;
-        }
-    }
-    return $found;
-}
-
-// makes sure no redundant date is included in import
-function umc_clean_line($line) {
-    $line = trim($line);
-    if ((substr($line,0,1) =='#') && strlen($line < 2)) {
-	    return false;
-    } else {
-	    return $line;
-    }
-}
-
 // A1 south-west
 // min: {z: 1152.0, y: 0.0, x: -1280.0}
 // max: {z: 1279.0, y: 128.0, x: -1153.0}
@@ -254,44 +232,13 @@ function umc_unpretty_name($name) {
     return strtolower(str_replace(" ","_",$name));
 }
 
-function umc_filemtime_remote($uri) {
-    $uri = parse_url($uri);
-    $handle = @fsockopen($uri['host'],80);
-    if (!$handle) {
-        return false;
-    }
-
-    fputs($handle,"GET $uri[path] HTTP/1.1\r\nHost: $uri[host]\r\n\r\n");
-    $result = 0;
-    while (!feof($handle)) {
-        $line = fgets($handle,1024);
-        if (!trim($line)) {
-            break;
-        }
-
-        $col = strpos($line,':');
-        if ($col !== false) {
-            $header = trim(substr($line,0,$col));
-            $value = trim(substr($line,$col+1));
-            if (strtolower($header) == 'last-modified') {
-                $result = strtotime($value);
-                break;
-            }
-        }
-    }
-    fclose($handle);
-    return $result;
-}
-
-
-function umc_print_truefalse($query) {
-    if ($query) {
-        return 'true';
-    } else {
-        return 'false';
-    }
-}
-
+/**
+ * Generic function to create a random code
+ * Used in stoy plugin and other places.
+ * 
+ * @param type $length
+ * @return string
+ */
 function umc_random_code_gen($length = 5) {
     $chars = "abcdefghijkmnopqrstuvwxyz0123456789";
     srand((double)microtime()*1000000);
