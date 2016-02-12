@@ -540,12 +540,9 @@ function umc_do_deposit_internal($all = false) {
         }
 
         // decide who the reciever is
-        if (isset($args[2]) && $args[2] != 'lot_reset') {
+        if (isset($args[2]) && $args[2]) {
             $recipient = umc_sanitize_input($args[2], 'player');
             $recipient_uuid = umc_user2uuid($recipient);
-        } else if (isset($args[2]) && $args[2] == 'lot_reset') {
-            $recipient_uuid = 'reset000-lot0-0000-0000-000000000000';
-            $recipient = $args[2];
         } else {
             $recipient = $player;
             $recipient_uuid = $uuid;
@@ -579,7 +576,7 @@ function umc_do_deposit_internal($all = false) {
         $seen[$item['full']] = 1;
         
         // get amount of empty deposit boxes reciever has
-        $emptyboxes = umc_depositbox_realcount($uuid, 'empty');
+        $emptyboxes = umc_depositbox_realcount($recipient_uuid, 'empty');
 
         // check first if item already is being sold
         if (count($D) > 0) {
@@ -590,12 +587,8 @@ function umc_do_deposit_internal($all = false) {
         } else {
             
             //check if recipient has space
-            if ($emptyboxes > 0 && $player != 'uncovery' && $recipient != 'lot_reset') {
-                if (!$sent_out_of_space_msg) {
-                    umc_echo("{red}[!] {gold}$recipient{gray} does not have any more deposit spaces left");
-                    $sent_out_of_space_msg = 1;
-                }
-                continue;
+            if ($emptyboxes < 1 && $player != 'uncovery') {
+                umc_error("{red}[!] {gold}$recipient{gray} does not have any more deposit spaces left");
             }
             
             // check if recipient is an active user
@@ -611,8 +604,8 @@ function umc_do_deposit_internal($all = false) {
             }
             
             // provide feedback
-            $text = "{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient";
-            umc_echo($text);
+            $log_text = "{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient";
+            umc_echo($log_text);
             
             $sentFromSystem = umc_depositbox_system_UUID_check($uuid);
             
@@ -625,10 +618,11 @@ function umc_do_deposit_internal($all = false) {
                 // if sender is not a system sender
                 // "fill" an existing depositbox
                 // select a single row to update from the database matching the user and having reusable sender
+                $sql_recipient_uuid = umc_mysql_real_escape_string($recipient_uuid);
                 $sql = "SELECT * FROM minecraft_iconomy.deposit
-                WHERE recipient_uuid=$recipient_uuid
-                AND sender_uuid='reusable-0000-0000-0000-000000000000'
-                LIMIT 1;";
+                    WHERE recipient_uuid = $sql_recipient_uuid
+                    AND sender_uuid = 'reusable-0000-0000-0000-000000000000'
+                    LIMIT 1;";
                 $D = umc_mysql_fetch_all($sql);
                 $box_id = $D[0]['id'];
             }
@@ -644,15 +638,10 @@ function umc_do_deposit_internal($all = false) {
             umc_mysql_query($sql_line, true);
 
             // log the outcome
-            umc_log("Deposit","do_deposit", $text); 
+            umc_log("Deposit","do_deposit", $log_text); 
         }
         
         umc_clear_inv($item['item_name'], $data, $amount, $meta);
-    }
-    
-    // allow unlimited deposits for lot resets
-    if($recipient == 'lot_reset') {
-        $allowed = 'unlimited';
     }
     
     // get players occupied box count
@@ -719,7 +708,7 @@ function umc_depositbox_realcount($uuid, $searchtype = 'total') {
     // fetch all entries targeting suplied uuid
     $sql_uuid = umc_mysql_real_escape_string($uuid);
     $sql = "SELECT amount, sender_uuid FROM minecraft_iconomy.deposit WHERE recipient_uuid=$sql_uuid;";
-    $D = umc_mysql_fetch_all();
+    $D = umc_mysql_fetch_all($sql);
     
     // iterate through entries and remove system entries from tally
     $output_count = 0;
