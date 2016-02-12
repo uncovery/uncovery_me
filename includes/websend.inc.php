@@ -182,7 +182,8 @@ function umc_ws_get_vars() {
             // xp converted to points value obtained total. JSON returns fractional value.
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             $UMC_USER['xpfraction'] = $json['Invoker']['XP'];
-            $UMC_USER['xp'] = umc_plugin_eventhandler('ws_user_init_xp', array('xp' => $json['Invoker']['XP'], 'xplevel' => $json['Invoker']['XPLevel']));
+            $user_xp = umc_plugin_eventhandler('ws_user_init_xp', array('xp' => $json['Invoker']['XP'], 'xplevel' => $json['Invoker']['XPLevel']));
+            $UMC_USER['xp'] = $user_xp[0];
 
             //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
