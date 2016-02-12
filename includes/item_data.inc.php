@@ -204,6 +204,7 @@ function umc_item_data_id2namelist() {
         $id = $data['id'];
         $D[$id] = $item_name;
     }
+    ksort($D);
     umc_array2file($D, 'UMC_DATA_ID2NAME', __DIR__ . "/item_id2name.inc.php");
 }
 
@@ -1176,7 +1177,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/6/68/Grid_Nether_Brick_Stairs.png',
     ),
-    'nether_wart' => array(
+    'nether_wart_block' => array(
         'id' => 115,
         'stack' => 64,
         'avail' => false,
@@ -1826,7 +1827,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => false,
         'icon_url' => '/0/0b/End_Rod.png',
-    ),    
+    ),
     'chorus_plant' => array(
         'id' => 199,
         'stack' => 64,
@@ -1880,19 +1881,19 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/a/a9/Grass_Path.png',
-    ),    
+    ),
     'end_gateway' => array(
         'id' => 209,
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/6/6e/End_Gateway_(block).png',
-    ),      
+    ),
     'frosted_ice' => array(
         'id' => 212,
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/7/77/Ice.png',
-    ),         
+    ),
 
     /*************************************************/
     /*                ITEMS                          */
