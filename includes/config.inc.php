@@ -18,7 +18,7 @@
  */
 
 /*
- * This file attempts to create a central config file. There are still MANY 
+ * This file attempts to create a central config file. There are still MANY
  * parts of the code where information is hard-coded such as paths, userlevels etc.
  */
 global $UMC_SETTING, $UMC_PATH_MC;
@@ -126,12 +126,12 @@ $UMC_SETTING = array(
         'Elder', 'ElderDonator', 'ElderDonatorPlus',
     ),
     'ranks' => array('Guest',
-        'Settler','SettlerDonator','SettlerDonatorPlus',
-        'Citizen','CitizenDonator','CitizenDonatorPlus',
-        'Architect','ArchitectDonator','ArchitectDonatorPlus',
-        'Designer','DesignerDonator','DesignerDonatorPlus',
-        'Master','MasterDonator','MasterDonatorPlus',
-        'Elder','ElderDonator','ElderDonatorPlus',
+        'Settler','SettlerDonatorPlus',
+        'Citizen','CitizenDonatorPlus',
+        'Architect','ArchitectDonatorPlus',
+        'Designer','DesignerDonatorPlus',
+        'Master','MasterDonatorPlus',
+        'Elder','ElderDonatorPlus',
         'Owner'
     ),
 );
