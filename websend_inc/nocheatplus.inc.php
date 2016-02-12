@@ -5,6 +5,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+global $WS_INIT, $UMC_SETTING;
 
 $WS_INIT['ncp'] = array(  // the name of the plugin
     'disabled' => false,
@@ -20,7 +21,6 @@ $WS_INIT['ncp'] = array(  // the name of the plugin
     ),
 );
 
-global $UMC_SETTING;
 $UMC_SETTING['nocheatplus']['logfile'] = '/home/minecraft/server/bukkit/plugins/NoCheatPlus/nocheatplus.log';
 
 function umc_nocheatplus_web() {
