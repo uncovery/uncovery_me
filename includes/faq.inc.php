@@ -179,7 +179,7 @@ $UMC_FAQ = array(
     ),
     24 => array(
         'question' => 'Can I keep my lot even if I do not login for a month?',
-        'answer' => 'Yes. Become DonatorPlus. You will keep your lot for the duration of your donation status',
+        'answer' => 'Yes. Become Donator. You will keep your lot for the duration of your donation status',
         'categories' => array('userlevels', 'lots'),
     ),
     25 => array(
