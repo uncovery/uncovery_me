@@ -292,7 +292,7 @@ function umc_userlevel_donation_remains($uuid) {
         $donation_level = $donation_level + $donation_leftover;
     }
     if ($donation_level > 0) {
-        return true;
+        return $donation_level;
     } else {
         return false;
     }
