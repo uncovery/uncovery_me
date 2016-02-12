@@ -326,7 +326,7 @@ function umc_donation_java_chart() {
 
     $outstanding = $sum * -1;
     $out = umc_web_javachart($final_data, 'Month', 'none', false, 'amchart', false, 300);
-    return array('chart' => $out, 'outstanding' => $outstanding);;
+    return array('chart' => $out, 'outstanding' => $outstanding);
 }
 
 function umc_donation_calc_average() {
