@@ -231,7 +231,7 @@ function umc_uuid_getboth($query) {
  * @param string $format of array('username', 'uuid')
  * @return string
  */
-function umc_uuid_getone($query, $format = 'uuid') {
+function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($format == 'uuid' && strlen($query) > 18) {
         return $query;
@@ -253,7 +253,7 @@ function umc_uuid_getone($query, $format = 'uuid') {
  * @param boolean $critical if critical, an error would be thrown if the user cannot be found
  * @return string either username or uuid
  */
-function umc_user2uuid($query) {
+function umc_user2uuid($query, $existing_only = false) {
     // get a username
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -270,13 +270,22 @@ function umc_user2uuid($query) {
         return $UMC_USER['username'];
     }
 
-    $checks = array(
-        'umc_uuid_get_system_users',
-        'umc_uuid_get_from_wordpress',
-        'umc_uuid_get_from_uuid_table',
-        'umc_uuid_get_from_logfile',
-        'umc_uuid_get_from_mojang'
-    );
+    if ($existing_only) {
+        $checks = array(
+            'umc_uuid_get_system_users',
+            'umc_uuid_get_from_wordpress',
+            'umc_uuid_get_from_uuid_table',
+        );
+    } else {
+        $checks = array(
+            'umc_uuid_get_system_users',
+            'umc_uuid_get_from_wordpress',
+            'umc_uuid_get_from_uuid_table',
+            'umc_uuid_get_from_logfile',
+            'umc_uuid_get_from_mojang'
+        );
+    }
+
 
     foreach ($checks as $function) {
         $result = $function($query);
