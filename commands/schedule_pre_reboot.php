@@ -14,3 +14,5 @@ umc_hardcore_resetworld();
 umc_usericon_get();
 
 umc_github_wordpress_update();
+
+umc_item_data_id2namelist();
