@@ -339,19 +339,42 @@ function umc_process_donation() {
  * @return type
  */
 function umc_donation_java_chart() {
-    $sql_chart = 'SELECT SUM(amount)-135 as monthly, DATE_FORMAT(`date`, "%Y-%m") as \'month\'
+    $sql_chart = 'SELECT SUM(amount) as monthly, DATE_FORMAT(`date`, "%Y-%m") as \'month\'
         FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, "%Y-%m")';
     $D = umc_mysql_fetch_all($sql_chart);
 
+    // first, we take all the data we have into an array
     $ydata = array();
-    $sum = 0;
-
     foreach ($D as $row) {
-        $sum += $row['monthly'];
-        $ydata[$row['month']]['value'] = $sum;
+        $ydata[$row['month']] = $row['monthly'];
     }
+    // now we have a donation amount for each existing month, we need to add the
+    // months without a donation
+
+    $start_date = '2010-11-01';
+    // we need to start with this date here instead of the date from the first
+    // donation. Also, we need to iterate every month in case there was no
+    // donation for one month
+    $final_data = array();
+    $sum = 0;
+    $first_date = new DateTime($start_date);
+    $today_date = new DateTime();
+    while ($first_date < $today_date) {
+        $first_date->add(new DateInterval('P1M'));
+        $check_date = $first_date->format('Y-m');
+        if (isset($ydata[$check_date])) {
+            $this_month = $ydata[$check_date] - 135;
+        } else {
+            $this_month = -135; // no donation, so only minus
+        }
+        $sum += $this_month;
+        $final_data[$check_date]['value'] = $sum;
+    }
+
+    ksort($ydata);
+
     $outstanding = $sum * -1;
-    $out = umc_web_javachart($ydata, 'Month', 'none', false, 'amchart', false, 300);
+    $out = umc_web_javachart($final_data, 'Month', 'none', false, 'amchart', false, 300);
     return array('chart' => $out, 'outstanding' => $outstanding);;
 }
 
@@ -547,6 +570,9 @@ function umc_donation_level($user, $debug = false, $down_only = false) {
     $donation_level = 0;
 
     // go through all donations and find out how much is still active
+    // the problem here is that if a user donated 2 USD twice 3 months ago
+    // he is still a donator. we have to be aware about overlapping donations
+    // that extend further into the future due to the overlap
     foreach ($D as $row) {
         $date_donation = new DateTime($row['date']);
         $interval = $date_donation->diff($date_now);
@@ -570,20 +596,18 @@ function umc_donation_level($user, $debug = false, $down_only = false) {
 
     // get current promotion level
     if (strpos($level, 'DonatorPlus')) {
-        $current = 2;
-    } else if (strpos($level, 'Donator')) {
         $current = 1;
     } else {
         $current = 0;
     }
 
     // get future promotion level
-    if (count($D) == 0) { // this never happens since it's excluded above
-        $future = 0;
-    } else if ($donation_level_rounded >= 1) {
-        $future = 2;
-    } else if ($donation_level_rounded < 1) {
+    if ($donation_level_rounded > 0) {
         $future = 1;
+        // user is donator
+    } else {
+        // user is not donator
+        $future = 0;
     }
     $debug_txt .= "future = $future, current = $current\n";
 
