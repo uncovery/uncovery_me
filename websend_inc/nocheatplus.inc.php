@@ -10,7 +10,6 @@ global $UMC_SETTING;
 $UMC_SETTING['nocheatplus']['logfile'] = '/home/minecraft/server/bukkit/plugins/NoCheatPlus/nocheatplus.log';
 
 function umc_nocheatplus_web() {
-    global $UMC_DOMAIN;
     $drop_sql = 'SELECT count(log_id) as counter, `action`
         FROM minecraft_log.nocheatplus
         GROUP BY `action`';
@@ -107,7 +106,7 @@ function umc_nocheatplus_logimport() {
         // $sql_check = "SELECT count(log_id) as counter FROM minecraft_log.nocheatplus WHERE `date`=$date AND username=$username AND action=$action AND level=$vl;";
         // $C = umc_mysql_fetch_all($sql_check);
         // if ($C[0]['counter'] < 1){
-            $sql = "INSERT INTO minecraft_log.nocheatplus(`date`, `username`, `action`, `level`, `text`)
+            $sql = "INSERT IGNORE INTO minecraft_log.nocheatplus(`date`, `username`, `action`, `level`, `text`)
                 VALUES
                 ($date,$username,$action,$vl,$text)";
             umc_mysql_execute_query($sql);
