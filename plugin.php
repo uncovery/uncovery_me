@@ -393,9 +393,5 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             }
         }
     }
-    if (count($return_vars) == 1) {
-        return $return_vars[0];
-    } else {
-        return $return_vars;
-    }
+    return $return_vars;
 }
