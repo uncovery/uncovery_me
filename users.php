@@ -257,7 +257,7 @@ function umc_users_active_lastlogin_and_level() {
  * returns a list of all users that own lots.
  * The output can be either "name" or "counter" to output either
  * the username or the lot count. The key is always the UUID
- * 
+ *
  * @param type $output
  * @return type
  */
@@ -699,14 +699,14 @@ function umc_user_directory() {
             $O[$world] .= $data['image'];
         }
 
-        $donator_level = umc_users_donators($uuid);
-        if ($donator_level > 12) {
+        $donator_level = umc_userlevel_donation_remains($uuid);
+        if (!$donator_level) {
+            $donator_str = "Not a donator";
+        } else if ($donator_level > 12) {
             $donator_str = 'More than 1 year';
         } else if ($donator_level) {
             $donator_level_rounded = round($donator_level, 1);
             $donator_str = "$donator_level_rounded Months";
-        } else {
-            $donator_str = "Not a donator";
         }
         $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
 
