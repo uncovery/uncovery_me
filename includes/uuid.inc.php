@@ -149,7 +149,7 @@ function umc_uuid_record_lotcount($user = false) {
 /**
  * takes the current username from the logged-in user and checks if the databases are matching
  * It assumes that the values passed by websend and are correct (which they should be).
- * 
+ *
  * @param string $uuid
  * @param string $username_raw
  */
@@ -162,25 +162,26 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
         XMPP_ERROR_trigger("Username change error!");
         return;
     }
-    
+
     $change = false;
-    
+
     // step one: check if the displayname matches the wordpress meta UUID
+    // in wordpress, we keep the actual capitalization
     $wp_username = umc_uuid_get_from_wordpress($uuid);
-    if ($wp_username != $username) {
-        // first we get the worpress ID so we can update it       
+    if ($wp_username != $username_raw) {
+        // first we get the worpress ID so we can update it
         $wp_login = umc_wp_get_login_from_uuid($uuid);
         $sql_wp_login = umc_mysql_real_escape_string($wp_login);
-        $sql_username = umc_mysql_real_escape_string($username);
+        $sql_username = umc_mysql_real_escape_string($username_raw);
         $u_sql_wp = "UPDATE minecraft.wp_users SET display_name=$sql_username WHERE user_login=$sql_wp_login;";
         umc_mysql_execute_query($u_sql_wp);
-        
-        $logtext = "User $uuid changed username from $wp_username to $username in Wordpress";
+
+        $logtext = "User $uuid changed username from $wp_username to $username_raw in Wordpress";
         XMPP_ERROR_send_msg($logtext);
         umc_log('UUID', 'Username Change', $logtext);
         $change = true;
     }
-    
+
     // step two: check if the UUID table has the right username
     $utable_username = umc_uuid_get_from_uuid_table($uuid);
     if ($utable_username != $username) {
@@ -188,10 +189,10 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
         $u_sql_uuid = "UPDATE minecraft_srvr.UUID SET username=$sql_username WHERE UUID='$uuid'";
         umc_mysql_execute_query($u_sql_uuid);
         $logtext = "User $uuid changed username from $utable_username to $username in UUID table";
-        
+
         XMPP_ERROR_send_msg($logtext);
         umc_log('UUID', 'Username Change', $logtext);
-        
+
         $change = true;
     }
     // log the complete username history since it changed
@@ -514,7 +515,7 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
 /**
  * checks if the username history exists. If not, we update it.
  * returns the history
- * 
+ *
  * @param type $uuid
  */
 function umc_uuid_check_history($uuid) {
@@ -530,13 +531,13 @@ function umc_uuid_check_history($uuid) {
     } else {
         $previous_names = unserialize($D[0]['username_history']);
     }
-} 
+}
 
 /**
  * Get historical usernames from Mojang and update the database
  * Should be only executed when we know that the username changed
  * or when we do not have a record on file
- * 
+ *
  * @param type $uuid
  * @return boolean
  */
