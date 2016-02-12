@@ -22,33 +22,6 @@
  * to UUID and back as well as the retrieval of UUIDs from Mojang and other sources.
  */
 
-function umc_tmp_fixtables() {
-    $tables = array(
-        'minecraft_srvr.proposals' => array('username' => 'uuid', 'proposer' => 'proposer_uuid'),
-        'minecraft_srvr.proposals_votes' => array('voter' => 'voter_uuid'),
-    );
-
-    foreach ($tables as $table => $fields) {
-        foreach ($fields as $userfield => $uuidfield) {
-            $sql = "SELECT $userfield FROM $table WHERE $uuidfield = '' GROUP BY $userfield;";
-            echo $sql. "<br>";
-            $data = umc_mysql_fetch_all($sql);
-            foreach ($data as $row) {
-                $username = $row[$userfield];
-                $json = file_get_contents("https://api.mojang.com/users/profiles/minecraft/$username?at=141321800");
-                $object = json_decode($json);
-                $uuid_raw = $object->id;
-                $uuid = umc_uuid_format($uuid_raw);
-                if ($uuid) {
-                    $update_sql = "UPDATE $table SET $uuidfield='$uuid' WHERE $userfield='$username';";
-                    echo $update_sql;
-                    umc_mysql_query($update_sql, true);
-                }
-            }
-        }
-    }
-}
-
 /**
  * Update last login time, last logout time, onlinetime
  *
@@ -211,15 +184,15 @@ function umc_uuid_check_usernamechange($uuid, $username_raw) {
  * @param string $query
  * @return array('uuid'=> $uuid, 'user'=>$username)
  */
-function umc_uuid_getboth($query) {
+function umc_uuid_getboth($query, $existing_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // input is a uuid
     if (strlen($query) > 18) {
         $uuid = $query;
-        $username = umc_user2uuid($query);
+        $username = umc_user2uuid($query, $existing_only);
     } else {
         $username = $query;
-        $uuid = umc_user2uuid($query);
+        $uuid = umc_user2uuid($query, $existing_only);
     }
 
     return array('uuid'=> $uuid, 'username'=>$username);
@@ -236,9 +209,9 @@ function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
     if ($format == 'uuid' && strlen($query) > 18) {
         return $query;
     } else if ($format == 'uuid' && strlen($query) < 18) {
-        return umc_user2uuid($query);
+        return umc_user2uuid($query, $existing_only);
     } else if ($format == 'username' && strlen($query) > 18) {
-        return umc_user2uuid($query);
+        return umc_user2uuid($query, $existing_only);
     } else if ($format == 'username' && strlen($query) < 18) {
         return $query;
     } else {
@@ -418,6 +391,7 @@ function umc_uuid_get_from_logfile($query) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $str_query = strtolower($query);
+    // TODO: this is often too large for memory, we should do this line-by-line
     $text = file("/home/minecraft/server/bukkit/logs/latest.log");
     // reverse
     $back_text = array_reverse($text);
