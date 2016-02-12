@@ -153,13 +153,9 @@ function umc_nocheatplus_logimport() {
         $action = umc_mysql_real_escape_string(strtolower(trim($M[3])));
         $text = umc_mysql_real_escape_string(trim($M[4]));
         $vl = umc_mysql_real_escape_string(trim($M[5]));
-        // $sql_check = "SELECT count(log_id) as counter FROM minecraft_log.nocheatplus WHERE `date`=$date AND username=$username AND action=$action AND level=$vl;";
-        // $C = umc_mysql_fetch_all($sql_check);
-        // if ($C[0]['counter'] < 1){
-            $sql = "INSERT IGNORE INTO minecraft_log.nocheatplus(`date`, `uuid`, `action`, `level`, `text`)
-                VALUES
-                ($date,$uuid_sql,$action,$vl,$text)";
-            umc_mysql_execute_query($sql);
-        // }
+        $sql = "INSERT IGNORE INTO minecraft_log.nocheatplus(`date`, `uuid`, `action`, `level`, `text`)
+            VALUES
+            ($date,$uuid_sql,$action,$vl,$text)";
+        umc_mysql_execute_query($sql);
     }
 }
