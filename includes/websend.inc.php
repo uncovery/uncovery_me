@@ -153,7 +153,7 @@ function umc_ws_get_vars() {
             $uuid = $json['Invoker']['UUID'];
         } else {
             // this is mostly used for pre-logins. it will check if the user exists and add them to the table if not.
-            XMPP_ERROR_trace("Getting UUID for UMC_USER array", "n/a");
+            XMPP_ERROR_trace("Getting UUID for UMC_USER array", $json);
             $uuid = umc_user2uuid($json['Invoker']['Name']);
         }
 
