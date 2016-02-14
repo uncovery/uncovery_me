@@ -32,6 +32,7 @@
  * @return int
  */
 function umc_db_take_item($table, $id, $amount, $player) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // $uuid = umc_uuid_getone($player, 'uuid');
     if ($table == 'stock') {
         $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
