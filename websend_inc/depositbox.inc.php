@@ -29,7 +29,7 @@
 global $UMC_SETTING, $WS_INIT, $UMC_USER;
 
 $WS_INIT['depositbox'] = array(
-    'disabled' => true,
+    'disabled' => false,
     'events' => array('user_ban' => 'umc_deposit_wipe', 'user_delete' => 'umc_deposit_wipe'),
     'default'   => array(
         'help' => array(
@@ -148,7 +148,7 @@ $UMC_SETTING['depositbox_limit'] = array(
  * @global array $UMC_SETTING
  */
 function umc_depositbox_purchase(){
-    
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
@@ -193,7 +193,7 @@ function umc_depositbox_purchase(){
  * @global array $UMC_SETTING
  */
 function umc_depositbox_check() {
-    //XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     
     $used = umc_depositbox_realcount($UMC_USER['uuid'], 'total');
