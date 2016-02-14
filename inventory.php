@@ -75,6 +75,7 @@ function umc_check_inventory($item_name, $data, $meta) {
  * @return boolean
  */
 function umc_clear_inv($id, $data, $amount, $meta = '') {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // umc_echo("trying to remove id $id, data $data, amount $amount, Enchantment $meta");
     global $UMC_USER;
     $inv = $UMC_USER['inv'];
@@ -222,7 +223,7 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         }
     } else if ($table == 'deposit') {
         $sql = "SELECT * FROM minecraft_iconomy.deposit 
-            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' LIMIT 1;";
+            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' AND sender_uuid<>'reusable-0000-0000-0000-000000000000' LIMIT 1;";
     }
     $D = umc_mysql_fetch_all($sql);
     if (count($D) == 0) {
