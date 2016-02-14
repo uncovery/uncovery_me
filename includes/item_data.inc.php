@@ -1792,31 +1792,31 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/f/f2/Grid_Acacia_Fence.png',
     ),
-    'spruce_door' => array(
+    'spruce_door_block' => array(
         'id' => 193,
         'stack' => 1,
         'avail' => false,
         'icon_url' => '/b/be/Grid_Spruce_Door.png',
     ),
-    'birch_door' => array(
+    'birch_door_block' => array(
         'id' => 194,
         'stack' => 1,
         'avail' => false,
         'icon_url' => '/f/f3/Grid_Birch_Door.png',
     ),
-    'jungle_door' => array(
+    'jungle_door_block' => array(
         'id' => 195,
         'stack' => 1,
         'avail' => false,
         'icon_url' => '/0/05/Grid_Jungle_Door.png',
     ),
-    'acacia_door' => array(
+    'acacia_door_block' => array(
         'id' => 196,
         'stack' => 1,
         'avail' => false,
         'icon_url' => '/d/d3/Grid_Acacia_Door.png',
     ),
-    'dark_oak_door' => array(
+    'dark_oak_door_block' => array(
         'id' => 197,
         'stack' => 64,
         'avail' => false,
