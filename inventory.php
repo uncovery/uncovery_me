@@ -223,11 +223,13 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         }
     } else if ($table == 'deposit') {
         $sql = "SELECT * FROM minecraft_iconomy.deposit 
-            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' AND amount > 0 LIMIT 1;";
+            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id'LIMIT 1;";
     }
     $D = umc_mysql_fetch_all($sql);
     if (count($D) == 0) {
         umc_error("{red}Id {white}$id{red} not found! Please try again.;");
+    } else if ($D[0]['amount'] == 0) {
+        umc_error("That depositslot is empty!");
     } else {
         $row = $D[0];
         $item = umc_goods_get_text($row['item_name'], $row['damage'], $row['meta']);
