@@ -221,7 +221,8 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
             $sql = "SELECT * FROM minecraft_iconomy.stock WHERE id='$id' LIMIT 1;";
         }
     } else if ($table == 'deposit') {
-        $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' LIMIT 1;";
+        $sql = "SELECT * FROM minecraft_iconomy.deposit 
+            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' LIMIT 1;";
     }
     $D = umc_mysql_fetch_all($sql);
     if (count($D) == 0) {
