@@ -51,7 +51,7 @@ function umc_wp_get_vars() {
             $UMC_USER['uuid'] = $uuid;
             $UMC_USER['userlevel'] = 'Guest';
         } else { // there is a logged-in user
-            // we do not check here since we do not know if the username is correct 
+            // we do not check here since we do not know if the username is correct
             // also we do not want to check at mojang every time.
             // umc_uuid_check_usernamechange($uuid, $UMC_USER['username']);
             $UMC_USER['email'] = $user_email;
@@ -186,7 +186,7 @@ function umc_wp_get_uuid_for_currentuser($user_obj = false) {
     $username_sql = umc_mysql_real_escape_string($username);
     $sql = "SELECT meta_value as uuid FROM minecraft.wp_usermeta
         LEFT JOIN minecraft.wp_users ON ID=user_id
-        WHERE display_name=$username_sql AND meta_key ='minecraft_uuid' LIMIT 1;";
+        WHERE display_name LIKE $username_sql AND meta_key ='minecraft_uuid' LIMIT 1;";
     $data = umc_mysql_fetch_all($sql);
     if (count($data) == 0) {
         return false;
