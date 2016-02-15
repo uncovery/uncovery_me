@@ -596,7 +596,7 @@ function umc_log_logblock() {
     if ($post_type == 'chest') {
         $chest_headers = "<th>Block</th><th>Source</th><td>Amount</td>";
     }
-    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th>$chest_headers<th>Lot</th><th>Coordinates</th></tr>\n";
+    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th>$chest_headers<th>Coordinates</th></tr>\n"; //<th>Lot</th>
     $yesterday = '';
 
     if ($post_type != 'chest') {
