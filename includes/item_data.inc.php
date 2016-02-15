@@ -772,7 +772,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/7/79/Grid_Crafting_Table.png',
     ),
-    'wheat' => array(
+    'wheat_block' => array(
         'id' => 59,
         'stack' => 64,
         'avail' => false,
@@ -970,7 +970,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/9/95/Grid_Jack_o%27Lantern.png',
     ),
-    'cake' => array(
+    'cake_block' => array(
         'id' => 92,
         'stack' => 1,
         'avail' => false,
