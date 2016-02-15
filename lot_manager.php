@@ -646,8 +646,8 @@ function umc_get_new_lot_form($world, $dibs = false) {
         $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"http://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
     }
 
-    $username = $UMC_USER['username'];
-    $account = umc_money_check($username);
+    $uuid = $UMC_USER['uuid'];
+    $account = umc_money_check($uuid);
 
     // get allowed draftland lots
     if ($world == 'draftlands') {
