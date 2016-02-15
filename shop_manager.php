@@ -23,6 +23,7 @@
  */
 
 function umc_shopmgr_main() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_DOMAIN;
     // $s_post  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
@@ -82,6 +83,7 @@ function umc_shopmgr_main() {
 }
 
 function umc_shopmgr_show_deposit() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
 
     if (!$UMC_USER) {
@@ -110,6 +112,7 @@ function umc_shopmgr_show_deposit() {
 }
 
 function umc_shopmgr_items() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA;
 
     $s_get = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
@@ -190,6 +193,7 @@ function umc_shopmgr_items() {
 }
 
 function umc_shopmgr_item_stats($item, $type) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT `damage`, AVG(cost / amount) AS price, `meta`, `item_name`, DATE_FORMAT(`date`,'%Y-%u') AS week
         FROM minecraft_iconomy.transactions
         WHERE item_name='$item' AND damage='$type'
@@ -215,6 +219,7 @@ function umc_shopmgr_item_stats($item, $type) {
 }
 
 function umc_shop_count_amounts($table, $item_name, $type=false, $meta=false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $type_sql = "";
     if (is_numeric($type)) {
         $type_sql = "AND damage=$type ";
@@ -236,6 +241,7 @@ function umc_shop_count_amounts($table, $item_name, $type=false, $meta=false) {
 }
 
 function umc_shopmgr_offers($where = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     if (!$where) {
         $uuid = $UMC_USER['uuid'];
@@ -276,6 +282,7 @@ function umc_shopmgr_offers($where = false) {
 }
 
 function umc_shopmgr_requests($where = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     if (!$where) {
         $uuid = $UMC_USER['uuid'];
@@ -313,6 +320,7 @@ function umc_shopmgr_requests($where = false) {
 }
 
 function umc_shopmgr_buyers() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "This data only covers the last month, max 100 entries";
     // 1 month ago date:
     $lastmonth = date("Y-m-d", strtotime("-1 month"));
@@ -337,6 +345,7 @@ function umc_shopmgr_buyers() {
 }
 
 function umc_shopmgr_sellers() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "This data only covers the last month, max 100 entries";
     // 1 month ago date:
     $lastmonth = date("Y-m-d", strtotime("-1 month"));
@@ -361,6 +370,7 @@ function umc_shopmgr_sellers() {
 }
 
 function umc_shopmgr_transactions() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "This data only covers the last month, max 100 entries";
 
     $s_get  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
@@ -412,6 +422,7 @@ function umc_shopmgr_transactions() {
 }
 
 function umc_shopmgr_goods_detail($item, $type) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $item_arr = umc_goods_get_text($item, $type);
     $out = $item_arr['full'] . "<hr>\n";
     // show stock
@@ -432,6 +443,7 @@ function umc_shopmgr_goods_detail($item, $type) {
  * @return type
  */
 function umc_shopmgr_stocklist($table, $item = false, $type = 0, $uuid = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA;
 
     $where = "WHERE damage=$type";
@@ -460,12 +472,14 @@ function umc_shopmgr_stocklist($table, $item = false, $type = 0, $uuid = false) 
 }
 
 function umc_shopmgr_show_help_deposit() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "<h2>Deposit help</h2>";
     $post_arr = get_post(12351);
     return $out . $post_arr->post_content;
 }
 
 function umc_shopmgr_show_help_shop() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = "<h2>Shop help</h2>";
     $post_arr = get_post(12355);
     return $out . $post_arr->post_content;
@@ -475,6 +489,7 @@ function umc_shopmgr_show_help_shop() {
  * shows a graphic of the shop trading volume in pieces and values over time
  */
 function umc_shopmgr_stats() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT DATE_FORMAT(`date`,'%Y-%u') AS week, SUM(amount) AS amount, SUM(cost) AS value
         FROM minecraft_iconomy.transactions
         WHERE date>'2012-03-00 00:00:00'
