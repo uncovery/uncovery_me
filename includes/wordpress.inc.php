@@ -178,11 +178,6 @@ function umc_wp_get_uuid_for_currentuser($user_obj = false) {
     }
 
     $user_id = $current_user->ID;
-    if ($username == '') {
-        // we have a guest, get UUID from system instead
-        return false;
-    }
-
     $sql = "SELECT meta_value as uuid FROM minecraft.wp_usermeta
         WHERE user_id = $user_id AND meta_key ='minecraft_uuid' LIMIT 1;";
     $data = umc_mysql_fetch_all($sql);
