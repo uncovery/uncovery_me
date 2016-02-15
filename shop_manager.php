@@ -94,7 +94,7 @@ function umc_shopmgr_show_deposit() {
         FROM minecraft_iconomy.deposit
         LEFT JOIN minecraft_srvr.UUID as s_link ON sender_uuid=s_link.UUID
         LEFT JOIN minecraft_srvr.UUID as r_link ON recipient_uuid=r_link.UUID
-        WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid'
+        WHERE sender_uuid='$uuid' OR recipient_uuid='$uuid' AND sender_uuid NOT LIKE 'reusable%'
         ORDER BY id, damage, amount DESC;";
     $D = umc_mysql_fetch_all($sql);
 
