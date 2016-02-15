@@ -515,6 +515,7 @@ function umc_uuid_check_history($uuid) {
     } else {
         $previous_names = unserialize($D[0]['username_history']);
     }
+    return $previous_names;
 }
 
 /**
@@ -547,7 +548,7 @@ function umc_uuid_mojang_usernames($uuid) {
 
 function umc_uuid_username_history($uuid) {
     $previous_names = umc_uuid_check_history($uuid);
-
+    XMPP_ERROR_trigger($previous_names);
     if (count($previous_names) > 1) {
         $names = array();
         foreach ($previous_names as $name_data) {
