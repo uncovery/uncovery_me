@@ -235,6 +235,17 @@ $ENCH_ITEMS = array(
     'LUCK'                    =>array('short'=> 'Luck',   'name'=>'Luck', 'items'=>array(346), 'max'=>1),
 );
 
+$UMC_BANNERS = array(
+    'colors' => array(
+        'WHITE', 'ORANGE', 'MAGENTA', 'LIGHT_BLUE', 'YELLOW', 'LIME', 'PINK', 'GRAY', 'LIGHT_GRAY', 'CYAN', 'PURPLE', 'BLUE', 'BROWN', 'GREEN', 'RED', 'BLACK',
+    ),
+    'patterns' => array(
+        "SQUARE_BOTTOM_LEFT", "SQUARE_BOTTOM_RIGHT","SQUARE_TOP_LEFT","SQUARE_TOP_RIGHT","STRIPE_BOTTOM","STRIPE_TOP","STRIPE_LEFT",
+        "BASE","STRIPE_RIGHT","STRIPE_CENTER","STRIPE_MIDDLE","STRIPE_DOWNRIGHT","STRIPE_DOWNLEFT","STRIPE_SMALL","CROSS","TRIANGLE_BOTTOM","TRIANGLE_TOP",
+        "TRIANGLES_TOP","DIAGONAL_LEFT","DIAGONAL_RIGHT","CIRCLE_MIDDLE","RHOMBUS_MIDDLE","HALF_VERTICAL","HALF_HORIZONTAL","CREEPER",
+        "GRADIENT","BRICKS","SKULL","FLOWER",
+    ),
+);
 
 $UMC_DATA = array(
     'air' => array(
