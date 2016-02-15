@@ -640,9 +640,11 @@ function umc_log_logblock() {
             $chest_line = "<td>{$row['itemamount']}</td>";
         }
 
-        $one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
+        // do not requery the lot, we should be in one only already
+        //$one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
+        // <td>$one_lot</td>
 
-        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td>$chest_line<td>$one_lot</td><td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
+        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td>$chest_line<td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
 	$yesterday = $date_arr[0];
     }
     $out .= "</table>\n";
