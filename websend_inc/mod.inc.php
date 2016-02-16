@@ -130,7 +130,20 @@ function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
+    umc_item_data_id2namelist();
     XMPP_ERROR_trigger("test");
+}
+
+function umc_temp_backup_activeusers() {
+    $sourcepath = '/home/minecraft/server/bukkit/city/playerdata';
+    $targetpath = '/home/minecraft/server/bukkit/userfile_backup';
+    $users = umc_get_active_members();
+    foreach ($users as $uuid => $username) {
+        $cmd = "cp $sourcepath/$uuid.dat $targetpath";
+        //XMPP_ERROR_send_msg($cmd);
+        //exec($cmd, $output);
+        XMPP_ERROR_send_msg($cmd);
+    }
 }
 
 function umc_mod_banrequest() {
