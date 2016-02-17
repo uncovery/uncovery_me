@@ -349,7 +349,7 @@ function umc_do_withdraw() {
 
     // get several items, either all or by sender name
     } else if (isset($args[2])) {
-        $id = $args[2];
+        $id = strtolower($args[2]);
         // make list of possible senders to avoid SQL injection
         $checklist = array('@lottery');
         $check_sql = "SELECT * FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' OR sender_uuid='$uuid';";
@@ -372,6 +372,10 @@ function umc_do_withdraw() {
             //if (in_array($find_item['id'], $umc_unavailable)) {
             //    umc_echo("{red}This item is unavailable. Please check the wiki for the proper item!",true);
             //}
+            // we need to stop here in case the $id cannot be identified
+            if ($find_item) {
+                umc_error("You cannot withdraw with that command. Please check the manual");
+            }
             $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit
                 WHERE recipient_uuid='$uuid'
 		    AND item_name='{$find_item['item_name']}'
