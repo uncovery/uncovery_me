@@ -374,7 +374,7 @@ function umc_do_withdraw() {
             //}
             // we need to stop here in case the $id cannot be identified
             if ($find_item) {
-                umc_error("You cannot withdraw with that command. Please check the manual");
+                umc_error("There is nobody with that name to withdraw from. Please check the manual");
             }
             $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit
                 WHERE recipient_uuid='$uuid'
