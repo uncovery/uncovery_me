@@ -175,7 +175,15 @@ function umc_userlevel_promote_onelevel($uuid) {
  * @param type $newlevel
  */
 function umc_userlevel_assign_level($uuid, $newlevel) {
+    global $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    // check if level is valid
+    if (!in_array($newlevel, $UMC_SETTING['ranks'])) {
+        XMPP_ERROR_trigger("Tried to set invalid userlevel $newlevel for user $uuid!");
+        return;
+    }
+    
     // upgrade on the server
     $check = umc_exec_command("pex user $uuid group set $newlevel");
     // if the server was not online, we need to do it in the database directly.
@@ -204,10 +212,11 @@ function umc_userlevel_get_base($userlevel) {
     // if we are not told what the userlevel us
     $base_levels = $UMC_SETTING['userlevels']['base_levels'];
     foreach ($base_levels as $base_level_id => $base_level_string) {
-        if (strpos($userlevel, $base_level_string)) {
+        if (strstr($userlevel, $base_level_string)) {
             return array('level_id' => $base_level_id, 'level_name' => $base_level_string);
         }
     }
+    return false;
 }
 
 /**
