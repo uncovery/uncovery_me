@@ -373,8 +373,8 @@ function umc_do_withdraw() {
             //    umc_echo("{red}This item is unavailable. Please check the wiki for the proper item!",true);
             //}
             // we need to stop here in case the $id cannot be identified
-            if ($find_item) {
-                umc_error("There is nobody with that name to withdraw from. Please check the manual");
+            if (!$find_item) {
+                umc_error("There is nobody or item with that name to withdraw. Please check the manual");
             }
             $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit
                 WHERE recipient_uuid='$uuid'
