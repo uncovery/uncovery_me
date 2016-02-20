@@ -27,6 +27,10 @@
 global $UMC_SETTING, $WS_INIT, $UMC_DOMAIN;
 
 $WS_INIT['lottery'] = array(  // the name of the plugin
+    'disabled' => false,
+    'events' => array(
+        'PlayerJoinEvent' => 'umc_lottery_reminder',
+    ),    
     'default' => array(
         'help' => array(
             'title' => 'Voting Lottery',  // give it a friendly title
@@ -44,10 +48,6 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
             'level' => 'Owner',
         ),
         'function' => 'umc_lottery',
-    ),
-    'disabled' => false,
-    'events' => array(
-        'PlayerJoinEvent' => 'umc_lottery_reminder',
     ),
     'report' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -246,12 +246,14 @@ $lottery = array(
  * @global type $UMC_DOMAIN
  */
 function umc_lottery_reminder() {
-    global $UMC_USER, $UMC_DOMAIN;
+    global $UMC_USER;
     $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
 
+    // TODO: the votes log fieldname is username, but there are UUIDs inside, need to fix that
     $sql = "SELECT count(vote_id) as counter 
             FROM minecraft_log.votes_log
-            WHERE `username`='$player'
+            WHERE `username`='$uuid'
             AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24
             ORDER BY `vote_id` DESC;";
     
@@ -261,28 +263,28 @@ function umc_lottery_reminder() {
     if ($counter < 5) {
         
         // politely remind users they need to vote dammit!
-        $title =  'title ' . $user . ' title {text:"Please vote!",color:green}';
+        $title =  'title ' . $player . ' title {text:"Please vote!",color:green}';
 
         // add some variety to login welcome messages!
         $subtitle_array = array(
-            ('title ' . $user . ' subtitle {text:"Welcome back ' . $player .'!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"' . $player . '! Great to see you!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Hello again ' . $player . '.",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Maybe you should visit the darklands today?",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Considered taking a stroll in the empire?",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Have you tried the command /find request new",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Experience can be bottled using /bottlexp",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Hold an item and type /offer <your price> to list it for sale!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Rome wasnt built in a day...",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Thanks for coming by to play!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"You can find items to buy using /find <itemname>",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Darklands is a resource gathering world. But beware the moon...",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Hey, your friends were looking for you ' . $player.'!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Use /whereami for information about your position!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Use /uncs to display your current balance!",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Did you know you can buy additional homes for Uncs?",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"Did you know you can buy additional desposit boxes for Uncs?",color:gold}'),
-            ('title ' . $user . ' subtitle {text:"We missed you ' . $player . '!",color:gold}')
+            ('title ' . $player . ' subtitle {text:"Welcome back ' . $player .'!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"' . $player . '! Great to see you!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Hello again ' . $player . '.",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Maybe you should visit the darklands today?",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Considered taking a stroll in the empire?",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Have you tried the command /find request new",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Experience can be bottled using /bottlexp",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Hold an item and type /offer <your price> to list it for sale!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Rome wasnt built in a day...",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Thanks for coming by to play!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"You can find items to buy using /find <itemname>",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Darklands is a resource gathering world. But beware the moon...",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Hey, your friends were looking for you ' . $player.'!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Use /whereami for information about your position!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Use /uncs to display your current balance!",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Did you know you can buy additional homes for Uncs?",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"Did you know you can buy additional desposit boxes for Uncs?",color:gold}'),
+            ('title ' . $player . ' subtitle {text:"We missed you ' . $player . '!",color:gold}')
         );
         
         // select a random position in the title array
@@ -353,11 +355,12 @@ function umc_lottery_report($hours = 24, $lim = 50){
 function umc_lottery_retrieve_entries($hours = 24){
     global $UMC_USER;
     $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
     
     // select all lottery rolls within last 24 hours
     $sql = "SELECT *
             FROM minecraft_log.votes_log
-            WHERE `username`='$player'
+            WHERE `username`='$uuid'
             AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < $hours
             LIMIT 150
             ORDER BY `vote_id` DESC;";
