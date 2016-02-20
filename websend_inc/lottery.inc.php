@@ -49,6 +49,13 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
     'events' => array(
         'PlayerJoinEvent' => 'umc_lottery_reminder',
     ),
+    'report' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Output vote data',
+            'long' => "Display information about times since last votes.",
+        ),
+        'function' => 'umc_lottery_report',
+    ),
 );
 
 global $lottery;
@@ -232,19 +239,143 @@ $lottery = array(
     ),
 );
 
+/**
+ * runs on user login to remind them to vote.
+ * 
+ * @global type $UMC_USER
+ * @global type $UMC_DOMAIN
+ */
 function umc_lottery_reminder() {
     global $UMC_USER, $UMC_DOMAIN;
     $player = $UMC_USER['username'];
 
-    $sql = "SELECT count(vote_id) as counter FROM minecraft_log.votes_log WHERE `username`='$player' AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24 ORDER BY `vote_id` DESC  ";
+    $sql = "SELECT count(vote_id) as counter 
+            FROM minecraft_log.votes_log
+            WHERE `username`='$player'
+            AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24
+            ORDER BY `vote_id` DESC;";
+    
     $D = umc_mysql_fetch_all($sql);
     $counter = $D[0]['counter'];
+    
     if ($counter < 5) {
-        umc_echo ("NOTE: You have voted only $counter times in the 24 hours before the last restart. "
-            . "Please vote: $UMC_DOMAIN/vote-for-us/");
+        
+        // politely remind users they need to vote dammit!
+        $title =  'title ' . $user . ' title {text:"Please vote!",color:green}';
+
+        // add some variety to login welcome messages!
+        $subtitle_array = array(
+            ('title ' . $user . ' subtitle {text:"Welcome back ' . $player .'!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"' . $player . '! Great to see you!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Hello again ' . $player . '.",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Maybe you should visit the darklands today?",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Considered taking a stroll in the empire?",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Have you tried the command /find request new",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Experience can be bottled using /bottlexp",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Hold an item and type /offer <your price> to list it for sale!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Rome wasnt built in a day...",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Thanks for coming by to play!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"You can find items to buy using /find <itemname>",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Darklands is a resource gathering world. But beware the moon...",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Hey, your friends were looking for you ' . $player.'!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Use /whereami for information about your position!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Use /uncs to display your current balance!",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Did you know you can buy additional homes for Uncs?",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"Did you know you can buy additional desposit boxes for Uncs?",color:gold}'),
+            ('title ' . $user . ' subtitle {text:"We missed you ' . $player . '!",color:gold}')
+        );
+        
+        // select a random position in the title array
+        $key = array_rand($subtitle_array);
+        $subtitle = $subtitle_array[$key];
+        
+        umc_ws_cmd($subtitle, 'asConsole');
+        umc_ws_cmd($title, 'asConsole');
+        
     }
 }
 
+/**
+ * displays a report to the initiating user displaying their vote history to $lim rolls and $hours hours.
+ * ie you can check for 500 hours worth of rolls, but limit result count to $lim
+ * 
+ * @param type $hours
+ * @param int $lim
+ */
+function umc_lottery_report($hours = 24, $lim = 50){
+    
+    $D = umc_lottery_retrieve_entries($hours);
+    $c = count($D);
+    
+    // display a reminder
+    if ($c < 5){
+        umc_echo("{yellow} Please vote! This is *super important* to attract more players, get rich and win fantastic rewards!");
+    }
+    
+    // display the total
+    umc_echo("{yellow} [!] {green} Our records show you have voted $c times in the last $hours hours!"); 
+    
+    //set a maximum number of vote records to display back to the user
+    $now = new DateTime("now");
+    
+    // iterate through array and output results to limits
+    foreach ($D as $row) {
+        
+        $timestamp = $row['datetime'];
+        $diff = $timestamp->diff($now);
+        $hours = $diff->h;
+        $website = $row['website'];
+        $reward = $row['reward'];
+        $reward_amount = $row['reward_amount'];
+        
+        // echo the records retrieved
+        umc_echo("{yellow}[-]{grey}[$website] $hours hours ago: $reward_amount $reward");
+        
+        // limit the count displayed back to the user due to mc messaging limits
+        $lim -= 1;
+        if ($lim <= 1){
+            umc_echo("red}[!] Too many records to display!");
+            break;
+        }
+        
+    }
+    
+}
+
+/**
+ * 
+ * returns an array of vote rolls (to 150) in last specified hours.
+ * 
+ * @global type $UMC_USER
+ * @param type $hours
+ * @return type
+ */
+function umc_lottery_retrieve_entries($hours = 24){
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    
+    // select all lottery rolls within last 24 hours
+    $sql = "SELECT *
+            FROM minecraft_log.votes_log
+            WHERE `username`='$player'
+            AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < $hours
+            LIMIT 150
+            ORDER BY `vote_id` DESC;";
+              
+    // run the query to retrieve the data
+    $D = umc_mysql_fetch_all($sql);
+    
+    // send back the array of entries within time period
+    return($D);
+    
+}
+
+/**
+ * 
+ * returns an html formatted table displaying the list of rolls and percentages for vote rolls
+ * 
+ * @global array $lottery
+ */
 function umc_lottery_show_chances() {
     global $lottery;
 
