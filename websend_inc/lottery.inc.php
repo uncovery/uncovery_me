@@ -250,11 +250,13 @@ function umc_lottery_reminder() {
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
 
+    $checkdate = date("Y-m-d H:i:s", strtotime("-24 hours"));
+
     // TODO: the votes log fieldname is username, but there are UUIDs inside, need to fix that
     $sql = "SELECT count(vote_id) as counter 
             FROM minecraft_log.votes_log
             WHERE `username`='$uuid'
-            AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24
+            AND `datetime`>='$checkdate'
             ORDER BY `vote_id` DESC;";
     
     $D = umc_mysql_fetch_all($sql);
@@ -357,11 +359,13 @@ function umc_lottery_retrieve_entries($hours = 24){
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     
+    $checkdate = date("Y-m-d H:i:s", strtotime("-" . $hours . "hours"));
+    
     // select all lottery rolls within last 24 hours
     $sql = "SELECT *
             FROM minecraft_log.votes_log
             WHERE `username`='$uuid'
-            AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < $hours
+            AND `datetime`>='$checkdate'
             LIMIT 150
             ORDER BY `vote_id` DESC;";
               
