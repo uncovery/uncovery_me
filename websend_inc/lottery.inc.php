@@ -356,7 +356,6 @@ function umc_lottery_report($hours = 24, $lim = 50){
  */
 function umc_lottery_retrieve_entries($hours = 24){
     global $UMC_USER;
-    $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     
     $checkdate = date("Y-m-d H:i:s", strtotime("-" . $hours . "hours"));
