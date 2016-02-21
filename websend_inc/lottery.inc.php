@@ -366,8 +366,8 @@ function umc_lottery_retrieve_entries($hours = 24){
             FROM minecraft_log.votes_log
             WHERE `username`='$uuid'
             AND `datetime`>='$checkdate'
-            LIMIT 150
-            ORDER BY `vote_id` DESC;";
+            ORDER BY `vote_id` DESC
+            LIMIT 150;";
               
     // run the query to retrieve the data
     $D = umc_mysql_fetch_all($sql);
