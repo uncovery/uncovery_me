@@ -312,11 +312,9 @@ function umc_create_map() {
 
             // kick out banned users
             if (isset($banned_users[$owner_uuid])) {
-                $class = ' redout';
+                $class .= ' red' . $border;
                 $lastlogin_str = "Banned!";
-            }
-
-            if ($retain_lot && ($owner_lastlogin < $two_months_ago) && !$is_donator) { // too late
+            } else if ($retain_lot && ($owner_lastlogin < $two_months_ago) && !$is_donator) { // too late
                 $class .= ' red' . $border;
             } else if ($retain_lot && ($owner_lastlogin < $one_months_ago) && $is_donator) { // still yellow
                 $class .= ' yellow' . $border;
