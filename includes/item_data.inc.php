@@ -844,7 +844,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/4/46/Grid_Stone_Pressure_Plate.png',
     ),
-    'iron_door' => array(
+    'iron_door_block' => array(
         'id' => 71,
         'stack' => 1,
         'avail' => false,
@@ -1206,7 +1206,7 @@ $UMC_DATA = array(
         'avail' => false,
         'icon_url' => '/7/70/Grid_Brewing_Stand.png',
     ),
-    'cauldron' => array(
+    'cauldron_block' => array(
         'id' => 118,
         'stack' => 64,
         'avail' => false,
