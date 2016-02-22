@@ -248,6 +248,9 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
 function umc_mail_draft() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $id = umc_mail_draft_existing();
+    if (!$id) {
+        umc_error("There is no current mail draft to display!");
+    }
     umc_mail_display($id);
 }
 
