@@ -48,7 +48,7 @@ function umc_db_take_item($table, $id, $amount, $player) {
     } else { // take from deposit
         $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
         $amount_row = $D[0];
-        $newstock = $amount_row['amount'] - $amount;        
+        $newstock = $amount_row['amount'] - $amount;
         if ($newstock == 0) {
             $sid = $amount_row['sender_uuid'];
             // $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
@@ -105,6 +105,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
             }
             $out .= "$meta_name $lvl";
         } else if (isset($UMC_BANNERS['colors'][$meta_name])) {
+            $meta_name = 'various patterns & colors, ';
             $out .= count($lvl) . "-Layered";
         } else { // some enchantments are stored wrong, with lowercase names instead of codes
             // this should not be needed anymore once there are no lowercase enchantments in the deposit
@@ -130,17 +131,17 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
 
 /**
  * returns full name of an item, depending on the environment
- * @param string $item_name
+ * @param string $item_name_raw
  * @param int $item_data
  * @param string $meta
  */
-function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
+function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // cast part capitalized text to lowercase.
-    $item_name = strtolower($item_name);
+    $item_name = strtolower($item_name_raw);
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
