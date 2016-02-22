@@ -92,7 +92,7 @@ function umc_xp_init_user($params){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $rawlevelfraction = $params['xp'];
     $rawlevel= $params['xplevel'];
-    
+
     $points_in_levels = umc_xp_lvl_to_points($rawlevel);
     $points_in_fraction = round(umc_xp_pointstolvl($rawlevel) * $rawlevelfraction);
     $total_xp_as_points = $points_in_levels + $points_in_fraction;
