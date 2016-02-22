@@ -27,7 +27,7 @@ global $UMC_SETTING, $WS_INIT;
 $WS_INIT['lot'] = array(
     'disabled' => false,
     'events' => array(
-        'user_ban' => 'umc_lot_wipe_user', 
+        'user_ban' => 'umc_lot_wipe_user',
         'user_delete' => 'umc_lot_wipe_user',
         'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory',
         'server_reboot' => 'umc_uuid_record_lotcount',
@@ -188,13 +188,13 @@ function umc_lot_addrem() {
     }
     $world = $worlds[$world_abr];
 
-    if ($player == '@Console') {
+    if ($player == '@console') {
         $player = 'uncovery';
     }
 
     $user_id = umc_get_worldguard_id('user', strtolower($player));
     if (!$user_id) {
-        umc_error("Your user id cannot be found!");
+        umc_error("Your user id ($player) cannot be found!");
     }
     $player_group = umc_get_userlevel($player);
 
@@ -218,7 +218,7 @@ function umc_lot_addrem() {
             }
             $owner_switch = 0;
             // check if player is Owner of lot
-            $sql = "SELECT * FROM minecraft_worldguard.region_players 
+            $sql = "SELECT * FROM minecraft_worldguard.region_players
                 WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
             $D = umc_mysql_fetch_all($sql);
             $num = count($D);
@@ -448,7 +448,7 @@ function umc_lot_by_owner($uuid, $world = false) {
 
 /**
  * On user login, we need to wipe the inventory to make sure end reset is not abused.
- * 
+ *
  * @param type $uuid
  */
 function umc_lot_end_wipe_inventory() {
@@ -465,15 +465,15 @@ function umc_lot_reset_flags() {
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
     $lot = $args[2];
-    
+
     $username = $UMC_USER['username'];
     if ($username != '@console') {
         $check = umc_check_lot_owner($lot, $uuid);
         if (!$check) {
             umc_error("You $username are not the owner of that lot!");
-        }    
+        }
     }
-            
+
     umc_check_lot_owner($lot, $uuid);
     umc_lot_flags_set_defaults($lot);
     umc_echo("The flags for lot $lot have been reset!");
