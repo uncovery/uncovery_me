@@ -293,12 +293,6 @@ function umc_create_map() {
             // find out who can keep their lot longer than 1 months
             $retain_lot = false;
 
-            // kick out banned users
-            if (isset($owner_uuid, $banned_users)) {
-                $class = ' redout';
-                $lastlogin_str = "Banned!";
-            }
-
             $owner_lastlogin = $all_lastlogins[$owner_uuid]['lastlogin'];
             if (!isset($all_lastlogins[$owner_uuid]['userlevel'])) {
                 XMPP_ERROR_trigger("$owner_username has no userlevel for the map!");
@@ -314,6 +308,12 @@ function umc_create_map() {
             if (!$freeonly) {
                 $border = 'border';
                 // $box_color = ' background: rgba(0, 255, 255, 0.2);';
+            }
+
+            // kick out banned users
+            if (isset($banned_users[$owner_uuid])) {
+                $class = ' redout';
+                $lastlogin_str = "Banned!";
             }
 
             if ($retain_lot && ($owner_lastlogin < $two_months_ago) && !$is_donator) { // too late
