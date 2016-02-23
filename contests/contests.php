@@ -4,18 +4,18 @@
 
 global $prefix;
 $prefix = "contest_"; //Set a prefix for your tables here
- 
+
 $contest_blacklist = array(); //people that cannot enter contests
 $voting_blacklist = array(); //people that cannot vote
 
 $can_vote = array(
     'Owner' => 10,
-    'ElderDonatorPlus' => 1, 'ElderDonator' => 1, 'Elder' => 1,
-    'MasterDonatorPlus' => 0.65, 'MasterDonator' => 0.65, 'Master' => 0.65,
-    'Designer' => 0.55, 'DesignerDonator' => 0.55, 'DesignerDonatorPlus' => 0.55,
-    'ArchitectDonatorPlus' => 0.45, 'ArchitectDonator' => 0.45, 'Architect' => 0.45,
-    'CitizenDonatorPlus' => 0.3, 'CitizenDonator' => 0.3, 'Citizen' => 0.3,
-    'SettlerDonatorPlus' => 0.2, 'SettlerDonator' => 0.2, 'Settler' => 0.2,
+    'ElderDonator' => 1, 'Elder' => 1,
+    'MasterDonator' => 0.65, 'Master' => 0.65,
+    'Designer' => 0.55, 'DesignerDonator' => 0.55,
+    'ArchitectDonator' => 0.45, 'Architect' => 0.45,
+    'CitizenDonator' => 0.3, 'Citizen' => 0.3,
+    'SettlerDonator' => 0.2, 'Settler' => 0.2,
     'Guest' => 0,
 );
 
@@ -50,7 +50,7 @@ echo "<Br>can enter : " . umc_can_enter_contests();
 
 function umc_contest_index() {
     $out = "<div id=\"contests\"><div id=\"contest_menu\">
-        Show contests: <a href=\"?action=list_contests&amp;type=current\">Open</a> 
+        Show contests: <a href=\"?action=list_contests&amp;type=current\">Open</a>
                      | <a href=\"?action=list_contests&amp;type=voting\">Now Voting</a>
                      | <a href=\"?action=list_contests&amp;type=closed\">Closed</a>
                      | <a href=\"?action=list_contests&amp;type=all\">All</a>
@@ -66,7 +66,7 @@ function umc_contest_index() {
     } else {
         $action = $_POST['func'];
     }
-    
+
     $errors = array();
     switch($action) {
         case "create_contest";
@@ -103,7 +103,7 @@ function umc_contest_index() {
             break;
         case "enter_contest":
             //var_dump($_POST);
-            
+
             umc_validate_and_enter(
                intval($_POST["contest"]), $_POST["title"], $GLOBALS[username], implode("|", $GLOBALS[info][groups]), $_POST["desc"],
                 $_POST["lot"]);
@@ -127,10 +127,10 @@ function umc_contest_index() {
 
     return $out."</div></div>";
 }
- 
+
 //umc_reset_tables();
 //umc_debug();
- 
+
 function umc_is_admin() {
     global $info;
     return (array_search('Owner', $info['groups']) > -1);
@@ -168,7 +168,7 @@ function umc_can_enter_contests() {
 function umc_i_am($username) {
         return $username == $GLOBALS[username];
 }
- 
+
 //sanitize input
 function sanitize($input) {
     $arr = array();
@@ -209,7 +209,7 @@ function umc_getjs() {
     }
     //return $js;
 }
- 
+
 function umc_simple_validate($val, $type = "string", $min = 1, $max = 30) {
     switch($type) {
         case "string":
@@ -219,7 +219,7 @@ function umc_simple_validate($val, $type = "string", $min = 1, $max = 30) {
             return $val >= $min && $val <= $max;
     }
 }
- 
+
 function umc_validate_and_enter($id, $entry_title, $name, $level, $description, $lot) {
     global $username;
     //echo "<div class='error'>";
@@ -245,7 +245,7 @@ function umc_validate_and_enter($id, $entry_title, $name, $level, $description, 
     }
     // echo "</div>";
 }
- 
+
 function umc_can_enter($id, $username = "") {
     if($username == "") {
         $username = $GLOBALS['username'];
@@ -259,7 +259,7 @@ function umc_can_enter($id, $username = "") {
     //return umc_can_enter_contests($username) && (umc_num_entries($id, $username) < $contest_info[max_entries]) && $contest_info[active];
     return umc_can_enter_contests() && (umc_num_entries($id, $username) < $contest_info[max_entries]) && ($contest_info[status] = 'open');
 }
- 
+
 //contest functions
 function umc_vote($entry_id_or_title, $name, $cat, $val) {
     global $prefix;
@@ -294,7 +294,7 @@ function umc_enter_contest($id_or_title, $entry_title, $name, $level, $descripti
     } else {
         $ids = array($id_or_title);
     }
-    
+
     $description = nl2br(strip_tags($description));
     foreach($ids as $id) {
         $sql[] = "INSERT INTO minecraft_srvr.$prefix entries (title, contest, user, level, description, lot)
@@ -306,7 +306,7 @@ function umc_enter_contest($id_or_title, $entry_title, $name, $level, $descripti
     }
     return mysql_insert_id();
 }
- 
+
 function umc_create_contest($title, $desc, $max_entries, $deadline, $type, $x, $y, $z, $voting_categories="Looks|Realism|Fun|Usability|Innovation") {
     if(!umc_is_admin()) {
         die("You don't have permission to do that.");
@@ -325,7 +325,7 @@ function umc_create_contest($title, $desc, $max_entries, $deadline, $type, $x, $
         return mysql_insert_id();
     }
 }
- 
+
 function umc_end_contest($id_or_title) {
     if(!umc_is_admin()) die("You don't have permission to do that.");
     global $prefix;
@@ -359,7 +359,7 @@ function umc_vote_contest($id_or_title) {
     return mysql_insert_id();
 }
 
- 
+
 function umc_resume_contest($id_or_title) {
     if(!umc_is_admin()) die("You don't have permission to do that.");
     global $prefix;
@@ -372,8 +372,8 @@ function umc_resume_contest($id_or_title) {
     foreach($sql as $statement) {
         $rst = mysql_query($statement);
     }
-}      
- 
+}
+
 function umc_delete_contest($id_or_title) {
     if (!umc_is_admin()) {
         die("You don't have permission to do that.");
@@ -381,7 +381,7 @@ function umc_delete_contest($id_or_title) {
     echo "starting delete";
     global $prefix;
     $sql = array();
-    if (is_string($id_or_title)) { 
+    if (is_string($id_or_title)) {
         $ids = umc_get_contests_by_title($id_or_title);
     } else {
         $ids = array($id_or_title);
@@ -412,7 +412,7 @@ function umc_delete_entry($id_or_title, $contest) {
     } else {
         $ids = umc_get_entry($id_or_title, $contest);
     }
-   
+
     foreach($ids as $id) {
         $entry_info = umc_get_entry_info($id);
         if (!(umc_is_admin() || umc_i_am($entry_info[user]))) {
@@ -425,7 +425,7 @@ function umc_delete_entry($id_or_title, $contest) {
         $rst = mysql_query($statement);
     }
 }
- 
+
 function umc_get_contests_by_title($title) {
         global $prefix;
         $sql = "SELECT id FROM minecraft_srvr.".$prefix."contests WHERE title='".$title."'";
@@ -435,14 +435,14 @@ function umc_get_contests_by_title($title) {
         while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
             $ids[] = $row['id'];
         }
-        if (count($ids) > 0) {        
+        if (count($ids) > 0) {
             return $ids;
         } else {
             umc_throw_error("Can't find contest.");
             return -1;
         }
 }
- 
+
 function umc_get_entry($entry_title, $contest_id_or_title) {
     global $prefix;
     if (is_string($contest_id_or_title)) {
@@ -467,7 +467,7 @@ function umc_get_entry($entry_title, $contest_id_or_title) {
         return -1;
     }
 }
- 
+
 function umc_num_entries($id_or_title, $name) {
     global $prefix;
     if (is_string($id_or_title)) {
@@ -484,7 +484,7 @@ function umc_num_entries($id_or_title, $name) {
         return 1;
     }
 }
- 
+
 function umc_get_entries_by_title($entry_title) {
     global $prefix;
     $sql = "SELECT id FROM minecraft_srvr.".$prefix."entries WHERE title='".$entry_title."'";
@@ -495,9 +495,9 @@ function umc_get_entries_by_title($entry_title) {
     }
     return $ids;
 }
- 
+
 //formatted output functions
- 
+
 function umc_get_stars($id, $votes, $cat, $can_edit=false) {
     global $username;
     $input_id = str_replace(" ", "_", strtolower($cat))."_".$id;
@@ -528,7 +528,7 @@ function umc_get_stars($id, $votes, $cat, $can_edit=false) {
     if ($usercount > 0) {
         $uservote = "You voted " . $uservote / $usercount . " stars ";
     } else if ($usercount == 0 || !$can_edit) {
-        $uservote = '';        
+        $uservote = '';
     } else {
         $uservote = "You did not vote yet<br>";
         $uservote = '';
@@ -656,7 +656,7 @@ function umc_get_formatted_contests($mode = "active"){
             $admin_html .= ' | <a href="?action=resume_contest&amp;id='.$row['id'].'" class="toggle_contest">Resume</a> ';
         }
         $admin_html .= "</div><hr>";
-        
+
         $ret .= '<div class="contest">'. "\n". '<div class="contest_title"><a href="?action=show_contest&amp;type='
             . $row['id'].'">'.$pre_title.$row['title'].'</a></div>'.  "\n";
         $deadline_text = "";
@@ -672,7 +672,7 @@ function umc_get_formatted_contests($mode = "active"){
         }
         //$ret .= '</div>';
     }
-    
+
     // create new contest
     $admin_html2 = '<div id="new_contest_form">Create a new contest:<br />'
         . '<form method="post">'
@@ -693,7 +693,7 @@ function umc_get_formatted_contests($mode = "active"){
 
     return $ret;
 }
- 
+
 function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
     $id = intval($contest_id);
     global $prefix, $UMC_DOMAIN;
@@ -711,7 +711,7 @@ function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
     if ($row['type'] == 'creative') {
         $pre_title = 'Creative: ';
     }
-    
+
     $ret = '<div class="contest"><div class="contest_title">'.$pre_title.$row['title'].'</div>';
     $deadline_text = "";
     if ($row['deadline'] != "" && $row['deadline'] != '0000-00-00' && $row['status'] == 'active') {
@@ -748,18 +748,18 @@ function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
         }
         $ret .= '</div>';
     }
-    
+
     //create new contest entry
-    
+
     // find entry by user
-    
+
     $user_arr = umc_is_online();
-    
+
     if ($user_arr['online'] == false) {
         $ret .= "To enter your contest entry, please <a href=\"$UMC_DOMAIN/wp-admin/profile.php\">logged in</a>!";
         return $ret;
     }
-    
+
     $username = $user_arr['username'];
     $lower_username = strtolower($username);
     mysql_select_db('minecraft_worldguard');
@@ -779,13 +779,13 @@ function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
         $ret .= "To create a contest entry, please type <strong>/contest</strong> in-game!";
         return $ret;
     }
-    
+
     $entries = array();
     while ($row = mysql_fetch_array($rst, MYSQL_ASSOC)) {
         $entries[] = $row['region_id'];
     }
-    
-    mysql_select_db('minecraft_srvr');    
+
+    mysql_select_db('minecraft_srvr');
 
     foreach ($entries as $entry) {
         $sql = "SELECT * FROM contest_entries WHERE contest = $id AND user = '$lower_username' AND lot='$entry';";
@@ -808,7 +808,7 @@ function umc_get_formatted_entries($contest_id = false, $new_entry_id = 0) {
                 . '</div>';
         }
     }
-    
+
 
     //if(umc_can_enter($id)) {
         $ret .= $entry_html;
@@ -833,9 +833,9 @@ function umc_filter_votes($votes, $crit, $mode = "category") {
     }
     return $arr;
 }
- 
+
 //general functions
- 
+
 function umc_get_contest_info($id) {
     global $prefix;
     mysql_select_db('minecraft_srvr');
@@ -844,7 +844,7 @@ function umc_get_contest_info($id) {
     $row = mysql_fetch_array($rst, MYSQL_ASSOC);
     return $row;
 }
- 
+
 function umc_get_entry_info($id) {
     global $prefix;
     mysql_select_db('minecraft_srvr');
@@ -853,7 +853,7 @@ function umc_get_entry_info($id) {
     $row = mysql_fetch_array($rst, MYSQL_ASSOC);
     return $row;
 }
- 
+
 function umc_get_votes_info($criteria, $mode = "entry") {
     global $prefix;
     switch($mode) {
@@ -875,7 +875,7 @@ function umc_get_votes_info($criteria, $mode = "entry") {
     }
     return $rows;
 }
- 
+
 function umc_get_field($table, $field, $sel_field, $sel_val) {
     global $prefix;
     $sql = "SELECT ".$field." FROM ".$prefix.$table." WHERE ".$sel_field."=".$sel_val;
@@ -884,8 +884,8 @@ function umc_get_field($table, $field, $sel_field, $sel_val) {
     $row = mysql_fetch_array($rst, MYSQL_ASSOC);
     return $row[$field];
 }
- 
- 
+
+
 function umc_reset_tables() {
     global $prefix;
     $sql = array();
@@ -931,7 +931,7 @@ function umc_reset_tables() {
     }
     echo "Database Initialized.<br /><br />";
 }
- 
+
 //debug functions
 function umc_debug_contests() {
     global $prefix;
@@ -944,7 +944,7 @@ function umc_debug_contests() {
     }
     return $ret;
 }
- 
+
 function umc_debug_entries() {
     global $prefix;
     $sql = "SELECT * FROM ".$prefix."entries";
@@ -956,7 +956,7 @@ function umc_debug_entries() {
     }
     return $ret;
 }
- 
+
 function umc_debug_votes() {
     global $prefix;
     $sql = "SELECT * FROM ".$prefix."votes";
@@ -968,19 +968,19 @@ function umc_debug_votes() {
     }
     return $ret;
 }
- 
+
 function umc_debug() {
         echo umc_debug_contests();
         echo umc_debug_entries();
         echo umc_debug_votes();
         echo umc_debug_errors();
 }
- 
+
 function umc_debug_errors() {
         global $errors;
         return "Errors: ".print_r($errors, true);
 }
- 
+
 function umc_throw_error($error) {
     global $errors;
     $errors[] = $error;
