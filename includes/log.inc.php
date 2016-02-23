@@ -327,7 +327,7 @@ function umc_display_logblock() {
     }
 
     $userlevel = $UMC_USER['userlevel'];
-    $admins = array('Owner', 'Elder', 'ElderDonator', 'ElderDonatorPlus');
+    $admins = array('Owner', 'Elder', 'ElderDonator');
     if (!in_array($userlevel, $admins)) {
         return "This page is admin-only!";
     }
@@ -685,7 +685,7 @@ function umc_log_kill_display() {
     }
 
     $userlevel = $UMC_USER['userlevel'];
-    $admins = array('Owner', 'Elder', 'ElderDonator', 'ElderDonatorPlus');
+    $admins = array('Owner', 'Elder', 'ElderDonator');
     if (!in_array($userlevel, $admins)) {
         return "This page is admin-only!";
     }
