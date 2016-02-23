@@ -212,12 +212,12 @@ div.ts3_viewer {
 }
 
 /*  Colors for user levels */
-.settler, .settlerdonator, .settlerdonatorplus { color: #FF0 }
-.citizen, .citizendonator, .citizendonatorplus { color: #0FF }
-.architect, .architectdonator, .architectdonatorplus { color: #090 }
-.designer, .designerdonator, .designerdonatorplus { color: #00F }
-.master, .masterdonator, .masterdonatorplus { color: #F44 }
-.elder, .elderdonator, .elderdonatorplus { color: #F80 }
+.settler, .settlerdonator { color: #FF0 }
+.citizen, .citizendonator { color: #0FF }
+.architect, .architectdonator { color: #090 }
+.designer, .designerdonator { color: #00F }
+.master, .masterdonator { color: #F44 }
+.elder, .elderdonator { color: #F80 }
 .pluscolor { color: #EA2 }
 
 /* Tab Layout */
