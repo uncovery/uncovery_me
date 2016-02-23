@@ -801,9 +801,9 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
 
 
 // this is called with URL
-// http://uncovery.me/admin/index.php?function=display_markers&world=world
+// https://uncovery.me/admin/index.php?function=display_markers&world=world
 // or
-// http://uncovery.me/admin/index.php?function=display_markers&world=empire&track_player=uncovery
+// https://uncovery.me/admin/index.php?function=display_markers&world=empire&track_player=uncovery
 //
 // and returns ONLY the userpositions HTML/CSS with images for the selected map
 // used for dynamic map location updates

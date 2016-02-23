@@ -73,7 +73,7 @@ function umc_donation_chart() {
     $out = "<div style=\"float:right; width:440px; margin-left: 30px;\">\n$chart\n$table</div>\n"
         . "<div style=\"width:auto; overflow:hidden; \">Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\"
         and therefore also want to only provide non-essential benefits to donators. Those benefits can be seen on the bottom of
-        the \"<a href=\"http://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page. If you ask me what I am doing with the donation money,
+        the \"<a href=\"https://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page. If you ask me what I am doing with the donation money,
         you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month.
         So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other
         plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that

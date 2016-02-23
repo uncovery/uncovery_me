@@ -125,7 +125,7 @@ function umc_display_guestinfo(){
 	// Deposit information
         $deposit = umc_show_depotlist(true, $username, true);
         if (is_array($deposit) && count($deposit) > 0) {
-            $content .= "<li><strong><a href=\"http://uncovery.me/server-access/shop-manager/?page=deposit\">Your Deposit:</a></strong><ul>";
+            $content .= "<li><strong><a href=\"https://uncovery.me/server-access/shop-manager/?page=deposit\">Your Deposit:</a></strong><ul>";
             foreach ($deposit as $depot_content) {
                 $content .=  "<li>" . $depot_content['item'] . "</li>";
             }
@@ -511,7 +511,7 @@ function umc_jquery_tabs($data) {
 
 function umc_web_sphere_generator() {
     $out = '
-    <script type=\'text/javascript\' src=\'http://uncovery.me/admin/js/sphere.js\'></script>
+    <script type=\'text/javascript\' src=\'https://uncovery.me/admin/js/sphere.js\'></script>
     <div>
     Radius: <input type="text" id="txtRadius" value="5" /><br>
     Fill: <input type="checkbox" id="chkFill" value="true" checked /> <small>Either fill the sphere, or calculate which position may be left empty.</small><br>

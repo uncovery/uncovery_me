@@ -340,7 +340,7 @@ function umc_ts_viewer() {
         }
     }
 
-    $out_new .= "<div style=\"text-align:right;\"><a href=\"http://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
+    $out_new .= "<div style=\"text-align:right;\"><a href=\"https://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
     return $out_new;
 }
 

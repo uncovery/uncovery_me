@@ -24,7 +24,7 @@
 global $UMC_SETTING, $UMC_PATH_MC;
 
 $UMC_PATH_MC = "/home/minecraft";
-$UMC_DOMAIN = "http://uncovery.me";
+$UMC_DOMAIN = "https://uncovery.me";
 
 ini_set('display_errors', 1);
 

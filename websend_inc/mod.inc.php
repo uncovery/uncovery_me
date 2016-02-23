@@ -130,7 +130,7 @@ function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
-    umc_item_data_id2namelist();
+    umc_userlevel_donation_update_all();
     XMPP_ERROR_trigger("test");
 }
 

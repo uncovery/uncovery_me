@@ -50,7 +50,7 @@ $UMC_FAQ = array(
     3 => array(
         'question' => 'How can I have more lots? I need more space!',
         'answer' => 'If you are settler, you can either buy kingdom lots or build in the darklands.
-            To get more space in other worlds, please see the bottom of <a href="http://uncovery.me/about-this-server/user-levels/">this page</a>.',
+            To get more space in other worlds, please see the bottom of <a href="https://uncovery.me/about-this-server/user-levels/">this page</a>.',
         'categories' => array('userlevels', 'lots', 'account'),
     ),
     4 => array(
@@ -111,7 +111,7 @@ $UMC_FAQ = array(
     ),
     13 => array(
         'question' => 'Can I allow others to build inside my lot?',
-        'answer' => 'Yes, you can do so yourself. Please see the <a href="http://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
+        'answer' => 'Yes, you can do so yourself. Please see the <a href="https://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
         'categories' => array('commands', 'lots', 'in-game'),
     ),
     14 => array(
@@ -203,7 +203,7 @@ $UMC_FAQ = array(
     ),
     28 => array(
         'question' => 'Something is not working, what should I do?',
-        'answer' => 'First of all, please check if someone else has the same issue. If that is the case, please check the <a href="http://uncovery.me/server-features/development-status/">
+        'answer' => 'First of all, please check if someone else has the same issue. If that is the case, please check the <a href="https://uncovery.me/server-features/development-status/">
             Bugs list</a>. If you can find the problem there, then it\'s a known problem. If you want to accelerate the fix for this problem, you can post to the forum. If the problem is not
             on the list, you can send a mail to uncovery with the /mail command.',
         'categories' => array('problems'),

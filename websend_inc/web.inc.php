@@ -75,7 +75,7 @@ function umc_web_read() {
             umc_footer();
             umc_echo($P['comment_count'] . " comments.");
         }
-        umc_footer(true, "http://uncovery.me/?p=$id");
+        umc_footer(true, "https://uncovery.me/?p=$id");
     } else {
         umc_error("Invalid Post ID!");
     }

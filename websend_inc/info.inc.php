@@ -98,7 +98,7 @@ function umc_info_setpass() {
     $reset_key = get_password_reset_key($user_data);
     $url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user_login), 'login');
     // shorten the URL
-    $shortenedurl = file_get_contents('http://uncovery.me/s/shorten.php?longurl=' . urlencode($url));
+    $shortenedurl = file_get_contents('https://uncovery.me/s/shorten.php?longurl=' . urlencode($url));
 
     umc_header("Password Reset Link");
     umc_echo("Please click on the following link to set a new password:");

@@ -109,7 +109,7 @@ function umc_wp_fingerprint_call() {
         jQuery(document).ready(function(jQuery) {
             var fp = new Fingerprint2();
             fp.get(function(result) {
-                var fingerprint_url = "http://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
+                var fingerprint_url = "https://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
                 jQuery.ajax(fingerprint_url);
             });
         });
@@ -160,21 +160,21 @@ function umc_wp_template_picker($template) {
  * add additional CSS and JS
  */
 function umc_wp_add_css_and_js() {
-    wp_enqueue_style( 'dataTables', 'http://uncovery.me/admin/dataTables.css' );
-    wp_enqueue_style( 'uncovery', 'http://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'dataTables', 'https://uncovery.me/admin/dataTables.css' );
+    wp_enqueue_style( 'uncovery', 'https://uncovery.me/admin/global.css' );
     // execute floored's CSS only on his page
     $postid = get_the_ID();
     if ($postid == 15523) {
-        wp_enqueue_style( 'floored_css', 'http://uncovery.me/admin/floored.css' );
+        wp_enqueue_style( 'floored_css', 'https://uncovery.me/admin/floored.css' );
     }
     wp_enqueue_script('jquery-ui-accordion');
     wp_enqueue_script('jquery-ui-tabs');
-    wp_enqueue_script('uncovery_global_js', 'http://uncovery.me/admin/js/global.js');
-    wp_enqueue_script('uncovery_fingerprint', 'http://uncovery.me/admin/js/fingerprint2.min.js');
+    wp_enqueue_script('uncovery_global_js', 'https://uncovery.me/admin/js/global.js');
+    wp_enqueue_script('uncovery_fingerprint', 'https://uncovery.me/admin/js/fingerprint2.min.js');
 }
 
 function umc_wp_login_stylesheet() {
-    wp_enqueue_style( 'custom-login',  'http://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'custom-login',  'https://uncovery.me/admin/global.css' );
 }
 add_action('login_enqueue_scripts', 'umc_wp_login_stylesheet');
 
@@ -193,7 +193,7 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
 
     $post = get_post($parent, 'ARRAY_A');
     $title = $post['post_title'];
-    $post_link = "http://uncovery.me/?p=" . $post['ID'];
+    $post_link = "https://uncovery.me/?p=" . $post['ID'];
 
     $cmd1 = "ch qm n New Comment on Post &a$title &fby $author&f";
     $cmd2 = "ch qm n Link: &a$post_link&f";
@@ -221,7 +221,7 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
     $cmds = array();
     if ($old_status != 'publish' && $new_status == 'publish') {
         $post_title = $post->post_title;
-        $post_link = "http://uncovery.me/?p=" . $post->ID;
+        $post_link = "https://uncovery.me/?p=" . $post->ID;
         $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
             $cmds[] = "ch qm u New Blog Post: &a$post_title&f";
@@ -342,9 +342,9 @@ function umc_wp_forum_widget($items = 20) {
         $date_obj = umc_datetime($P->post_date);
         $time_ago = umc_timer_format_diff($date_obj);
         $link = $parent->guid . "#post-" . $P->ID;
-        $html = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        $html = "<a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
             class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-            <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+            <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
             $user->display_name</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
         if (!isset($posts[$P->post_parent])) {
             $parent_post = get_post($P->post_parent);
@@ -390,9 +390,9 @@ function umc_wp_forum_get_postlink($P) {
     $link = $P->guid;
     $post_title = $P->post_title;
     $html = "<a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$post_title</a><br>by
-        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
         class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
         $user->display_name</a><br>$time_ago ago";
     return $html;
 }
@@ -434,7 +434,7 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
             if (!isset($s_post[$q_index]) || ($s_post[$q_index] != $item['true'])) {
                 $error = true;
                 $error_msg = "<strong>ERROR:</strong>You entered one or more wrong answers to the questions below. "
-                    . "Please go back to <a href=\"http://uncovery.me/whitelist/\">this page</a>, read it properly and try again.";
+                    . "Please go back to <a href=\"https://uncovery.me/whitelist/\">this page</a>, read it properly and try again.";
             }
         }
         if ($error) {
@@ -447,7 +447,7 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 $error_msg = "<strong>ERROR:</strong>We could not verify your username right now. If you own a copy of Minecraft under the username '$user_login', you can try to login to the server once. "
                     . "It will not let you login, but our system will get a confirmation from Mojang in case your username exists. "
                     . "If you are sure that this is your username, try to connect to uncovery.me with your minecraft client once. You can try to register afterwards here again. "
-                    . "If you are certain that you are using the right username and still get this error, please submit a <a href=\"http://uncovery.me/help-2/support/\">support ticket</a>.";
+                    . "If you are certain that you are using the right username and still get this error, please submit a <a href=\"https://uncovery.me/help-2/support/\">support ticket</a>.";
                 $errors->add('demo_error',__($error_msg));
                 return $errors;
             } else if (umc_user_is_banned($UMC_USER['uuid'])) {

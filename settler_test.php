@@ -59,7 +59,7 @@ function umc_settler_new() {
     $email = $UMC_USER['email'];
 
     if ($userlevel != 'Guest') {
-        $out .= "You are not a Guest and can use the <a href=\"http://uncovery.me/server-access/lot-manager/\">Lot manager</a> to get a lot!";
+        $out .= "You are not a Guest and can use the <a href=\"https://uncovery.me/server-access/lot-manager/\">Lot manager</a> to get a lot!";
     }
 
     if (umc_user_is_banned($uuid)) {

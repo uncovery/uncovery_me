@@ -788,7 +788,7 @@ function umc_do_search() {
     // check for broadform too many results
     $len = count($finds);
     if ($len > $max) {
-        umc_error("Too many results ($len)! Please see http://uncovery.me/server-access/shop-manager/?page=goods");
+        umc_error("Too many results ($len)! Please see https://uncovery.me/server-access/shop-manager/?page=goods");
     }
 
     // return results, paginated if required

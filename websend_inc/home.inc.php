@@ -121,7 +121,7 @@ $UMC_SETTING['homes']['max_homes'] = array(
     'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
     'Owner' => 100,
 );
-$UMC_SETTING['homes']['icon_url'] = "http://uncovery.me/admin/img/home_icon.png";
+$UMC_SETTING['homes']['icon_url'] = "https://uncovery.me/admin/img/home_icon.png";
 
 // returns information about the players homes
 function umc_home_check() {
