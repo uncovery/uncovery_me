@@ -145,7 +145,7 @@ function umc_ws_get_vars() {
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
-        $UMC_USER['donator'] = 'DonatorPlus';
+        $UMC_USER['donator'] = 'Donator';
         $UMC_USER['uuid'] = 'Console0-0000-0000-0000-000000000000';
     } else {
         $UMC_USER['username'] = $json['Invoker']['Name'];
@@ -160,9 +160,7 @@ function umc_ws_get_vars() {
 
         $UMC_USER['uuid'] = $uuid;
         $UMC_USER['userlevel'] = umc_get_uuid_level($uuid);
-        if (strstr($UMC_USER['userlevel'], 'DonatorPlus')) {
-            $UMC_USER['donator'] = 'DonatorPlus';
-        } else if (strstr($UMC_USER['userlevel'], 'Donator')) {
+        if (strstr($UMC_USER['userlevel'], 'Donator')) {
             $UMC_USER['donator'] = 'Donator';
         } else {
             $UMC_USER['donator'] = false;
