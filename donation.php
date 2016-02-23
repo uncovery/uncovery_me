@@ -88,9 +88,9 @@ function umc_donation_chart() {
         . '<br><br><form style="display:inline;" action="' . $UMC_DONATION['paypal_url'] . '" method="post" target="_top">'
         . '<input type="hidden" name="cmd" value="_s-xclick">'
         . '<input type="hidden" name="hosted_button_id" value="' . $UMC_DONATION['button_id'] . '">'
-        . '<p style="text-align:center;"><input type="hidden" name="on0" value="DonatorPlus Status">'
+        . '<p style="text-align:center;"><input type="hidden" name="on0" value="Donator Status">'
         . "The average donation amount is <strong>$donation_avg USD</strong><br>
-        Buy DonatorPlus Status as user <strong>$username<br>
+        Buy Donator Status as user <strong>$username<br>
             (UUID: $uuid)" . '</strong><br> Duration <select style="font-size:12px" name="os0">
             <option value="1 Month">1 Month $2.00 USD</option>
             <option value="6 Months">6 Months $7.00 USD</option>
