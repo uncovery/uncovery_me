@@ -19,7 +19,7 @@
 
 /*
  * This manages user level upgrades based on user votes. The amount of votes needed
- * to upgrade depends on the active Elder (=max) level users on the server. 
+ * to upgrade depends on the active Elder (=max) level users on the server.
  * This makes sure that the max. amount of Elder users is proportional to the overall
  * amount of users on the server.
  */
@@ -43,22 +43,16 @@ $vote_ranks = array(
     'Guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'next' => 'Settler'),
     'Settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'Citizen'),
     'SettlerDonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonator'),
-    'SettlerDonatorPlus'    => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonatorPlus'),
     'Citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'Architect'),
     'CitizenDonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonator'),
-    'CitizenDonatorPlus'    => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonatorPlus'),
     'Architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'Designer'),
     'ArchitectDonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonator'),
-    'ArchitectDonatorPlus'  => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonatorPlus'),
     'Designer'              => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'Master'),
     'DesignerDonator'       => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonator'),
-    'DesignerDonatorPlus'   => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonatorPlus'),
     'Master'                => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'Elder'),
     'MasterDonator'         => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonator'),
-    'MasterDonatorPlus'     => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonatorPlus'),
     'Elder'                 => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
     'ElderDonator'          => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'ElderDonatorPlus'      => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
     'Owner'                 => array('lvl' => 7, 'vote' => 16, 'code' => 'o', 'next' => false)
 );
 
