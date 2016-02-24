@@ -76,7 +76,7 @@ $WS_INIT['lot'] = array(
         'function' => 'umc_lot_mod',
         'security' => array(
             'level'=>'Elder',
-            // 'level'=>'ElderDonator', 'level'=>'ElderDonatorPlus',
+            // 'level'=>'ElderDonator',
          ),
     ),
     'warp' => array(
@@ -128,7 +128,7 @@ function umc_lot_mod() {
     if (!umc_check_lot_exists($world_id, $lot)) {
         umc_error("There is no lot $lot in world $world;");
     }
-    if ($player_group !== 'Owner' && $player_group !== 'Elder' && $player_group !== 'ElderDonator' && $player_group !== 'ElderDonatorPlus') {
+    if ($player_group !== 'Owner' && $player_group !== 'Elder' && $player_group !== 'ElderDonator') {
         umc_error("You are not Elder or Owner, you are $player_group!");
     }
 
@@ -210,11 +210,11 @@ function umc_lot_addrem() {
     }
 
     if ($action == 'snow' || $action == 'ice') {
-        // check if the user has DonatorPlus status.
+        // check if the user has Donator status.
 
         if ($player_group !== 'Owner') {
-            if (!stristr($player_group, 'DonatorPlus')) {
-                umc_error("You need to be DonatorPlus level to use the snow/ice features!;");
+            if (!stristr($player_group, 'Donator')) {
+                umc_error("You need to be Donator level to use the snow/ice features!;");
             }
             $owner_switch = 0;
             // check if player is Owner of lot
