@@ -298,11 +298,10 @@ function umc_info_who() {
         $level = umc_get_uuid_level($uuid);
         $player = $players_details['Name'];
 
+        $new_lvl = $level;
         if (strstr($level, "Donator")){
-            $new_lvl = substr($level, 0, -7);
             $new_player = "$player{yellow}++{white}";
         } else {
-            $new_lvl = $level;
             $new_player = $player;
         }
         $lower_username = strtolower($player);
