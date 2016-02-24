@@ -160,9 +160,7 @@ function umc_userlevel_promote_onelevel($uuid) {
     $new_level = $UMC_SETTING['userlevels']['base_levels'][$user_base_level_id];
     // add the donator status if the old level had that
     // alternatively we could skip this and just run the donator check again.
-    if (strpos($userlevel, "DonatorPlus")) {
-        $new_level .= "DonatorPlus";
-    } else if (strpos($userlevel, "Donator")) {
+    if (strpos($userlevel, "Donator")) {
         $new_level .= "Donator";
     }
     umc_userlevel_assign_level($uuid, $new_level);
@@ -177,13 +175,13 @@ function umc_userlevel_promote_onelevel($uuid) {
 function umc_userlevel_assign_level($uuid, $newlevel) {
     global $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // check if level is valid
     if (!in_array($newlevel, $UMC_SETTING['ranks'])) {
         XMPP_ERROR_trigger("Tried to set invalid userlevel $newlevel for user $uuid!");
         return;
     }
-    
+
     // upgrade on the server
     $check = umc_exec_command("pex user $uuid group set $newlevel");
     // if the server was not online, we need to do it in the database directly.
