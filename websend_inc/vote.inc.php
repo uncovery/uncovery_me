@@ -212,7 +212,7 @@ function umc_vote_web() {
 
     // get user numbers for levels
     $lvl_str_arr = array(
-        'a' => "'Architect', 'ArchitectDonator',",
+        'a' => "'Architect', 'ArchitectDonator'",
         'd' => "'Designer', 'DesignerDonator'",
         'm' => "'Master', 'MasterDonator'",
         'e' => "'Elder', 'ElderDonator'",
