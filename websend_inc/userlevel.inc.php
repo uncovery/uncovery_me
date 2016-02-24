@@ -317,7 +317,7 @@ function umc_userlevel_donation_remains($uuid) {
  */
 function umc_userlevel_donators_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%DonatorPlus';";
+    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator';";
     $D = umc_mysql_fetch_all($sql);
     $out_arr = array();
     foreach($D as $row) {
