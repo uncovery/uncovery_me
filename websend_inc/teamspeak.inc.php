@@ -89,12 +89,12 @@ $UMC_TEAMSPEAK = array(
     'server' => false,
     'user_groups' => array(
         6 => array('Owner'),
-        10 => array('Master','MasterDonator','MasterDonatorPlus',
-            'Elder','ElderDonator','ElderDonatorPlus'),
-        7 => array('Settler','SettlerDonator','SettlerDonatorPlus',
-            'Citizen','CitizenDonator','CitizenDonatorPlus',
-            'Architect','ArchitectDonator','ArchitectDonatorPlus',
-            'Designer','DesignerDonator','DesignerDonatorPlus'),
+        10 => array('Master','MasterDonator',
+            'Elder','ElderDonator'),
+        7 => array('Settler','SettlerDonator',
+            'Citizen','CitizenDonator',
+            'Architect','ArchitectDonator',
+            'Designer','DesignerDonator'),
     ),
     'ts_groups' => array(
         6 => 'TS Admin', 10 => 'TS Moderator', 7 => 'TS Settler', 8 => 'TS Guest'
