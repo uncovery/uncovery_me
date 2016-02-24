@@ -171,10 +171,8 @@ function umc_vanity_cancel() {
         $time_out = $date_out->format('Y-m-d H:i:s');
         $userlevel = umc_get_userlevel($player);
         $donator_str = false;
-        if (strstr($userlevel, 'DonatorPlus')) {
+        if (strstr($userlevel, 'Donator')) {
             $donator_str = '&6++&f';
-        } else if (strstr($userlevel, 'Donator')){
-            $donator_str = '&6+&f';
         } else if ($userlevel == 'Owner') {
             $donator_str = '&6++&f';
         }
@@ -240,10 +238,8 @@ function umc_vanity_set() {
     $vanity = trim($vanity_raw);
 
     $donator_str = '';
-    if (strstr($userlevel, 'DonatorPlus')) {
+    if (strstr($userlevel, 'Donator')){
         $donator_str = '&6++&f';
-    } else if (strstr($userlevel, 'Donator')){
-        $donator_str = '&6+&f';
     } else if ($userlevel == 'Owner') {
         $donator_str = '&6++&f';
     }
