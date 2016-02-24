@@ -113,12 +113,12 @@ $WS_INIT['homes'] = array(  // the name of the plugin
 
 $UMC_SETTING['homes']['max_homes'] = array(
     'Guest' => 1,
-    'Settler' => 6, 'SettlerDonator' => 6, 'SettlerDonatorPlus' => 6,
-    'Citizen' => 8, 'CitizenDonator' => 8, 'CitizenDonatorPlus' => 8,
-    'Architect'  => 10, 'ArchitectDonator' => 10, 'ArchitectDonatorPlus' => 10,
-    'Designer' => 15, 'DesignerDonator' => 15, 'DesignerDonatorPlus' => 15,
-    'Master' => 20, 'MasterDonator' => 20, 'MasterDonatorPlus' => 20,
-    'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
+    'Settler' => 6, 'SettlerDonator' => 6,
+    'Citizen' => 8, 'CitizenDonator' => 8,
+    'Architect'  => 10, 'ArchitectDonator' => 10,
+    'Designer' => 15, 'DesignerDonator' => 15,
+    'Master' => 20, 'MasterDonator' => 20,
+    'Elder' => 50, 'ElderDonator' => 50, 
     'Owner' => 100,
 );
 $UMC_SETTING['homes']['icon_url'] = "https://uncovery.me/admin/img/home_icon.png";
