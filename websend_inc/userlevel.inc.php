@@ -253,7 +253,7 @@ function umc_userlevel_donator_update($uuid) {
     $base_level = $base_level_arr['level_name'];
     if ($is_donator) {
         if (strpos($userlevel, 'DonatorPlus')) { // all good
-            $new_level = $userlevel . "Donator";
+            $new_level = $base_level . "Donator";
             umc_userlevel_assign_level($uuid, $new_level);
         } else if (strpos($userlevel, 'Donator')) { // all good
             return;
