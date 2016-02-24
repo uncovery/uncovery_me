@@ -805,7 +805,7 @@ function umc_user_directory() {
 
         while ($row = umc_mysql_fetch_array($rst)) {
             $days_offline = $row['days_offline'];
-            $settler_levels = array('Settler', 'SettlerDonator', 'SettlerDonatorPlus');
+            $settler_levels = array('Settler', 'SettlerDonator');
             if (in_array($row['userlevel'], $settler_levels) && $row['onlinetime'] >= 60) {
                 umc_promote_citizen(strtolower($row['username']), $row['userlevel']);
             }
@@ -1016,7 +1016,7 @@ function umc_promote_citizen($username, $userlevel = false) {
         $userlevel = umc_get_userlevel($username);
     }
     $lower_username = strtolower($username);
-    $settlers = array('Settler', 'SettlerDonator', 'SettlerDonatorPlus');
+    $settlers = array('Settler', 'SettlerDonator');
     if (in_array($userlevel, $settlers)) {
         /*
         $age = umc_get_lot_owner_age('array', $lower_login);
@@ -1038,9 +1038,6 @@ function umc_promote_citizen($username, $userlevel = false) {
             } else if ($userlevel == 'SettlerDonator') {
                 umc_exec_command("pex user $uuid group set CitizenDonator");
                 umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to CitizenDonator (online: $online_hours)");
-            } else if ($userlevel == 'SettlerDonatorPlus') {
-                umc_exec_command("pex user $uuid group set CitizenDonatorPlus");
-                umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to CitizenDonatorPlus (online: $online_hours)");
             } else {
                 XMPP_ERROR_trigger("$username / $uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
             }
