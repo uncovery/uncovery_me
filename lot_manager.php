@@ -32,7 +32,7 @@ function umc_lot_manager_main() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_DOMAIN;
     // levels which should be able to get draftlands lots
-    $elder_ranks = array('Elder', 'ElderDonator', 'ElderDonatorPlus', 'Owner');
+    $elder_ranks = array('Elder', 'ElderDonator', 'Owner');
 
     // ***** ACCESS ***** //
     $out = '';
@@ -773,7 +773,7 @@ function umc_get_flag_form($lot, $form = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     $out = '';
-    if ($UMC_USER['donator'] == 'DonatorPlus' || $UMC_USER['username'] == 'uncovery') {
+    if ($UMC_USER['donator'] == 'Donator' || $UMC_USER['username'] == 'uncovery') {
         $flags = umc_get_lot_flags($lot);
         $avail_flags = $UMC_SETTING['lot_flags'];
         foreach ($avail_flags as $flag) {
@@ -805,7 +805,7 @@ function umc_get_flag_form($lot, $form = false) {
             $out .= "No flags set";
         }
     } else if ($form) {
-        $out .= "Flag changes are only available to DonatorPlus users;";
+        $out .= "Flag changes are only available to Donators;";
     } else {
         $out .= " No Flags;";
     }
