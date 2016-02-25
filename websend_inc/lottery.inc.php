@@ -299,7 +299,6 @@ function umc_lottery_reminder() {
 
     }
 }
-
 /**
  * displays a report to the initiating user displaying their vote history to $lim rolls and $hours hours.
  * ie you can check for 500 hours worth of rolls, but limit result count to $lim
