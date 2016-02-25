@@ -249,53 +249,73 @@ function umc_lottery_reminder() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
+    $display = true;
 
-    $checkdate = date("Y-m-d H:i:s", strtotime("-24 hours"));
+    // exclude "young" users from being harassed to vote
+    $sql = "SELECT username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
+            FROM minecraft_srvr.UUID
+            LEFT JOIN minecraft_srvr.permissions_inheritance ON UUID.uuid=child
+            LEFT JOIN minecraft_worldguard.user ON UUID.uuid = user.uuid
+            LEFT JOIN minecraft_worldguard.region_players ON user.id=region_players.user_id
+            WHERE owner = 1 AND firstlogin >'0000-00-00 00:00:00' AND username <> '_abandoned_'
+            GROUP BY username, owner
+            ORDER BY firstlogin";
+    $rst = umc_mysql_query($sql);
+    $row = umc_mysql_fetch_array($rst);
+    if ($row['onlinetime'] < 20) {
+        $display = false;
+    }
 
-    // TODO: the votes log fieldname is username, but there are UUIDs inside, need to fix that
-    $sql = "SELECT count(vote_id) as counter 
-            FROM minecraft_log.votes_log
-            WHERE `username`='$uuid'
-            AND `datetime`>='$checkdate'
-            ORDER BY `vote_id` DESC;";
+    if($display){
+        
+        // set a checkdate 22 hours before current timestamp, sites have reset by this time.
+        $checkdate = date("Y-m-d H:i:s", strtotime("-22 hours"));
     
-    $D = umc_mysql_fetch_all($sql);
-    $counter = $D[0]['counter'];
+        // TODO: the votes log fieldname is username, but there are UUIDs inside, need to fix that
+        $sql = "SELECT count(vote_id) as counter 
+                FROM minecraft_log.votes_log
+                WHERE `username`='$uuid'
+                AND `datetime`>='$checkdate'
+                ORDER BY `vote_id` DESC;";
+        
+        $D = umc_mysql_fetch_all($sql);
+        $counter = $D[0]['counter'];
+        
+        if ($counter < 5) {
+            
+            // politely remind users they need to vote dammit!
+            $title =  'title ' . $player . ' title {text:"Please vote!",color:green}';
     
-    if ($counter < 5) {
-        
-        // politely remind users they need to vote dammit!
-        $title =  'title ' . $player . ' title {text:"Please vote!",color:green}';
-
-        // add some variety to login welcome messages!
-        $subtitle_array = array(
-            ('title ' . $player . ' subtitle {text:"Welcome back ' . $player .'!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"' . $player . '! Great to see you!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Hello again ' . $player . '.",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Maybe you should visit the darklands today?",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Considered taking a stroll in the empire?",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Have you tried the command /find request new",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Experience can be bottled using /bottlexp",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Hold an item and type /offer <your price> to list it for sale!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Rome wasnt built in a day...",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Thanks for coming by to play!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"You can find items to buy using /find <itemname>",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Darklands is a resource gathering world. But beware the moon...",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Hey, your friends were looking for you ' . $player.'!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Use /whereami for information about your position!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Use /uncs to display your current balance!",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Did you know you can buy additional homes for Uncs?",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"Did you know you can buy additional desposit boxes for Uncs?",color:gold}'),
-            ('title ' . $player . ' subtitle {text:"We missed you ' . $player . '!",color:gold}')
-        );
-        
-        // select a random position in the title array
-        $key = array_rand($subtitle_array);
-        $subtitle = $subtitle_array[$key];
-        
-        umc_ws_cmd($subtitle, 'asConsole');
-        umc_ws_cmd($title, 'asConsole');
-        
+            // add some variety to login welcome messages!
+            $subtitle_array = array(
+                ('title ' . $player . ' subtitle {text:"Welcome back ' . $player .'!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"' . $player . '! Great to see you!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Hello again ' . $player . '.",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Maybe you should visit the darklands today?",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Considered taking a stroll in the empire?",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Have you tried the command /find request new",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Experience can be bottled using /bottlexp",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Hold an item and type /offer <your price> to list it for sale!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Rome wasnt built in a day...",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Thanks for coming by to play!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"You can find items to buy using /find <itemname>",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Darklands is a resource gathering world. But beware the moon...",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Hey, your friends were looking for you ' . $player.'!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Use /whereami for information about your position!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Use /uncs to display your current balance!",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Did you know you can buy additional homes for Uncs?",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"Did you know you can buy additional desposit boxes for Uncs?",color:gold}'),
+                ('title ' . $player . ' subtitle {text:"We missed you ' . $player . '!",color:gold}')
+            );
+            
+            // select a random position in the title array
+            $key = array_rand($subtitle_array);
+            $subtitle = $subtitle_array[$key];
+            
+            umc_ws_cmd($subtitle, 'asConsole');
+            umc_ws_cmd($title, 'asConsole');
+            
+        }
     }
 }
 
