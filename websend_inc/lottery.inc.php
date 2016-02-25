@@ -294,7 +294,7 @@ function umc_lottery_reminder() {
         $key = array_rand($messages);
         $subtitle = $messages[$key];
 
-        umc_ws_cmd("title $player subtitle {text:$subtitle,color:gold}", 'asConsole');
+        umc_ws_cmd("title $player subtitle {text:\"$subtitle\",color:gold}", 'asConsole');
         umc_ws_cmd($title, 'asConsole');
 
     }
