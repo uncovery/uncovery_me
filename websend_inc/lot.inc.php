@@ -29,7 +29,7 @@ $WS_INIT['lot'] = array(
     'events' => array(
         'user_ban' => 'umc_lot_wipe_user',
         'user_delete' => 'umc_lot_wipe_user',
-        'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory',
+        // 'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory', // this does not work currently ue to file write permissions
         'server_reboot' => 'umc_uuid_record_lotcount',
     ),
     'default' => array(
