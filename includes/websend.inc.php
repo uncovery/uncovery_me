@@ -434,8 +434,8 @@ function umc_ws_get_inv($inv_data) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
                     $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
-
-                    XMPP_ERROR_trigger("ITEM ISSUE: $item_typename not found in \$UMC_DATA, item {$item['Type']} : {$item['Durability']}, should be {$inv[$slot]['item_name']}");
+                    $out = "ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
+                    XMPP_ERROR_send_msg($out);
                 }
             } else if ($name == "Type") {
                 $inv[$slot]['id'] = $item['Type'];
