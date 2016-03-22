@@ -3644,4 +3644,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'monster_egg' => 'spawn_egg',
     'melon' => 'melonslice',
     'clay' => 'clayblock',
+    'boat_spruce' => 'spruce_boat',
+    'boat_acacia' => 'acacia_boat',
+    'dragons_breath' => 'dragon_breath',
 );
