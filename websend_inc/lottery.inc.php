@@ -265,7 +265,7 @@ function umc_lottery_reminder() {
     if ($counter < 5) {
 
         // politely remind users they need to vote dammit!
-        $title =  'title ' . $player . ' title {text:"Please vote!",color:green}';
+        $title =  'title ' . $player . ' title {\"text\":"Please vote!",\"color\":\"green\"}';
 
         // add some variety to login welcome messages!
         $messages = array(
@@ -423,11 +423,11 @@ function umc_lottery() {
     $uuid = umc_user2uuid($user);
 
     // give reinforcing feedback - set subtitle (not displayed)
-    $subtitle =  'title ' . $user . ' subtitle {\"text\":"Thanks for your vote!",\"color\":\"gold\"}';
+    $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
     umc_ws_cmd($subtitle, 'asConsole');
 
     // display the feedback - displays subtitle AND title
-    $title = 'title ' . $user . ' title {\"text\":"+100 Uncs",\"color\":\"gold\"}';
+    $title = 'title ' . $user . ' title {"text":"+100 Uncs","color":"gold"}';
     umc_ws_cmd($title, 'asConsole');
 
     // allow uncovery to test chance rolls for debugging purposes
