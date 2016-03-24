@@ -294,7 +294,7 @@ function umc_lottery_reminder() {
         $key = array_rand($messages);
         $subtitle = $messages[$key];
 
-        umc_ws_cmd("title $player subtitle {text:\"$subtitle\",color:gold}", 'asConsole');
+        umc_ws_cmd("title $player subtitle {\"text\":\"$subtitle\",\"color\":\"gold\"}", 'asConsole');
         umc_ws_cmd($title, 'asConsole');
 
     }
@@ -423,11 +423,11 @@ function umc_lottery() {
     $uuid = umc_user2uuid($user);
 
     // give reinforcing feedback - set subtitle (not displayed)
-    $subtitle =  'title ' . $user . ' subtitle {text:"Thanks for your vote!",color:gold}';
+    $subtitle =  'title ' . $user . ' subtitle {\"text\":"Thanks for your vote!",\"color\":\"gold\"}';
     umc_ws_cmd($subtitle, 'asConsole');
 
     // display the feedback - displays subtitle AND title
-    $title = 'title ' . $user . ' title {text:"+100 Uncs",color:gold}';
+    $title = 'title ' . $user . ' title {\"text\":"+100 Uncs",\"color\":\"gold\"}';
     umc_ws_cmd($title, 'asConsole');
 
     // allow uncovery to test chance rolls for debugging purposes
