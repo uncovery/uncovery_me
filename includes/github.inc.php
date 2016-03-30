@@ -55,7 +55,6 @@ function umc_github_wordpress_update() {
     global $GITHUB;
     $repo = $GITHUB['repo'];
     $owner = $GITHUB['owner'];
-    $page = $GITHUB['page'];
 
     $client = umc_github_client_connect($owner, $repo);
 
