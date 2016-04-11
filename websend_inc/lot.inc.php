@@ -406,6 +406,16 @@ function umc_lot_wipe_user($uuid) {
     // check if someone else has dibs for that lot
 
     }
+    // same for members:
+    $lot_members = umc_lot_by_owner($uuid, false, false);
+    foreach ($lot_members as $world => $L) {
+    // remove that user from the lots
+        $lot = $L['lot'];
+        umc_lot_rem_player($player, $lot, 1);
+
+    // check if someone else has dibs for that lot
+
+    }
 }
 
 /**
@@ -415,7 +425,7 @@ function umc_lot_wipe_user($uuid) {
  * @param type $world
  * @return type
  */
-function umc_lot_by_owner($uuid, $world = false) {
+function umc_lot_by_owner($uuid, $world = false, $owner = true) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // worldguard stores everything in lower case.
     $filter = '';
@@ -427,11 +437,17 @@ function umc_lot_by_owner($uuid, $world = false) {
             $filter = "AND world.name = '$world'";
         }
     }
+    
+    if (!$owner) {
+        $owner_str = 0;
+    } else {
+        $owner_str = 1;
+    }
 
     $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players`
         LEFT JOIN minecraft_worldguard.user ON user_id = user.id
         LEFT JOIN minecraft_worldguard.world ON world_id = world.id
-        WHERE Owner=1 AND uuid='$uuid' $filter ORDER BY region_id;";
+        WHERE Owner=$owner_str AND uuid='$uuid' $filter ORDER BY region_id;";
     $R = umc_mysql_fetch_all($sql);
     $out = array();
     //echo $sql;
