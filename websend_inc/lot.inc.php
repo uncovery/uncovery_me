@@ -411,7 +411,7 @@ function umc_lot_wipe_user($uuid) {
     foreach ($lot_members as $world => $L) {
     // remove that user from the lots
         $lot = $L['lot'];
-        umc_lot_rem_player($player, $lot, 1);
+        umc_lot_rem_player($player, $lot, 0);
 
     // check if someone else has dibs for that lot
 
