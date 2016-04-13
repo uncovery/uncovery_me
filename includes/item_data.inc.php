@@ -3648,4 +3648,5 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'boat_acacia' => 'acacia_boat',
     'boat_birch' => 'birch_boat',
     'dragons_breath' => 'dragon_breath',
+    'boat_dark_oak' => 'dark_oak_boat',
 );
