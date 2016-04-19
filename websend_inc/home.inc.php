@@ -40,7 +40,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
         ),
         'function' => 'umc_home_warp',
         'top' => true,
@@ -53,7 +53,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_buy',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
             // 'level'=>'Owner',
         ),
     ),
@@ -66,7 +66,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_update',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
         ),
     ),
     'rename' => array( // this is the base command if there are no other commands
@@ -118,7 +118,7 @@ $UMC_SETTING['homes']['max_homes'] = array(
     'Architect'  => 10, 'ArchitectDonator' => 10,
     'Designer' => 15, 'DesignerDonator' => 15,
     'Master' => 20, 'MasterDonator' => 20,
-    'Elder' => 50, 'ElderDonator' => 50, 
+    'Elder' => 50, 'ElderDonator' => 50,
     'Owner' => 100,
 );
 $UMC_SETTING['homes']['icon_url'] = "https://uncovery.me/admin/img/home_icon.png";
