@@ -459,10 +459,14 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 $sql = "SELECT display_name FROM minecraft.wp_usermeta
                     LEFT JOIN minecraft.wp_users ON ID=user_id
                     WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $uuid_quoted;";
-                $count = count(umc_mysql_fetch_all($sql));
+                $XD = umc_mysql_fetch_all($sql);
+                $count = count($XD);
                 if ($count !== 0) {
                     XMPP_ERROR_trigger('User tried to register 2nd account!');
-                    $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account! Please contact an admin to have this fixed!";
+                    $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account! 
+                            If you changed your username, there is no need for a second website account.
+                            Please simply continue using your existing account, your username will be displayed correctly,the user login remains the same.
+                            If you have any trouble please contact an admin!";
                     $errors->add('demo_error',__($error_msg));
                     return $errors;                    
                 }
