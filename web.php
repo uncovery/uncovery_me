@@ -610,6 +610,25 @@ function umc_web_usercheck() {
         . 'WHERE UUID.lastlogin < date ';
     $C = umc_mysql_fetch_all($sql_donations);
     $out .= umc_web_table('Late Donations', 0, $C, "<h2>Late Donations</h2>");
+    
+    $sql_double_account = 'SELECT count(user_id), meta_value FROM wp_usermeta
+        WHERE meta_key = \'minecraft_uuid\'
+        group by meta_value
+        having count(user_id) > 1 
+        ORDER BY count(user_id)  DESC';
+    $U = umc_mysql_fetch_all($sql_double_account);
+    $out_data = array();
+    foreach ($U as $data) {
+        $sql_check = "SELECT * FROM wp_usermeta 
+            LEFT JOIN wp_users on ID=user_id WHERE meta_value=\"{$data['meta_value']}\"";
+        $X = umc_mysql_fetch_all($sql_check);
+        foreach ($X as $xdata) {
+            $out_data[] = array('uuid' => $data['meta_value'], 'user_login' => $xdata['user_login'],'username' => $xdata['display_name']);
+        }
+    }
+    $out .= umc_web_table('Double accounts', 0, $out_data, "<h2>Double accounts</h2>");
+    
+    
     return $out;
 }
 
