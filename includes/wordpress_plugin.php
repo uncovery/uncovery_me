@@ -454,6 +454,18 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 $error_msg = "<strong>ERROR:</strong>Sorry, you were banned from the server. Please find another one.";
                 $errors->add('demo_error',__($error_msg));
                 return $errors;
+            } else { // check if there is a user with this UUID already
+                $uuid_quoted = umc_mysql_real_escape_string($UMC_USER['uuid']);
+                $sql = "SELECT display_name FROM minecraft.wp_usermeta
+                    LEFT JOIN minecraft.wp_users ON ID=user_id
+                    WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $uuid_quoted;";
+                $count = count(umc_mysql_fetch_all($sql));
+                if ($count !== 0) {
+                    XMPP_ERROR_trigger('User tried to register 2nd account!');
+                    $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account! Please contact an admin to have this fixed!";
+                    $errors->add('demo_error',__($error_msg));
+                    return $errors;                    
+                }
             }
         }
     }
