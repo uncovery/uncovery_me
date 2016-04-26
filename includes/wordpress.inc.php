@@ -27,7 +27,7 @@
  */
 function umc_wp_get_vars() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USERS, $UMC_USER, $UMC_ENV, $user_email, $user_login;
+    global $UMC_USER, $UMC_ENV, $user_email, $user_login;
 
     if ($UMC_ENV !== 'wordpress') {
         // XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
