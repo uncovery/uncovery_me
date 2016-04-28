@@ -265,7 +265,7 @@ function umc_lottery_reminder() {
     if ($counter < 5) {
 
         // politely remind users they need to vote dammit!
-        $title =  'title ' . $player . ' title {\"text\":"Please vote!",\"color\":\"green\"}';
+        $title =  'title ' . $player . ' title {"text":"Please vote!","color":"green"}';
 
         // add some variety to login welcome messages!
         $messages = array(
