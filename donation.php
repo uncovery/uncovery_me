@@ -279,9 +279,9 @@ function umc_process_donation() {
             . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
             . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
             . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
-        mail("minecraft@uncovery.me", "Donation failed!", $mailtext, $headers);
+        mail("minecraft@uncovery.me", "Donation failed!", $mailtext, $headers, "-fminecraft@uncovery.me");
     }
-    mail($s_post['payer_email'], $subject, $mailtext, $headers);
+    mail($s_post['payer_email'], $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
 }
 
 /**
