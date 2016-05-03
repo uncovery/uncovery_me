@@ -298,9 +298,9 @@ function umc_vote_web() {
                         . "Please note that the vote will be closed as 'failed' unless all Elders cast a vote within the coming 2 months.\r\n"
                         . "Thanks a lot for supporting Uncovery Minecraft!\r\n\r\nBest regards,\r\nUncovery";
                     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-                    mail('minecraft@uncovery.me', $subject, $content, $headers);
+                    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
                     foreach ($D as $row) {
-                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers);
+                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers, "-fminecraft@uncovery.me");
                         umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
                     }
                 }
@@ -429,7 +429,7 @@ function umc_vote_web() {
             // send email with status report
             $email_text = $email_close . "Total Score: $total_score\n\rRequired: " . abs($lvl_min_req[$lvl_code]);
             $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-            mail('minecraft@uncovery.me', "Voting closed for " . $row['username'], $email_text, $headers);
+            mail('minecraft@uncovery.me', "Voting closed for " . $row['username'], $email_text, $headers, "-fminecraft@uncovery.me");
             $prop_status = 'closed';
         } else if (($prop_status == 'closed') && ($total_score < abs($lvl_min_req[$lvl_code]))) {
             //$sql = "UPDATE minecraft_srvr.`proposals` SET `status` = 'voting' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1 ";
