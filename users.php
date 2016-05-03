@@ -428,10 +428,10 @@ function umc_check_user($username) {
     $username_quoted = umc_mysql_real_escape_string($username);
     // UUID
     if (strlen($username) > 17) {
-        $uuid = true;
+        $uuid = $username;
         $sql = "SELECT display_name FROM minecraft.wp_usermeta
             LEFT JOIN minecraft.wp_users ON ID=user_id
-            WHERE meta_value LIKE $username_quoted;";
+            WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $username_quoted;";
     } else {
         // Username
         $uuid = false;
