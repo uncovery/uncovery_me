@@ -99,7 +99,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
         ),
         'function' => 'umc_mod_error_message',
         'security' => array(
-           'level' => 'Owner'
+           //'level' => 'Owner'
         ),
     ),
     'blockcheck' => array (
@@ -130,8 +130,9 @@ function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
-    umc_userlevel_donation_update_all();
-    XMPP_ERROR_trigger("test");
+    $username = $UMC_USER['username'];
+    umc_echo("Thanks for the test, Uncovery received the message!");
+    XMPP_ERROR_trigger("User $username ran a mod test");
 }
 
 function umc_temp_backup_activeusers() {
@@ -174,7 +175,7 @@ function umc_mod_banrequest() {
     $content .= umc_attach_logfile($user);
 
     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-    mail('minecraft@uncovery.me', $subject, $content, $headers);
+    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
     umc_header("Ban request for $user", true);
     umc_echo("An email with a logfile has been sent to the admin. Action will be taken if appropriate!", true);
     umc_footer(true);
@@ -223,7 +224,7 @@ function umc_mod_ban() {
     $content .= umc_attach_logfile($user);
 
     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-    mail('minecraft@uncovery.me', $subject, $content, $headers);
+    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
     umc_header("Ban of $user by $player", true);
     umc_echo("Thanks for the ban! An email with a logfile has been sent to the admin.", true);
     umc_footer(true);
