@@ -415,7 +415,7 @@ function umc_settler_new() {
                     'X-Mailer: PHP/' . phpversion();
                 $subject = "[Uncovery Minecraft] Settler applicaton";
                 $mailtext = "The user: $player (email: $email) was promoted to Settler and got lot $lot.\n\n";
-                $check = mail('minecraft@uncovery.me', $subject, $mailtext, $headers);
+                $check = mail('minecraft@uncovery.me', $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
                 if (!$check) {
                     XMPP_ERROR_trigger("The settler promotion email could not be sent!");
                 }
