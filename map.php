@@ -48,12 +48,12 @@ function umc_create_map() {
     if (isset($s_get['world'])) {
         $world = $s_get['world'];
         if (!in_array($world, $worlds)) {
-            exit;
+            die;
         }
     } else if (isset($s_post['world'])) {
         $world = $s_post['world'];
         if (!in_array($world, $worlds)) {
-            exit;
+            die;
         }
     } else {
         $world = 'empire';
