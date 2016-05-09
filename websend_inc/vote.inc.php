@@ -71,6 +71,12 @@ function umc_vote_get_votable($username = false, $web = false) {
         $uuid = umc_uuid_getone($username, 'uuid');
     }
 
+    // only active users can vote
+    $is_active = umc_users_is_active($uuid);
+    if (!$is_active) {
+        return;
+    }
+
     if (!$username && !isset($UMC_USER['username'])) {
         XMPP_ERROR_trigger("websend player undidentified");
     }
@@ -203,6 +209,12 @@ function umc_vote_web() {
         $username = $UMC_USER['username'];
         $uuid = $UMC_USER['uuid'];
         $user_lvl = $UMC_USER['userlevel'];
+    }
+
+    // only active users can vote
+    $is_active = umc_users_is_active($uuid);
+    if (!$is_active) {
+        return "Sorry, but you do not have a lot, so you cannot vote.";
     }
 
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
