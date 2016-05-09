@@ -63,6 +63,21 @@ function umc_users_by_world($world) {
     return $out;
 }
 
+/**
+ * checks if a user is active or not
+ *
+ * @param type $uuid
+ */
+function umc_users_is_active($uuid) {
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT lot_count FROM minecraft_srvr.UUID WHERE UUID=$sql_uuid AND lot_count > 0;";
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
+        return true;
+    }
+    return false;
+}
+
 
 /**
  * Retrieve the userlevel from a uuid
