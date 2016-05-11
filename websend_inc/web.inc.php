@@ -53,12 +53,13 @@ function umc_web_read() {
     $args = $UMC_USER['args'];
 
     $id = strtolower($args[2]);
+    $lb_arr = array("\r", "\n");
 
     if (strpos($id, "c") === 0) {
         $comment_id = substr($id, 1);
         $C = get_comment($comment_id, ARRAY_A);
         $author = $C['comment_author'];
-        $comment = $C['comment_content'];
+        $comment = strip_tags(str_replace($lb_arr, " ", $C['comment_content']));
         umc_header("Comment by $author");
         umc_echo($comment);
         umc_footer(true);
@@ -83,21 +84,21 @@ function umc_web_read() {
 
 /**
  * Allow in-game listing of recent posts and comments
- * 
+ *
  * @global type $UMC_USER
  */
 function umc_web_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     $valid_types = array("p", "c", "f");
-    
+
     global $UMC_USER;
     $args = $UMC_USER['args'];
     if (!isset($args[2]) || !in_array($args[2], $valid_types)) {
         umc_error("You need to give a valid type (" . implode(",", $valid_types) . ")");
     }
     $type = $args[2];
-    
+
     if ($type == 'p') {
         $args = array(
             'posts_per_page'   => 25,
@@ -106,7 +107,7 @@ function umc_web_list() {
             'order'            => 'DESC',
             'post_type'        => 'post',
             'post_status'      => 'publish',
-            'suppress_filters' => true 
+            'suppress_filters' => true
         );
         $posts_array = get_posts($args);
         $count = count($posts_array);
@@ -122,14 +123,14 @@ function umc_web_list() {
             'order'            => 'DESC',
             'post_type'        => 'topic',
             'post_status'      => 'publish',
-            'suppress_filters' => true 
+            'suppress_filters' => true
         );
         $posts_array = get_posts($args);
         $count = count($posts_array);
         umc_header("$count Recent Forum Posts");
         foreach($posts_array as $P) {
             umc_echo("f" . $P->ID . " > " . $P->post_title);
-        }        
+        }
     } else if ($type == 'c') {
         $args = array(
             'number' => 25,
@@ -138,7 +139,7 @@ function umc_web_list() {
                 'after' => '4 week ago',
                 'before' => 'tomorrow',
                 'inclusive' => true,
-            ),    
+            ),
         );
         $posts_array = get_comments($args);
         $count = count($posts_array);
@@ -153,5 +154,5 @@ function umc_web_list() {
         }
     }
     umc_footer("Type &a/web read ID&f to read in-game");
-    
+
 }
