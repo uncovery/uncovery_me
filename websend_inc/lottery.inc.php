@@ -299,6 +299,40 @@ function umc_lottery_reminder() {
 
     }
 }
+
+function umc_lottery_stats($uuid) {
+    // check how often the user logged in during the last 30 days
+    $username = umc_uuid_getone($uuid, 'username');
+
+    $sql_uname = umc_mysql_real_escape_string($username);
+    $sql = "SELECT date
+        FROM minecraft_log.universal_log
+        WHERE username LIKE $sql_uname AND `plugin` LIKE 'system' AND `action` LIKE 'login' AND `date` > DATE_SUB(NOW(), INTERVAL 30 day)
+        group by `date`";
+    $L = umc_mysql_fetch_all($sql);
+    $login_count = count($L);
+
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql_votes = "SELECT datetime FROM minecraft_log.`votes_log`
+        WHERE username=$sql_uuid AND `datetime` > DATE_SUB(NOW(), INTERVAL 30 day)
+        group by DAY(datetime)";
+    $V = umc_mysql_fetch_all($sql_votes);
+    $vote_count = count($V);
+
+    if ($username == 'uncovery') {
+        return "n/a";
+    }
+    if ($login_count == 0) {
+        return "n/a";
+    } else if ($vote_count == 0) {
+        return 0;
+    }
+
+    $ratio = number_format($vote_count / $login_count, 2);
+    return $ratio;
+}
+
+
 /**
  * displays a report to the initiating user displaying their vote history to $lim rolls and $hours hours.
  * ie you can check for 500 hours worth of rolls, but limit result count to $lim
