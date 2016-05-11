@@ -801,9 +801,10 @@ function umc_user_directory() {
             . "<th>Lots</th>"
             . "<th>Online min/day</th>"
             . "<th>Online hrs</th>"
+            . "<th>Voting ratio</th>"
             . "</thead>\n<tbody>\n";
 
-        $sql = "SELECT username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
+        $sql = "SELECT UUID.uuid as uuid, username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
             FROM minecraft_srvr.UUID
             LEFT JOIN minecraft_srvr.permissions_inheritance ON UUID.uuid=child
             LEFT JOIN minecraft_worldguard.user ON UUID.uuid = user.uuid
@@ -820,6 +821,7 @@ function umc_user_directory() {
 
         while ($row = umc_mysql_fetch_array($rst)) {
             $days_offline = $row['days_offline'];
+            $vote_stats = umc_lottery_stats($row['uuid']);
             $settler_levels = array('Settler', 'SettlerDonator');
             if (in_array($row['userlevel'], $settler_levels) && $row['onlinetime'] >= 60) {
                 umc_promote_citizen(strtolower($row['username']), $row['userlevel']);
@@ -848,6 +850,7 @@ function umc_user_directory() {
                 . "<td class='numeric_td'>{$row['lot_count']}</td>"
                 . "<td class='numeric_td'>$avg_online</td>"
                 . "<td class='numeric_td'>$online_total</td>"
+                . "<td class='numeric_td'>$vote_stats</td>"
                 . "</tr>\n";
         }
         $out .= "</tbody>\n</table>\n";
@@ -1120,6 +1123,9 @@ function umc_promote_citizen($username, $userlevel = false) {
 
     $karma = umc_getkarma($user['uuid'], true);
     $user['Karma'] = $karma;
+
+    $vote_ratio = umc_lottery_stats($user['uuid']);
+    $user['Vote Ratio'] = $vote_ratio;
 
     $lots = umc_user_getlots($uuid);
     $display_lots = array();
