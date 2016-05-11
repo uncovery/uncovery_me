@@ -610,25 +610,31 @@ function umc_web_usercheck() {
         . 'WHERE UUID.lastlogin < date ';
     $C = umc_mysql_fetch_all($sql_donations);
     $out .= umc_web_table('Late Donations', 0, $C, "<h2>Late Donations</h2>");
-    
+
     $sql_double_account = 'SELECT count(user_id), meta_value FROM wp_usermeta
         WHERE meta_key = \'minecraft_uuid\'
         group by meta_value
-        having count(user_id) > 1 
+        having count(user_id) > 1
         ORDER BY count(user_id)  DESC';
     $U = umc_mysql_fetch_all($sql_double_account);
     $out_data = array();
     foreach ($U as $data) {
-        $sql_check = "SELECT * FROM wp_usermeta 
+        $sql_check = "SELECT * FROM wp_usermeta
             LEFT JOIN wp_users on ID=user_id WHERE meta_value=\"{$data['meta_value']}\"";
         $X = umc_mysql_fetch_all($sql_check);
         foreach ($X as $xdata) {
-            $out_data[] = array('uuid' => $data['meta_value'], 'user_login' => $xdata['user_login'],'username' => $xdata['display_name']);
+            $out_data[] = array(
+                'username' => $xdata['display_name'],
+                'uuid' => $data['meta_value'],
+                'user_login' => $xdata['user_login'],
+                'user_registered' => $xdata['user_registered'],
+                'lot_count' => umc_user_countlots($data['meta_value']),
+            );
         }
     }
     $out .= umc_web_table('Double accounts', 0, $out_data, "<h2>Double accounts</h2>");
-    
-    
+
+
     return $out;
 }
 
@@ -673,11 +679,23 @@ function umc_web_userstats() {
 
     $D2 = umc_mysql_fetch_all($sql2);
     $L = array();
+    $days_this_month = 0;
+    $sum_this_month = 0;
     foreach ($D2 as $row) {
         $L[$row['date']]['users'] = $row['users'];
+        $days_this_month++;
+        $day = intval(substr($row['date'], 9,2));
+        $sum_this_month += $row['users'];
+        if ($day == 1) {
+            $avg_this_month = $sum_this_month / $days_this_month;
+            $days_this_month = 0;
+            $sum_this_month = 0;
+            $L[$row['date']]['avg'] = $avg_this_month;
+
+        }
     }
     $out .= "<h2>Unique user logins per day:</h2>\n"
-        . umc_web_javachart($L, 'weeks', 'regular', false, 'userlogins');
+        . umc_web_javachart($L, 'weeks', 'none', false, 'userlogins');
     return $out;
 
 }
