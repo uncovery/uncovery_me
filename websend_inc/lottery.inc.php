@@ -268,7 +268,6 @@ function umc_lottery_vote() {
 
     $uuid_sql = umc_mysql_real_escape_string($UMC_USER['uuid']);
     $sql = "SELECT website FROM minecraft_log.votes_log WHERE username=$uuid_sql AND datetime > DATE_SUB(NOW(), INTERVAL 24 HOUR)";
-    XMPP_ERROR_send_msg($sql);
     $W = umc_mysql_fetch_all($sql);
     if (count($W) == count($lottery_urls)) {
        umc_echo("You voted on all lists in the last 24 hours already! Thanks!");
