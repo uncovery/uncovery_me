@@ -38,7 +38,7 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
             'long' => "You can vote for the lottery and win 100 Uncs + a random prize. See $UMC_DOMAIN/vote-for-us/ for detailss", // a long add-on to the short  description
             ),
     ),
-    'vote' => array( // this is the base command if there are no other commands
+    'servervote' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Test Vote',
             'long' => "Runs a test vote, results go to Uncovery.",
@@ -49,6 +49,14 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
         ),
         'function' => 'umc_lottery',
     ),
+    'vote' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Display the vote links',
+            'long' => "Shows a list of all active test-URLs for easier click & vote",
+        ),
+        'function' => 'umc_lottery_vote',
+        'top' => true,
+    ),
     'report' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Output vote data',
@@ -58,7 +66,17 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
     ),
 );
 
-global $lottery;
+global $lottery, $lottery_urls;
+
+$lottery_urls = array(
+    'minecraft-server-list.com' => array('url' => 'http://minecraft-server-list.com/server/54265/vote/', 'id' => 'mcsl'),
+    'minecraftservers.org' => array('url' => 'http://minecraftservers.org/vote/160828', 'id' => 'minecraftservers.org'),
+    'mineservers.net' => array('url' => 'http://www.mineservers.net/servers/834-uncovery-minecraft/vote', 'id' => 'mineservers.net'),
+    'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com'),
+    'minestatus.net' => array('url' => 'https://www.minestatus.net/152-uncovery-minecraft/vote', 'id' => 'minestatus'),
+    'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org'),
+    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers'),
+);
 
 $lottery = array(
     'diamond' => array(
@@ -238,6 +256,50 @@ $lottery = array(
         'txt' => 'an additional home!',
     ),
 );
+
+/**
+ * Prints a list of all voting servers in-game for easier voting
+ * @global array $lottery_urls
+ */
+function umc_lottery_vote() {
+    // get the votes of the current user in the last 24 hours
+
+    global $UMC_USER, $lottery_urls;
+
+    $uuid_sql = umc_mysql_real_escape_string($UMC_USER['uuid']);
+    $sql = "SELECT website FROM minecraft_log.votes_log WHERE username=$uuid_sql AND datetime > DATE_SUB(NOW(), INTERVAL 24 HOUR)";
+    XMPP_ERROR_send_msg($sql);
+    $W = umc_mysql_fetch_all($sql);
+    if (count($W) == count($lottery_urls)) {
+       umc_echo("You voted on all lists in the last 24 hours already! Thanks!");
+    }
+    $voted = array();
+    foreach ($W as $row) {
+        $voted[] = $row['website'];
+    }
+    umc_header("Voting servers:");
+    foreach ($lottery_urls as $L) {
+        if (!in_array($L['id'], $voted)) {
+            umc_echo($L['url']);
+        }
+    }
+    umc_footer();
+}
+
+/**
+ * displays a list of all lottery links for the website
+ */
+function umc_lottery_votelist_web() {
+    global $lottery_urls;
+    $out = "<br><ul>\n";
+    foreach ($lottery_urls as $id => $L) {
+        $out .= "<li><a href='{$L['url']}'>$id</a></li>\n";
+    }
+    $out .= "</ul>";
+    $out .= "<p><strong>Use /withdraw @lottery to get your stuff, use /vote in-game to display this list for easier voting!</strong></p>";
+    echo $out;
+}
+
 
 /**
  * runs on user login to remind them to vote.
@@ -584,8 +646,9 @@ function umc_lottery() {
     // sql log
     $sql_reward = umc_mysql_real_escape_string($type);
     $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
     $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
-        VALUES ('$uuid', NOW(), $service, $ip, $luck, $sql_reward);";
+        VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
     umc_mysql_query($sql, true);
 }
 
