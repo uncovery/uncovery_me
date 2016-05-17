@@ -44,8 +44,16 @@ $WS_INIT['story'] = array(
     ),
 );
 
+global $game_modes;
+$game_modes = array(
+    'unchanged' => 'Unchanged',
+    'creative' => 'Creative',
+    'survival' => 'Survival',
+    'adventure' => 'Adventure',
+);
+
 function umc_story_admin() {
-    global $UMC_USER;
+    global $UMC_USER, $game_modes;
     if (!$UMC_USER) {
         die('You need to be online to use this!');
     }
@@ -68,7 +76,7 @@ function umc_story_admin() {
     if (isset($_POST['delete'])) {
         $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
         $sql = "DELETE FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code=$code;";
-        $rst = umc_mysql_query($sql);
+        umc_mysql_query($sql);
     } else if (isset($_POST['add'])) {
         $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
         $warp = umc_mysql_real_escape_string(strip_tags($_POST['warp']));
@@ -76,16 +84,18 @@ function umc_story_admin() {
         $save_title = umc_mysql_real_escape_string(strip_tags($_POST['storyline']));
         $save_items =  umc_mysql_real_escape_string(strip_tags($_POST['items']));
         $save_survival = 0;
-        if (isset($_POST['survival'])) {
-            $save_survival = -1;
+        if (isset($_POST['game_mode']) && isset($game_modes[$_POST['game_mode']])) {
+            $game_mode = umc_mysql_real_escape_string($_POST['game_mode']);
+        } else {
+            $game_mode = umc_mysql_real_escape_string('unchanged');
         }
         $save_clear_inv = 0;
         if (isset($_POST['clear_inv'])) {
             $save_clear_inv = -1;
         }
         if ($save_story != 'Please enter text here') {
-            $sql2_raw = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `forcesurvival`, `items`, `clear_inv`, `warp`)
-                VALUES ('$uuid', $save_story, $code, $save_title, '$save_survival', $save_items, '$save_clear_inv', $warp)";
+            $sql2_raw = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `game_mode`, `items`, `clear_inv`, `warp`)
+                VALUES ('$uuid', $save_story, $code, $save_title, $game_mode, $save_items, '$save_clear_inv', $warp)";
             $sql2 = str_replace('&','_', $sql2_raw); // this removes strings that can be abused by the minimap
             umc_mysql_query($sql2);
         }
@@ -97,11 +107,12 @@ function umc_story_admin() {
             $row = $D[0];
             $story = stripslashes(strip_tags($row['story']));
             $pass = $row['code'];
-            $warp = $row['warp'];
+            $warp = stripslashes($row['warp']);
             $action_text = "Edit story and save";
             $action_code = "update";
             $title = $row['storyline'];
             $survival = $row['forcesurvival'];
+            $game_mode = $row['game_mode'];
             $items = $row['items'];
             $clear_inv = $row['clear_inv'];
         }
@@ -111,9 +122,10 @@ function umc_story_admin() {
         $save_story = umc_mysql_real_escape_string(strip_tags($_POST['story']));
         $save_title = umc_mysql_real_escape_string(strip_tags($_POST['storyline']));
         $save_items =  umc_mysql_real_escape_string(strip_tags($_POST['items']));
-        $save_survival = 0;
-        if (isset($_POST['survival'])) {
-            $save_survival = -1;
+        if (isset($_POST['game_mode']) && isset($game_modes[$_POST['game_mode']])) {
+            $game_mode = umc_mysql_real_escape_string($_POST['game_mode']);
+        } else {
+            $game_mode = umc_mysql_real_escape_string('unchanged');
         }
         $warp = '';
         if (isset($_POST['warp'])) {
@@ -127,18 +139,18 @@ function umc_story_admin() {
 	    SET story= $save_story,
 		storyline=$save_title,
 		warp=$warp,
-		forcesurvival='$save_survival',
+		game_mode=$game_mode,
             	`items`=$save_items,
 		`clear_inv`='$save_clear_inv'
             WHERE uuid='$uuid' and code=$code;";
-        $sql = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
-        umc_mysql_query($sql, true);
+        $sql_update = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
+        umc_mysql_query($sql_update, true);
     }
 
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE uuid='$uuid' ORDER BY storyline, id;";
     $D = umc_mysql_fetch_all($sql);
     if (count($D) > 0) {
-        echo "<table><tr><td style=\"padding:3px;\"><strong>Storyline</strong></td><td style=\"padding:3px;\"><strong>Survival?<br>Clear Inv?</strong></td><td style=\"padding:3px;\"><strong>Code</strong></td>"
+        echo "<table><tr><td style=\"padding:3px;\"><strong>Storyline</strong></td><td style=\"padding:3px;\"><strong>Game mode<br>Clear Inv?</strong></td><td style=\"padding:3px;\"><strong>Code</strong></td>"
             . "<td style=\"padding:3px;\"><strong>Hits</strong></td>"
             . "<td style=\"padding:3px;\"><strong>Story & items</strong></td><td style=\"padding:3px;\"><strong>Actions</strong></td></tr>\n";
         foreach ($D as $row) {
@@ -147,10 +159,7 @@ function umc_story_admin() {
             $count_row = $D[0];
             $hitcount = $count_row['counter'];
             $story_short = substr($row['story'], 0 , 50) . '...';
-            $txt_survival = 'No';
-            if ($row['forcesurvival'] == -1) {
-                $txt_survival = 'Yes';
-            }
+            $game_mode_text = $game_modes[$row['game_mode']];
             $txt_clear_inv = 'No';
             if ($row['clear_inv'] == -1) {
                 $txt_clear_inv = 'Yes';
@@ -161,35 +170,35 @@ function umc_story_admin() {
             }
             $buttons = "<form action=\"#result\" method=\"post\"><input type=\"submit\" name=\"edit\" class=\"button-primary\"value=\"Edit\"/> "
                     . "<input type=\"submit\" name=\"delete\" class=\"button-primary\"value=\"Delete\"/><input type=\"hidden\" name=\"storycode\" value=\"{$row['code']}\"></form>";
-            echo "<tr><td>{$row['storyline']}</td><td>$txt_survival / $txt_clear_inv</td><td>{$row['code']}</td><td>$hitcount</td><td>$story_short</td><td>$buttons</td></tr>\n";
+            echo "<tr><td>{$row['storyline']}</td><td>$game_mode_text / $txt_clear_inv</td><td>{$row['code']}</td><td>$hitcount</td><td>$story_short</td><td>$buttons</td></tr>\n";
         }
         echo "</table>";
     }
 
-    // add new content form
-    $surv_checked = '';
-    if ($survival == -1) {
-        $surv_checked = ' checked="checked"';
-    }
     $inv_checked = '';
     if ($clear_inv == -1) {
         $inv_checked = ' checked="checked"';
     }
-    $out = "<hr><a name=\"result\">$action_text:</a><form action=\"#result\" method=\"post\">\n"
-        . "<strong>Your story code: $pass</strong><br>"
-        . "Title: <input type=\"text\" name=\"storyline\" value=\"$title\"> Force Survival mode? <input type=\"checkbox\" name=\"survival\" value=\"survival\"$surv_checked/>"
-        . " Clear inventory? <input type=\"checkbox\" name=\"clear_inv\" value=\"clear_inv\"$inv_checked/> (city & flatlands only)<br>"
-        . "Give items: <input type=\"text\" name=\"items\" value=\"$items\"> (Format: item_id:damage:amount;... city & flatlands only)<br>"
-        . "Warp to point: <input type=\"text\" name=\"warp\" value=\"$warp\"> (Format: 'story_yourwarp'; Ask Uncovery to create a warp point for you, only works in city. Do not include the story_ here)<br>"
-        . "<textarea rows=\"10\" name=\"story\">$story</textarea>"
-        . "<input type=\"hidden\" name=\"storycode\" value=\"$pass\">"
-        . "<input type=\"submit\" name=\"$action_code\" id=\"wp-submit\" class=\"button-primary\" "
-        . "value=\"Save\" tabindex=\"100\" /></form>\n\n";
+
+
+    $mode_drop = umc_web_dropdown($game_modes, 'game_mode', $game_mode, false);
+
+    $out = "<hr><a name=\"result\">$action_text:</a><form action=\"#result\" method=\"post\">\n
+        <strong>Your story code: $pass</strong><br>
+        Title: <input type=\"text\" name=\"storyline\" value=\"$title\"> <br>
+        Game mode: $mode_drop (creative works in city & flatlands only)<br>
+        Clear inventory? <input type=\"checkbox\" name=\"clear_inv\" value=\"clear_inv\"$inv_checked/> (city & flatlands only)<br>
+        Give items: <input type=\"text\" name=\"items\" value=\"$items\"> (Format: item_id:damage:amount;... city & flatlands only)<br>
+        Warp to point: <input type=\"text\" name=\"warp\" value=\"$warp\"> (Format: 'story_yourwarp'; Ask Uncovery to create a warp point for you, only works in city. Do not include the story_ here)<br>
+        <textarea rows=\"10\" name=\"story\">$story</textarea>
+        <input type=\"hidden\" name=\"storycode\" value=\"$pass\">
+        <input type=\"submit\" name=\"$action_code\" id=\"wp-submit\" class=\"button-primary\"
+        value=\"Save\" tabindex=\"100\" /></form>\n\n";
     echo $out;
 }
 
 function umc_story_show() {
-    global $UMC_USER, $UMC_COLORS;
+    global $UMC_USER, $UMC_COLORS, $game_modes;
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
@@ -218,8 +227,10 @@ function umc_story_show() {
         $story = stripslashes($row['story']);
         $title = stripslashes($row['storyline']);
         $warp = stripslashes($row['warp']);
-        if (($row['forcesurvival'] == -1) && ($mode=='CREATIVE')) {
-            umc_ws_cmd("gamemode survival $username;", 'asConsole');
+        if (($row['game_mode'] != 'unchanged') && (($world == 'city') || ($world == 'flatlands'))) {
+            umc_ws_cmd("gamemode {$row['game_mode']} $username;", 'asConsole');
+            $mode_text = $game_modes[$row['game_mode']];
+            umc_echo("Your game mode has been set to $mode_text");
         }
         if (($row['clear_inv'] == -1) && (($world == 'city') || ($world == 'flatlands'))) {
             umc_ws_cmd("ci $username;", 'asConsole');
@@ -296,7 +307,7 @@ function umc_story_show() {
 
 function umc_get_code() {
     $pass = umc_random_code_gen();
-    
+
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code='$pass';";
     $D3 = umc_mysql_fetch_all($sql);
     $count = count($D3);
