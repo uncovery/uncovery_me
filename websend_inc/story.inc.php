@@ -71,6 +71,7 @@ function umc_story_admin() {
     $items = '';
     $warp = '';
     $clear_inv = 0;
+    $game_mode = 'unchanged';
 
 
     if (isset($_POST['delete'])) {
