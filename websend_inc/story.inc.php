@@ -293,7 +293,7 @@ function umc_story_show() {
             . $this_page;
         if (count($pages) > $page) {
             $nextpage = $page + 1;
-            $out .= "{white}------- {green}Please type /ws story $code $nextpage to read on! {white}--------;";
+            $out .= "{white}------- {green}Please type /story $code $nextpage to read on! {white}--------;";
         } else {
             $out .= ";-----------------------------------------------------;";
         }
