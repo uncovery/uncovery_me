@@ -332,7 +332,7 @@ function umc_display_logblock() {
         return "This page is admin-only!";
     }
 
-    $worlds = array('empire', 'nether', 'darklands');
+    $worlds = array('empire', 'nether', 'darklands', 'kingdom');
     $usernames = umc_logblock_get_usernames();
     $post_world = filter_input(INPUT_POST, 'world', FILTER_SANITIZE_STRING);
     $post_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
