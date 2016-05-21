@@ -188,7 +188,7 @@ function umc_userlevel_assign_level($uuid, $newlevel) {
     if (!$check) {
         $uuid_sql = umc_mysql_real_escape_string($uuid);
         $level_sql = umc_mysql_real_escape_string($newlevel);
-        $sql = "UPDATE `permissions_inheritance` SET parent=$level_sql WHERE `child`=$uuid_sql";
+        $sql = "UPDATE minecraft_srvr.permissions_inheritance SET parent=$level_sql WHERE `child`=$uuid_sql";
         umc_mysql_execute_query($sql);
         // try at lease to reloaduserlvels
         umc_exec_command("pex reload");
