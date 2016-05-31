@@ -593,7 +593,7 @@ function umc_lottery() {
             if ($current_title) {
                 return umc_lottery();
             }
-            $luck2 = mt_rand(1, 14);
+            $luck2 = mt_rand(7, 14);
             umc_vanity_set($luck2, "I won the lottery!");
             $item_txt = "a vanity title fo $luck2 days!!";
             break;
