@@ -224,12 +224,18 @@ function umc_vanity_set($days = false, $vanity = false) {
     $userlevel = umc_get_userlevel($player);
 
     if (!$days) {
+        if (!isset($args[2])) {
+            umc_error("{red}You need to specify a number of days");
+        }
         $days = $args[2];
     }
 
     $vanity_raw = '';
     if (!$vanity) {
         // concatenate all into a string
+        if (!isset($args[3])) {
+            umc_error("{red}You need to specify the title you want to have. See {yellow}/helpme vanity");
+        }
         for ($i=3; $i<count($args); $i++) {
             $vanity_raw .= " " . $args[$i];
         }
@@ -237,10 +243,8 @@ function umc_vanity_set($days = false, $vanity = false) {
     }
 
     // umc_echo("$userlevel");
-    if (!isset($args[2]) || !is_numeric($args[2]) || ($args[2] < 1)) {
+    if (!is_numeric($days) || ($days < 1)) {
         umc_error("{red}You need to specify a number of days");
-    } else if (!isset($args[3])) {
-        umc_error("{red}You need to specify the title you want to have. See {yellow}/helpme vanity");
     }
 
     $donator_str = '';
