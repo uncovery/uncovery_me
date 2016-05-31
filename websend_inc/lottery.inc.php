@@ -244,7 +244,7 @@ $lottery = array(
         ),
     ),
     'random_ench' => array(
-        'chance' => 69, // rate of 69 in 1000
+        'chance' => 68, // rate of 69 in 1000
         'type' => 'random_ench',
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
@@ -254,6 +254,12 @@ $lottery = array(
         'type' => 'additional_home',
         'data' => 'home',
         'txt' => 'an additional home!',
+    ),
+    'additional_deposit' => array(
+        'chance' => 1, // rate of 1 in 1000
+        'type' => 'additional_deposit',
+        'data' => 'deposit',
+        'txt' => 'an additional deposit slot!',
     ),
 );
 
@@ -572,6 +578,10 @@ function umc_lottery() {
             umc_home_add($uuid, $newname, true);
             $item_txt = "an addtional home!!";
             break;
+        case 'additional_deposit':
+            umc_depositbox_create($uuid);
+            $item_txt = "an addtional deposit box!!";
+            break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
             umc_money(false, $user, $luck2);
@@ -721,8 +731,6 @@ function umc_lottery_lot_fix_time($datetime) {
 }
 
 function umc_lottery_web_stats() {
-    global $UMC_DOMAIN;
-
     // get a timestamp 6 months ago
     $old_date = date("Y-m-d H:i:s", strtotime("-6 months"));
     $yesterday = date("Y-m-d H:i:s", strtotime("-1 day"));
