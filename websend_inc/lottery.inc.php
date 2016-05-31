@@ -261,6 +261,12 @@ $lottery = array(
         'data' => 'deposit',
         'txt' => 'an additional deposit slot!',
     ),
+    'vanity_title' => array(
+        'chance' => 10, // rate of 1 in 1000
+        'type' => 'vanity_title',
+        'data' => 'title',
+        'txt' => 'a vanity title!',
+    )
 );
 
 /**
@@ -581,6 +587,15 @@ function umc_lottery() {
         case 'additional_deposit':
             umc_depositbox_create($uuid);
             $item_txt = "an addtional deposit box!!";
+            break;
+        case 'vanity_title':
+            $current_title = umc_vanity_get_title();
+            if ($current_title) {
+                return umc_lottery();
+            }
+            $luck2 = mt_rand(1, 14);
+            umc_vanity_set($luck2, "I won the lottery!");
+            $item_txt = "a vanity title fo $luck2 days!!";
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
