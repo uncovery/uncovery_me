@@ -228,7 +228,7 @@ $lottery = array(
         ),
     ),
     'random_manuf' => array(
-        'chance' => 150,
+        'chance' => 140,
         'type' => 'random_manuf',
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
