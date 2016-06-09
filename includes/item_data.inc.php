@@ -1905,6 +1905,43 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/7/77/Ice.png',
     ),
+    'magma_block' => array(
+        'id' => 213,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/eb/Magma_Block.gif',
+    ),
+    'nether_wart_block' => array(
+        'id' => 214,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/c/c0/Nether_Wart_Block.png',
+    ),
+    'red_nether_brick' => array(
+        'id' => 215,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/9/94/Red_Nether_Brick.png',
+    ),
+    'bone_block' => array(
+        'id' => 216,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/0/02/Bone_Block.png',
+    ),
+    'structure_void' => array(
+        'id' => 217,
+        'stack' => 64,
+        'avail' => false,
+        'icon_url' => '/e/e8/Structure_Block_Corner.png',
+    ),
+    'structure_block' => array(
+        'id' => 255,
+        'stack' => 64,
+        'avail' => false,
+        'icon_url' => '/e/e8/Structure_Block_Corner.png',
+    ),
+
 
     /*************************************************/
     /*                ITEMS                          */
@@ -3649,5 +3686,5 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'boat_birch' => 'birch_boat',
     'dragons_breath' => 'dragon_breath',
     'boat_dark_oak' => 'dark_oak_boat',
-    'boat_jungle' => 'jungle_boat', 
+    'boat_jungle' => 'jungle_boat',
 );
