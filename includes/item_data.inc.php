@@ -2977,6 +2977,7 @@ $UMC_DATA = array(
             94 => array('name' => 'squid_egg', 'avail' => true, 'icon_url' => '/5/58/Grid_Spawn_Squid.png'),
             95 => array('name' => 'wolf_egg', 'avail' => true, 'icon_url' => '/4/4b/Grid_Spawn_Wolf.png'),
             96 => array('name' => 'mooshroom_egg', 'avail' => true, 'icon_url' => '/9/91/Grid_Spawn_Mooshroom.png'),
+            97 => array('name' => 'polar_bear_egg', 'avail' => true, 'icon_url' => '/3/3f/Grid_Spawn_Ghast.png'),
             98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'),
             100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'),
             101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'),
@@ -3687,4 +3688,5 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'dragons_breath' => 'dragon_breath',
     'boat_dark_oak' => 'dark_oak_boat',
     'boat_jungle' => 'jungle_boat',
+    'magma' => 'magma_block',
 );
