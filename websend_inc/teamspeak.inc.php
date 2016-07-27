@@ -26,7 +26,7 @@ global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
+    'events' => array(), // array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
     'default' => array(
         'help' => array(
             'title' => 'Teamspeak',  // give it a friendly title
@@ -267,18 +267,22 @@ function umc_ts_clear_rights($uuid, $echo = false) {
     umc_ts_connect(true);
 
     // find the TS user by that TS UUID
-    umc_echo("Searching for you on the TS server.");
+    echo("Searching for you on the TS server.");
 
     try {
         $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
     } catch (TeamSpeak3_Exception $e) {
         XMPP_ERROR_trace("Error ", $e->getCode() . ": " . $e->getMessage());
         $ts_Clients_match = 0;
+        umc_echo("There is no client on the teamspeak server!");
+        return;
     }
     if (count($ts_Clients_match) > 0) {
         XMPP_ERROR_trace("ts_Clients_match", $ts_Clients_match);
         umc_echo("Found user entries on TS server");
+        var_dump($ts_Clients_match);
         $client_dbid = $ts_Clients_match[0];
+        umc_echo("Client userid=$client_dbid");
         // enumerate all the groups the user is part of
         $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($client_dbid));
         XMPP_ERROR_trace("servergroups", $servergroups);
