@@ -209,30 +209,308 @@ function umc_item_data_id2namelist() {
 }
 
 $ENCH_ITEMS = array(
-    'PROTECTION_ENVIRONMENTAL'=>array('short'=> 'Prot',   'name'=>'Protection', 'items'=>          array(298,299,300,301,306,307,308,309,310,311,312,313,314,315,316,317), 'max'=>4),
-    'PROTECTION_FIRE'         =>array('short'=> 'FP',     'name'=>'FireProtection', 'items'=>      array(298,299,300,301,306,307,308,309,310,311,312,313,314,315,316,317), 'max'=>4),
-    'PROTECTION_FALL'         =>array('short'=> 'Fall',   'name'=>'FeatherFalling', 'items'=>      array(301,309,313,317), 'max'=>4),
-    'PROTECTION_EXPLOSIONS'   =>array('short'=> 'BP',     'name'=>'BlastProtection', 'items'=>     array(298,299,300,301,306,307,308,309,310,311,312,313,314,315,316,317), 'max'=>4),
-    'PROTECTION_PROJECTILE'   =>array('short'=> 'PP',     'name'=>'ProjectileProtection', 'items'=>array(298,299,300,301,306,307,308,309,310,311,312,313,314,315,316,317), 'max'=>4),
-    'THORNS'                  =>array('short'=> 'Thorn',  'name'=>'Thorn', 'items'=>array(298,299,300,301,306,307,308,309,310,311,312,313,314,315,316,317), 'max'=>3),
-    'OXYGEN'                  =>array('short'=> 'Res',    'name'=>'Respiration', 'items'=>  array(298,306,310,314), 'max'=>3),
-    'WATER_WORKER'            =>array('short'=> 'Aqua',   'name'=>'AquaAffinity', 'items'=> array(298,306,310,314), 'max'=>1),
-    'DAMAGE_ALL'              =>array('short'=> 'Sharp',  'name'=>'Sharpness', 'items'=>       array(267,268,272,276,283), 'max'=>5),
-    'DAMAGE_UNDEAD'           =>array('short'=> 'Smite',  'name'=>'Smite', 'items'=>           array(267,268,272,276,283), 'max'=>5),
-    'DAMAGE_ARTHROPODS'       =>array('short'=> 'Bane',   'name'=>'BaneOfArthropods', 'items'=>array(267,268,272,276,283), 'max'=>5),
-    'KNOCKBACK'               =>array('short'=> 'Knock',  'name'=>'Knockback', 'items'=>       array(267,268,272,276,283), 'max'=>2),
-    'FIRE_ASPECT'             =>array('short'=> 'Fire',   'name'=>'FireAspect', 'items'=>      array(267,268,272,276,283), 'max'=>2),
-    'LOOT_BONUS_MOBS'         =>array('short'=> 'Loot',   'name'=>'Looting', 'items'=>         array(267,268,272,276,283), 'max'=>3),
-    'DIG_SPEED'               =>array('short'=> 'Eff',    'name'=>'Efficiency', 'items'=>array(256,257,258,269,270,271,273,274,275,277,278,279,284,285,286), 'max'=>5),
-    'SILK_TOUCH'              =>array('short'=> 'Silk',   'name'=>'SilkTouch', 'items'=> array(256,257,258,269,270,271,273,274,275,277,278,279,284,285,286,359), 'max'=>1),
-    'DURABILITY'              =>array('short'=> 'Unb',    'name'=>'Unbreaking', 'items'=>array(267,268,272,276,283,256,257,258,269,270,271,273,274,275,277,278,279,284,285,286,359,346), 'max'=>3),
-    'LOOT_BONUS_BLOCKS'       =>array('short'=> 'Fort',   'name'=>'Fortune', 'items'=>   array(256,257,258,269,270,271,273,274,275,277,278,279,284,285,286), 'max'=>3),
-    'ARROW_DAMAGE'            =>array('short'=> 'Power',  'name'=>'Power', 'items'=>   array(261), 'max'=>5),
-    'ARROW_KNOCKBACK'         =>array('short'=> 'Punch',  'name'=>'Punch', 'items'=>   array(261), 'max'=>2),
-    'ARROW_FIRE'              =>array('short'=> 'Flame',  'name'=>'Flame', 'items'=>   array(261), 'max'=>1),
-    'ARROW_INFINITE'          =>array('short'=> 'Inf',    'name'=>'Infinity', 'items'=>array(261), 'max'=>1),
-    'LURE'                    =>array('short'=> 'Lure',   'name'=>'Lure', 'items'=>   array(346), 'max'=>1),
-    'LUCK'                    =>array('short'=> 'Luck',   'name'=>'Luck', 'items'=>array(346), 'max'=>1),
+    'PROTECTION_ENVIRONMENTAL'=> array( // 0
+        'short'=> 'Prot',
+        'name'=>'Protection',
+        'items'=> array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max'=> 4
+    ),
+    'PROTECTION_FIRE' =>array( // 1
+        'short'=> 'FP',
+        'name'=>'FireProtection',
+        'items'=> array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max'=>4
+    ),
+    'PROTECTION_FALL' => array( // 3
+        'short'=> 'Fall',
+        'name'=>'FeatherFalling',
+        'items'=> array(
+            'diamond_boots', 'golden_boots', 'iron_boots', 'chainmail_boots', 'leather_boots',
+        ),
+        'max'=>4
+    ),
+    'PROTECTION_EXPLOSIONS' => array( // 3
+        'short'=> 'BP',
+        'name'=>'BlastProtection',
+        'items'=> array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max'=>4
+    ),
+    'PROTECTION_PROJECTILE' => array( // 4
+        'short'=> 'PP',
+        'name'=>'ProjectileProtection',
+        'items'=> array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max'=>4
+    ),
+    'OXYGEN' => array( // 5
+        'short' => 'Res',
+        'name' =>'Respiration',
+        'items' => array(
+            'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
+        ),
+        'max' => 3
+    ),
+    'WATER_WORKER' => array( // 6
+        'short' => 'Aqua',
+        'name' =>'AquaAffinity',
+        'items' => array(
+            'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
+        ),
+        'max' => 1
+    ),
+    'THORNS' => array( // 7
+        'short' => 'Thorn',
+        'name' =>'Thorn',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max' => 3
+    ),
+    'DEPTH_STRIDER' => array( // 8
+        'short' => 'Depth',
+        'name' => 'DepthStrider',
+        'items' => array(
+            'diamond_boots', 'golden_boots', 'iron_boots', 'chainmail_boots', 'leather_boots',
+        ),
+        'max' => 3
+    ),
+    'FROST_WALKER' => array( // 9
+        'short' => 'Depth',
+        'name' => 'DepthStrider',
+        'items' => array(
+            'diamond_boots', 'golden_boots', 'iron_boots', 'chainmail_boots', 'leather_boots',
+        ),
+        'max' => 2
+    ),
+    'BINDING_CURSE' => array( // 10
+        'short' => 'Binding',
+        'name' =>'BindingCurse',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+        ),
+        'max' => 1
+    ),
+    'DAMAGE_ALL' => array( // 16
+        'short'=> 'Sharp',
+        'name'=>'Sharpness',
+        'items'=> array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+        ),
+        'max' => 5
+    ),
+    'DAMAGE_UNDEAD' =>array( // 17
+        'short' => 'Smite',
+        'name' => 'Smite',
+        'items' => array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+        ),
+        'max'=>5
+    ),
+    'DAMAGE_ARTHROPODS' =>array( // 18
+        'short' => 'Bane',
+        'name' => 'BaneOfArthropods',
+        'items' => array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+        ),
+        'max'=>5
+    ),
+    'KNOCKBACK' => array( // 19
+        'short' => 'Knock',
+        'name' => 'Knockback',
+        'items' => array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+        ),
+        'max'=>2
+    ),
+    'FIRE_ASPECT' => array( // 20
+        'short' => 'Fire',
+        'name' => 'FireAspect',
+        'items' => array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+        ),
+        'max'=>2
+    ),
+    'LOOT_BONUS_MOBS' =>array( // 21
+        'short' => 'Loot',
+        'name' => 'Looting',
+        'items' => array(
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+        ),
+        'max'=>3
+    ),
+    'DIG_SPEED' =>array( // 32
+        'short' => 'Eff',
+        'name' => 'Efficiency',
+        'items' => array(
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+            'shears'
+        ),
+        'max' => 5
+    ),
+    'SILK_TOUCH' => array( // 33
+        'short' => 'Silk',
+        'name' => 'SilkTouch',
+        'items' => array(
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+        ),
+        'max' => 1
+    ),
+    'DURABILITY' => array( // 34
+        'short'=> 'Unb',
+        'name'=>'Unbreaking',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
+            'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra'
+        ),
+        'max' => 3
+    ),
+    'LOOT_BONUS_BLOCKS' => array( // 35
+        'short' => 'Fort',
+        'name' => 'Fortune',
+        'items' => array(
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+        ),
+        'max' => 3
+    ),
+    'ARROW_DAMAGE' => array( //48
+        'short' => 'Power',
+        'name' => 'Power',
+        'items' => array('bow'),
+        'max'=>5
+    ),
+    'ARROW_KNOCKBACK' => array( //49
+        'short'=> 'Punch',
+        'name'=>'Punch',
+        'items' => array('bow'),
+        'max' => 2
+    ),
+    'ARROW_FIRE' => array( // 50
+        'short' => 'Flame',
+        'name' => 'Flame',
+        'items' => array('bow'),
+        'max' => 1
+    ),
+    'ARROW_INFINITE' => array( // 51
+        'short' => 'Inf',
+        'name' => 'Infinity',
+        'items' => array('bow'),
+        'max'=>1
+    ),
+    'LUCK' =>array( // 61
+        'short' => 'Luck',
+        'name' => 'Luck',
+        'items' => array('fishing_rod'),
+        'max'=>1
+    ),
+    'LURE' => array( // 62
+        'short' => 'Lure',
+        'name' => 'Lure',
+        'items' => array('fishing_rod'),
+        'max'=>1
+    ),
+    'MENDING' => array( // 70
+        'short' => 'Mending',
+        'name' => 'Mending',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
+            'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
+        ),
+        'max'=>1
+    ),
+    'UNKNOWN_ENCHANT_71' =>array( // 71
+        'short' => 'Vanish',
+        'name' => 'Curse of Vanishing',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
+            'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
+        ),
+        'max'=>1
+    ),
+    'VANISHING_CURSE' =>array(  // 71
+        'short' => 'Vanish',
+        'name' => 'Curse of Vanishing',
+        'items' => array(
+            'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+            'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
+            'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+            'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+            'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
+            'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
+            'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
+            'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
+            'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
+        ),
+        'max' => 1
+    ),
 );
 
 $UMC_BANNERS = array(
@@ -1905,7 +2183,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/7/77/Ice.png',
     ),
-    'magma_block' => array(
+    'magma' => array(
         'id' => 213,
         'stack' => 64,
         'avail' => true,
@@ -1935,11 +2213,113 @@ $UMC_DATA = array(
         'avail' => false,
         'icon_url' => '/e/e8/Structure_Block_Corner.png',
     ),
+    'observer' => array(
+        'id' => 218,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/d/d3/Observer.png',
+    ),
+    'white_shulker_box' => array(
+        'id' => 219,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/8/80/White_Shulker_Box.png',
+    ),
+    'orange_shulker_box' => array(
+        'id' => 220,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/d/d2/Orange_Shulker_Box.png',
+    ),
+    'magenta_shulker_box' => array(
+        'id' => 221,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/b/bd/Magenta_Shulker_Box.png',
+    ),
+    'light_blue_shulker_box' => array(
+        'id' => 222,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/d/d8/Light_Blue_Shulker_Box.png',
+    ),
+    'yellow_shulker_box' => array(
+        'id' => 223,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/f/f9/Yellow_Shulker_Box.png',
+    ),
+    'lime_shulker_box' => array(
+        'id' => 224,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/7a/Lime_Shulker_Box.png',
+    ),
+    'pink_shulker_box' => array(
+        'id' => 225,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/f/fd/Pink_Shulker_Box.png',
+    ),
+    'gray_shulker_box' => array(
+        'id' => 226,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/73/Gray_Shulker_Box.png',
+    ),
+    'light_gray_shulker_box' => array(
+        'id' => 227,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/6/6c/Light_Gray_Shulker_Box.png',
+    ),
+    'cyan_shulker_box' => array(
+        'id' => 228,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/76/Cyan_Shulker_Box.png',
+    ),
+    'purple_shulker_box' => array(
+        'id' => 229,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/f/f9/Purple_Shulker_Box.png',
+    ),
+    'blue_shulker_box' => array(
+        'id' => 230,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/e9/Blue_Shulker_Box.png',
+    ),
+    'brown_shulker_box' => array(
+        'id' => 231,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/7/73/Brown_Shulker_Box.png',
+    ),
+    'green_shulker_box' => array(
+        'id' => 232,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/2/2a/Green_Shulker_Box.png',
+    ),
+    'red_shulker_box' => array(
+        'id' => 233,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/f/f2/Red_Shulker_Box.png',
+    ),
+    'black_shulker_box' => array(
+        'id' => 234,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/e2/Black_Shulker_Box.png',
+    ),
     'structure_block' => array(
         'id' => 255,
         'stack' => 64,
         'avail' => false,
-        'icon_url' => '/e/e8/Structure_Block_Corner.png',
+        'icon_url' => '/4/49/Structure_Block_Save.png',
     ),
 
 
@@ -2652,7 +3032,7 @@ $UMC_DATA = array(
         'id' => 358,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/a/aa/Grid_Map.png',
+        'icon_url' => '/7/78/Exploration_maps.gif',
     ),
     'shears' => array(
         'id' => 359,
@@ -3487,6 +3867,18 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/5/59/Grid_Boat.png',
     ),
+    'totem' => array(
+        'id' => 449,
+        'stack' => 1,
+        'avail' => true,
+        'icon_url' => '/5/57/Totem_of_Undying.png',
+    ),
+    'shulker_shell' => array(
+        'id' => 450,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/b/ba/Shulker_Shell.png',
+    ),
 
     /*************************************************/
     /*                RECORDS                        */
@@ -3688,5 +4080,4 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'dragons_breath' => 'dragon_breath',
     'boat_dark_oak' => 'dark_oak_boat',
     'boat_jungle' => 'jungle_boat',
-    'magma' => 'magma_block',
 );
