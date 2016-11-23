@@ -366,6 +366,12 @@ function umc_lot_warp() {
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
         }
+        // check if lot exists
+        $lot_check = umc_check_lot_exists($target_world, $lot);
+        if (!$lot_check) {
+            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+        }
+
     } else{
         umc_error("Sorry, you need to enter the lot name after /lot warp!");
     }
@@ -376,7 +382,8 @@ function umc_lot_warp() {
 
     $D = umc_mysql_fetch_all($sql);
     if (count($D) != 1) {
-        umc_error("There was an error teleporting you to your lot, the admin was notified, please wait for it to be fixed!");
+        XMPP_ERROR_trigger("Could not get coordinates for lot warp command: $sql");
+        umc_error("There was an error teleporting you to your lot, the admin was notified, please try again. If the error persists, please wait for it to be fixed!");
     }
     $lots = $D[0];
 
@@ -437,7 +444,7 @@ function umc_lot_by_owner($uuid, $world = false, $owner = true) {
             $filter = "AND world.name = '$world'";
         }
     }
-    
+
     if (!$owner) {
         $owner_str = 0;
     } else {
