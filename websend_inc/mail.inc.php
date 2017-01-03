@@ -490,7 +490,7 @@ function umc_mail_list() {
 
 function umc_test_mail() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $recipient = "web-87iyhC@mail-tester.com";
+    $recipient = "oliver@spiesshofer.com";
     $sender = "minecraft@uncovery.me";
     $headers = "From:$sender <$sender>\r\n" .
         "Reply-To: $sender\r\n" .
@@ -498,8 +498,9 @@ function umc_test_mail() {
     $mail_title = "Test mail";
     $body = "This is a test mail";
 
-    $check = mail($recipient, $mail_title, $body, $headers);
+    $check = mail($recipient, $mail_title, $body, $headers, "-fminecraft@uncovery.me");
     var_dump($check);
+    echo "Sent to $recipient";
 }
 
 /**
@@ -534,7 +535,7 @@ function umc_mail_send_alert($mail_id = 3886) {
         $headers = "From:$sender <no-reply@uncovery.me>\r\n" .
             "Reply-To: no-reply@uncovery.me\r\n" .
             "X-Mailer: PHP/" . phpversion();
-        mail($user_email, $mail_title, $body, $headers);
+        mail($user_email, $mail_title, $body, $headers, "-fminecraft@uncovery.me");
     }
 }
 

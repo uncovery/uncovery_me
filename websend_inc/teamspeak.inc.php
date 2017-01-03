@@ -26,7 +26,7 @@ global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => array(), // array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
+    'events' => array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
     'default' => array(
         'help' => array(
             'title' => 'Teamspeak',  // give it a friendly title
@@ -84,7 +84,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
  * server.
  */
 $UMC_TEAMSPEAK = array(
-    'ts_php_path' => '/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
+    'ts_php_path' => '/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
     'server_query_string_path' => "/home/includes/certificates/teamspeak_query.txt",
     'server' => false,
     'user_groups' => array(

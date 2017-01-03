@@ -717,16 +717,16 @@ function umc_do_buy_internal($to_deposit = false) {
         } else {
             umc_echo("{green}[+] {gray}Buying {yellow}$amount {$item['full']}{gray} for {cyan}{$row['price']}{gray} each from {gold}$seller");
         }
-        $balance = umc_money_check($player);
+        $balance = umc_money_check($uuid);
         if ($balance < $sum) {
             umc_echo("{red}[!]{gray} Insufficient funds ({white}$sum{gray} needed).;{purple}[?]{white} Why don't you vote for the server and try again?");
         } else {
             $new_balance = $balance - $sum;
-            if($do_check) {
+            if ($do_check) {
                 umc_echo("{white}[?]{gray} You would have {green}$new_balance Uncs{gray} remaining after spending {cyan}$sum",true);
                 return;
             }
-	    if(!$to_deposit) {
+	    if (!$to_deposit) {
             	umc_check_space($amount, $item['item_name'], $item['type']);
 	    }
             umc_echo("{green}[+]{gray} You have {green}$new_balance Uncs{gray} remaining after spending {cyan}$sum");
@@ -1114,6 +1114,7 @@ function umc_do_request() {
  */
 function umc_shop_cleanout_olduser($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    umc_log('shop', 'reset', "cleaning shop for user $uuid");
     // delete all requests
     $requests_sql = "DELETE FROM minecraft_iconomy.request WHERE uuid='$uuid';";
     umc_mysql_query($requests_sql, true);

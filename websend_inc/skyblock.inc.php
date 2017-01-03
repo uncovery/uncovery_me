@@ -129,7 +129,7 @@ function umc_skyblock_warp(){
     $c_z = $lots['min_z'] + 64;
     $c_y = 256;
 
-    $cmd = "tppos $player $c_x $c_y $c_z 0";
+    $cmd = "tppos $player $c_x $c_y $c_z 0 skyblock";
     umc_ws_cmd($cmd, 'asConsole');
     umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to skyblock");
     umc_echo("You are now on skyblock $lot!");

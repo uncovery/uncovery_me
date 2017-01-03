@@ -469,7 +469,7 @@ function umc_mod_warp_lot() {
     $x = $row['min_x'];
     $z = $row['min_z'];
     $y = 70;
-    umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
+    umc_ws_cmd("tppos $x $y $z 135 $playerworld", 'asPlayer');
 }
 
 function umc_mod_command($player) {

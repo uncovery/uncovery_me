@@ -269,7 +269,7 @@ function umc_story_show() {
 
         $pages = explode("[BR]", $story);
         $pagecount = count($pages);
-        if (isset($args[2]) && is_numeric($args[2]) && isset($pages[($args[2] -1)])) {
+        if (isset($args[2]) && is_numeric($args[2]) && isset($pages[($args[2] - 1)])) {
             $page = $args[2];
         } else {
             $page = 1;

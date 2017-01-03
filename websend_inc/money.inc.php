@@ -117,17 +117,24 @@ function umc_money_give() {
  * @param type $amount
  * @return boolean
  */
-function umc_money($source = false, $target = false, $amount_raw = 0) {
+function umc_money($source_raw = false, $target = false, $amount_raw = 0) {
     global $UMC_ENV;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    if ($source) {
-        $source = umc_check_user($source);
+    if ($source_raw) {
+        $source = umc_check_user($source_raw);
+        if (!$source) {
+            XMPP_ERROR_trigger("Error payment from $source_raw (check result false! $source)");
+        }
+                
+    } else {
+        $source = $source_raw;
     }
 
     if ($target) {
         $target = umc_check_user($target);
     }
+    
     $amount = abs($amount_raw);
 
     if ($source) { // take from someone

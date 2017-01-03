@@ -69,13 +69,13 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
 global $lottery, $lottery_urls;
 
 $lottery_urls = array(
-    'minecraft-server-list.com' => array('url' => 'http://minecraft-server-list.com/server/54265/vote/', 'id' => 'mcsl'),
-    'minecraftservers.org' => array('url' => 'http://minecraftservers.org/vote/160828', 'id' => 'minecraftservers.org'),
-    'mineservers.net' => array('url' => 'http://www.mineservers.net/servers/834-uncovery-minecraft/vote', 'id' => 'mineservers.net'),
-    'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com'),
-    'minestatus.net' => array('url' => 'https://www.minestatus.net/152-uncovery-minecraft/vote', 'id' => 'minestatus'),
-    'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org'),
-    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers'),
+    'minecraft-server-list.com' => array('url' => 'http://minecraft-server-list.com/server/54265/vote/', 'id' => 'mcsl', 'val' => 500),
+    'minecraftservers.org' => array('url' => 'http://minecraftservers.org/vote/160828', 'id' => 'minecraftservers.org', 'val' => 50),
+    // 'mineservers.net' => array('url' => 'http://www.mineservers.net/servers/834-uncovery-minecraft/vote', 'id' => 'mineservers.net', 'val' => 100),
+    'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com', 'val' => 50),
+    'minestatus.net' => array('url' => 'https://www.minestatus.net/152-uncovery-minecraft/vote', 'id' => 'minestatus', 'val' => 50),
+    'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org', 'val' => 50),
+    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers', 'val' => 50),
 );
 
 $lottery = array(
@@ -515,7 +515,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS;
+    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
 
     $user_input = $UMC_USER['args'][2];
 
@@ -563,9 +563,6 @@ function umc_lottery() {
         $detail = $prize['detail'];
     }
     $type = $prize['type'];
-
-    // always give 100 uncs irrespective of roll.
-    umc_money(false, $user, 100);
 
     // instantiate block variables
     $given_block_data = 0;
@@ -674,6 +671,17 @@ function umc_lottery() {
     $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
         VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
     umc_mysql_query($sql, true);
+
+    //TODO: Match the site with the lottery_urls
+
+    //TODO: determine the money given per lottery url
+
+    //TODO: make the return uncremental if several days in a row voting was done
+
+    // always give 100 uncs irrespective of roll.
+    umc_money(false, $user, 100);
+
+
 }
 
 // returns an array with the item and roll value
