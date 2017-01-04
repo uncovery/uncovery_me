@@ -147,6 +147,25 @@ function umc_temp_backup_activeusers() {
     }
 }
 
+/**
+ * Sends a message to all users in-game
+ * This is a bridge so we do not need to change hundreds of lines of code
+ * in case the chat plugin changes again.
+ * 
+ * @param type $msg
+ */
+function umc_mod_broadcast($msg) {
+    $chat_command = 'broadcast';
+    // we can send several messages as an array.
+    if (!is_array($msg)) {
+        $msg = array($msg);
+    }
+    foreach ($msg as $line) {
+        $full_command = "$chat_command $line;";
+        umc_exec_command($full_command, 'asConsole');
+    }
+}
+
 function umc_mod_banrequest() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
@@ -469,7 +488,7 @@ function umc_mod_warp_lot() {
     $x = $row['min_x'];
     $z = $row['min_z'];
     $y = 70;
-    umc_ws_cmd("tppos $x $y $z 135 $playerworld", 'asPlayer');
+    umc_ws_cmd("tppos $x $y $z 135 0 $playerworld", 'asPlayer');
 }
 
 function umc_mod_command($player) {
