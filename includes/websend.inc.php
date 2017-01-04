@@ -516,11 +516,6 @@ function umc_footer($silent = false, $footer_text = false) {
     umc_pretty_bar("darkblue", "-", $footer, 49, $silent);
 }
 
-function umc_announce($string, $channel = 't') {
-    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $string);
-    umc_ws_cmd("ch qm $channel $str", 'asConsole');
-}
-
 /**
  *
  * @param type $color

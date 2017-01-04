@@ -99,18 +99,22 @@ function umc_wsplg_dispatch($module) {
     }
 
     if (isset($command['function']) && function_exists($command['function'])) {
-        if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
+        if (isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
 
             // restricts command to the named worlds
-            if(isset($command['security']['worlds'])) {
-                if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
+            if (isset($command['security']['worlds'])) {
+                // XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world']);
+                if (!in_array($UMC_USER['world'], $command['security']['worlds'])) {
+                    //XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world'] . " failed!");
                     umc_error("{red}That command is restricted to the following worlds: {yellow}".join(", ",$command['security']['worlds']));
+                } else {
+                    // XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world'] . " did NOT fail!");
                 }
             }
 
             // restricts command to a minimum user level or higher
-            if(isset($command['security']['level'])) {
-                if(!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
+            if (isset($command['security']['level'])) {
+                if (!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
@@ -122,6 +126,8 @@ function umc_wsplg_dispatch($module) {
                 }
             }
 
+        } else {
+            XMPP_ERROR_trace("test", $command);
         }
         $function = $command['function'];
         $function();
@@ -332,7 +338,7 @@ function umc_plugin_web_help($one_plugin = false) {
  * another function name configured and this event handler then executes the plugins' function
  * and passes the parameters to it. The plugin function can then return the result back to whatever
  * triggered the event.
- * 
+ *
  * We do not support a plugin to have several ections for the same event. If there are several things
  * that need to happen for one event and one plugin, this needs to be handled in the plugin itself.
  *
@@ -382,12 +388,13 @@ function umc_plugin_eventhandler($event, $parameters = false) {
             // execute function
             $function = $data['events'][$event];
             if (!is_string($function) || !function_exists($function)) {
-                XMPP_ERROR_trigger("plugin eventhandler failed event $event");
+                XMPP_ERROR_trigger("plugin eventhandler failed event $event because $function is not a valid function");
+                return false;
             }
             // execute the function, optionally with parameters
             if ($parameters) {
                 //$params_txt = implode(", ", $parameters);
-                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with parameters $params_txt");
+                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with function $function and parameters $parameters");
                 $return_vars[] = $function($parameters);
             } else {
                 //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");

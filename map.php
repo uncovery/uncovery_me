@@ -293,7 +293,7 @@ function umc_create_map() {
             // find out who can keep their lot longer than 1 months
             $retain_lot = false;
 
-            $owner_lastlogin = $all_lastlogins[$owner_uuid]['lastlogin'];
+            $owner_lastlogin = substr($all_lastlogins[$owner_uuid]['lastlogin'], 0, 10);
             if (!isset($all_lastlogins[$owner_uuid]['userlevel'])) {
                 XMPP_ERROR_trigger("$owner_username has no userlevel for the map!");
             }

@@ -843,7 +843,7 @@ function umc_user_directory() {
             $online_total = round($row['onlinetime'] / 60 / 60);
             $icon_url = umc_user_get_icon_url($row['username']);
             $out .= "<tr>"
-                . "<td><img title='{$row['username']}' src='$icon_url' alt=\"{$row['username']}\"> <a href=\"?u={$row['username']}\">{$row['username']}</a></td>"
+                . "<td><img title='{$row['username']}' src='$icon_url' alt=\"{$row['username']}\">&nbsp;<a href=\"?u={$row['username']}\">{$row['username']}</a></td>"
                 . "<td>{$row['userlevel']}</td>"
                 . "<td class='numeric_td'>{$row['registered_since']}</td>"
                 . "<td class='numeric_td'>$days_offline</td>"

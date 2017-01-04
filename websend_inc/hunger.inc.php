@@ -255,8 +255,8 @@ function umc_hunger_announce() {
         umc_ws_cmd("pex reload", 'asConsole');
         XMPP_ERROR_send_msg("$player announced new Hunger game");
         if ($HUNGER['announce']) {
-            umc_announce("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!", $HUNGER['channel']);
-            umc_announce("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!", $HUNGER['channel']);
         } else {
             umc_echo("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!");
             umc_echo("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!");
@@ -334,7 +334,7 @@ function umc_hunger_start() {
 
     foreach ($droppedplayers as $uuid => $player) {
         if ($HUNGER['announce']) {
-            umc_announce("[Hunger] The user {gold}$player{purple} did not make it into the hunger world before the game start and will be removed", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] The user {gold}$player{purple} did not make it into the hunger world before the game start and will be removed", $HUNGER['channel']);
         } else {
             umc_echo("[Hunger] The user {gold}$player{purple} did not make it into the hunger world before the game start and will be removed");
         }
@@ -357,8 +357,8 @@ function umc_hunger_start() {
 
     $world_size = $HUNGER['current_game']['size'];
     if ($HUNGER['announce']) {
-        umc_announce("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size", $HUNGER['channel']);
-        umc_announce("Participants: {gold}" . implode(", ", $finalplayers), $HUNGER['channel']);
+        umc_mod_broadcast("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size", $HUNGER['channel']);
+        umc_mod_broadcast("Participants: {gold}" . implode(", ", $finalplayers), $HUNGER['channel']);
     } else {
         umc_echo("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size");
         umc_echo("Participants: {gold}" . implode(", ", $finalplayers));
@@ -386,7 +386,7 @@ function umc_hunger_stop() {
         // check if the player is the admin for the current game or if the admin is offline
         if ($uuid == $HUNGER['current_game']['admin'] || (!in_array($admin_username, $UMC_USER['online_players']))) {
             if ($HUNGER['announce']) {
-                umc_announce("[Hunger] The current hunger game has been {red}cancelled{purple} by {gold}$player{purple}.", $HUNGER['channel']);
+                umc_mod_broadcast("[Hunger] The current hunger game has been {red}cancelled{purple} by {gold}$player{purple}.", $HUNGER['channel']);
             } else {
                 umc_echo("[Hunger] The current hunger game has been {red}cancelled{purple} by {gold}$player{purple}.");
             }
@@ -419,7 +419,7 @@ function umc_hunger_abort() {
         $game = $HUNGER['current_game'];
     }
     if ($HUNGER['announce']) {
-        umc_announce("[Hunger] The current hunger game has been {red}cancelled{purple}.",$HUNGER['channel']);
+        umc_mod_broadcast("[Hunger] The current hunger game has been {red}cancelled{purple}.",$HUNGER['channel']);
     } else {
         umc_echo("[Hunger] The current hunger game has been {red}cancelled{purple}.");
     }
@@ -751,7 +751,7 @@ function umc_hunger_addplayer() {
 
     umc_ws_cmd("tell $admin The user $player just joined the hunger game!", 'asConsole');
     if ($HUNGER['announce']) {
-        umc_announce("[Hunger] The user {gold}$player{purple} just {green}joined{purple} the hunger game!", $HUNGER['channel']);
+        umc_mod_broadcast("[Hunger] The user {gold}$player{purple} just {green}joined{purple} the hunger game!", $HUNGER['channel']);
     } else {
         umc_echo("[Hunger] The user {gold}$player{purple} just {green}joined{purple} the hunger game!");
     }
@@ -809,7 +809,7 @@ function umc_hunger_removeplayer($died = true) {
             $admin = umc_user2uuid($admin_uuid);
             umc_echo("[Hunger] {green}You ({gold}$username{green}) were removed from Hunger Game {white}#$game_id.");
             if ($HUNGER['announce']) {
-                umc_announce("[Hunger] The user {gold}$username{purple} just {cyan}left{gold} the hunger game!", $HUNGER['channel']);
+                umc_mod_broadcast("[Hunger] The user {gold}$username{purple} just {cyan}left{gold} the hunger game!", $HUNGER['channel']);
             } else {
                 umc_echo("[Hunger] The user {gold}$username{purple} just {cyan}left{gold} the hunger game!");
             }
@@ -851,7 +851,7 @@ function umc_hunger_check_winner() {
                 SET status='left' WHERE uuid='$winner_uuid' and game_id = $id;";
             umc_mysql_query($sql_player, true);
             if ($HUNGER['announce']) {
-                umc_announce("The Hunger Game has been {red}aborted{purple}, no active players online.", $HUNGER['channel']);
+                umc_mod_broadcast("The Hunger Game has been {red}aborted{purple}, no active players online.", $HUNGER['channel']);
             } else {
                 umc_echo("The Hunger Game has been {red}aborted{purple}, no active players online.");
             }
@@ -862,7 +862,7 @@ function umc_hunger_check_winner() {
         $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
         umc_mysql_query($sql, true);
         if ($HUNGER['announce']) {
-            umc_announce("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;", $HUNGER['channel']);
+            umc_mod_broadcast("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;", $HUNGER['channel']);
         } else {
             umc_echo("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;");
         }

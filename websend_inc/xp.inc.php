@@ -202,7 +202,7 @@ function umc_do_buyxp() {
         umc_money($player, false, $amount);
 
         // announce the purchase to encourage players to consider buying xp
-        umc_announce("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $amount Uncs{gray}!");
+        umc_mod_broadcast("{gold}$player{gray} just bought {purple}$xp XP{gray} for{cyan} $amount Uncs{gray}!");
 	umc_echo("{white} You ended with $new_xp experience points.");
 
         // log the purchase

@@ -125,6 +125,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
          ),
     ),
 );
+$WS_INIT['mod']['broadcast'] = 'broadcast';
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -155,13 +156,15 @@ function umc_temp_backup_activeusers() {
  * @param type $msg
  */
 function umc_mod_broadcast($msg) {
-    $chat_command = 'broadcast';
+    global $WS_INIT;
+    $chat_command = $WS_INIT['mod']['broadcast'];
     // we can send several messages as an array.
     if (!is_array($msg)) {
         $msg = array($msg);
     }
     foreach ($msg as $line) {
-        $full_command = "$chat_command $line;";
+        $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $line);
+        $full_command = "$chat_command $str;";
         umc_exec_command($full_command, 'asConsole');
     }
 }

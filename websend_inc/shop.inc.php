@@ -622,7 +622,7 @@ function umc_do_offer_internal($deposit) {
 	}
         umc_echo("{green}[+]{gray} You now have {yellow}$sum {$item['full']}{gray} in the shop (ID: $posted_id).");
         if (!$silent) {
-            umc_announce("Offer: {yellow}$sum {$item['full']}{darkgray} "
+            umc_mod_broadcast("Offer: {yellow}$sum {$item['full']}{darkgray} "
             . "@ {cyan}{$price}/pc{darkgray}, ID {gray}{$posted_id} from {gold}$player");
         }
     } else {
@@ -1102,7 +1102,7 @@ function umc_do_request() {
         umc_echo("{green}[$]{white} Your account has been credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
     }
     umc_money($player, false, $cost);
-    umc_announce("{gold}$player{gray} is {red}requesting to buy {yellow}$sum$meta_txt{green} "
+    umc_mod_broadcast("{gold}$player{gray} is {red}requesting to buy {yellow}$sum$meta_txt{green} "
         . "{$item['full']}{darkgray} @ {cyan}{$price}{gray} each{darkgray}, shop-id {gray}{$posted_id}");
 }
 

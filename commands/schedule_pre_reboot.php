@@ -2,6 +2,8 @@
 
 include('/home/minecraft/server/bin/index_wp.php');
 
+umc_log('system', 'daily_process', "pre-reboot processes started");
+
 umc_plugin_eventhandler('server_pre_reboot');
 
 // reset all user lots

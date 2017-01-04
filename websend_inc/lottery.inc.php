@@ -649,7 +649,7 @@ function umc_lottery() {
     }
     if ($user != 'uncovery') {// testing only
         $item_nocolor = umc_ws_color_remove($item_txt);
-        umc_ws_cmd("ch qm N $user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
+        umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
         umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($given_block_type:$given_block_data)");
         $userlevel = umc_get_userlevel($user);
         if (in_array($userlevel, array('Settler', 'Guest'))) {

@@ -4,8 +4,11 @@
 
 include_once('/home/minecraft/server/bin/index_wp.php');
 // umc_restore_from_backup();
-$cmd = "ch qm n This is a test&f";
-umc_exec_command($cmd, 'asConsole');
+//$cmd = "ch qm n This is a test&f";
+//umc_exec_command($cmd, 'asConsole');
+
+$uuid = "3236fa2f-7c1e-4438-bb80-71aef236f901";
+umc_ts_clear_rights($uuid, true);
 /*
     $good_map = "/disk2/backup/bukkit_164/empire";
     $bad_map = "/home/minecraft/server/bukkit/empire";

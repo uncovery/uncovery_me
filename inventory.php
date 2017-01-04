@@ -131,7 +131,7 @@ function umc_check_space($amount, $item_name, $type) {
     // first find how many free slots we have
     $free = 0;
     for ($i = 0; $i < 36; $i++) {
-        if (!isset($inv[$i])) {
+        if (!isset($inv[$i]) || ($inv[$i]['amount'] == 0)) {
             $free++;
         }
     }
@@ -143,7 +143,7 @@ function umc_check_space($amount, $item_name, $type) {
     if (isset($UMC_DATA[$item_name]['stack'])) {
         $stack_size = $UMC_DATA[$item_name]['stack'];
     } else {
-        XMPP_ERROR_trigger("umc_check_space error with item $item and type $type");
+        XMPP_ERROR_trigger("umc_check_space error with item $item_name and type $type");
     }
 
     $need_slots = ceil($amount / $stack_size);
@@ -151,7 +151,7 @@ function umc_check_space($amount, $item_name, $type) {
     if ($free >= $need_slots) {
         return true;
     } else {
-        umc_error("{red}You have {white}$free{red} empty slots but need {white}$need_slots{red}. "
+        umc_error("{red}You only have {white}$free{red} empty slots but need {white}$need_slots{red}. "
             . "{red}Try a smaller amount, or free up some inventory space.;");
     }
 }
@@ -166,7 +166,7 @@ function umc_check_space_multiple($items) {
     // first find how many free slots we have
     $free = 0;
     for ($i = 0; $i < 36; $i++) {
-        if (!isset($inv[$i])) {
+        if (!isset($inv[$i]) || ($inv[$i]['amount'] == 0)) {
             $free++;
         }
     }
@@ -222,7 +222,7 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
             $sql = "SELECT * FROM minecraft_iconomy.stock WHERE id='$id' LIMIT 1;";
         }
     } else if ($table == 'deposit') {
-        $sql = "SELECT * FROM minecraft_iconomy.deposit 
+        $sql = "SELECT * FROM minecraft_iconomy.deposit
             WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id'LIMIT 1;";
     }
     $D = umc_mysql_fetch_all($sql);

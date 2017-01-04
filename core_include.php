@@ -179,7 +179,7 @@ function umc_sanitize_input(&$value, $type) {
         if (is_null($meta_name)) {
             umc_error("Unknown Metavalue name: {white}$value");
         } else {
-            return $meta_nam;
+            return $meta_name;
         }
     }
 
