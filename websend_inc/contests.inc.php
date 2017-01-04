@@ -580,7 +580,7 @@ function umc_contests_warp(){
     $c_z = $lot['max_z'] + 2;
     $c_y = $lot['min_y'] + 2;
 
-    $cmd = "tppos $player $c_x $c_y $c_z 0 aether";
+    $cmd = "tppos $player $c_x $c_y $c_z 0 0 aether";
     umc_ws_cmd($cmd, 'asConsole');
     umc_pretty_bar("darkblue", "-", "{darkcyan} Visiting contest $id ");
     umc_echo("You are looking now at contest $id entry $num!");
