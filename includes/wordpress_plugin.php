@@ -197,13 +197,12 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
     $title = $post['post_title'];
     $post_link = "https://uncovery.me/?p=" . $post['ID'];
 
-    $cmd1 = "ch qm n New Comment on Post &a$title &fby $author&f";
-    $cmd2 = "ch qm n Link: &a$post_link&f";
-    $cmd3 = "ch qm n Type &a/web read c$comment_id&f to read in-game";
+    $msgs = array(
+        "New Comment on Post &a$title &fby $author&f",
+        "Link: &a$post_link&f",
+        "Type &a/web read c$comment_id&f to read in-game");
     require_once('/home/minecraft/server/bin/index_wp.php');
-    umc_exec_command($cmd1, 'asConsole');
-    umc_exec_command($cmd2, 'asConsole');
-    umc_exec_command($cmd3, 'asConsole');
+    umc_mod_broadcast($msgs);
 }
 
 /**
@@ -226,7 +225,7 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
         $post_link = "https://uncovery.me/?p=" . $post->ID;
         $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
-            $cmds[] = "ch qm u New Blog Post: &a$post_title&f";
+            $cmds[] = "New Blog Post: &a$post_title&f";
         } else {
             $type = ucwords($post->post_type);
             if ($type == 'Reply') {
@@ -236,14 +235,12 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $author_id = $post->post_author;
             $user = get_userdata($author_id);
             $username = $user->display_name;
-            $cmd[] = "ch qm n New Forum $type: &a$post_title &fby $username&f";
+            $cmd[] = "New Forum $type: &a$post_title &fby $username&f";
         }
-        $cmd[] = "ch qm u Link: &a$post_link&f";
-        $cmd[] = "ch qm u Type &a/web read $id&f to read in-game";
+        $cmd[] = "Link: &a$post_link&f";
+        $cmd[] = "Type &a/web read $id&f to read in-game";
         require_once('/home/minecraft/server/bin/index_wp.php');
-        foreach ($cmds as $cmd) {
-            umc_exec_command($cmd, 'asConsole');
-        }
+        umc_mod_broadcast($cmd);
     }
 }
 
@@ -254,10 +251,10 @@ $umc_wp_register_questions = array(
         'answers'=>array('0'=>'I have it already!', '1'=>'I have to apply for Settler status on the website!')),
     2 => array('text'=>'Which username do you choose here?', 'true'=>0,
         'answers'=>array('0'=>'My Minecraft username', '1'=>'My email address', '2'=>'31337 sh0073rz')),
-    3 => array('text'=>'How do you know the IP of the server?', 'true'=>0,
-        'answers'=>array('0'=>'Its written in the email I get when I fill this out correctly', '1'=>'I will have to guess', '2'=>'I ask for it in the forum')),
-    4 => array('text'=>'In which world do you spawn?', 'true'=>2,
+    3 => array('text'=>'In which world do you spawn?', 'true'=>2,
         'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
+    //4 => array('text'=>'In which world do you spawn?', 'true'=>2,
+    //    'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
 );
 
 /**
