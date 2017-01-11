@@ -91,7 +91,7 @@ function umc_money_give() {
     $target_uuid = umc_user2uuid($target);
     // check if the user is online
     if (isset($UMC_USER['player_data'][$target_uuid])) {
-        umc_msg_user($target, "You just received $sum Uncs from $player!");
+        umc_mod_message($target, "You just received $sum Uncs from $player!");
         umc_echo("The recipient is online, the server sent a notification message.");
     } else {
         // otherwise, send an email

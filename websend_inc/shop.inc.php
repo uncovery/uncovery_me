@@ -738,7 +738,7 @@ function umc_do_buy_internal($to_deposit = false) {
             // give goods to player1
             $leftover = umc_checkout_goods($id, $amount, 'stock', false, $to_deposit);
             $msg = "$player bought $amount {$item['name']} for {$row['price']} Uncs/pcs (= $sum Uncs)! $leftover left in stock!;";
-            umc_msg_user($seller, $msg);
+            umc_mod_message($seller, $msg);
         }
     } else {
         umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp buy;");
@@ -970,7 +970,7 @@ function umc_do_sell_internal($from_deposit=false) {
 
     // message recipient
     $msg = "$player sold you $amount {$request_item['full']} per your request, check your /depotlist!;";
-    umc_msg_user($recipient, $msg);
+    umc_mod_message($recipient, $msg);
 
     // record logfile
     umc_log('shop', 'sell_on_request', "$player sold $amount of {$request_item['full_clean']} to $recipient (ID: {$request['id']})");

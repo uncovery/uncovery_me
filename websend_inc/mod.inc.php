@@ -169,6 +169,19 @@ function umc_mod_broadcast($msg) {
     }
 }
 
+/**
+ * Command to send a message to a specific user. 
+ * See http://minecraft.gamepedia.com/Commands#Raw_JSON_text for more options
+ * 
+ * @param type $user
+ * @param type $message
+ */
+function umc_mod_message($user, $message) {
+    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
+    $cmd = "tellraw $user {\"text\":\"$str\",\"bold\":false}";
+    umc_exec_command($cmd, 'asConsole');
+}
+
 function umc_mod_banrequest() {
     global $UMC_USER;
     $player = $UMC_USER['username'];

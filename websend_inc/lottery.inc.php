@@ -654,7 +654,7 @@ function umc_lottery() {
         $userlevel = umc_get_userlevel($user);
         if (in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
-            umc_msg_user($user, $msg);
+            umc_mod_message($user, $msg);
         }
     } else {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");

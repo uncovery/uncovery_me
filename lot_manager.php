@@ -1815,29 +1815,13 @@ function umc_temp() {
 
 }
 
-function umc_restore_from_backup(){
+function umc_restore_from_backup() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
 
-    // king_s11_b, king_r11_a, king_r11_b, king_q11_a, king_q11_b, king_p11_a, king_p11_b, king_o11_a, king_o11_b, king_n11_a, king_n11_b, and king_n12_c.
-    //  emp_k7, emp_j7, king_h21_a, king_h22, king_h22_c, king_g22, king_h22_a, king h22_b, king_g22_a, king_h23, king_h23_c, and king_g23.
+    $lots = array('emp_s30'=>'psiber','emp_t30'=>'psiber','flat_a18'=>'psiber','flat_b18'=>'psiber',);
 
-    $lots = array('king_s9'=>'f1','king_s9_b'=>'f1','king_s9_c'=>'f1','king_s8_a'=>'f1','king_s8_b'=>'f1','king_s8_c'=>'f1','king_s10_b'=>'f1',
-        'king_s10_c'=>'f1','king_s11_b'=>'f1','king_s11_c'=>'f1','king_r9'=>'f1','king_r9_a'=>'f1','king_r8_a'=>'f1','king_r8_b'=>'f1',
-        'king_r11_b'=>'f1','king_r15_b'=>'psychodrea','king_r11_a'=>'f1','king_r10'=>'f1','king_q16'=>'psychodrea','king_q15'=>'psychodrea',
-        'king_q15_a'=>'psychodrea','king_q14_a'=>'psychodrea','king_q14'=>'psychodrea','king_q11_a'=>'f1','king_q11_b'=>'f1','king_p13'=>'butifuldzastr',
-        'king_p11_a'=>'f1','king_p11_b'=>'f1','king_n11_b'=>'f1','king_n12_c'=>'f1','king_o11_a'=>'f1','king_o11_b'=>'f1','king_i22_c'=>'chenoa',
-        'king_n11_a'=>'f1','king_h23'=>'chenoa','king_h23_c'=>'chenoa','king_h22_c'=>'chenoa','king_h22'=>'chenoa','king_h22_a'=>'chenoa',
-        'king_h22_b'=>'chenoa','king_g23'=>'chenoa','king_h21_a'=>'chenoa','king_g22'=>'chenoa','king_g22_a'=>'chenoa','emp_x9'=>'patpat2211',
-        'emp_w17'=>'dueldragonoid','emp_w9'=>'patpat2211','emp_x10'=>'patpat2211','emp_v19'=>'dueldragonoid','emp_w10'=>'patpat2211','emp_t8'=>'silver82',
-        'emp_u7'=>'silver82','emp_u8'=>'silver82','emp_q6'=>'azjaguar','emp_q7'=>'azjaguar','emp_t7'=>'silver82','emp_q11'=>'doriryo92',
-        'emp_q20'=>'cyanlaser121','emp_p7'=>'azjaguar','emp_o4'=>'nerfherd315','emp_p6'=>'mrturtl3_97','emp_m22'=>'psychodrea','emp_m23'=>'psychodrea',
-        'emp_n22'=>'psychodrea','emp_n23'=>'psychodrea','emp_j7'=>'chenoa','emp_k7'=>'chenoa','emp_m20'=>'zataros','emp_i17'=>'f1','emp_j17'=>'bissellc',
-        'emp_h17'=>'f1','emp_ac6'=>'pilotrange','emp_f15'=>'pilotrange','emp_aa18'=>'butifuldzastr','emp_ab21'=>'masetrix','block_g7'=>'zataros',
-        'block_g9'=>'psychodrea','aet_g8'=>'nerfherd315','aet_j12'=>'mattdholloway','aet_f11'=>'f1','aet_d6'=>'azjaguar','aet_a12'=>'psychodrea',
-        'aet_a5'=>'dueldragonoid','emp_g27'=>'uncovery');
-
-    $source_folder = "/disk2/tmp/minecraft/server/worlds/save/";
+    $source_folder = "/data/backup/home/monthly/09/minecraft/server/worlds/save/"; // trailing /
     $dest_folder = "$UMC_PATH_MC/server/bukkit/";
 
     foreach ($lots as $lot => $owner) {
@@ -1853,18 +1837,7 @@ function umc_restore_from_backup(){
 }
 
 function umc_manual_reset_lot() {
-    $lots = array('flat_b14','flat_l12','emp_k3','flat_r5','emp_ae1','emp_af7','flat_j11','flat_a1','emp_p12','emp_af25','flat_j10','emp_v4','emp_c10','emp_s21',
-        'emp_s22','emp_p15','emp_s8','aet_m10','emp_w22','emp_o14','emp_o13','emp_l23','emp_ad5','emp_ab23','emp_i9','emp_r15','flat_l9','flat_k10','emp_w24',
-        'emp_w23','emp_w8','emp_q26','emp_p29','emp_q31','emp_o15','emp_r16','emp_o6','flat_l13','flat_f1','king_v15','emp_k16','emp_q14','aet_k7','emp_o2',
-        'emp_u7','emp_ad15','emp_ab18','emp_l5','emp_h14','emp_y22','emp_s17','emp_t11','king_r6_b','king_r6_a','flat_s16','emp_a25','emp_a1','block_b17',
-        'block_b16','emp_o16','emp_q22','emp_q21','emp_q20','emp_e15','flat_j13','emp_ab3','aet_b10','king_u9_b','king_u10_c','king_t9_b','king_t9_a',
-        'king_t12_c','king_t12_b','king_t12_a','king_t12','king_t11_c','king_t11_b','king_t11_a','king_t11','king_t10_c','king_t10_b','king_t10_a',
-        'king_t10','king_s9_a','king_s12_a','king_s12','king_s11_a','king_s11','king_s10_a','king_s10','king_r16_c','king_m18','king_l22_c','king_l22',
-        'king_l21_a','king_k22','king_d9_b','king_d9_a','king_c9_b','king_c9_a','king_c8_c','king_c8_b','king_c7_c','king_c7_b','king_c6_b','king_b9_c',
-        'king_b9_b','king_b9_a','king_b8_c','king_b8_b','king_b8_a','king_b8','king_b7_c','king_b7_b','king_b7_a','king_b7','king_b6_b','king_b6_a',
-        'king_a8_c','king_a8_b','king_a8_a','king_a8','king_a7_c','king_a7_b','king_a7_a','king_a7','king_a6_b','king_a6_a','flat_b18','flat_a18','emp_t30',
-        'emp_s30','block_g8','aet_k15','aet_j15','emp_r18','king_f1_c','king_f1','king_e2','king_e1_a','king_e1','emp_k30','emp_j30','aet_g1'
-    );
+    $lots = array('flat_b14');
     foreach ($lots as $lot) {
         umc_lot_add_player('_abandoned_', $lot, 1);
     }

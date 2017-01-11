@@ -346,3 +346,7 @@ a .widget .bbp-author-name {
     width: 192px;
     height: 192px;
 }
+/** FAQ header bold when active **/
+.ui-accordion-header-active {
+    font-weight: bold;
+}

@@ -484,21 +484,6 @@ function umc_echo($string, $silent = false) {
 }
 
 
-/* messages a user from the console or code
- * will return false in case the user does not exist or is not online
- */
-function umc_msg_user($username, $message) {
-    global $UMC_USER;
-    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
-    if (!in_array($username, $UMC_USER['online_players'])) {
-        return false;
-    } else {
-        umc_ws_cmd("msg $username $str", 'asConsole');
-    }
-    return true;
-}
-
-
 function umc_header($string = 'Uncovery Minecraft', $silent = false) {
     $bar = "{blue}--{darkcyan}-{cyan}-{green}-=[ {white}$string{green} ]=-{cyan}-{darkcyan}-{blue}--";
     umc_pretty_bar("darkblue", "-", $bar, 52, $silent);

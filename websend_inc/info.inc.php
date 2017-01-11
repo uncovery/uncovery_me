@@ -330,9 +330,9 @@ function umc_info_website() {
     $players = $UMC_USER['online_players'];
 
     if (isset($args[2]) && in_array($args[2], $players)) {
-        $cmd = "msg {$args[2]} Dear {$args[2]}, you have just asked a question that is answered on the website. "
+        $msg = "Dear {$args[2]}, you have just asked a question that is answered on the website. "
         . "Instead of bothering everyone in game, please go there and look for the answer yourself: $UMC_DOMAIN - Thats why we have it;";
-        umc_ws_cmd($cmd, 'asPlayer');
+        umc_mod_message($args[2], $msg);
     } else {
         umc_echo("You have to name an online user to receive the message");
     }
@@ -344,9 +344,9 @@ function umc_info_settler() {
     $players = $UMC_USER['online_players'];
 
     if (isset($args[2]) && in_array($args[2], $players)) {
-        $cmd = "msg {$args[2]} Dear {$args[2]}, welcome to Uncovery Minecraft! "
+        $msg = "Dear {$args[2]}, welcome to Uncovery Minecraft! "
         . "You have so far only gotten Guest-status to look around. If you want to start building,; please click here http://bit.ly/1GUDhgg and follow the instructions!";
-        umc_ws_cmd($cmd, 'asPlayer');
+        umc_mod_message($msg, 'asPlayer');
     } else {
         umc_echo("You have to name an online user to receive the message");
     }

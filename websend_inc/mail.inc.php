@@ -329,12 +329,12 @@ function umc_mail_check($uuid = false) {
     foreach ($mails as $uuid => $data) {
         $user = umc_user2uuid($uuid);
         $count = count($data);
-        $check = umc_msg_user($user, "You have $count new mail(s):");
+        $check = umc_echo("You have $count new mail(s):");
         if (!$check) {
             continue;
         }
         foreach ($data as $id => $mail) {
-            umc_msg_user($user, "{green}ID:{white} $id {green}From: {white}$user{green}:{white}{$mail['title']}");
+            umc_echo("{green}ID:{white} $id {green}From: {white}$user{green}:{white}{$mail['title']}");
             $check = true;
         }
     }
