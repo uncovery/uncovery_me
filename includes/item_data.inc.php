@@ -4086,4 +4086,6 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'dragons_breath' => 'dragon_breath',
     'boat_dark_oak' => 'dark_oak_boat',
     'boat_jungle' => 'jungle_boat',
+    'snow_ball' => 'snowball',
+    'snow_block' => 'snow',    
 );
