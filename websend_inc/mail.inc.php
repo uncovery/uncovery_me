@@ -617,9 +617,12 @@ function umc_mail_web() {
     }
 
     if ($action == 'Reply') {
+        $subject = htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
+        // type comparison to avoid false (ie not found) evaluating to 0;
+        if (strpos($subject, 'Re:') !== 0) { 
+            $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
+        }
         $recipient = filter_input(INPUT_POST, 'sender', FILTER_SANITIZE_STRING);
-
-        $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
         $action = "New Mail";
     } else if ($action == 'Delete' || $action == 'Undelete') {
         $msg_id = filter_input(INPUT_POST, 'msg_id', FILTER_SANITIZE_NUMBER_INT);
