@@ -620,7 +620,7 @@ function umc_mail_web() {
         $subject = htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
         // type comparison to avoid false (ie not found) evaluating to 0;
         if (strpos($subject, 'Re:') !== 0) { 
-            $subject = "Re: ". htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
+            $subject = "Re: ". $subject;
         }
         $recipient = filter_input(INPUT_POST, 'sender', FILTER_SANITIZE_STRING);
         $action = "New Mail";
