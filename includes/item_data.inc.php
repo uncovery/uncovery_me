@@ -3879,6 +3879,12 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/b/ba/Shulker_Shell.png',
     ),
+    'iron_nugget' => array(
+        'id' => 452,
+        'stack' => 64,
+        'avail' => true,
+        'icon_url' => '/e/e7/Iron_Nugget.png',
+    ),    
 
     /*************************************************/
     /*                RECORDS                        */
