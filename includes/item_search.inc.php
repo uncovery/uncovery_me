@@ -29537,28 +29537,28 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'netherbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'nbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'hellbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'deathbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'dbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'hbrick' => array(
-        'item_name' => '',
-        'type' => '',
+        'item_name' => 'nether_brick',
+        'type' => 0,
     ),
     'netherquartz' => array(
         'item_name' => 'quartz',

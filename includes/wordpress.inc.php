@@ -27,11 +27,11 @@
  */
 function umc_wp_get_vars() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USERS, $UMC_USER, $UMC_ENV, $user_email, $user_login;
+    global $UMC_USER, $UMC_ENV, $user_email, $user_login;
 
     if ($UMC_ENV !== 'wordpress') {
-        XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
-        die('umc_wp_get_vars');
+        // XMPP_ERROR_trigger("Tried to get wordpress vars, but environment did not match: " . var_export($UMC_ENV, true));
+        // die();
     }
     get_currentuserinfo();
     if (!isset($user_login) || ($user_login == '') || ($user_email == '')) {
@@ -51,14 +51,14 @@ function umc_wp_get_vars() {
             $UMC_USER['uuid'] = $uuid;
             $UMC_USER['userlevel'] = 'Guest';
         } else { // there is a logged-in user
-            umc_uuid_check_usernamechange($uuid);
+            // we do not check here since we do not know if the username is correct
+            // also we do not want to check at mojang every time.
+            // umc_uuid_check_usernamechange($uuid, $UMC_USER['username']);
             $UMC_USER['email'] = $user_email;
             $UMC_USER['username'] = umc_uuid_getone($uuid, 'username');
             $UMC_USER['uuid'] = $uuid;
             $UMC_USER['userlevel'] = umc_get_uuid_level($uuid);
-            if (strstr($UMC_USER['userlevel'], 'DonatorPlus')) {
-                $UMC_USER['donator'] = 'DonatorPlus';
-            } else if (strstr($UMC_USER['userlevel'], 'Donator')) {
+            if (strstr($UMC_USER['userlevel'], 'Donator')) {
                 $UMC_USER['donator'] = 'Donator';
             } else {
                 $UMC_USER['donator'] = false;
@@ -79,7 +79,7 @@ function umc_wp_get_vars() {
 /**
  * When banning a users, reset the users password in the WP database to something
  * random and log the user out of the system
- * 
+ *
  * @param type $uuid
  */
 function umc_wp_ban_user($uuid) {
@@ -162,24 +162,22 @@ function umc_wp_get_username_from_uuid($uuid) {
 
 /**
  * Get a UUID from the wp_username
+ * optionally for a passed user object
  *
  * @param string $uuid
  * @return string
  */
-function umc_wp_get_uuid_for_currentuser() {
+function umc_wp_get_uuid_for_currentuser($user_obj = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $current_user = wp_get_current_user();
-    $username = $current_user->display_name;
-
-    if ($username == '') {
-        // we have a guest, get UUID from system instead
-        return false;
+    if (!$user_obj) {
+        $current_user = wp_get_current_user();
+    } else {
+        $current_user = $user_obj;
     }
 
-    $username_sql = umc_mysql_real_escape_string($username);
+    $user_id = $current_user->ID;
     $sql = "SELECT meta_value as uuid FROM minecraft.wp_usermeta
-        LEFT JOIN minecraft.wp_users ON ID=user_id
-        WHERE display_name=$username_sql AND meta_key ='minecraft_uuid' LIMIT 1;";
+        WHERE user_id = $user_id AND meta_key ='minecraft_uuid' LIMIT 1;";
     $data = umc_mysql_fetch_all($sql);
     if (count($data) == 0) {
         return false;

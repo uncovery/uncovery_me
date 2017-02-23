@@ -26,15 +26,15 @@
  * The list needs to be maintained so that the function can actually be called. See index_wp for the mechanism.
  */
 global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
-global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS;
+global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_BANNERS;
 
 $UMC_PATH_MC = "/home/minecraft";
 
 // include error handling
 global $XMPP_ERROR;
+require_once('/home/includes/xmpp_error/xmpp_error.php');
 $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
 $XMPP_ERROR['config']['enabled'] = true;
-require_once('/home/includes/xmpp_error/xmpp_error.php');
 
 // include database abstraction
 global $UNC_DB;
@@ -67,6 +67,7 @@ require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_search.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/item_id2name.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
@@ -178,32 +179,10 @@ function umc_sanitize_input(&$value, $type) {
         if (is_null($meta_name)) {
             umc_error("Unknown Metavalue name: {white}$value");
         } else {
-            return $meta_nam;
+            return $meta_name;
         }
     }
 
-}
-
-
-
-function in_arrayi($needle, $haystack) {
-    $found = false;
-    foreach($haystack as $value) {
-        if(strtolower($value) == strtolower($needle)) {
-            $found = true;
-        }
-    }
-    return $found;
-}
-
-// makes sure no redundant date is included in import
-function umc_clean_line($line) {
-    $line = trim($line);
-    if ((substr($line,0,1) =='#') && strlen($line < 2)) {
-	    return false;
-    } else {
-	    return $line;
-    }
 }
 
 // A1 south-west
@@ -216,8 +195,8 @@ function conv_z($z, $map) {
     if (isset($map['top_offset'])) {
         $offset = $map['top_offset'];
     }
-    $y = $z + $offset + $map['max_coord'];
-    return $y;
+    $new_z = $z + $offset + $map['max_coord'];
+    return $new_z;
 }
 
 function conv_x($x, $map) {
@@ -225,8 +204,8 @@ function conv_x($x, $map) {
     if (isset($map['left_offset'])) {
         $offset = $map['left_offset'];
     }
-    $x = $x + $map['max_coord'] + $offset;
-    return $x;
+    $new_x = $x + $map['max_coord'] + $offset;
+    return $new_x;
 }
 
 
@@ -253,44 +232,13 @@ function umc_unpretty_name($name) {
     return strtolower(str_replace(" ","_",$name));
 }
 
-function umc_filemtime_remote($uri) {
-    $uri = parse_url($uri);
-    $handle = @fsockopen($uri['host'],80);
-    if (!$handle) {
-        return false;
-    }
-
-    fputs($handle,"GET $uri[path] HTTP/1.1\r\nHost: $uri[host]\r\n\r\n");
-    $result = 0;
-    while (!feof($handle)) {
-        $line = fgets($handle,1024);
-        if (!trim($line)) {
-            break;
-        }
-
-        $col = strpos($line,':');
-        if ($col !== false) {
-            $header = trim(substr($line,0,$col));
-            $value = trim(substr($line,$col+1));
-            if (strtolower($header) == 'last-modified') {
-                $result = strtotime($value);
-                break;
-            }
-        }
-    }
-    fclose($handle);
-    return $result;
-}
-
-
-function umc_print_truefalse($query) {
-    if ($query) {
-        return 'true';
-    } else {
-        return 'false';
-    }
-}
-
+/**
+ * Generic function to create a random code
+ * Used in stoy plugin and other places.
+ *
+ * @param type $length
+ * @return string
+ */
 function umc_random_code_gen($length = 5) {
     $chars = "abcdefghijkmnopqrstuvwxyz0123456789";
     srand((double)microtime()*1000000);

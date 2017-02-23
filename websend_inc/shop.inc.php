@@ -4,7 +4,7 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['shop'] = array(
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_banned' => 'umc_shop_cleanout_olduser', 'user_inactive' => 'umc_shop_cleanout_olduser'),
     'default' => array(
         'help' => array(
             'title' => 'Virtual Shop',
@@ -367,6 +367,9 @@ function umc_do_find() {
             // catch all undefined args
             default:
                 if (is_numeric($arg)) {
+                    if (!isset($UMC_DATA_ID2NAME[$arg])) {
+                        umc_error("Could not find this item");
+                    }
                     $arg = $UMC_DATA_ID2NAME[$arg];
                 }
 
@@ -474,18 +477,21 @@ function umc_do_offer_internal($deposit) {
     $inv = $UMC_USER['inv'];
 
     if ($deposit) {
+        if (!isset($args[2])) {
+            umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
+        }
 	$id = $args[2];
 	array_splice($args, 2, 1);
 
-    if (is_numeric($id)) {
+        if (is_numeric($id)) {
             $sql = "SELECT * from minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' and id='$id'";
             $dep_data = umc_mysql_fetch_all($sql);
-    	if (count($dep_data) < 1) {
-                umc_error("You have no such deposit ID");
-    	}
-    } else {
-        umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
-    }
+            if (count($dep_data) < 1) {
+                    umc_error("You have no such deposit ID");
+            }
+        } else {
+            umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
+        }
 
    	$row = $dep_data[0];
 	$item_name = $row['item_name'];
@@ -616,7 +622,7 @@ function umc_do_offer_internal($deposit) {
 	}
         umc_echo("{green}[+]{gray} You now have {yellow}$sum {$item['full']}{gray} in the shop (ID: $posted_id).");
         if (!$silent) {
-            umc_announce("Offer: {yellow}$sum {$item['full']}{darkgray} "
+            umc_mod_broadcast("Offer: {yellow}$sum {$item['full']}{darkgray} "
             . "@ {cyan}{$price}/pc{darkgray}, ID {gray}{$posted_id} from {gold}$player");
         }
     } else {
@@ -711,16 +717,16 @@ function umc_do_buy_internal($to_deposit = false) {
         } else {
             umc_echo("{green}[+] {gray}Buying {yellow}$amount {$item['full']}{gray} for {cyan}{$row['price']}{gray} each from {gold}$seller");
         }
-        $balance = umc_money_check($player);
+        $balance = umc_money_check($uuid);
         if ($balance < $sum) {
             umc_echo("{red}[!]{gray} Insufficient funds ({white}$sum{gray} needed).;{purple}[?]{white} Why don't you vote for the server and try again?");
         } else {
             $new_balance = $balance - $sum;
-            if($do_check) {
+            if ($do_check) {
                 umc_echo("{white}[?]{gray} You would have {green}$new_balance Uncs{gray} remaining after spending {cyan}$sum",true);
                 return;
             }
-	    if(!$to_deposit) {
+	    if (!$to_deposit) {
             	umc_check_space($amount, $item['item_name'], $item['type']);
 	    }
             umc_echo("{green}[+]{gray} You have {green}$new_balance Uncs{gray} remaining after spending {cyan}$sum");
@@ -732,7 +738,7 @@ function umc_do_buy_internal($to_deposit = false) {
             // give goods to player1
             $leftover = umc_checkout_goods($id, $amount, 'stock', false, $to_deposit);
             $msg = "$player bought $amount {$item['name']} for {$row['price']} Uncs/pcs (= $sum Uncs)! $leftover left in stock!;";
-            umc_msg_user($seller, $msg);
+            umc_mod_message($seller, $msg);
         }
     } else {
         umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp buy;");
@@ -750,20 +756,20 @@ function umc_do_search() {
         umc_error("{red}You need at least 3 letters to search for!;");
     }
 
-    $term = $args[2];
+    $term_raw = $args[2];
     $pageindex = 1;
 
     // check for multiple search terms, or if it is just a pagination index
     if (isset($args[3])) {
         if(!is_numeric($args[3])){
-            umc_error("You can search only for one term such as '$term', not for '$term {$args[3]}'!");
+            umc_error("You can search only for one term such as '$term_raw', not for '$term_raw {$args[3]}'!");
         } else {
             $pageindex = ($args[3]);
         }
     }
 
     // cast to lowercase so case doesn't remove results
-    $term = strtolower($term);
+    $term = strtolower($term_raw);
 
     // chat formatting of results
     umc_header();
@@ -771,7 +777,6 @@ function umc_do_search() {
     umc_echo("{green}Item name => {blue} Alias{grey},{blue}...");
 
     $finds = array();
-    $count = 0;
 
     // populate array with found results
     foreach ($ITEM_SEARCH as $name => $data) {
@@ -783,7 +788,7 @@ function umc_do_search() {
     // check for broadform too many results
     $len = count($finds);
     if ($len > $max) {
-        umc_error("Too many results ($len)! Please see http://uncovery.me/server-access/shop-manager/?page=goods");
+        umc_error("Too many results ($len)! Please see https://uncovery.me/server-access/shop-manager/?page=goods");
     }
 
     // return results, paginated if required
@@ -965,7 +970,7 @@ function umc_do_sell_internal($from_deposit=false) {
 
     // message recipient
     $msg = "$player sold you $amount {$request_item['full']} per your request, check your /depotlist!;";
-    umc_msg_user($recipient, $msg);
+    umc_mod_message($recipient, $msg);
 
     // record logfile
     umc_log('shop', 'sell_on_request', "$player sold $amount of {$request_item['full_clean']} to $recipient (ID: {$request['id']})");
@@ -1097,7 +1102,7 @@ function umc_do_request() {
         umc_echo("{green}[$]{white} Your account has been credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
     }
     umc_money($player, false, $cost);
-    umc_announce("{gold}$player{gray} is {red}requesting to buy {yellow}$sum$meta_txt{green} "
+    umc_mod_broadcast("{gold}$player{gray} is {red}requesting to buy {yellow}$sum$meta_txt{green} "
         . "{$item['full']}{darkgray} @ {cyan}{$price}{gray} each{darkgray}, shop-id {gray}{$posted_id}");
 }
 
@@ -1109,6 +1114,7 @@ function umc_do_request() {
  */
 function umc_shop_cleanout_olduser($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    umc_log('shop', 'reset', "cleaning shop for user $uuid");
     // delete all requests
     $requests_sql = "DELETE FROM minecraft_iconomy.request WHERE uuid='$uuid';";
     umc_mysql_query($requests_sql, true);

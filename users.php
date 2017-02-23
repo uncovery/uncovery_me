@@ -63,6 +63,21 @@ function umc_users_by_world($world) {
     return $out;
 }
 
+/**
+ * checks if a user is active or not
+ *
+ * @param type $uuid
+ */
+function umc_users_is_active($uuid) {
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT lot_count FROM minecraft_srvr.UUID WHERE UUID=$sql_uuid AND lot_count > 0;";
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) > 0) {
+        return true;
+    }
+    return false;
+}
+
 
 /**
  * Retrieve the userlevel from a uuid
@@ -254,21 +269,25 @@ function umc_users_active_lastlogin_and_level() {
 }
 
 /**
- * returns an array of all players that own a lot right now.
+ * returns a list of all users that own lots.
+ * The output can be either "name" or "counter" to output either
+ * the username or the lot count. The key is always the UUID
  *
+ * @param type $output
  * @return type
  */
-function umc_get_active_members() {
+function umc_get_active_members($output = 'name') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $active_members = array();
-    $sql = "SELECT user.uuid as user_uuid, lower(username) as name FROM minecraft_worldguard.region_players
+    $sql = "SELECT user.uuid as user_uuid, lower(username) as name, count(region_players.region_id) as counter
+        FROM minecraft_worldguard.region_players
         LEFT JOIN minecraft_worldguard.user ON user_id=id
         LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
         WHERE owner=1 AND user.uuid IS NOT NULL AND username IS NOT NULL
         GROUP BY user_uuid ORDER BY name";
     $data = umc_mysql_fetch_all($sql);
     foreach ($data as $row) {
-        $active_members[$row['user_uuid']] = $row['name'];
+        $active_members[$row['user_uuid']] = $row[$output];
     }
     return $active_members;
 }
@@ -424,10 +443,10 @@ function umc_check_user($username) {
     $username_quoted = umc_mysql_real_escape_string($username);
     // UUID
     if (strlen($username) > 17) {
-        $uuid = true;
+        $uuid = $username;
         $sql = "SELECT display_name FROM minecraft.wp_usermeta
             LEFT JOIN minecraft.wp_users ON ID=user_id
-            WHERE meta_value LIKE $username_quoted;";
+            WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $username_quoted;";
     } else {
         // Username
         $uuid = false;
@@ -474,6 +493,15 @@ function umc_user_email($username) {
 }
 
 // get all user lots and the image link
+/**
+ * this function is deprecated and moved to the lots plugin
+ * IF you find this function to be used anywhere, please point to the new function instead.
+ * Also please do not update/change this, instead use the new function in lot.inc.php
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
 function umc_user_getlots($uuid, $world = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // worldguard stores everything in lower case.
@@ -513,10 +541,8 @@ function umc_user_countlots($user) {
         FROM minecraft_worldguard.`region_players`
         LEFT JOIN minecraft_worldguard.user ON user_id=user.id
         WHERE owner=1 AND user.uuid='$uuid';";
-    $rst = umc_mysql_query($sql);
-    $row = umc_mysql_fetch_array($rst);
-    umc_mysql_free_result($rst);
-    $out = $row['counter'];
+    $D = umc_mysql_fetch_all($sql);
+    $out = $D[0]['counter'];
     return $out;
 }
 
@@ -622,9 +648,7 @@ function umc_user_ban($user, $reason) {
     $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `uuid`) VALUES ('$username','$reason', '$admin', '$uuid');";
     umc_mysql_query($sql, true);
     // remove shop inventory
-    umc_shop_cleanout_olduser($uuid);
-    // remove from teamspeak
-    umc_ts_clear_rights($uuid);
+    umc_plugin_eventhandler('user_banned', $uuid);
     umc_wp_ban_user($uuid);
 
     umc_log('mod', 'ban', "$admin banned $username/$uuid because of $reason");
@@ -690,14 +714,14 @@ function umc_user_directory() {
             $O[$world] .= $data['image'];
         }
 
-        $donator_level = umc_users_donators($uuid);
-        if ($donator_level > 12) {
+        $donator_level = umc_userlevel_donation_remains($uuid);
+        if (!$donator_level) {
+            $donator_str = "Not a donator";
+        } else if ($donator_level > 12) {
             $donator_str = 'More than 1 year';
         } else if ($donator_level) {
             $donator_level_rounded = round($donator_level, 1);
             $donator_str = "$donator_level_rounded Months";
-        } else {
-            $donator_str = "Not a donator";
         }
         $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
 
@@ -777,9 +801,10 @@ function umc_user_directory() {
             . "<th>Lots</th>"
             . "<th>Online min/day</th>"
             . "<th>Online hrs</th>"
+            . "<th>Voting ratio</th>"
             . "</thead>\n<tbody>\n";
 
-        $sql = "SELECT username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
+        $sql = "SELECT UUID.uuid as uuid, username, DATEDIFF(NOW(),firstlogin) as registered_since, parent as userlevel, count(owner) as lot_count, onlinetime, DATEDIFF(NOW(), lastlogin) as days_offline
             FROM minecraft_srvr.UUID
             LEFT JOIN minecraft_srvr.permissions_inheritance ON UUID.uuid=child
             LEFT JOIN minecraft_worldguard.user ON UUID.uuid = user.uuid
@@ -796,7 +821,8 @@ function umc_user_directory() {
 
         while ($row = umc_mysql_fetch_array($rst)) {
             $days_offline = $row['days_offline'];
-            $settler_levels = array('Settler', 'SettlerDonator', 'SettlerDonatorPlus');
+            $vote_stats = umc_lottery_stats($row['uuid']);
+            $settler_levels = array('Settler', 'SettlerDonator');
             if (in_array($row['userlevel'], $settler_levels) && $row['onlinetime'] >= 60) {
                 umc_promote_citizen(strtolower($row['username']), $row['userlevel']);
             }
@@ -817,13 +843,14 @@ function umc_user_directory() {
             $online_total = round($row['onlinetime'] / 60 / 60);
             $icon_url = umc_user_get_icon_url($row['username']);
             $out .= "<tr>"
-                . "<td><img title='{$row['username']}' src='$icon_url' alt=\"{$row['username']}\"> <a href=\"?u={$row['username']}\">{$row['username']}</a></td>"
+                . "<td><img title='{$row['username']}' src='$icon_url' alt=\"{$row['username']}\">&nbsp;<a href=\"?u={$row['username']}\">{$row['username']}</a></td>"
                 . "<td>{$row['userlevel']}</td>"
                 . "<td class='numeric_td'>{$row['registered_since']}</td>"
                 . "<td class='numeric_td'>$days_offline</td>"
                 . "<td class='numeric_td'>{$row['lot_count']}</td>"
                 . "<td class='numeric_td'>$avg_online</td>"
                 . "<td class='numeric_td'>$online_total</td>"
+                . "<td class='numeric_td'>$vote_stats</td>"
                 . "</tr>\n";
         }
         $out .= "</tbody>\n</table>\n";
@@ -997,7 +1024,7 @@ function umc_get_online_hours($user) {
 /**
  * promotes a user to Citizen if applicable
  *
- * @param type $user_login
+ * @param type $username
  * @param type $userlevel
  * @return type
  */
@@ -1007,7 +1034,7 @@ function umc_promote_citizen($username, $userlevel = false) {
         $userlevel = umc_get_userlevel($username);
     }
     $lower_username = strtolower($username);
-    $settlers = array('Settler', 'SettlerDonator', 'SettlerDonatorPlus');
+    $settlers = array('Settler', 'SettlerDonator');
     if (in_array($userlevel, $settlers)) {
         /*
         $age = umc_get_lot_owner_age('array', $lower_login);
@@ -1029,9 +1056,6 @@ function umc_promote_citizen($username, $userlevel = false) {
             } else if ($userlevel == 'SettlerDonator') {
                 umc_exec_command("pex user $uuid group set CitizenDonator");
                 umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to CitizenDonator (online: $online_hours)");
-            } else if ($userlevel == 'SettlerDonatorPlus') {
-                umc_exec_command("pex user $uuid group set CitizenDonatorPlus");
-                umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to CitizenDonatorPlus (online: $online_hours)");
             } else {
                 XMPP_ERROR_trigger("$username / $uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
             }
@@ -1099,6 +1123,9 @@ function umc_promote_citizen($username, $userlevel = false) {
 
     $karma = umc_getkarma($user['uuid'], true);
     $user['Karma'] = $karma;
+
+    $vote_ratio = umc_lottery_stats($user['uuid']);
+    $user['Vote Ratio'] = $vote_ratio;
 
     $lots = umc_user_getlots($uuid);
     $display_lots = array();

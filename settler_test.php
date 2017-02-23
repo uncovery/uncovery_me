@@ -47,7 +47,7 @@ function umc_settler_new() {
             'minimaps' => false,
             'xray_and_cheats' => true,
             'not_reading_the_website' => true,
-            'swearing' => true,
+            'excessive_swearing' => true,
             'walls_around_your_lot' => true,
             'shaders' => false,
         ),
@@ -59,7 +59,7 @@ function umc_settler_new() {
     $email = $UMC_USER['email'];
 
     if ($userlevel != 'Guest') {
-        $out .= "You are not a Guest and can use the <a href=\"http://uncovery.me/server-access/lot-manager/\">Lot manager</a> to get a lot!";
+        $out .= "You are not a Guest and can use the <a href=\"https://uncovery.me/server-access/lot-manager/\">Lot manager</a> to get a lot!";
     }
 
     if (umc_user_is_banned($uuid)) {
@@ -407,7 +407,7 @@ function umc_settler_new() {
                 $sql = "UPDATE minecraft_srvr.UUID SET userlevel='Settler' WHERE UUID='{$UMC_USER['uuid']}';";
                 umc_mysql_query($sql);
                 umc_exec_command('pex reload');
-                umc_exec_command("ch qm u Congrats $player for becoming Settler!");
+                umc_mod_broadcast("Congrats $player for becoming Settler!");
                 XMPP_ERROR_send_msg("$userlevel $player got promoted with command " . $cmd);
                 umc_log('settler_test', 'promotion', "$player ({$UMC_USER['uuid']})was promoted to settler (new test)");
                 $headers = "From: minecraft@uncovery.me\r\n" .
@@ -415,7 +415,7 @@ function umc_settler_new() {
                     'X-Mailer: PHP/' . phpversion();
                 $subject = "[Uncovery Minecraft] Settler applicaton";
                 $mailtext = "The user: $player (email: $email) was promoted to Settler and got lot $lot.\n\n";
-                $check = mail('minecraft@uncovery.me', $subject, $mailtext, $headers);
+                $check = mail('minecraft@uncovery.me', $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
                 if (!$check) {
                     XMPP_ERROR_trigger("The settler promotion email could not be sent!");
                 }

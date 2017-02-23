@@ -32,12 +32,12 @@
  * @return int
  */
 function umc_db_take_item($table, $id, $amount, $player) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // $uuid = umc_uuid_getone($player, 'uuid');
-
-    $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
-    $amount_row = $D[0];
-    $newstock = $amount_row['amount'] - $amount;
     if ($table == 'stock') {
+        $D = umc_mysql_fetch_all("SELECT amount FROM minecraft_iconomy.$table WHERE id='$id';");
+        $amount_row = $D[0];
+        $newstock = $amount_row['amount'] - $amount;
         if ($newstock == 0) {
             $sql = "DELETE FROM minecraft_iconomy.stock WHERE id='$id';";
             umc_log('shop', 'stock_adjust', "Cleared all content from stock for ID $id by withdrawing {$amount_row['amount']}");
@@ -46,15 +46,29 @@ function umc_db_take_item($table, $id, $amount, $player) {
             umc_log('shop', 'stock_adjust', "Changed stock level for ID $id from {$amount_row['amount']} to $newstock");
         }
     } else { // take from deposit
+        $D = umc_mysql_fetch_all("SELECT amount, sender_uuid FROM minecraft_iconomy.$table WHERE id='$id';");
+        $amount_row = $D[0];
+        $newstock = $amount_row['amount'] - $amount;
         if ($newstock == 0) {
-            $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
-            umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
+            $sid = $amount_row['sender_uuid'];
+            // $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+            // if not a player to player transaction
+            if ($sid !== 'reusable-0000-0000-0000-000000000000' && strpos($sid, '-0000-0000-000000000000')) {
+                $sql = "DELETE FROM minecraft_iconomy.deposit WHERE id='$id';";
+            } else {
+                $sql = "UPDATE minecraft_iconomy.deposit
+                    SET sender_uuid='reusable-0000-0000-0000-000000000000', damage=0, amount=0, meta='', item_name='', date=NOW()
+                    WHERE id='$id' LIMIT 1";
+                //$sql = "UPDATE minecraft_iconomy.`deposit` SET `amount`=amount+'$amount' WHERE `id`={$row['id']} LIMIT 1;";
+                umc_log('shop', 'deposit_adjust', "Cleared all content from deposit for ID $id by withdrawing {$amount_row['amount']}");
+            }
         } else {
             $sql = "UPDATE minecraft_iconomy.deposit SET amount=$newstock WHERE id='$id';";
             umc_log('shop', 'deposit_adjust', "Changed deposit level for ID $id from {$amount_row['amount']} to $newstock");
         }
     }
-    umc_mysql_query($sql,true);
+
+    umc_mysql_execute_query($sql);
 
     // check stock levels
 
@@ -91,6 +105,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
             }
             $out .= "$meta_name $lvl";
         } else if (isset($UMC_BANNERS['colors'][$meta_name])) {
+            $meta_name = 'various patterns & colors, ';
             $out .= count($lvl) . "-Layered";
         } else { // some enchantments are stored wrong, with lowercase names instead of codes
             // this should not be needed anymore once there are no lowercase enchantments in the deposit
@@ -116,17 +131,17 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
 
 /**
  * returns full name of an item, depending on the environment
- * @param string $item_name
+ * @param string $item_name_raw
  * @param int $item_data
  * @param string $meta
  */
-function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
-    
+function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
+
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // cast part capitalized text to lowercase.
-    $item_name = strtolower($item_name);
+    $item_name = strtolower($item_name_raw);
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
@@ -137,7 +152,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
             return false;
         }
     }
-    
+
     // if item name is not set at all
     if (!isset($UMC_DATA[$item_name])) {
         XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text");
@@ -151,7 +166,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
     $damage_spacer = '';
     $mc_name = $item_name;
     $icon_ext = strtolower(pathinfo($item_arr['icon_url'], PATHINFO_EXTENSION));
-    
+
     if (isset($item_arr['damage'])) {
         $damage = umc_goods_damage_calc($item_data, $item_arr['damage']);
         if ($damage) {
@@ -162,7 +177,7 @@ function umc_goods_get_text($item_name, $item_data = 0, $meta = '') {
         $mc_name = $item_arr['subtypes'][$item_data]['name'];
         $icon_ext = strtolower(pathinfo($item_arr['subtypes'][$item_data]['icon_url'], PATHINFO_EXTENSION));
     }
-    
+
     $nice_name = umc_pretty_name($mc_name);
 
     $icon_file = "icons/$mc_name.$icon_ext";

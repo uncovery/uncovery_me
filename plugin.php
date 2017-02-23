@@ -22,8 +22,7 @@
  */
 
 /**
- * This cuntion iterates the plugin folder and includes
- * all the modules in there.
+ * handles the inclusion of all available plugins in the folder
  */
 function umc_plg_include() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -41,6 +40,14 @@ function umc_plg_include() {
     }
 }
 
+/**
+ * looks for the existance of a called command in plugin definitions
+ *
+ * @global type $WS_INIT
+ * @global type $UMC_USER
+ * @param type $name
+ * @return type
+ */
 function umc_wsplg_find_command($name) {
     global $WS_INIT, $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -66,7 +73,15 @@ function umc_wsplg_find_command($name) {
    return $command;
 }
 
-
+/**
+ * handles the execution of plugin commands
+ *
+ * @global type $UMC_USER
+ * @global type $WS_INIT
+ * @global type $UMC_SETTING
+ * @param type $module
+ * @return boolean
+ */
 function umc_wsplg_dispatch($module) {
     global $UMC_USER, $WS_INIT, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -84,29 +99,35 @@ function umc_wsplg_dispatch($module) {
     }
 
     if (isset($command['function']) && function_exists($command['function'])) {
-        if(isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
-            
+        if (isset($command['security']) && !in_array($player, $admins)) { // Are there security restrictions?
+
             // restricts command to the named worlds
-            if(isset($command['security']['worlds'])) {
-                if(!in_array($UMC_USER['world'], $command['security']['worlds'])) {
+            if (isset($command['security']['worlds'])) {
+                // XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world']);
+                if (!in_array($UMC_USER['world'], $command['security']['worlds'])) {
+                    //XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world'] . " failed!");
                     umc_error("{red}That command is restricted to the following worlds: {yellow}".join(", ",$command['security']['worlds']));
+                } else {
+                    // XMPP_ERROR_send_msg("$player Checking for world:" . $UMC_USER['world'] . " did NOT fail!");
                 }
             }
 
             // restricts command to a minimum user level or higher
-            if(isset($command['security']['level'])) {
-                if(!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
+            if (isset($command['security']['level'])) {
+                if (!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($command['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $command['security']['users'])) {
                     umc_error('{red}That command is restricted');
                 }
             }
-            
+
+        } else {
+            XMPP_ERROR_trace("test", $command);
         }
         $function = $command['function'];
         $function();
@@ -116,6 +137,14 @@ function umc_wsplg_dispatch($module) {
     }
 }
 
+/**
+ * show the in-game help for a plugin
+ *
+ * @global type $UMC_USER
+ * @global type $WS_INIT
+ * @param type $args
+ * @return boolean
+ */
 function umc_show_help($args = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $WS_INIT;
@@ -149,21 +178,21 @@ function umc_show_help($args = false) {
             umc_echo($command['help']['long'], true);
             foreach ($WS_INIT[$command_name] as $cmd => $cmd_data) {
                 if (!in_array($cmd, $non_commands)) {
-                    
+
                     // This command is restricted to a user level or higher
                     if (isset($cmd_data['security']['level']) && $player != 'uncovery') {
                         if (!umc_rank_check($userlevel, $cmd_data['security']['level'])) {
                             continue;
                         }
                     }
-                    
+
                     // restricts command to specific users (for testing / debug / collaboration)
                     if(isset($cmd_data['security']['users'])) {
                         if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
                             continue;
                         }
                     }
-                    
+
                     if (!isset($cmd_data['top']) || !$cmd_data['top']) {
                         $plugin_name = $command_name . ' ';
                     }
@@ -196,21 +225,21 @@ function umc_show_help($args = false) {
         }
     } else { // Show general help.
         foreach ($WS_INIT as $plugin => $cmd_data) {
-            
+
             // This command is restricted to a user level or higher
             if (isset($cmd_data['default']['security']['level']) && $player != 'uncovery') {
                 if(!umc_rank_check($userlevel, $cmd_data['default']['security']['level'])) {
                     continue;
                 }
             }
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($cmd_data['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $cmd_data['security']['users'])) {
                     continue;
                 }
             }
-            
+
             umc_echo("{green}/$plugin{gray} - " . $cmd_data['default']['help']['short'], true);
         }
         umc_echo("{gray}Use {yellow}/helpme <command>{gray} for more details.", true);
@@ -220,7 +249,9 @@ function umc_show_help($args = false) {
 }
 
 /**
- * Displays the help for all plugins or one specific one on the website.
+ * Displays the help for all plugins or one specific one in HTML for use on the website.
+ * TODO: The css for this should be improved and moved into a separate CSS file where
+ * all plugin CSS are stored.
  *
  * @global type $WS_INIT
  * @global type $UMC_USER
@@ -258,14 +289,14 @@ function umc_plugin_web_help($one_plugin = false) {
                 continue;
             }
             $sec = '';
-            
+
             // restricts command to specific users (for testing / debug / collaboration)
             if(isset($value['security']['users'])) {
                 if(!in_array($UMC_USER['username'], $value['security']['users'])) {
                     continue;
                 }
             }
-            
+
             if (isset($value['security']['level'])) {
                 if(!umc_rank_check($userlevel, $value['security']['level'])) {
                     continue;
@@ -273,7 +304,7 @@ function umc_plugin_web_help($one_plugin = false) {
                     $sec = "\n<br><smaller>Required Userlevel: {$value['security']['level']}</smaller>";
                 }
             }
-            
+
             $args = '';
             if (isset($value['help']['args'])) {
                 $args = htmlentities($value['help']['args']);
@@ -300,4 +331,76 @@ function umc_plugin_web_help($one_plugin = false) {
     return $out;
 }
 
-?>
+/**
+ * Central event handler. Any function can trigger an event of name $event by calling this
+ * function and passing optional parameters. This function then iterates all plugins and
+ * looks if there is one that recognizes the event. The plugin that recognize the event has
+ * another function name configured and this event handler then executes the plugins' function
+ * and passes the parameters to it. The plugin function can then return the result back to whatever
+ * triggered the event.
+ *
+ * We do not support a plugin to have several ections for the same event. If there are several things
+ * that need to happen for one event and one plugin, this needs to be handled in the plugin itself.
+ *
+ * @global type $WS_INIT
+ * @param string $event event name
+ * @param array $parameters event parameters
+ * @return misc
+ */
+function umc_plugin_eventhandler($event, $parameters = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $WS_INIT;
+    // define list of available events for security, it's questionable if we need this list.
+    $available_events = array(
+        // server events
+        'server_pre_reboot',
+        'server_reboot',
+        'server_post_reboot',
+        // user events
+        'user_delete',
+        'user_banned',
+        'user_registered',
+        'user_inactive',
+        // websend events, do not have parameters usually since
+        // websend sends stuff via $UMC_USER
+        'PlayerPreLoginEvent',
+        'PlayerJoinEvent',
+        'PlayerQuitEvent',
+        'PlayerKickEvent',
+        'PlayerChangedWorldEvent',
+        'PlayerGameModeChangeEvent',
+        'PlayerPortalEvent',
+        'PlayerRespawnEvent',
+        'PlayerDeathEvent',
+        'EntityDeathEvent',
+        'AsyncPlayerPreLoginEvent',
+        // websend custom events
+        'ws_user_init_xp',
+    );
+    if (!in_array($event, $available_events)) {
+        XMPP_ERROR_trigger("received incoming event $event which is not available");
+        // return false;
+    }
+    $return_vars = array();
+    foreach ($WS_INIT as $data) {
+        // check if there is a setting for the current event
+        if (($data['events'] != false) && (isset($data['events'][$event]))) {
+            // execute function
+            $function = $data['events'][$event];
+            if (!is_string($function) || !function_exists($function)) {
+                XMPP_ERROR_trigger("plugin eventhandler failed event $event because $function is not a valid function");
+                return false;
+            }
+            // execute the function, optionally with parameters
+            if ($parameters) {
+                //$params_txt = implode(", ", $parameters);
+                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with function $function and parameters $parameters");
+                $return_vars[] = $function($parameters);
+            } else {
+                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
+                $return_vars[] = $function();
+            }
+        }
+    }
+    return $return_vars;
+}

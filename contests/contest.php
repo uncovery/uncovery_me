@@ -4,16 +4,16 @@ $voting_blacklist = array(); //people that cannot vote
 
 $can_vote = array(
     'Owner' => 10,
-    'ElderDonatorPlus' => 1, 'ElderDonator' => 1, 'Elder' => 1,
-    'MasterDonatorPlus' => 0.65, 'MasterDonator' => 0.65, 'Master' => 0.65,
-    'Designer' => 0.55, 'DesignerDonator' => 0.55, 'DesignerDonatorPlus' => 0.55,
-    'ArchitectDonatorPlus' => 0.45, 'ArchitectDonator' => 0.45, 'Architect' => 0.45,
-    'CitizenDonatorPlus' => 0.3, 'CitizenDonator' => 0.3, 'Citizen' => 0.3,
-    'SettlerDonatorPlus' => 0.2, 'SettlerDonator' => 0.2, 'Settler' => 0.2,
+    'ElderDonator' => 1, 'Elder' => 1,
+    'MasterDonator' => 0.65, 'Master' => 0.65,
+    'Designer' => 0.55, 'DesignerDonator' => 0.55,
+    'ArchitectDonator' => 0.45, 'Architect' => 0.45,
+    'CitizenDonator' => 0.3, 'Citizen' => 0.3,
+    'SettlerDonator' => 0.2, 'Settler' => 0.2,
     'Guest' => 0,
 );
 
- 
+
 remove_filter( 'the_content', 'wpautop' );
 $contest_db = mysql_select_db('minecraft_srvr');
 
@@ -27,12 +27,12 @@ if(!$UMC_USER) {
 
 function umc_contest() {
     $out = "<div id=\"contests\"><div id=\"contest_menu\">
-        Show contests: <a href=\"?action=list_contests&amp;type=current\">Open</a> 
+        Show contests: <a href=\"?action=list_contests&amp;type=current\">Open</a>
                      | <a href=\"?action=list_contests&amp;type=voting\">Now Voting</a>
                      | <a href=\"?action=list_contests&amp;type=closed\">Closed</a>
                      | <a href=\"?action=list_contests&amp;type=all\">All</a>
     <div id='holder'>";
-    
+
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
     } else if (isset($_GET['action'])) {
@@ -40,8 +40,8 @@ function umc_contest() {
     } else {
         $action = 'list_contests';
     }
-     
-    
+
+
     if (!function_exists('umc_'. $action)) {
         echo "ERROR, function $action not found!";
     } else {
@@ -73,7 +73,7 @@ function umc_list_contests() {
             $sql = "SELECT * FROM contest_contests WHERE status='active'";
             $contest_header = "Current Contests:";
     }
-    
+
     mysql_select_db('minecraft_srvr');
     $rst = mysql_query($sql);
     $ret = '<div id="contest_header" class="header">'.$contest_header.'</div>';
@@ -102,7 +102,7 @@ function umc_list_contests() {
             $admin_html .= ' | <a href="?action=resume_contest&amp;id='.$row['id'].'" class="toggle_contest">Resume</a> ';
         }
         $admin_html .= "</div><hr>";
-        
+
         $ret .= '<div class="contest">'. "\n". '<div class="contest_title"><a href="?action=show_contest&amp;type='
             . $row['id'].'">'.$pre_title.$row['title'].'</a></div>'.  "\n";
         $deadline_text = "";
@@ -118,7 +118,7 @@ function umc_list_contests() {
         }
         //$ret .= '</div>';
     }
-    
+
     // create new contest
     if (umc_is_admin()) {
             $ret .= '<div id="new_contest_form">Create a new contest:<br />'
@@ -142,9 +142,9 @@ function umc_create_contest() {
     if (!umc_is_admin()) {
         die("You don't have permission to do that.");
     }
-    
+
     $voting_categories = "Looks|Realism|Fun|Usability|Innovation";
-    
+
     $post_vals = array($title, $desc, $max_entries, $deadline, $type, $x, $y, $z);
     foreach ($post_vals as $val) {
         $$val = $val;

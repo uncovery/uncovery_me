@@ -31,7 +31,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'long' => "This command allows you to warp to pre-defined locations (homes). "
                 . "It also allows you to buy additional homes locations, depending on your userlevel. "
                 . "Home prices increase with each additional home. We use the formula: cost = (no_of_homes ^ 3) x 10.", // a long add-on to the short  description
-            ),
+        ),
     ),
     'home' => array( // this is the base command if there are no other commands
         'help' => array(
@@ -40,7 +40,7 @@ $WS_INIT['homes'] = array(  // the name of the plugin
             'args' => '<home name>',
         ),
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
         ),
         'function' => 'umc_home_warp',
         'top' => true,
@@ -53,25 +53,26 @@ $WS_INIT['homes'] = array(  // the name of the plugin
         ),
         'function' => 'umc_home_buy',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
             // 'level'=>'Owner',
         ),
     ),
     'update' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Update the location of a home (/sethome also works)',
-            'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>",
-            'args' => '<home name>',
+            'long' => "This will update the position of an existing home. Alternatively to /homes update <name> you can also use /sethome <name>."
+                . " You can rename the home at the same time by optionally adding a new name after the current name.",
+            'args' => '<home name> [new name]',
         ),
         'function' => 'umc_home_update',
         'security' => array(
-            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands'),
+            'worlds' => array('city', 'empire', 'kingdom', 'skylands', 'aether', 'nether', 'flatlands', 'draftlands'),
         ),
     ),
     'rename' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Change the name of a home',
-            'long' => "This will update the name of an existing home.",
+            'long' => "This will change the name of an existing home.",
             'args' => '<home name> <new name>',
         ),
         'function' => 'umc_home_rename',
@@ -110,16 +111,17 @@ $WS_INIT['homes'] = array(  // the name of the plugin
      */
 );
 
-$UMC_SETTING['max_homes'] = array(
+$UMC_SETTING['homes']['max_homes'] = array(
     'Guest' => 1,
-    'Settler' => 6, 'SettlerDonator' => 6, 'SettlerDonatorPlus' => 6,
-    'Citizen' => 8, 'CitizenDonator' => 8, 'CitizenDonatorPlus' => 8,
-    'Architect'  => 10, 'ArchitectDonator' => 10, 'ArchitectDonatorPlus' => 10,
-    'Designer' => 15, 'DesignerDonator' => 15, 'DesignerDonatorPlus' => 15,
-    'Master' => 20, 'MasterDonator' => 20, 'MasterDonatorPlus' => 20,
-    'Elder' => 50, 'ElderDonator' => 50, 'ElderDonatorPlus' => 50,
+    'Settler' => 6, 'SettlerDonator' => 6,
+    'Citizen' => 8, 'CitizenDonator' => 8,
+    'Architect'  => 10, 'ArchitectDonator' => 10,
+    'Designer' => 15, 'DesignerDonator' => 15,
+    'Master' => 20, 'MasterDonator' => 20,
+    'Elder' => 50, 'ElderDonator' => 50,
     'Owner' => 100,
 );
+$UMC_SETTING['homes']['icon_url'] = "https://uncovery.me/admin/img/home_icon.png";
 
 // returns information about the players homes
 function umc_home_check() {
@@ -130,7 +132,7 @@ function umc_home_check() {
 
     $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
-    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
     $bank = umc_money_check($UMC_USER['uuid']);
 
     // output the return values to the chat window
@@ -153,7 +155,6 @@ function umc_home_warp() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
 
-    $playerworld = $UMC_USER['world'];
     $args = $UMC_USER['args'];
     $player = $UMC_USER['username'];
 
@@ -169,11 +170,11 @@ function umc_home_warp() {
             $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' LIMIT 1;";
         }
     } else {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
-        $home_count = umc_home_count($name);
+        $home_count = umc_home_count(trim($args[2]));
         if ($home_count < 1) {
             umc_error("{red}You do not have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
         $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' AND name=$name;";
     }
 
@@ -201,7 +202,7 @@ function umc_home_add($uuid, $name, $force = false){
     // add a prefix string to lottery home name to prevent conflict
     if (!$force) {
         $userlevel = umc_get_uuid_level($uuid);
-        $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+        $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
 
         if ($count >= $max_homes) {
             umc_error("You already reached your maximum home count ($max_homes)!");
@@ -225,16 +226,16 @@ function umc_home_buy() {
     $count = umc_home_count();
     $cost = $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
-    $max_homes = $UMC_SETTING['max_homes'][$userlevel];
+    $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
 
     // sanitise input and check if home name valid
     if (isset($args[2])) {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
-        $name_check = umc_home_count($name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check > 0) {
             umc_error("{red}You already have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -250,6 +251,10 @@ function umc_home_buy() {
         umc_error("You do not have enough cash to buy another home! You have only $bank Uncs. You need $cost Uncs.");
     }
     $leftover = $bank - $cost;
+
+    if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
+        umc_error("Sorry, you cannot set a home this high in the nether!");
+    }
 
     // transfer the money
     umc_money($UMC_USER['uuid'], false, $cost);
@@ -278,11 +283,11 @@ function umc_home_sell() {
     if (!isset($args[2])) {
         umc_error("{red}You need to specify which home you wish to sell");
     } else {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
-        $name_check = umc_home_count($name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check == 0) {
             umc_error("{red}You do not have a home with that name!");
         }
+        $name = umc_mysql_real_escape_string(trim($args[2]));
     }
 
     umc_money(false, $UMC_USER['uuid'], $cost);
@@ -302,22 +307,42 @@ function umc_home_update() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $args = $UMC_USER['args'];
-    // home name
+
+    // check if the home exists
     if (isset($args[2])) {
-        $name = umc_mysql_real_escape_string(trim($args[2]));
-        // check if the name already exists
-        $name_check = umc_home_count($name);
+        // check if the name actually exists to replace
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
-            umc_error("{red}You do not have a home with that name!");
+            umc_error("{red}You do not have a home called " . trim($args[2]) . " to replace!");
         }
+        $replacing = umc_mysql_real_escape_string(trim($args[2]));
     } else {
-        umc_error("{red}You need to specify the name of your new home!");
+        umc_error("{red}You need to specify the name of the home you want to update home!");
     }
-    $sql = "UPDATE minecraft_srvr.`homes` SET `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
-        . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$name LIMIT 1;";
+
+    // change the home name as well?
+    $name_update = '';
+    $log_addon = '';
+    if (isset($args[3])) {
+        // check if the name already exists
+        $name_check = umc_home_count(trim($args[3]));
+        if ($name_check == 1) {
+            umc_error("{red}You do already have a home with that name!");
+        }
+        $new_name = umc_mysql_real_escape_string(trim($args[3]));
+        $name_update = " `name`=$new_name,";
+        $log_addon = " and the name of the home was changed to " . $args[3];
+    }
+    if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
+        umc_error("Sorry, you cannot set a home this high in the nether!");
+    }
+
+    $sql = "UPDATE minecraft_srvr.`homes` SET $name_update `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
+        . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
+
     umc_mysql_query($sql, true);
-    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]}!");
-    umc_echo("The coordinates of home {$args[2]} were updated to the current location!");
+    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]} $log_addon!");
+    umc_echo("The coordinates of home {$args[2]} were updated to the current location $log_addon!");
 }
 
 function umc_home_rename() {
@@ -326,17 +351,17 @@ function umc_home_rename() {
     $args = $UMC_USER['args'];
     // home name
     if (isset($args[2]) && isset($args[3])) {
-        $old_name = umc_mysql_real_escape_string(trim($args[2]));
         // check if the name already exists
-        $name_check = umc_home_count($old_name);
+        $name_check = umc_home_count(trim($args[2]));
         if ($name_check <> 1) {
             umc_error("{red}You do not have a home with that name!");
         }
-        $new_name = umc_mysql_real_escape_string(trim($args[3]));
-        $new_name_check = umc_home_count($new_name);
+        $old_name = umc_mysql_real_escape_string(trim($args[2]));
+        $new_name_check = umc_home_count(trim($args[3]));
         if ($new_name_check == 1) {
             umc_error("{red}You already have a home with that name!");
         }
+        $new_name = umc_mysql_real_escape_string(trim($args[3]));
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -359,7 +384,7 @@ function umc_home_count($name = false, $uuid_req = false) {
     global $UMC_USER;
     $name_sql = '';
     if ($name) {
-        $name_sql = "AND name=$name";
+        $name_sql = "AND name=" . umc_mysql_real_escape_string($name);
     }
     $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='$uuid' $name_sql;";
     $D = umc_mysql_fetch_all($sql);
@@ -367,26 +392,78 @@ function umc_home_count($name = false, $uuid_req = false) {
     return $homes;
 }
 
+/**
+ * List the homes for the current user in-game
+ *
+ * @global type $UMC_USER
+ */
 function umc_home_list() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
-    $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid='{$UMC_USER['uuid']}' ORDER BY world, name;";
+
+    $homes = umc_homes_array($UMC_USER['uuid'], false);
+
+    umc_header("Your home list");
+    $count = 0;
+    foreach ($homes as $world => $worldhomes) {
+        $count += count($worldhomes);
+        $out = "{red}$world: {white}" . implode("{red},{white} ", array_keys($worldhomes));
+        umc_echo($out);
+    }
+    umc_pretty_bar("darkblue", "-", " {white}Your Homecount: $count{darkblue} ", 49, true);
+}
+
+/**
+ * Create an array with home data for a user, optionally only for one world
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
+function umc_homes_array($uuid, $world = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $world_filter = '';
+    if ($world) {
+        $world_filter = " AND world=" . umc_mysql_real_escape_string($world);
+    }
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
+
+    $sql = "SELECT * FROM minecraft_srvr.homes WHERE uuid=$uuid_sql $world_filter ORDER BY world, name;";
     $D = umc_mysql_fetch_all($sql);
-    $count = count($D);
-    umc_header("Your home list ($count homes)");
 
     $homes = array();
     foreach ($D as $d) {
         $world = $d['world'];
         $name = $d['name'];
-        $homes[$world][] = $name;
+        $homes[$world][$name] = array('x' => $d['x'], 'y' => $d['y'], 'z' => $d['z']);
     }
+    return $homes;
+}
 
-    foreach ($homes as $world => $worldhomes) {
-        $out = "{red}$world: {white}" . implode("{red},{white} ", $worldhomes);
-        umc_echo($out);
+/**
+ * Create a list of homes that will be displayed on the 2D map.
+ *
+ * @global array $UMC_SETTING
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
+function umc_home_2d_map($uuid, $world) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_SETTING;
+    $homes = umc_homes_array($uuid, $world);
+
+    $icon = $UMC_SETTING['homes']['icon_url'];
+    $out = "\n";
+    foreach ($homes as $world => $world_homes) {
+        foreach ($world_homes as $home => $coords) {
+            $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
+            $top = $map_coords['z'];
+            $left = $map_coords['x'];
+            $out .= "<img class='marker' style='width:20px; height:20px; z-index:99; top:{$top}px; left:{$left}px;' src='$icon' alt='Home $home'>\n";
+        }
     }
-    umc_footer();
+    return $out;
 }
 
 // import current homes from the essential plugin

@@ -24,8 +24,10 @@
 global $umc_wp_register_questions;
 
 global $XMPP_ERROR;
-$XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
+
 require_once('/home/includes/xmpp_error/xmpp_error.php');
+$XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
+$XMPP_ERROR['config']['ignore_warnings'] = array('wp-includes', 'iwp-client', 'jaxl');
 
 /**
  * Initialize plugins so that the hooks in Wordpress are correct
@@ -45,7 +47,12 @@ function umc_wp_init_plugins() {
     // make notification when new comment is made on post
     add_action('comment_post', 'umc_wp_notify_new_comment', 10, 2);
     // add additional CSS and JS
-    add_action( 'wp_enqueue_scripts', 'umc_wp_add_css_and_js' );
+    add_action('wp_enqueue_scripts', 'umc_wp_add_css_and_js');
+    add_action('admin_enqueue_scripts', 'umc_wp_add_css_and_js');
+
+    // what happens when a user gets deleted
+    add_action('delete_user', 'umc_wp_user_delete');
+
     remove_action('wp_head', 'start_post_rel_link', 10, 0 );
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
     add_action('wp_footer', 'umc_wp_fingerprint_call');
@@ -76,6 +83,24 @@ function umc_wp_init_plugins() {
     }
 }
 
+/**
+ * action that is run when WP deletes a user
+ *
+ * @param type $wp_user_id
+ */
+function umc_wp_user_delete($wp_user_id) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    require_once('/home/minecraft/server/bin/core_include.php');
+    // let's get more info about the user
+    $user_obj = get_userdata($wp_user_id);
+    $username = $user_obj->display_name;
+    $uuid = umc_wp_get_uuid_for_currentuser($user_obj);
+    if ($uuid) { // if there is no UUID, nothing to do
+        umc_plugin_eventhandler('user_delete', $uuid);
+    }
+    XMPP_ERROR_trigger("User $username / $uuid has been deleted!");
+}
+
 function umc_wp_fingerprint_call() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     require_once('/home/minecraft/server/bin/core_include.php');
@@ -86,7 +111,7 @@ function umc_wp_fingerprint_call() {
         jQuery(document).ready(function(jQuery) {
             var fp = new Fingerprint2();
             fp.get(function(result) {
-                var fingerprint_url = "http://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
+                var fingerprint_url = "https://uncovery.me/admin/index.php?function=web_set_fingerprint&uuid='.$uuid.'&id=" + result;
                 jQuery.ajax(fingerprint_url);
             });
         });
@@ -94,12 +119,6 @@ function umc_wp_fingerprint_call() {
         echo $out;
     }
 }
-
-function umc_wp_bbp_subscription_to_email($test = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    return 'oliver@uncovery.net';
-}
-
 
 /**
  * Validate password resets for banned users
@@ -113,7 +132,7 @@ function umc_wp_password_reset_check($errors, $user_obj) {
     $check = umc_user_is_banned($user_obj->user_login);
     if ($check) {
         // user is banned
-        $errors->add( 'user_is_banned', 'ERROR: You are banned from this server. Password request denied.' );
+        $errors->add('user_is_banned', 'ERROR: You are banned from this server. Password request denied.');
         XMPP_ERROR_send_msg("Banned User " . $user_obj->user_login . " attempted password reset");
     }
 }
@@ -143,21 +162,21 @@ function umc_wp_template_picker($template) {
  * add additional CSS and JS
  */
 function umc_wp_add_css_and_js() {
-    wp_enqueue_style( 'dataTables', 'http://uncovery.me/admin/dataTables.css' );
-    wp_enqueue_style( 'uncovery', 'http://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'dataTables', 'https://uncovery.me/admin/dataTables.css' );
+    wp_enqueue_style( 'uncovery', 'https://uncovery.me/admin/global.css' );
     // execute floored's CSS only on his page
     $postid = get_the_ID();
     if ($postid == 15523) {
-        wp_enqueue_style( 'floored_css', 'http://uncovery.me/admin/floored.css' );
+        wp_enqueue_style( 'floored_css', 'https://uncovery.me/admin/floored.css' );
     }
     wp_enqueue_script('jquery-ui-accordion');
     wp_enqueue_script('jquery-ui-tabs');
-    wp_enqueue_script('uncovery_global_js', 'http://uncovery.me/admin/js/global.js');
-    wp_enqueue_script('uncovery_fingerprint', 'http://uncovery.me/admin/js/fingerprint2.min.js');
+    wp_enqueue_script('uncovery_global_js', 'https://uncovery.me/admin/js/global.js');
+    wp_enqueue_script('uncovery_fingerprint', 'https://uncovery.me/admin/js/fingerprint2.min.js');
 }
 
 function umc_wp_login_stylesheet() {
-    wp_enqueue_style( 'custom-login',  'http://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'custom-login',  'https://uncovery.me/admin/global.css' );
 }
 add_action('login_enqueue_scripts', 'umc_wp_login_stylesheet');
 
@@ -169,18 +188,21 @@ add_action('login_enqueue_scripts', 'umc_wp_login_stylesheet');
  * @param type $arg2
  */
 function umc_wp_notify_new_comment($comment_id, $arg2){
-
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $comment = get_comment( $comment_id, 'ARRAY_A' );
     $author = $comment['comment_author'];
     $parent = $comment['comment_post_ID'];
 
-    $post = get_post( $parent, 'ARRAY_A');
+    $post = get_post($parent, 'ARRAY_A');
     $title = $post['post_title'];
+    $post_link = "https://uncovery.me/?p=" . $post['ID'];
 
-    $cmd = "ch qm n New Comment on Post &a$title &fby $author&f";
+    $msgs = array(
+        "New Comment on Post &a$title &fby $author&f",
+        "Link: &a$post_link&f",
+        "Type &a/web read c$comment_id&f to read in-game");
     require_once('/home/minecraft/server/bin/index_wp.php');
-    umc_exec_command($cmd, 'asConsole');
+    umc_mod_broadcast($msgs);
 }
 
 /**
@@ -191,26 +213,34 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
  */
 function umc_wp_notify_new_post($new_status, $old_status, $post) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if ($old_status != 'publish' && $new_status == 'publish' ) {
-        $post_title = $post->post_title;
+    // check for valid post types
+    $valid_post_types = array('post', "reply");
+    if (!in_array($post->post_type, $valid_post_types)) {
+        return;
+    }
 
+    $cmds = array();
+    if ($old_status != 'publish' && $new_status == 'publish') {
+        $post_title = $post->post_title;
+        $post_link = "https://uncovery.me/?p=" . $post->ID;
+        $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
-            $cmd = "ch qm u New Blog Post: &a$post_title&f";
+            $cmds[] = "New Blog Post: &a$post_title&f";
         } else {
             $type = ucwords($post->post_type);
             if ($type == 'Reply') {
                 $parent = get_post($post->post_parent);
                 $post_title = $parent->post_title;
-            } else if ($type == 'Page') {
-                return; //die('umc_wp_notify_new_post');
             }
             $author_id = $post->post_author;
             $user = get_userdata($author_id);
             $username = $user->display_name;
-            $cmd = "ch qm n New Forum $type: &a$post_title &fby $username&f";
+            $cmd[] = "New Forum $type: &a$post_title &fby $username&f";
         }
+        $cmd[] = "Link: &a$post_link&f";
+        $cmd[] = "Type &a/web read $id&f to read in-game";
         require_once('/home/minecraft/server/bin/index_wp.php');
-        umc_exec_command($cmd, 'asConsole');
+        umc_mod_broadcast($cmd);
     }
 }
 
@@ -221,10 +251,10 @@ $umc_wp_register_questions = array(
         'answers'=>array('0'=>'I have it already!', '1'=>'I have to apply for Settler status on the website!')),
     2 => array('text'=>'Which username do you choose here?', 'true'=>0,
         'answers'=>array('0'=>'My Minecraft username', '1'=>'My email address', '2'=>'31337 sh0073rz')),
-    3 => array('text'=>'How do you know the IP of the server?', 'true'=>0,
-        'answers'=>array('0'=>'Its written in the email I get when I fill this out correctly', '1'=>'I will have to guess', '2'=>'I ask for it in the forum')),
-    4 => array('text'=>'In which world do you spawn?', 'true'=>2,
+    3 => array('text'=>'In which world do you spawn?', 'true'=>2,
         'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
+    //4 => array('text'=>'In which world do you spawn?', 'true'=>2,
+    //    'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
 );
 
 /**
@@ -311,17 +341,19 @@ function umc_wp_forum_widget($items = 20) {
         $date_obj = umc_datetime($P->post_date);
         $time_ago = umc_timer_format_diff($date_obj);
         $link = $parent->guid . "#post-" . $P->ID;
-        $html = "<a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        $html = "<a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
             class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-            <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+            <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
             $user->display_name</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
+        // set data for top-level posts (instead of replies)
         if (!isset($posts[$P->post_parent])) {
             $parent_post = get_post($P->post_parent);
             $posts[$P->post_parent]['link'] = umc_wp_forum_get_postlink($parent_post);
+            // the "latest" field is the sorting indicator and should be set to the date of the latest reply.
             $posts[$P->post_parent]['latest'] = $P->post_date;
         }
         $posts[$P->post_parent]['replies'][$P->post_date] = $html;
-        $posts[$P->post_parent]['latest'] = min($P->post_date, $posts[$P->post_parent]['latest']);
+        $posts[$P->post_parent]['latest'] = max($P->post_date, $posts[$P->post_parent]['latest']);
     }
     // sort the array
     usort($posts, "umc_wp_forum_sort");
@@ -359,9 +391,9 @@ function umc_wp_forum_get_postlink($P) {
     $link = $P->guid;
     $post_title = $P->post_title;
     $html = "<a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$post_title</a><br>by
-        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
         class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-        <a href=\"http://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
         $user->display_name</a><br>$time_ago ago";
     return $html;
 }
@@ -403,7 +435,7 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
             if (!isset($s_post[$q_index]) || ($s_post[$q_index] != $item['true'])) {
                 $error = true;
                 $error_msg = "<strong>ERROR:</strong>You entered one or more wrong answers to the questions below. "
-                    . "Please go back to <a href=\"http://uncovery.me/whitelist/\">this page</a>, read it properly and try again.";
+                    . "Please go back to <a href=\"https://uncovery.me/whitelist/\">this page</a>, read it properly and try again.";
             }
         }
         if ($error) {
@@ -416,13 +448,29 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 $error_msg = "<strong>ERROR:</strong>We could not verify your username right now. If you own a copy of Minecraft under the username '$user_login', you can try to login to the server once. "
                     . "It will not let you login, but our system will get a confirmation from Mojang in case your username exists. "
                     . "If you are sure that this is your username, try to connect to uncovery.me with your minecraft client once. You can try to register afterwards here again. "
-                    . "If you are certain that you are using the right username and still get this error, please submit a <a href=\"http://uncovery.me/help-2/support/\">support ticket</a>.";
+                    . "If you are certain that you are using the right username and still get this error, please submit a <a href=\"https://uncovery.me/help-2/support/\">support ticket</a>.";
                 $errors->add('demo_error',__($error_msg));
                 return $errors;
             } else if (umc_user_is_banned($UMC_USER['uuid'])) {
                 $error_msg = "<strong>ERROR:</strong>Sorry, you were banned from the server. Please find another one.";
                 $errors->add('demo_error',__($error_msg));
                 return $errors;
+            } else { // check if there is a user with this UUID already
+                $uuid_quoted = umc_mysql_real_escape_string($UMC_USER['uuid']);
+                $sql = "SELECT display_name FROM minecraft.wp_usermeta
+                    LEFT JOIN minecraft.wp_users ON ID=user_id
+                    WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $uuid_quoted;";
+                $XD = umc_mysql_fetch_all($sql);
+                $count = count($XD);
+                if ($count !== 0) {
+                    XMPP_ERROR_trigger('User tried to register 2nd account!');
+                    $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account!
+                            If you changed your username, there is no need for a second website account.
+                            Please simply continue using your existing account, your username will be displayed correctly,the user login remains the same.
+                            If you have any trouble please contact an admin!";
+                    $errors->add('demo_error',__($error_msg));
+                    return $errors;
+                }
             }
         }
     }
@@ -451,57 +499,409 @@ function umc_wp_register_addWhitelist($user_id){
 }
 
 function umc_wp_add_uncovery_avatar( $avatar_defaults ) {
-        $avatar_defaults['uncovery'] = 'Minecraft Avatar';
-        return $avatar_defaults;
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $avatar_defaults['uncovery'] = 'Minecraft Avatar';
+    return $avatar_defaults;
 }
 
 function umc_wp_get_uncovery_avatar($avatar, $id_or_email, $size, $default, $alt) {
-        XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-        if ($default == 'uncovery') {
-            $filename = '/home/minecraft/server/bin/core_include.php';
-            require_once($filename);
-            if (!function_exists('umc_user_ban')) {
-                XMPP_ERROR_trigger("Failed to include $filename!");
-            }
-            //Alternative text
-            if (false === $alt) {
-                $safe_alt = '';
-            } else {
-                $safe_alt = esc_attr($alt);
-            }
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if ($default == 'uncovery') {
+        $filename = '/home/minecraft/server/bin/core_include.php';
+        require_once($filename);
+        if (!function_exists('umc_user_ban')) {
+            XMPP_ERROR_trigger("Failed to include $filename!");
+        }
+        //Alternative text
+        if (false === $alt) {
+            $safe_alt = '';
+        } else {
+            $safe_alt = esc_attr($alt);
+        }
 
-            //Get username
-            if (is_numeric($id_or_email)) {
-                $id = (int) $id_or_email;
+        //Get username
+        if (is_numeric($id_or_email)) {
+            $id = (int) $id_or_email;
+            $user = get_userdata($id);
+            if ($user) {
+                $username = $user->user_login;
+            } else {
+                return false; // user cannot be found, probably deleted
+            }
+        } else if (is_object($id_or_email)) {
+            if (!empty($id_or_email->user_id)) {
+                $id = (int) $id_or_email->user_id;
                 $user = get_userdata($id);
                 if ($user) {
                     $username = $user->user_login;
                 } else {
-                    return false; // user cannot be found, probably deleted
+                    return '';
                 }
-            } else if (is_object($id_or_email)) {
-                if (!empty($id_or_email->user_id)) {
-                    $id = (int) $id_or_email->user_id;
-                    $user = get_userdata($id);
-                    if ($user) {
-                        $username = $user->user_login;
-                    } else {
-                        return '';
+            } else if (!empty($id_or_email->comment_author)) {
+                $username = $id_or_email->comment_author;
+            }
+        } else if (strstr($id_or_email, '@')) { // email
+            require_once(ABSPATH . WPINC . '/ms-functions.php');
+            $user = get_user_by('email', $id_or_email);
+            $username = $user->user_login;
+        } else { // by displayname
+            $username = $id_or_email;
+        }
+
+        $uuid = umc_wp_get_uuid_from_userlogin($username);
+        $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
+        $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
+    }
+    return $avatar;
+}
+
+/**
+ * Send mail, similar to PHP's mail
+ *
+ * A true return value does not automatically mean that the user received the
+ * email successfully. It just only means that the method used was able to
+ * process the request without any errors.
+ *
+ * Using the two 'wp_mail_from' and 'wp_mail_from_name' hooks allow from
+ * creating a from address like 'Name <email@address.com>' when both are set. If
+ * just 'wp_mail_from' is set, then just the email address will be used with no
+ * name.
+ *
+ * The default content type is 'text/plain' which does not allow using HTML.
+ * However, you can set the content type of the email by using the
+ * 'wp_mail_content_type' filter.
+ *
+ * The default charset is based on the charset used on the blog. The charset can
+ * be set using the 'wp_mail_charset' filter.
+ *
+ * @since 1.2.1
+ *
+ * @global PHPMailer $phpmailer
+ *
+ * @param string|array $to          Array or comma-separated list of email addresses to send message.
+ * @param string       $subject     Email subject
+ * @param string       $message     Message contents
+ * @param string|array $headers     Optional. Additional headers.
+ * @param string|array $attachments Optional. Files to attach.
+ * @return bool Whether the email contents were sent successfully.
+ */
+
+function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
+    // Compact the input, apply the filters, and extract them back out
+
+    /**
+     * Filter the wp_mail() arguments.
+     *
+     * @since 2.2.0
+     *
+     * @param array $args A compacted array of wp_mail() arguments, including the "to" email,
+     *                    subject, message, headers, and attachments values.
+     */
+    $atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
+
+    if ( isset( $atts['to'] ) ) {
+            $to = $atts['to'];
+    }
+
+    if ( isset( $atts['subject'] ) ) {
+            $subject = $atts['subject'];
+    }
+
+    if ( isset( $atts['message'] ) ) {
+            $message = $atts['message'];
+    }
+
+    if ( isset( $atts['headers'] ) ) {
+            $headers = $atts['headers'];
+    }
+
+    if ( isset( $atts['attachments'] ) ) {
+            $attachments = $atts['attachments'];
+    }
+
+    if ( ! is_array( $attachments ) ) {
+            $attachments = explode( "\n", str_replace( "\r\n", "\n", $attachments ) );
+    }
+    global $phpmailer;
+
+    // (Re)create it, if it's gone missing
+    if ( ! ( $phpmailer instanceof PHPMailer ) ) {
+            require_once ABSPATH . WPINC . '/class-phpmailer.php';
+            require_once ABSPATH . WPINC . '/class-smtp.php';
+            $phpmailer = new PHPMailer( true );
+    }
+
+    // Headers
+    if ( empty( $headers ) ) {
+            $headers = array();
+    } else {
+            if ( !is_array( $headers ) ) {
+                    // Explode the headers out, so this function can take both
+                    // string headers and an array of headers.
+                    $tempheaders = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
+            } else {
+                    $tempheaders = $headers;
+            }
+            $headers = array();
+            $cc = array();
+            $bcc = array();
+
+            // If it's actually got contents
+            if ( !empty( $tempheaders ) ) {
+                    // Iterate through the raw headers
+                    foreach ( (array) $tempheaders as $header ) {
+                            if ( strpos($header, ':') === false ) {
+                                    if ( false !== stripos( $header, 'boundary=' ) ) {
+                                            $parts = preg_split('/boundary=/i', trim( $header ) );
+                                            $boundary = trim( str_replace( array( "'", '"' ), '', $parts[1] ) );
+                                    }
+                                    continue;
+                            }
+                            // Explode them out
+                            list( $name, $content ) = explode( ':', trim( $header ), 2 );
+
+                            // Cleanup crew
+                            $name    = trim( $name    );
+                            $content = trim( $content );
+
+                            switch ( strtolower( $name ) ) {
+                                    // Mainly for legacy -- process a From: header if it's there
+                                    case 'from':
+                                            $bracket_pos = strpos( $content, '<' );
+                                            if ( $bracket_pos !== false ) {
+                                                    // Text before the bracketed email is the "From" name.
+                                                    if ( $bracket_pos > 0 ) {
+                                                            $from_name = substr( $content, 0, $bracket_pos - 1 );
+                                                            $from_name = str_replace( '"', '', $from_name );
+                                                            $from_name = trim( $from_name );
+                                                    }
+
+                                                    $from_email = substr( $content, $bracket_pos + 1 );
+                                                    $from_email = str_replace( '>', '', $from_email );
+                                                    $from_email = trim( $from_email );
+
+                                            // Avoid setting an empty $from_email.
+                                            } elseif ( '' !== trim( $content ) ) {
+                                                    $from_email = trim( $content );
+                                            }
+                                            break;
+                                    case 'content-type':
+                                            if ( strpos( $content, ';' ) !== false ) {
+                                                    list( $type, $charset_content ) = explode( ';', $content );
+                                                    $content_type = trim( $type );
+                                                    if ( false !== stripos( $charset_content, 'charset=' ) ) {
+                                                            $charset = trim( str_replace( array( 'charset=', '"' ), '', $charset_content ) );
+                                                    } elseif ( false !== stripos( $charset_content, 'boundary=' ) ) {
+                                                            $boundary = trim( str_replace( array( 'BOUNDARY=', 'boundary=', '"' ), '', $charset_content ) );
+                                                            $charset = '';
+                                                    }
+
+                                            // Avoid setting an empty $content_type.
+                                            } elseif ( '' !== trim( $content ) ) {
+                                                    $content_type = trim( $content );
+                                            }
+                                            break;
+                                    case 'cc':
+                                            $cc = array_merge( (array) $cc, explode( ',', $content ) );
+                                            break;
+                                    case 'bcc':
+                                            $bcc = array_merge( (array) $bcc, explode( ',', $content ) );
+                                            break;
+                                    default:
+                                            // Add it to our grand headers array
+                                            $headers[trim( $name )] = trim( $content );
+                                            break;
+                            }
                     }
-                } else if (!empty($id_or_email->comment_author)) {
-                    $username = $id_or_email->comment_author;
-                }
-            } else if (strstr($id_or_email, '@')) { // email
-                require_once(ABSPATH . WPINC . '/ms-functions.php');
-                $user = get_user_by('email', $id_or_email);
-                $username = $user->user_login;
-            } else { // by displayname
-                $username = $id_or_email;
+            }
+    }
+
+    // Empty out the values that may be set
+    $phpmailer->ClearAllRecipients();
+    $phpmailer->ClearAttachments();
+    $phpmailer->ClearCustomHeaders();
+    $phpmailer->ClearReplyTos();
+
+    // From email and name
+    // If we don't have a name from the input headers
+    if ( !isset( $from_name ) )
+            $from_name = 'minecraft';
+
+    /* If we don't have an email from the input headers default to wordpress@$sitename
+     * Some hosts will block outgoing mail from this address if it doesn't exist but
+     * there's no easy alternative. Defaulting to admin_email might appear to be another
+     * option but some hosts may refuse to relay mail from an unknown domain. See
+     * https://core.trac.wordpress.org/ticket/5007.
+     */
+
+    if ( !isset( $from_email ) ) {
+            $from_email = 'minecraft@uncovery.me';
+    }
+
+    /**
+     * Filter the email address to send from.
+     *
+     * @since 2.2.0
+     *
+     * @param string $from_email Email address to send from.
+     */
+    $phpmailer->From = apply_filters( 'wp_mail_from', $from_email );
+
+    /**
+     * Filter the name to associate with the "from" email address.
+     *
+     * @since 2.3.0
+     *
+     * @param string $from_name Name associated with the "from" email address.
+     */
+    $phpmailer->FromName = apply_filters( 'wp_mail_from_name', $from_name );
+    // Set destination addresses
+    if ( !is_array( $to ) )
+            $to = explode( ',', $to );
+
+    foreach ( (array) $to as $recipient ) {
+            try {
+                    // Break $recipient into name and address parts if in the format "Foo <bar@baz.com>"
+                    $recipient_name = '';
+                    if ( preg_match( '/(.*)<(.+)>/', $recipient, $matches ) ) {
+                            if ( count( $matches ) == 3 ) {
+                                    $recipient_name = $matches[1];
+                                    $recipient = $matches[2];
+                            }
+                    }
+                    $phpmailer->AddAddress( $recipient, $recipient_name);
+            } catch ( phpmailerException $e ) {
+                    continue;
+            }
+    }
+
+    // Set mail's subject and body
+    $phpmailer->Subject = $subject;
+    $phpmailer->Body    = $message;
+    $phpmailer->Sender  = 'noreply@uncovery.me';
+
+
+
+    // Add any CC and BCC recipients
+    if ( !empty( $cc ) ) {
+            foreach ( (array) $cc as $recipient ) {
+                    try {
+                            // Break $recipient into name and address parts if in the format "Foo <bar@baz.com>"
+                            $recipient_name = '';
+                            if ( preg_match( '/(.*)<(.+)>/', $recipient, $matches ) ) {
+                                    if ( count( $matches ) == 3 ) {
+                                            $recipient_name = $matches[1];
+                                            $recipient = $matches[2];
+                                    }
+                            }
+                            $phpmailer->AddCc( $recipient, $recipient_name );
+                    } catch ( phpmailerException $e ) {
+                            continue;
+                    }
+            }
+    }
+
+    if ( !empty( $bcc ) ) {
+            foreach ( (array) $bcc as $recipient) {
+                    try {
+                            // Break $recipient into name and address parts if in the format "Foo <bar@baz.com>"
+                            $recipient_name = '';
+                            if ( preg_match( '/(.*)<(.+)>/', $recipient, $matches ) ) {
+                                    if ( count( $matches ) == 3 ) {
+                                            $recipient_name = $matches[1];
+                                            $recipient = $matches[2];
+                                    }
+                            }
+                            $phpmailer->AddBcc( $recipient, $recipient_name );
+                    } catch ( phpmailerException $e ) {
+                            continue;
+                    }
+            }
+    }
+
+    // Set to use PHP's mail()
+    $phpmailer->IsMail();
+
+    // Set Content-Type and charset
+    // If we don't have a content-type from the input headers
+    if ( !isset( $content_type ) )
+            $content_type = 'text/plain';
+
+    /**
+     * Filter the wp_mail() content type.
+     *
+     * @since 2.3.0
+     *
+     * @param string $content_type Default wp_mail() content type.
+     */
+    $content_type = apply_filters( 'wp_mail_content_type', $content_type );
+
+    $phpmailer->ContentType = $content_type;
+
+    // Set whether it's plaintext, depending on $content_type
+    if ( 'text/html' == $content_type )
+            $phpmailer->IsHTML( true );
+
+    // If we don't have a charset from the input headers
+    if ( !isset( $charset ) )
+            $charset = get_bloginfo( 'charset' );
+
+    // Set the content-type and charset
+
+    /**
+     * Filter the default wp_mail() charset.
+     *
+     * @since 2.3.0
+     *
+     * @param string $charset Default email charset.
+     */
+    $phpmailer->CharSet = apply_filters( 'wp_mail_charset', $charset );
+
+    // Set custom headers
+    if ( !empty( $headers ) ) {
+            foreach ( (array) $headers as $name => $content ) {
+                    $phpmailer->AddCustomHeader( sprintf( '%1$s: %2$s', $name, $content ) );
             }
 
-            $uuid = umc_wp_get_uuid_from_userlogin($username);
-            $icon = umc_user_get_icon_url($uuid); // 'https://crafatar.com/avatars/' . $uuid . '?size=' . $size;
-            $avatar = "<img  class='avatar avatar-64 photo' alt='".$safe_alt."' src='".$icon."' class='avatar avatar-".$size." photo' height='".$size."' width='".$size."' />";
-        }
-        return $avatar;
+            if ( false !== stripos( $content_type, 'multipart' ) && ! empty($boundary) )
+                    $phpmailer->AddCustomHeader( sprintf( "Content-Type: %s;\n\t boundary=\"%s\"", $content_type, $boundary ) );
     }
+
+    if ( !empty( $attachments ) ) {
+            foreach ( $attachments as $attachment ) {
+                    try {
+                            $phpmailer->AddAttachment($attachment);
+                    } catch ( phpmailerException $e ) {
+                            continue;
+                    }
+            }
+    }
+    /**
+     * Fires after PHPMailer is initialized.
+     *
+     * @since 2.2.0
+     *
+     * @param PHPMailer &$phpmailer The PHPMailer instance, passed by reference.
+     */
+    do_action_ref_array( 'phpmailer_init', array( &$phpmailer ) );
+
+    // Send!
+    try {
+            return $phpmailer->Send();
+    } catch ( phpmailerException $e ) {
+
+            $mail_error_data = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
+
+            /**
+             * Fires after a phpmailerException is caught.
+             *
+             * @since 4.4.0
+             *
+             * @param WP_Error $error A WP_Error object with the phpmailerException code, message, and an array
+             *                        containing the mail recipient, subject, message, headers, and attachments.
+             */
+            do_action( 'wp_mail_failed', new WP_Error( $e->getCode(), $e->getMessage(), $mail_error_data ) );
+
+            return false;
+    }
+}

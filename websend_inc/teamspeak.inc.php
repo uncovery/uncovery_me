@@ -26,7 +26,7 @@ global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
     'default' => array(
         'help' => array(
             'title' => 'Teamspeak',  // give it a friendly title
@@ -84,17 +84,17 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
  * server.
  */
 $UMC_TEAMSPEAK = array(
-    'ts_php_path' => '/home/uncovery/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
+    'ts_php_path' => '/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
     'server_query_string_path' => "/home/includes/certificates/teamspeak_query.txt",
     'server' => false,
     'user_groups' => array(
         6 => array('Owner'),
-        10 => array('Master','MasterDonator','MasterDonatorPlus',
-            'Elder','ElderDonator','ElderDonatorPlus'),
-        7 => array('Settler','SettlerDonator','SettlerDonatorPlus',
-            'Citizen','CitizenDonator','CitizenDonatorPlus',
-            'Architect','ArchitectDonator','ArchitectDonatorPlus',
-            'Designer','DesignerDonator','DesignerDonatorPlus'),
+        10 => array('Master','MasterDonator',
+            'Elder','ElderDonator'),
+        7 => array('Settler','SettlerDonator',
+            'Citizen','CitizenDonator',
+            'Architect','ArchitectDonator',
+            'Designer','DesignerDonator'),
     ),
     'ts_groups' => array(
         6 => 'TS Admin', 10 => 'TS Moderator', 7 => 'TS Settler', 8 => 'TS Guest'
@@ -154,8 +154,12 @@ function umc_ts_display_users() {
 function umc_ts_authorize() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_TEAMSPEAK;
-    umc_ts_connect();
+    XMPP_ERROR_trigger("Test");
+    $check = umc_ts_connect();
 
+    if (!$check) {
+        umc_error("Could not connect to Teamspeak server!");
+    }
     // get client by name
     $uuid = $UMC_USER['uuid'];
     $userlevel = $UMC_USER['userlevel'];
@@ -183,14 +187,18 @@ function umc_ts_authorize() {
     $users = umc_ts_list_users();
     $found = 0;
     // iterate all users to make sure that there are not 2 with the same nickname
-    foreach ($users as $user) {
-        XMPP_ERROR_trace("comparing user $username to ", $user);
-        if ($user == $username) {
+    $first_match = false;
+    foreach ($users as $id => $U) {
+        XMPP_ERROR_trace("comparing user $username to ", $U['username']);
+        if ($U['username'] == $username) {
             $found++;
-            XMPP_ERROR_trace("found user ", $user);
+            if (!$first_match) {
+                $first_match = $id;
+            }
+            XMPP_ERROR_trace("found user ", "{$U['username']} / $id");
         }
     }
-    XMPP_ERROR_trace("found no if users: ", $found);
+    XMPP_ERROR_trace("found no of users: ", $found);
 
     if ($found == 0) {
         umc_echo("You need to logon to Teamspeak with the EXACT same username (\"$username\")");
@@ -206,12 +214,14 @@ function umc_ts_authorize() {
     }
 
     // we have a user
-    $ts_Client = $UMC_TEAMSPEAK['server']->clientGetByName($username);
-    $ts_dbid = $ts_Client["client_database_id"];
+    XMPP_ERROR_trace("getting user client groups");
+    // remove all groups
+    $this_user_obj = $users[$first_match]['object'];
+    $ts_dbid = $this_user_obj["client_database_id"];
     // remove all groups
     $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($ts_dbid));
     foreach ($servergroups as $sgid) {
-        umc_echo($ts_Client["client_nickname"] . " is member of group " . $UMC_TEAMSPEAK['ts_groups'][$sgid]);
+        umc_echo($this_user_obj["client_nickname"] . " is member of group " . $UMC_TEAMSPEAK['ts_groups'][$sgid]);
         if ($sgid != $target_group && $sgid != 8) {
             umc_echo("Removing usergroup $sgid...");
             $UMC_TEAMSPEAK['server']->serverGroupClientDel($sgid, $ts_dbid); // remove user from group
@@ -223,17 +233,17 @@ function umc_ts_authorize() {
     // add the proper group
     if ($target_group) { // add target group of required
         umc_echo("Adding you to group " . $UMC_TEAMSPEAK['ts_groups'][$target_group]);
-        $ts_Client->addServerGroup($target_group);
+        $this_user_obj->addServerGroup($target_group);
     }
-
     // get UUID
-    $target_ts_uuid = $ts_Client["client_unique_identifier"];
+    $target_ts_uuid = $this_user_obj["client_unique_identifier"];
     $ts_uuid = umc_mysql_real_escape_string($target_ts_uuid);
     $ins_sql = "UPDATE minecraft_srvr.UUID SET ts_uuid=$ts_uuid WHERE UUID='$uuid';";
     umc_mysql_query($ins_sql, true);
     umc_echo("Adding TS ID $ts_uuid to database");
     umc_footer("Done!");
-    
+
+
 }
 
 /**
@@ -267,18 +277,21 @@ function umc_ts_clear_rights($uuid, $echo = false) {
     umc_ts_connect(true);
 
     // find the TS user by that TS UUID
-    umc_echo("Searching for you on the TS server.");
-    
+    echo("Searching for you on the TS server.");
+
     try {
         $ts_Clients_match = $UMC_TEAMSPEAK['server']->clientFindDb($ts_uuid, true);
     } catch (TeamSpeak3_Exception $e) {
         XMPP_ERROR_trace("Error ", $e->getCode() . ": " . $e->getMessage());
         $ts_Clients_match = 0;
+        umc_echo("There is no client on the teamspeak server!");
+        return;
     }
     if (count($ts_Clients_match) > 0) {
         XMPP_ERROR_trace("ts_Clients_match", $ts_Clients_match);
         umc_echo("Found user entries on TS server");
         $client_dbid = $ts_Clients_match[0];
+        umc_echo("Client userid=$client_dbid");
         // enumerate all the groups the user is part of
         $servergroups = array_keys($UMC_TEAMSPEAK['server']->clientGetServerGroupsByDbid($client_dbid));
         XMPP_ERROR_trace("servergroups", $servergroups);
@@ -340,14 +353,17 @@ function umc_ts_viewer() {
         }
     }
 
-    $out_new .= "<div style=\"text-align:right;\"><a href=\"http://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
+    $out_new .= "<div style=\"text-align:right;\"><a href=\"https://uncovery.me/communication/teamspeak/\">Help / Info</a></div>";
     return $out_new;
 }
 
 function umc_ts_list_channels_users() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
-    umc_ts_connect();
+    $check = umc_ts_connect();
+    if (!$check) {
+        return false;
+    }
     $ts3_Channels = $UMC_TEAMSPEAK['server']->channelList();
     $users = array();
     foreach ($ts3_Channels as $ts3_Channel) {
@@ -372,20 +388,38 @@ function umc_ts_list_channels_users() {
 function umc_ts_list_users($channel = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_TEAMSPEAK;
-    umc_ts_connect();
+    $check = umc_ts_connect();
+    if (!$check) {
+        return false;
+    }
     $users = array();
     if (!$channel ) {
         $channel = $UMC_TEAMSPEAK['server'];
     }
 
+    $usercount = count($channel->clientList());
+    if ($usercount == 0) {
+        XMPP_ERROR_send_msg("No users found");
+        return false;
+    }
+    XMPP_ERROR_trace("Users found:", $usercount);
+
     foreach ($channel->clientList() as $ts_Client) {
+        // $var = get_object_vars($ts_Client);
         $username = $ts_Client["client_nickname"];
+        $id = (string)($ts_Client["client_unique_identifier"]);
+        XMPP_ERROR_trace("User", "$username $id");
+
         // we have 2 system users which we do not want to list
         // they are both called "mc_bot..."
         if (strpos($username, 'mc_bot') === false) {
-            $users[] = strtolower($username);
+            $users[$id] = array(
+                'username' => strtolower($username),
+                'object' => $ts_Client,
+            );
         }
     }
+
     return $users;
 }
 
@@ -409,11 +443,14 @@ function umc_ts_connect($error_reply = false) {
         $ts_connection = TeamSpeak3::factory($query_string);
         if ($ts_connection) {
             $UMC_TEAMSPEAK['server'] = $ts_connection;
+            return true;
         } else {
             XMPP_ERROR_trigger('Could not connect to Teamspeak Server! Is it running?');
             if ($error_reply) {
                 umc_error("Sorry, the teamspeak server is down, please send a /ticket!");
             }
+            return false;
         }
     }
+    return true;
 }

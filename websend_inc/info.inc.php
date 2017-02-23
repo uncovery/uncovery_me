@@ -98,7 +98,7 @@ function umc_info_setpass() {
     $reset_key = get_password_reset_key($user_data);
     $url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user_login), 'login');
     // shorten the URL
-    $shortenedurl = file_get_contents('http://uncovery.me/s/shorten.php?longurl=' . urlencode($url));
+    $shortenedurl = file_get_contents('https://uncovery.me/s/shorten.php?longurl=' . urlencode($url));
 
     umc_header("Password Reset Link");
     umc_echo("Please click on the following link to set a new password:");
@@ -173,6 +173,8 @@ function umc_info_whereami() {
     $lot = umc_lot_get_from_coords($x, $z, $world);
     $lot_members = umc_get_lot_members($lot, false);
     $lot_owners = umc_get_lot_members($lot, true);
+    // $lot_group_members = umc_lot_get_group_members($lot, false);
+    // $lot_group_owners = umc_lot_get_group_members($lot, true);
     if (!$lot) {
         $lot = 'No lot here';
     }
@@ -296,14 +298,10 @@ function umc_info_who() {
         $level = umc_get_uuid_level($uuid);
         $player = $players_details['Name'];
 
-        if (strstr($level, "DonatorPlus")) {
-            $new_lvl = substr($level, 0, -11);
+        $new_lvl = $level;
+        if (strstr($level, "Donator")){
             $new_player = "$player{yellow}++{white}";
-        } else if (strstr($level, "Donator")){
-            $new_lvl = substr($level, 0, -7);
-            $new_player = "$player{yellow}+{white}";
         } else {
-            $new_lvl = $level;
             $new_player = $player;
         }
         $lower_username = strtolower($player);
@@ -332,9 +330,9 @@ function umc_info_website() {
     $players = $UMC_USER['online_players'];
 
     if (isset($args[2]) && in_array($args[2], $players)) {
-        $cmd = "msg {$args[2]} Dear {$args[2]}, you have just asked a question that is answered on the website. "
+        $msg = "Dear {$args[2]}, you have just asked a question that is answered on the website. "
         . "Instead of bothering everyone in game, please go there and look for the answer yourself: $UMC_DOMAIN - Thats why we have it;";
-        umc_ws_cmd($cmd, 'asPlayer');
+        umc_mod_message($args[2], $msg);
     } else {
         umc_echo("You have to name an online user to receive the message");
     }
@@ -346,9 +344,9 @@ function umc_info_settler() {
     $players = $UMC_USER['online_players'];
 
     if (isset($args[2]) && in_array($args[2], $players)) {
-        $cmd = "msg {$args[2]} Dear {$args[2]}, welcome to Uncovery Minecraft! "
+        $msg = "Dear {$args[2]}, welcome to Uncovery Minecraft! "
         . "You have so far only gotten Guest-status to look around. If you want to start building,; please click here http://bit.ly/1GUDhgg and follow the instructions!";
-        umc_ws_cmd($cmd, 'asPlayer');
+        umc_mod_message($msg, 'asPlayer');
     } else {
         umc_echo("You have to name an online user to receive the message");
     }

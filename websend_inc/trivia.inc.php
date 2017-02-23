@@ -134,9 +134,9 @@ function umc_trivia_new() {
     // announce quiz and send first question
     umc_footer();
 
-    umc_ws_cmd("ch qm o &3[Trivia]&f &4Trivia Quiz No $id started: &4$questions questions, $price Uncs&f per given answer&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f Quizmaster today is &4$player&f!");
-    umc_ws_cmd("ch qm u &3[Trivia]&f There is a new trivia quiz starting, do &2/ch join o&f to see it!");
+    umc_mod_broadcast("&3[Trivia]&f &4Trivia Quiz No $id started: &4$questions questions, $price Uncs&f per given answer&4");
+    umc_mod_broadcast("&3[Trivia]&f Quizmaster today is &4$player&f!");
+    umc_mod_broadcast("&3[Trivia]&f There is a new trivia quiz starting, do &2/ch join o&f to see it!");
     umc_trivia_find_question();
     umc_log('trivia', 'start', "$player started a trivia with $questions questions for $price uncs");
 }
@@ -188,9 +188,9 @@ function umc_trivia_ask_users() {
     $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id = $question_id";
     umc_mysql_query($question_sql, true);
 
-    umc_ws_cmd("ch qm o &3[Trivia]&f Quiz No $quiz_id Question $question_no:&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f Question: $question&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f Answer for $price Uncs with &3/trivia answer <text>&4");
+    umc_mod_broadcast("&3[Trivia]&f Quiz No $quiz_id Question $question_no:&4");
+    umc_mod_broadcast("&3[Trivia]&f Question: $question&4");
+    umc_mod_broadcast("&3[Trivia]&f Answer for $price Uncs with &3/trivia answer <text>&4");
     umc_log('trivia', 'ask', "$player asked trivia $quiz_id question id {$quiz_arr['question_id']}");
 }
 
@@ -298,13 +298,13 @@ function umc_trivia_skip() {
 
     $close_sql = "UPDATE minecraft_quiz.quiz_questions SET status='solved' WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']};";
     umc_mysql_query($close_sql);
-    umc_ws_cmd("ch qm o &3[Trivia]&f &4 Quiz No $quiz_id Question $question_no&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f &2No correct answers, this question has been skipped!&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f &2Correct answer would have been $answer&4");
+    umc_mod_broadcast("&3[Trivia]&f &4 Quiz No $quiz_id Question $question_no&4");
+    umc_mod_broadcast("&3[Trivia]&f &2No correct answers, this question has been skipped!&4");
+    umc_mod_broadcast("&3[Trivia]&f &2Correct answer would have been $answer&4");
     if ($quiz_arr['question_no'] >= $quiz_arr['questions']) {
         umc_trivia_close_quiz();
     } else {
-        umc_ws_cmd("ch qm o &3[Trivia]&f Please stand by for the next question to be picked and annunced.");
+        umc_mod_broadcast("&3[Trivia]&f Please stand by for the next question to be picked and annunced.");
         umc_trivia_find_question();
     }
 }
@@ -341,14 +341,14 @@ function umc_trivia_solve() {
     $row = $D[0];
     $username = $row['username'];
     $answer = $row['answer_text'];
-    umc_ws_cmd("ch qm o &3[Trivia]&f Quiz No $quiz_id Question $question_no");
-    umc_ws_cmd("ch qm o &3[Trivia]&f The correct answer was: {$quiz_arr['answer']}&4");
-    umc_ws_cmd("ch qm o &3[Trivia]&f User &6$username&f answered correctly with &2$answer&4");
+    umc_mod_broadcast("&3[Trivia]&f Quiz No $quiz_id Question $question_no");
+    umc_mod_broadcast("&3[Trivia]&f The correct answer was: {$quiz_arr['answer']}&4");
+    umc_mod_broadcast("&3[Trivia]&f User &6$username&f answered correctly with &2$answer&4");
 
     if ($quiz_arr['question_no'] >= $quiz_arr['questions']) {
         umc_trivia_close_quiz();
     } else {
-        umc_ws_cmd("ch qm o &3[Trivia]&f Please stand by for the next question to be picked and annunced.");
+        umc_mod_broadcast("&3[Trivia]&f Please stand by for the next question to be picked and annunced.");
         umc_trivia_find_question();
     }
 }
@@ -504,15 +504,15 @@ function umc_trivia_close_quiz($quiz_arr = false) {
         $answer_count = $answer_row['counter'];
 
         $prize = ($answer_count * $quiz_arr['price']) / $winner_count;
-        umc_ws_cmd("ch qm o &3[Trivia]&f We have $winner_count winner(s) who each get $prize!");
-        umc_ws_cmd("ch qm o &3[Trivia]&f Winner(s): $winner_str");
+        umc_mod_broadcast("&3[Trivia]&f We have $winner_count winner(s) who each get $prize!");
+        umc_mod_broadcast("&3[Trivia]&f Winner(s): $winner_str");
         umc_money(false, $row['username'], $prize);
         $sql = "UPDATE minecraft_quiz.quizzes SET end=NOW(), winner='$winner_str', points=$prev_points WHERE quiz_id=$quiz_id;";
     } else {
          $sql = "UPDATE minecraft_quiz.quizzes SET end=NOW(), winner='', points=0 WHERE quiz_id=$quiz_id;";
     }
     umc_mysql_query($sql, true);
-    umc_ws_cmd("ch qm o &3[Trivia]&f Thanks for participating. Create your own quiz with /trivia new!");
+    umc_mod_broadcast("&3[Trivia]&f Thanks for participating. Create your own quiz with /trivia new!");
     umc_log('trivia', 'close', "$player closed trivia $quiz_id and gave $prize to $winner_str each");
 }
 

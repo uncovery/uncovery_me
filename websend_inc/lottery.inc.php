@@ -27,6 +27,10 @@
 global $UMC_SETTING, $WS_INIT, $UMC_DOMAIN;
 
 $WS_INIT['lottery'] = array(  // the name of the plugin
+    'disabled' => false,
+    'events' => array(
+        'PlayerJoinEvent' => 'umc_lottery_reminder',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Voting Lottery',  // give it a friendly title
@@ -34,7 +38,7 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
             'long' => "You can vote for the lottery and win 100 Uncs + a random prize. See $UMC_DOMAIN/vote-for-us/ for detailss", // a long add-on to the short  description
             ),
     ),
-    'vote' => array( // this is the base command if there are no other commands
+    'servervote' => array( // this is the base command if there are no other commands
         'help' => array(
             'short' => 'Test Vote',
             'long' => "Runs a test vote, results go to Uncovery.",
@@ -45,13 +49,34 @@ $WS_INIT['lottery'] = array(  // the name of the plugin
         ),
         'function' => 'umc_lottery',
     ),
-    'disabled' => false,
-    'events' => array(
-        'PlayerJoinEvent' => 'umc_lottery_reminder',
+    'vote' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Display the vote links',
+            'long' => "Shows a list of all active test-URLs for easier click & vote",
+        ),
+        'function' => 'umc_lottery_vote',
+        'top' => true,
+    ),
+    'report' => array( // this is the base command if there are no other commands
+        'help' => array(
+            'short' => 'Output vote data',
+            'long' => "Display information about times since last votes.",
+        ),
+        'function' => 'umc_lottery_report',
     ),
 );
 
-global $lottery;
+global $lottery, $lottery_urls;
+
+$lottery_urls = array(
+    'minecraft-server-list.com' => array('url' => 'http://minecraft-server-list.com/server/54265/vote/', 'id' => 'mcsl', 'val' => 500),
+    'minecraftservers.org' => array('url' => 'http://minecraftservers.org/vote/160828', 'id' => 'minecraftservers.org', 'val' => 50),
+    // 'mineservers.net' => array('url' => 'http://www.mineservers.net/servers/834-uncovery-minecraft/vote', 'id' => 'mineservers.net', 'val' => 100),
+    'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com', 'val' => 50),
+    'minestatus.net' => array('url' => 'https://www.minestatus.net/152-uncovery-minecraft/vote', 'id' => 'minestatus', 'val' => 50),
+    'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org', 'val' => 50),
+    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers', 'val' => 50),
+);
 
 $lottery = array(
     'diamond' => array(
@@ -197,13 +222,13 @@ $lottery = array(
         'txt' => '1-64 of random rare block',
         'blocks' => array(
             'coal_ore:0', 'iron_ore:0', 'lapis_ore:0', 'mossy_cobblestone:0', 'diamond_ore:0',
-            'redstone_ore:0', 'ice:0', 'snow:0', 'clay:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
+            'redstone_ore:0', 'ice:0', 'snow:0', 'clayblock:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
             'mycelium:0', 'nether_brick:0', 'emerald_ore:0', 'end_stone:0', 'redstone_block:0',
             'quartz_ore:0', 'quartz_block:0', 'coal_block:0', 'packed_ice:0',
         ),
     ),
     'random_manuf' => array(
-        'chance' => 150,
+        'chance' => 140,
         'type' => 'random_manuf',
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
@@ -219,7 +244,7 @@ $lottery = array(
         ),
     ),
     'random_ench' => array(
-        'chance' => 69, // rate of 69 in 1000
+        'chance' => 68, // rate of 69 in 1000
         'type' => 'random_ench',
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
@@ -230,21 +255,240 @@ $lottery = array(
         'data' => 'home',
         'txt' => 'an additional home!',
     ),
+    'additional_deposit' => array(
+        'chance' => 1, // rate of 1 in 1000
+        'type' => 'additional_deposit',
+        'data' => 'deposit',
+        'txt' => 'an additional deposit slot!',
+    ),
+    'vanity_title' => array(
+        'chance' => 10, // rate of 1 in 1000
+        'type' => 'vanity_title',
+        'data' => 'title',
+        'txt' => 'a vanity title!',
+    )
 );
 
-function umc_lottery_reminder() {
-    global $UMC_USER, $UMC_DOMAIN;
-    $player = $UMC_USER['username'];
+/**
+ * Prints a list of all voting servers in-game for easier voting
+ * @global array $lottery_urls
+ */
+function umc_lottery_vote() {
+    // get the votes of the current user in the last 24 hours
 
-    $sql = "SELECT count(vote_id) as counter FROM minecraft_log.votes_log WHERE `username`='$player' AND TIMESTAMPDIFF(HOUR, datetime, NOW()) < 24 ORDER BY `vote_id` DESC  ";
+    global $UMC_USER, $lottery_urls;
+
+    $uuid_sql = umc_mysql_real_escape_string($UMC_USER['uuid']);
+    $sql = "SELECT website FROM minecraft_log.votes_log WHERE username=$uuid_sql AND datetime > DATE_SUB(NOW(), INTERVAL 24 HOUR)";
+    $W = umc_mysql_fetch_all($sql);
+    if (count($W) == count($lottery_urls)) {
+       umc_echo("You voted on all lists in the last 24 hours already! Thanks!");
+    }
+    $voted = array();
+    foreach ($W as $row) {
+        $voted[] = $row['website'];
+    }
+    umc_header("Voting servers:");
+    foreach ($lottery_urls as $L) {
+        if (!in_array($L['id'], $voted)) {
+            umc_echo($L['url']);
+        }
+    }
+    umc_footer();
+}
+
+/**
+ * displays a list of all lottery links for the website
+ */
+function umc_lottery_votelist_web() {
+    global $lottery_urls;
+    $out = "<br><ul>\n";
+    foreach ($lottery_urls as $id => $L) {
+        $out .= "<li><a href='{$L['url']}'>$id</a></li>\n";
+    }
+    $out .= "</ul>";
+    $out .= "<p><strong>Use /withdraw @lottery to get your stuff, use /vote in-game to display this list for easier voting!</strong></p>";
+    echo $out;
+}
+
+
+/**
+ * runs on user login to remind them to vote.
+ *
+ * @global type $UMC_USER
+ * @global type $UMC_DOMAIN
+ */
+function umc_lottery_reminder() {
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
+
+    $checkdate = date("Y-m-d H:i:s", strtotime("-24 hours"));
+
+    // TODO: the votes log fieldname is username, but there are UUIDs inside, need to fix that
+    $sql = "SELECT count(vote_id) as counter
+            FROM minecraft_log.votes_log
+            WHERE `username`='$uuid'
+            AND `datetime`>='$checkdate'
+            ORDER BY `vote_id` DESC;";
+
     $D = umc_mysql_fetch_all($sql);
     $counter = $D[0]['counter'];
+
     if ($counter < 5) {
-        umc_echo ("NOTE: You have voted only $counter times in the 24 hours before the last restart. "
-            . "Please vote: $UMC_DOMAIN/vote-for-us/");
+
+        // politely remind users they need to vote dammit!
+        $title =  'title ' . $player . ' title {"text":"Please vote!","color":"green"}';
+
+        // add some variety to login welcome messages!
+        $messages = array(
+            'Welcome back ' . $player .'!',
+            $player . '! Great to see you!',
+            'Hello again ' . $player,
+            "Maybe you should visit the darklands today?",
+            "Maybe you should visit the darklands today?",
+            "Considered taking a stroll in the empire?",
+            "Have you tried the command /find request new",
+            "Experience can be bottled using /bottlexp",
+            "Hold an item and type /offer <your price> to list it for sale!",
+            "Rome wasnt built in a day...",
+            "Thanks for coming by to play!",
+            "You can find items to buy using /find <itemname>",
+            "Darklands is a resource gathering world. But beware the moon...",
+            'Hey, your friends were looking for you ' . $player,
+            "Use /whereami for information about your position!",
+            "Use /uncs to display your current balance!",
+            "Did you know you can buy additional homes for Uncs?",
+            "Did you know you can buy additional desposit boxes for Uncs?",
+            "We missed you $player!",
+        );
+
+        // select a random position in the title array
+        $key = array_rand($messages);
+        $subtitle = $messages[$key];
+
+        umc_ws_cmd("title $player subtitle {\"text\":\"$subtitle\",\"color\":\"gold\"}", 'asConsole');
+        umc_ws_cmd($title, 'asConsole');
+
     }
 }
 
+function umc_lottery_stats($uuid) {
+    // check how often the user logged in during the last 30 days
+    $username = umc_uuid_getone($uuid, 'username');
+
+    $sql_uname = umc_mysql_real_escape_string($username);
+    $sql = "SELECT date
+        FROM minecraft_log.universal_log
+        WHERE username LIKE $sql_uname AND `plugin` LIKE 'system' AND `action` LIKE 'login' AND `date` > DATE_SUB(NOW(), INTERVAL 30 day)
+        group by `date`";
+    $L = umc_mysql_fetch_all($sql);
+    $login_count = count($L);
+
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql_votes = "SELECT datetime FROM minecraft_log.`votes_log`
+        WHERE username=$sql_uuid AND `datetime` > DATE_SUB(NOW(), INTERVAL 30 day)
+        group by DAY(datetime)";
+    $V = umc_mysql_fetch_all($sql_votes);
+    $vote_count = count($V);
+
+    if ($username == 'uncovery') {
+        return "n/a";
+    }
+    if ($login_count == 0) {
+        return "n/a";
+    } else if ($vote_count == 0) {
+        return 0;
+    }
+
+    $ratio = number_format($vote_count / $login_count, 2);
+    return $ratio;
+}
+
+
+/**
+ * displays a report to the initiating user displaying their vote history to $lim rolls and $hours hours.
+ * ie you can check for 500 hours worth of rolls, but limit result count to $lim
+ *
+ * @param type $hours
+ * @param int $lim
+ */
+function umc_lottery_report($hours = 24, $lim = 50){
+
+    $D = umc_lottery_retrieve_entries($hours);
+    $c = count($D);
+
+    // display a reminder
+    if ($c < 5){
+        umc_echo("{yellow} Please vote! This is *super important* to attract more players, get rich and win fantastic rewards!");
+    }
+
+    // display the total
+    umc_echo("{yellow} [!] {green} Our records show you have voted $c times in the last $hours hours!");
+
+    //set a maximum number of vote records to display back to the user
+    $now = new DateTime("now");
+
+    // iterate through array and output results to limits
+    foreach ($D as $row) {
+
+        $timestamp = $row['datetime'];
+        $diff = $timestamp->diff($now);
+        $hours = $diff->h;
+        $website = $row['website'];
+        $reward = $row['reward'];
+        $reward_amount = $row['reward_amount'];
+
+        // echo the records retrieved
+        umc_echo("{yellow}[-]{grey}[$website] $hours hours ago: $reward_amount $reward");
+
+        // limit the count displayed back to the user due to mc messaging limits
+        $lim -= 1;
+        if ($lim <= 1){
+            umc_echo("red}[!] Too many records to display!");
+            break;
+        }
+
+    }
+
+}
+
+/**
+ *
+ * returns an array of vote rolls (to 150) in last specified hours.
+ *
+ * @global type $UMC_USER
+ * @param type $hours
+ * @return type
+ */
+function umc_lottery_retrieve_entries($hours = 24){
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+
+    $checkdate = date("Y-m-d H:i:s", strtotime("-" . $hours . "hours"));
+
+    // select all lottery rolls within last 24 hours
+    $sql = "SELECT *
+            FROM minecraft_log.votes_log
+            WHERE `username`='$uuid'
+            AND `datetime`>='$checkdate'
+            ORDER BY `vote_id` DESC
+            LIMIT 150;";
+
+    // run the query to retrieve the data
+    $D = umc_mysql_fetch_all($sql);
+
+    // send back the array of entries within time period
+    return($D);
+
+}
+
+/**
+ *
+ * returns an html formatted table displaying the list of rolls and percentages for vote rolls
+ *
+ * @global array $lottery
+ */
 function umc_lottery_show_chances() {
     global $lottery;
 
@@ -271,7 +515,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS;
+    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
 
     $user_input = $UMC_USER['args'][2];
 
@@ -286,11 +530,11 @@ function umc_lottery() {
     $uuid = umc_user2uuid($user);
 
     // give reinforcing feedback - set subtitle (not displayed)
-    $subtitle =  'title ' . $user . ' subtitle {text:"Thanks for your vote!",color:gold}';
+    $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
     umc_ws_cmd($subtitle, 'asConsole');
 
     // display the feedback - displays subtitle AND title
-    $title = 'title ' . $user . ' title {text:"+100 Uncs",color:gold}';
+    $title = 'title ' . $user . ' title {"text":"+100 Uncs","color":"gold"}';
     umc_ws_cmd($title, 'asConsole');
 
     // allow uncovery to test chance rolls for debugging purposes
@@ -320,9 +564,6 @@ function umc_lottery() {
     }
     $type = $prize['type'];
 
-    // always give 100 uncs irrespective of roll.
-    umc_money(false, $user, 100);
-
     // instantiate block variables
     $given_block_data = 0;
     $given_block_type = 0;
@@ -339,6 +580,19 @@ function umc_lottery() {
             $newname = 'lottery' . "_" . umc_random_code_gen(4);
             umc_home_add($uuid, $newname, true);
             $item_txt = "an addtional home!!";
+            break;
+        case 'additional_deposit':
+            umc_depositbox_create($uuid);
+            $item_txt = "an addtional deposit box!!";
+            break;
+        case 'vanity_title':
+            $current_title = umc_vanity_get_title();
+            if ($current_title) {
+                return umc_lottery();
+            }
+            $luck2 = mt_rand(7, 14);
+            umc_vanity_set($luck2, "I won the lottery!");
+            $item_txt = "a vanity title fo $luck2 days!!";
             break;
         case 'random_unc':
             $luck2 = mt_rand(1, 500);
@@ -395,12 +649,12 @@ function umc_lottery() {
     }
     if ($user != 'uncovery') {// testing only
         $item_nocolor = umc_ws_color_remove($item_txt);
-        umc_ws_cmd("ch qm N $user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
+        umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
         umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($given_block_type:$given_block_data)");
         $userlevel = umc_get_userlevel($user);
         if (in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
-            umc_msg_user($user, $msg);
+            umc_mod_message($user, $msg);
         }
     } else {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
@@ -413,9 +667,21 @@ function umc_lottery() {
     // sql log
     $sql_reward = umc_mysql_real_escape_string($type);
     $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
     $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
-        VALUES ('$uuid', NOW(), $service, $ip, $luck, $sql_reward);";
+        VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
     umc_mysql_query($sql, true);
+
+    //TODO: Match the site with the lottery_urls
+
+    //TODO: determine the money given per lottery url
+
+    //TODO: make the return uncremental if several days in a row voting was done
+
+    // always give 100 uncs irrespective of roll.
+    umc_money(false, $user, 100);
+
+
 }
 
 // returns an array with the item and roll value
@@ -488,8 +754,6 @@ function umc_lottery_lot_fix_time($datetime) {
 }
 
 function umc_lottery_web_stats() {
-    global $UMC_DOMAIN;
-
     // get a timestamp 6 months ago
     $old_date = date("Y-m-d H:i:s", strtotime("-6 months"));
     $yesterday = date("Y-m-d H:i:s", strtotime("-1 day"));
@@ -502,101 +766,19 @@ function umc_lottery_web_stats() {
 
     $D = umc_mysql_fetch_all($sql);
     $out = '<h2>Voting stats for the last 6 months:</h2>';
-    $maxval = 0;
-    $minval = 0;
-    $legend = array();
     $ydata = array();
-    $sites = array();
 
-    $out .= "\n<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
-    //
     foreach ($D as $row) {
-        $maxval = max($maxval, $row['vote_count']);
-        $minval = min($minval, $row['vote_count']);
-        $date = $row['date'];
-        $legend[$date] = $date;
         if ($row['website'] == 'mcsl') {
             $site = 'minecraft-server-list.com';
+        } else if ($row['website'] == '') {
+            $site = 'unknown';
         } else {
             $site = $row['website'];
         }
-        $sites[$site] = $site;
-        $ydata[$date][$site] = $row['vote_count'];
+        $ydata[$row['date']][$site] = $row['vote_count'];
     }
 
-    foreach ($ydata as $date => $date_sites) {
-        $out .= "{\"date\": \"$date\",";
-        foreach ($date_sites as $date_site => $count) {
-            $out .= "\"$date_site\": $count,";
-        }
-        $out .= "},\n";
-    }
-    $out .= "];\n";
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Value
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.stackType = "regular"; // this line makes the chart "stacked"
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Votes";
-    chart.addValueAxis(valueAxis);';
-
-    foreach ($sites as $site) {
-        $out .= "var graph = new AmCharts.AmGraph();
-        graph.type = \"line\";
-        graph.hidden = false;
-        graph.title = \"$site\";
-        graph.valueField = \"$site\";
-        graph.lineAlpha = 1;
-        graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-        graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>$site: <b>[[value]]</b></span>\";
-        chart.addGraph(graph);";
-    }
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
-
+    $out .= umc_web_javachart($ydata, 'date', 'regular');
     return $out;
 }
-?>

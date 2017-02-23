@@ -34,8 +34,9 @@ $WS_INIT['money'] = array(  // the name of the plugin
     ),
     'status' => array( // this is the base command if there are no other commands
         'help' => array(
-            'short' => 'Check account status',
-            'long' => "This commdn shows you how much money you have in your account",
+            'short' => 'Check account status - shorthand command /uncs',
+            'long' => 'This command shows you how much money you have in your account. ' 
+                . 'You can as well user the command /uncs'
         ),
         'function' => 'umc_money_status',
     ),
@@ -90,7 +91,7 @@ function umc_money_give() {
     $target_uuid = umc_user2uuid($target);
     // check if the user is online
     if (isset($UMC_USER['player_data'][$target_uuid])) {
-        umc_msg_user($target, "You just received $sum Uncs from $player!");
+        umc_mod_message($target, "You just received $sum Uncs from $player!");
         umc_echo("The recipient is online, the server sent a notification message.");
     } else {
         // otherwise, send an email
@@ -116,17 +117,24 @@ function umc_money_give() {
  * @param type $amount
  * @return boolean
  */
-function umc_money($source = false, $target = false, $amount_raw = 0) {
+function umc_money($source_raw = false, $target = false, $amount_raw = 0) {
     global $UMC_ENV;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    if ($source) {
-        $source = umc_check_user($source);
+    if ($source_raw) {
+        $source = umc_check_user($source_raw);
+        if (!$source) {
+            XMPP_ERROR_trigger("Error payment from $source_raw (check result false! $source)");
+        }
+                
+    } else {
+        $source = $source_raw;
     }
 
     if ($target) {
         $target = umc_check_user($target);
     }
+    
     $amount = abs($amount_raw);
 
     if ($source) { // take from someone

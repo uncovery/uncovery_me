@@ -26,7 +26,12 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['lot'] = array(
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'user_ban' => 'umc_lot_wipe_user',
+        'user_delete' => 'umc_lot_wipe_user',
+        // 'PlayerPreLoginEvent'  => 'umc_lot_end_wipe_inventory', // this does not work currently ue to file write permissions
+        'server_reboot' => 'umc_uuid_record_lotcount',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Lot Management',
@@ -71,7 +76,7 @@ $WS_INIT['lot'] = array(
         'function' => 'umc_lot_mod',
         'security' => array(
             'level'=>'Elder',
-            // 'level'=>'ElderDonator', 'level'=>'ElderDonatorPlus',
+            // 'level'=>'ElderDonator',
          ),
     ),
     'warp' => array(
@@ -82,6 +87,14 @@ $WS_INIT['lot'] = array(
         ),
         'function' => 'umc_lot_warp',
     ),
+    'resetflags' => array(
+        'help' => array(
+            'short' => 'Resets the usage flags on your lot',
+            'args' => '<lot>',
+            'long' => 'This will reset all flags on your lot. It will also remove all snowfall and iceform flgs. Use this in case people cannot use your doors and buttons.',
+        ),
+        'function' => 'umc_lot_reset_flags',
+    ) //
 );
 
 function umc_lot_mod() {
@@ -115,7 +128,7 @@ function umc_lot_mod() {
     if (!umc_check_lot_exists($world_id, $lot)) {
         umc_error("There is no lot $lot in world $world;");
     }
-    if ($player_group !== 'Owner' && $player_group !== 'Elder' && $player_group !== 'ElderDonator' && $player_group !== 'ElderDonatorPlus') {
+    if ($player_group !== 'Owner' && $player_group !== 'Elder' && $player_group !== 'ElderDonator') {
         umc_error("You are not Elder or Owner, you are $player_group!");
     }
 
@@ -175,13 +188,13 @@ function umc_lot_addrem() {
     }
     $world = $worlds[$world_abr];
 
-    if ($player == '@Console') {
+    if ($player == '@console') {
         $player = 'uncovery';
     }
 
     $user_id = umc_get_worldguard_id('user', strtolower($player));
     if (!$user_id) {
-        umc_error("Your user id cannot be found!");
+        umc_error("Your user id ($player) cannot be found!");
     }
     $player_group = umc_get_userlevel($player);
 
@@ -197,15 +210,16 @@ function umc_lot_addrem() {
     }
 
     if ($action == 'snow' || $action == 'ice') {
-        // check if the user has DonatorPlus status.
+        // check if the user has Donator status.
 
         if ($player_group !== 'Owner') {
-            if (!stristr($player_group, 'DonatorPlus')) {
-                umc_error("You need to be DonatorPlus level to use the snow/ice features!;");
+            if (!stristr($player_group, 'Donator')) {
+                umc_error("You need to be Donator level to use the snow/ice features!;");
             }
             $owner_switch = 0;
             // check if player is Owner of lot
-            $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
+            $sql = "SELECT * FROM minecraft_worldguard.region_players
+                WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
             $D = umc_mysql_fetch_all($sql);
             $num = count($D);
             if ($num != 1) {
@@ -342,16 +356,24 @@ function umc_lot_warp() {
 
     if (!in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
-    } else {
+    } else if (isset($args[2])) {
         $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
         if (!in_array($target_world, $allowed_worlds)) {
-            umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
+            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
         }
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
         }
+        // check if lot exists
+        $lot_check = umc_check_lot_exists($target_world, $lot);
+        if (!$lot_check) {
+            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+        }
+
+    } else{
+        umc_error("Sorry, you need to enter the lot name after /lot warp!");
     }
 
     $sql = "SELECT * FROM minecraft_worldguard.world LEFT JOIN minecraft_worldguard.region ON world.id=region.world_id
@@ -360,7 +382,8 @@ function umc_lot_warp() {
 
     $D = umc_mysql_fetch_all($sql);
     if (count($D) != 1) {
-        umc_error("There was an error teleporting you to your lot, the admin was notified, please wait for it to be fixed!");
+        XMPP_ERROR_trigger("Could not get coordinates for lot warp command: $sql");
+        umc_error("There was an error teleporting you to your lot, the admin was notified, please try again. If the error persists, please wait for it to be fixed!");
     }
     $lots = $D[0];
 
@@ -368,9 +391,113 @@ function umc_lot_warp() {
     $c_z = $lots['min_z'] + 64;
     $c_y = 256;
 
-    $cmd = "tppos $player $c_x $c_y $c_z 0";
+    $cmd = "tppos $player $c_x $c_y $c_z 0 0 $world";
     umc_ws_cmd($cmd, 'asConsole');
     umc_pretty_bar("darkblue", "-", "{darkcyan} Warping to lot $lot");
     umc_echo("You are now in the center of lot $lot!");
     umc_footer();
+}
+
+function umc_lot_wipe_user($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // delete all dibs the user has
+    umc_lot_manager_dib_delete($uuid);
+
+    // get all lots of that user
+    $lots = umc_lot_by_owner($uuid);
+    foreach ($lots as $world => $L) {
+    // remove that user from the lots
+        $lot = $L['lot'];
+        umc_lot_rem_player($player, $lot, 1);
+
+    // check if someone else has dibs for that lot
+
+    }
+    // same for members:
+    $lot_members = umc_lot_by_owner($uuid, false, false);
+    foreach ($lot_members as $world => $L) {
+    // remove that user from the lots
+        $lot = $L['lot'];
+        umc_lot_rem_player($player, $lot, 0);
+
+    // check if someone else has dibs for that lot
+
+    }
+}
+
+/**
+ * returns all lots of a specific user
+ *
+ * @param type $uuid
+ * @param type $world
+ * @return type
+ */
+function umc_lot_by_owner($uuid, $world = false, $owner = true) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // worldguard stores everything in lower case.
+    $filter = '';
+    if ($world) {
+        if (is_array($world)){
+            $worlds = implode("','", $world);
+            $filter = "AND world.name IN('$worlds')";
+        } else {
+            $filter = "AND world.name = '$world'";
+        }
+    }
+
+    if (!$owner) {
+        $owner_str = 0;
+    } else {
+        $owner_str = 1;
+    }
+
+    $sql = "SELECT region_id, world.name FROM minecraft_worldguard.`region_players`
+        LEFT JOIN minecraft_worldguard.user ON user_id = user.id
+        LEFT JOIN minecraft_worldguard.world ON world_id = world.id
+        WHERE Owner=$owner_str AND uuid='$uuid' $filter ORDER BY region_id;";
+    $R = umc_mysql_fetch_all($sql);
+    $out = array();
+    //echo $sql;
+    foreach ($R as $row) {
+        $link = umc_lot_get_tile($row['region_id'], $row['name']);
+        if (!$link) {
+            $link = '';
+        }
+        $lot = $row['region_id'];
+        $out[$lot] = array('world' => $row['name'], 'lot' => $lot, 'image' => $link);
+    }
+    return $out;
+}
+
+/**
+ * On user login, we need to wipe the inventory to make sure end reset is not abused.
+ *
+ * @param type $uuid
+ */
+function umc_lot_end_wipe_inventory() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    umc_inventory_delete_world($uuid, 'the_end');
+}
+
+
+function umc_lot_reset_flags() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    $args = $UMC_USER['args'];
+    $lot = $args[2];
+
+    $username = $UMC_USER['username'];
+    if ($username != '@console') {
+        $check = umc_check_lot_owner($lot, $uuid);
+        if (!$check) {
+            umc_error("You $username are not the owner of that lot!");
+        }
+    }
+
+    umc_check_lot_owner($lot, $uuid);
+    umc_lot_flags_set_defaults($lot);
+    umc_echo("The flags for lot $lot have been reset!");
 }

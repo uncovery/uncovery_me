@@ -16,6 +16,9 @@ jQuery(document).ready(function(jQuery) {
 
     // Fade in sections that we wanted to pre-render
     jQuery('.umc_fade_in').fadeIn('fast');
+
+    // remove nickname editor from profile
+    jQuery('.user-nickname-wrap,.user-display-name-wrap').css('display','none');
 });
 
 // this should be in the footer to work

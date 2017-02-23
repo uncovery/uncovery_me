@@ -32,7 +32,7 @@ function umc_lot_manager_main() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_DOMAIN;
     // levels which should be able to get draftlands lots
-    $elder_ranks = array('Elder', 'ElderDonator', 'ElderDonatorPlus', 'Owner');
+    $elder_ranks = array('Elder', 'ElderDonator', 'Owner');
 
     // ***** ACCESS ***** //
     $out = '';
@@ -222,12 +222,11 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $members_form = umc_get_member_form($lot, $form);
         $flags_form = umc_get_flag_form($lot, $form);
         $lot_change_form = umc_get_lot_change_form($lot, $form);
-        $image = $lot_data['tile'];
+        $image = umc_lot_get_tile($lot);
 
-        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" class=\"lotform$class\" method=\"POST\">\n"
+        $out .= "<a name=\"$lot\"></a><form style=\"overflow:auto;\" action=\"#$lot\" class=\"lotform$class\" method=\"POST\">\n"
             . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div class=\"imgdiv\" style=\"width:{$lot_size}px; height:{$lot_size}px;\">$image</div>\n"
-            . "<div style=\"margin-left:{$lot_size}px; min-height:{$lot_size}px;\"><p><strong>Lot:</strong> $lot$button</p>\n"
+            . "<div>$image<p><strong>Lot:</strong> $lot$button</p>\n"
             . "<p><strong>Members:</strong> $members_form</p>\n"
             . "<p><strong>Flags:</strong> $flags_form</p>\n"
             . "<p>$lot_change_form</p></div>\n"
@@ -242,13 +241,12 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $form = false;
         $button = "<input class=\"submitbutton\" type=\"submit\" name=\"delete_dib\" value=\"Cancel dibs on $lot\">";
         $class = '';
-        $image = $lot_data['tile'];
+        $image = umc_lot_get_tile($lot);
         $action = $lot_data['action'];
 
         $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" class=\"lotform\" method=\"POST\">\n"
             . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div class=\"imgdiv\" style=\"width:{$lot_size}px; height:{$lot_size}px;\">$image</div>\n"
-            . "<div style=\"margin-left:{$lot_size}px; min-height:{$lot_size}px;\"><p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
+            . "<div>$image<p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
             . "<p><strong>Action:</strong> $action</p></div>\n"
             . "</form>\n";
     }
@@ -362,16 +360,25 @@ function umc_lot_manager_process() {
  * @return string
  */
 function umc_lot_manager_dib_delete($uuid, $lot = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "DELETE FROM minecraft_srvr.lot_reservation WHERE uuid='$uuid' AND lot='$lot' LIMIT 1;";
-    umc_mysql_query($sql);
-
     global $UMC_USER;
-    $world = umc_get_lot_world($lot);
-    unset($UMC_USER['lots'][$world]['dib_list'][$lot]);
-    $out = "Removed dib for lot $lot;";
-    XMPP_ERROR_send_msg("User $uuid removed dibs for lot $lot in world $world");
-    return $out;
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $lot_sql = '';
+    if ($lot) {
+        $lot_sql = "AND lot=" . umc_mysql_real_escape_string($lot);
+        $world = umc_get_lot_world($lot);
+        if ($UMC_USER && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
+            unset($UMC_USER['lots'][$world]['dib_list'][$lot]);
+        }
+        $log_msg = "for lot $lot in world $world";
+    } else { // we remove all dibs, so we
+        $log_msg = "for all lots";
+    }
+
+    $sql = "DELETE FROM minecraft_srvr.lot_reservation WHERE uuid='$uuid' $lot_sql;";
+    $count = umc_mysql_execute_query($sql);
+
+    XMPP_ERROR_send_msg("User $uuid removed $count dibs $log_msg");
+    umc_log("Lot", "wipe_user_dibs", "$count dibs removed from $uuid");
 }
 
 /**
@@ -636,11 +643,11 @@ function umc_get_new_lot_form($world, $dibs = false) {
 
     $intro_text = '';
     if ($world == 'kingdom' && $dibs == false) {
-        $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"http://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
+        $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"https://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
     }
 
-    $username = $UMC_USER['username'];
-    $account = umc_money_check($username);
+    $uuid = $UMC_USER['uuid'];
+    $account = umc_money_check($uuid);
 
     // get allowed draftland lots
     if ($world == 'draftlands') {
@@ -766,7 +773,7 @@ function umc_get_flag_form($lot, $form = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $UMC_SETTING;
     $out = '';
-    if ($UMC_USER['donator'] == 'DonatorPlus' || $UMC_USER['username'] == 'uncovery') {
+    if ($UMC_USER['donator'] == 'Donator' || $UMC_USER['username'] == 'uncovery') {
         $flags = umc_get_lot_flags($lot);
         $avail_flags = $UMC_SETTING['lot_flags'];
         foreach ($avail_flags as $flag) {
@@ -798,7 +805,7 @@ function umc_get_flag_form($lot, $form = false) {
             $out .= "No flags set";
         }
     } else if ($form) {
-        $out .= "Flag changes are only available to DonatorPlus users;";
+        $out .= "Flag changes are only available to Donators;";
     } else {
         $out .= " No Flags;";
     }
@@ -910,7 +917,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // check if the lot is owned already by someone
     $occupied_check = umc_check_lot_owner($new_lot, false);
     if ($occupied_check) {
-        XMPP_ERROR_send_msg("User $username tried to get $new_lot but someone else owns it! (umc_assign_new_lot)");
+        XMPP_ERROR_trigger("User $username tried to get $new_lot but someone else owns it! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "This lot is owned by someone else already!", 'cost' => $cost);
         return $result;
     }
@@ -1057,12 +1064,35 @@ function umc_lot_remove_all($lot) {
     }
     //  Remove all players
     $sql1 = "DELETE FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND world_id = $world_id";
-    umc_mysql_query($sql1, true);
+    umc_mysql_execute_query($sql1);
+
+    // now set default flags
+    umc_lot_flags_set_defaults($lot);
+
+    umc_log('lot_manager', 'remove all', "All users and flags have been reset for  lot $lot");
+    return true;
+}
+
+/**
+ * reset all lot flags to the defaults
+ *
+ * @param type $lot
+ */
+function umc_lot_flags_set_defaults($lot) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $lot_sql = umc_mysql_real_escape_string($lot);
+    $world = umc_get_lot_world($lot, true);
+    $world_id = umc_get_worldguard_id('world', $world, false);
 
     $sql2 = "DELETE FROM minecraft_worldguard.region_flag WHERE region_id = '$lot' AND world_id = $world_id";
-    umc_mysql_query($sql2, true);
-    umc_log('lot_manager', 'remove all', "All users and flags have been removed from lot $lot");
-    return true;
+    umc_mysql_execute_query($sql2);
+
+    $sql = "INSERT INTO minecraft_worldguard.`region_flag` (`region_id`, `world_id`, `flag`, `value`) VALUES
+        ($lot_sql, $world_id, 'use', 'allow\n'),
+        ($lot_sql, $world_id, 'chest-access', 'deny\n'),
+        ($lot_sql, $world_id, 'chest-access-group', 'NON_MEMBERS\n');";
+    umc_mysql_execute_query($sql);
+    umc_ws_cmd('regions load -w ' . $world);
 }
 
 /*
@@ -1192,6 +1222,34 @@ function umc_get_lot_members($lot, $owner = false) {
     return $members;
 }
 
+/**
+ * Gets an array of only members of a lot
+ * If $owner = true, gets only the owners
+ *
+ * @param type $lot
+ * @param type $owner
+ * @return type
+ */
+function umc_lot_get_group_members($lot, $owner = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $owner_val = 0;
+    if ($owner) {
+        $owner_val = 1;
+    }
+    $sql = "SELECT group.id as id, group.name FROM minecraft_worldguard.group
+        LEFT JOIN minecraft_worldguard.region_groups ON group.id=region_groups.group_id
+        WHERE region_id='$lot' AND owner=$owner_val;";
+    $D = umc_mysql_fetch_all($sql);
+    $members = false;
+    if (count($D) > 0) {
+        $members = array();
+        foreach ($D as $row) {
+            $members[$row['id']] = $row['name'];
+        }
+    }
+    return $members;
+}
+
 function umc_get_lot_flags($lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT `flag`, `value` FROM minecraft_worldguard.region_flag WHERE region_id='$lot';";
@@ -1257,11 +1315,14 @@ function umc_get_worldguard_id($type, $name, $add = false) {
 function umc_check_lot_owner($lot, $uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
+    $lot_sql = umc_mysql_real_escape_string($lot);
     if ($uuid) {
         $uuid = umc_uuid_getone($uuid, 'uuid');
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+
         $sql = "SELECT region_id FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
-            WHERE Owner=1 AND user.uuid='$uuid' AND region_id='$lot';";
+            WHERE Owner=1 AND user.uuid=$uuid_sql AND region_id=$lot_sql;";
         $D = umc_mysql_fetch_all($sql);
         // echo $sql;
         if (count($D) == 1) {
@@ -1270,7 +1331,7 @@ function umc_check_lot_owner($lot, $uuid = false) {
     } else {
         $sql = "SELECT uuid FROM minecraft_worldguard.region_players
             LEFT JOIN minecraft_worldguard.user ON user_id=user.id
-            WHERE Owner=1 AND region_id='$lot';";
+            WHERE Owner=1 AND region_id=$lot_sql;";
         $data = umc_mysql_fetch_all($sql);
         if (count($data) == 0) {
             return false;
@@ -1293,6 +1354,7 @@ function umc_lot_reset_process() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_PATH_MC;
 
+    umc_log('lot_manager', 'reset', "Lot reset process started");
     // first of all, clean up user dibs
     umc_lot_manager_dib_cleanup();
 
@@ -1300,7 +1362,7 @@ function umc_lot_reset_process() {
     $banned_users = umc_banned_users();
     // var_dump($banned_users);
     // donators UUID => leftover days
-    $donators = umc_users_donators();
+    $donators = umc_userlevel_donators_list();
 
     $dibs = umc_lot_manager_dibs_get_all();
 
@@ -1352,7 +1414,7 @@ function umc_lot_reset_process() {
         }
 
         // we do not reset active donators, except those who are banned
-        if (isset($donators[$owner_uuid]) && !isset($banned_users[$owner_uuid])) {
+        if (in_array($owner_uuid, $donators) && !isset($banned_users[$owner_uuid])) {
             continue;
         }
 
@@ -1366,7 +1428,8 @@ function umc_lot_reset_process() {
 
         // sanity check
         if ((!isset($row['userlevel'])) || (!in_array($owner_level, $UMC_SETTING['ranks']))) {
-            XMPP_ERROR_trigger("Could not reset lots, userlevel failure for Owner '$owner_username / $owner_uuid / $owner_level': $list_sql");
+            $this_row = var_export($row, true);
+            XMPP_ERROR_trigger("Could not reset lots, userlevel failure for Owner '$owner_username / $owner_uuid / $owner_level': $list_sql // $this_row");
             die("userlevel error");
         }
 
@@ -1377,7 +1440,7 @@ function umc_lot_reset_process() {
                 'dest_world' => "$dest_path/$world",
                 'remove_users' => true,
                 'reset_to' => $lot,
-                'user_shop_clean' => $owner_uuid,
+                'user_shop_clean' => false, // we do that via plugin-event
                 'dibs' => $lot_dibs,
                 'version_sql' => false,
                 'del_skyblock_inv' => false,
@@ -1499,8 +1562,9 @@ function umc_lot_reset_process() {
         }
     }
 
-
     // iterate the items
+    $count = count($A);
+    umc_log('lot_manager', 'reset', "$count lots marked for reset");
     foreach ($A as $lot => $a) {
         umc_lot_manager_reset_lot($lot, $a);
     }
@@ -1516,6 +1580,7 @@ function umc_lot_reset_process() {
 function umc_lot_manager_reset_lot($lot, $a) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
+    umc_log('lot_manager', 'reset', "restting lot $lot");
     $debug = $a['reason'];
     // we assume reseting of chunks, unless the dibs owner does not want to
     $a['reset_chunks'] = true;
@@ -1525,6 +1590,7 @@ function umc_lot_manager_reset_lot($lot, $a) {
     // check dibs
 
     if ($a['dibs']) {
+        umc_log('lot_manager', 'reset', "processing dibs for $lot");
         if (count($a['dibs']) > 1) {
             $debug .= "Lot $lot has more than 1 dibs applicant, aborting! ";
             return;
@@ -1562,26 +1628,29 @@ function umc_lot_manager_reset_lot($lot, $a) {
         }
         //echo $debug . "<br>";
     }
+
     // reset all lots
-    $debug .= "Lot ready for reset!";
+    // $debug .= "Lot ready for reset!";
     $source_lot = $lot;
-    if ($a['user_shop_clean']) {
-        $debug .= " Shop cleanout user " . $a['user_shop_clean']. ", ";
-        umc_shop_cleanout_olduser($a['user_shop_clean']);
-        // also remove teamspeak priviledges
-        umc_ts_clear_rights($a['user_shop_clean'], false);
+    if ($a['user_shop_clean']) { // this is the UUID or false
+        // plugin event on user inactiviy
+        umc_log('lot_manager', 'reset', "cleaning shop for user of $lot");
+        umc_plugin_eventhandler('user_inactive', $a['user_shop_clean']);
     }
     if ($a['remove_users']) {
         $debug .= " Removing all users ";
+        umc_log('lot_manager', 'reset', "removing all users of $lot");
         umc_lot_remove_all($lot);
     }
     if ($a['reset_to']) {
         $source_lot = $a['reset_to'];
     }
     if ($a['del_skyblock_inv']) { // value is false or the uuid
+        umc_log('lot_manager', 'reset', "deleting skyblock inv of $lot");
         umc_lot_skyblock_inv_reset($a['del_skyblock_inv']);
     }
     if ($a['reset_chunks']) {
+        umc_log('lot_manager', 'reset', "resetting chunks of $lot");
         umc_move_chunks($source_lot, $a['source_world'], $lot, $a['dest_world'], false);
     }
     umc_log('lot_manager', 'reset', $reason);
@@ -1595,6 +1664,7 @@ function umc_lot_manager_reset_lot($lot, $a) {
     }
     $debug .= "$source_lot, {$a['source_world']}, $lot, {$a['dest_world']}";
 
+    umc_log('lot_manager', 'reset', "processing $lot done!");
     XMPP_ERROR_trace(__FUNCTION__, $debug);
 }
 
@@ -1745,29 +1815,13 @@ function umc_temp() {
 
 }
 
-function umc_restore_from_backup(){
+function umc_restore_from_backup() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
 
-    // king_s11_b, king_r11_a, king_r11_b, king_q11_a, king_q11_b, king_p11_a, king_p11_b, king_o11_a, king_o11_b, king_n11_a, king_n11_b, and king_n12_c.
-    //  emp_k7, emp_j7, king_h21_a, king_h22, king_h22_c, king_g22, king_h22_a, king h22_b, king_g22_a, king_h23, king_h23_c, and king_g23.
+    $lots = array('emp_s30'=>'psiber','emp_t30'=>'psiber','flat_a18'=>'psiber','flat_b18'=>'psiber',);
 
-    $lots = array('king_s9'=>'f1','king_s9_b'=>'f1','king_s9_c'=>'f1','king_s8_a'=>'f1','king_s8_b'=>'f1','king_s8_c'=>'f1','king_s10_b'=>'f1',
-        'king_s10_c'=>'f1','king_s11_b'=>'f1','king_s11_c'=>'f1','king_r9'=>'f1','king_r9_a'=>'f1','king_r8_a'=>'f1','king_r8_b'=>'f1',
-        'king_r11_b'=>'f1','king_r15_b'=>'psychodrea','king_r11_a'=>'f1','king_r10'=>'f1','king_q16'=>'psychodrea','king_q15'=>'psychodrea',
-        'king_q15_a'=>'psychodrea','king_q14_a'=>'psychodrea','king_q14'=>'psychodrea','king_q11_a'=>'f1','king_q11_b'=>'f1','king_p13'=>'butifuldzastr',
-        'king_p11_a'=>'f1','king_p11_b'=>'f1','king_n11_b'=>'f1','king_n12_c'=>'f1','king_o11_a'=>'f1','king_o11_b'=>'f1','king_i22_c'=>'chenoa',
-        'king_n11_a'=>'f1','king_h23'=>'chenoa','king_h23_c'=>'chenoa','king_h22_c'=>'chenoa','king_h22'=>'chenoa','king_h22_a'=>'chenoa',
-        'king_h22_b'=>'chenoa','king_g23'=>'chenoa','king_h21_a'=>'chenoa','king_g22'=>'chenoa','king_g22_a'=>'chenoa','emp_x9'=>'patpat2211',
-        'emp_w17'=>'dueldragonoid','emp_w9'=>'patpat2211','emp_x10'=>'patpat2211','emp_v19'=>'dueldragonoid','emp_w10'=>'patpat2211','emp_t8'=>'silver82',
-        'emp_u7'=>'silver82','emp_u8'=>'silver82','emp_q6'=>'azjaguar','emp_q7'=>'azjaguar','emp_t7'=>'silver82','emp_q11'=>'doriryo92',
-        'emp_q20'=>'cyanlaser121','emp_p7'=>'azjaguar','emp_o4'=>'nerfherd315','emp_p6'=>'mrturtl3_97','emp_m22'=>'psychodrea','emp_m23'=>'psychodrea',
-        'emp_n22'=>'psychodrea','emp_n23'=>'psychodrea','emp_j7'=>'chenoa','emp_k7'=>'chenoa','emp_m20'=>'zataros','emp_i17'=>'f1','emp_j17'=>'bissellc',
-        'emp_h17'=>'f1','emp_ac6'=>'pilotrange','emp_f15'=>'pilotrange','emp_aa18'=>'butifuldzastr','emp_ab21'=>'masetrix','block_g7'=>'zataros',
-        'block_g9'=>'psychodrea','aet_g8'=>'nerfherd315','aet_j12'=>'mattdholloway','aet_f11'=>'f1','aet_d6'=>'azjaguar','aet_a12'=>'psychodrea',
-        'aet_a5'=>'dueldragonoid','emp_g27'=>'uncovery');
-
-    $source_folder = "/disk2/tmp/minecraft/server/worlds/save/";
+    $source_folder = "/data/backup/home/monthly/09/minecraft/server/worlds/save/"; // trailing /
     $dest_folder = "$UMC_PATH_MC/server/bukkit/";
 
     foreach ($lots as $lot => $owner) {
@@ -1780,6 +1834,14 @@ function umc_restore_from_backup(){
         //echo "Restoring with $lot, $source_folder . $world, $lot, $dest_folder . $world";
         umc_move_chunks($lot, $source_folder . $world, $lot, $dest_folder . $world, true);
     }
+}
+
+function umc_manual_reset_lot() {
+    $lots = array('flat_b14');
+    foreach ($lots as $lot) {
+        umc_lot_add_player('_abandoned_', $lot, 1);
+    }
+
 }
 
 function umc_flat_lot(){
@@ -1896,7 +1958,8 @@ function umc_check_lot_exists($world_id, $lot) {
     }
 
     //  Make sure the region exists
-    $sql = "SELECT id FROM minecraft_worldguard.region WHERE world_id = $world_id AND id = '$lot'";
+    $lot_sql = umc_mysql_real_escape_string($lot);
+    $sql = "SELECT id FROM minecraft_worldguard.region WHERE world_id = $world_id AND id = $lot_sql";
     //echo $sql;
     $C = umc_mysql_fetch_all($sql);
     if (count($C) < 1) {

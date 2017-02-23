@@ -50,7 +50,7 @@ $UMC_FAQ = array(
     3 => array(
         'question' => 'How can I have more lots? I need more space!',
         'answer' => 'If you are settler, you can either buy kingdom lots or build in the darklands.
-            To get more space in other worlds, please see the bottom of <a href="http://uncovery.me/about-this-server/user-levels/">this page</a>.',
+            To get more space in other worlds, please see the bottom of <a href="https://uncovery.me/about-this-server/user-levels/">this page</a>.',
         'categories' => array('userlevels', 'lots', 'account'),
     ),
     4 => array(
@@ -111,7 +111,7 @@ $UMC_FAQ = array(
     ),
     13 => array(
         'question' => 'Can I allow others to build inside my lot?',
-        'answer' => 'Yes, you can do so yourself. Please see the <a href="http://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
+        'answer' => 'Yes, you can do so yourself. Please see the <a href="https://uncovery.me/about-this-server/user-levels/">user levels</a> page for instructions.',
         'categories' => array('commands', 'lots', 'in-game'),
     ),
     14 => array(
@@ -179,7 +179,7 @@ $UMC_FAQ = array(
     ),
     24 => array(
         'question' => 'Can I keep my lot even if I do not login for a month?',
-        'answer' => 'Yes. Become DonatorPlus. You will keep your lot for the duration of your donation status',
+        'answer' => 'Yes. Become Donator. You will keep your lot for the duration of your donation status',
         'categories' => array('userlevels', 'lots'),
     ),
     25 => array(
@@ -203,7 +203,7 @@ $UMC_FAQ = array(
     ),
     28 => array(
         'question' => 'Something is not working, what should I do?',
-        'answer' => 'First of all, please check if someone else has the same issue. If that is the case, please check the <a href="http://uncovery.me/server-features/development-status/">
+        'answer' => 'First of all, please check if someone else has the same issue. If that is the case, please check the <a href="https://uncovery.me/server-features/development-status/">
             Bugs list</a>. If you can find the problem there, then it\'s a known problem. If you want to accelerate the fix for this problem, you can post to the forum. If the problem is not
             on the list, you can send a mail to uncovery with the /mail command.',
         'categories' => array('problems'),
@@ -239,7 +239,16 @@ $UMC_FAQ = array(
             Further, when a user had large amount of shop offers and became inactive, the offers stayed around and active users had less chances to sell their stuff.
             So we automatically move all shop contents of inactive users to their deposit. So we treat users without lots as inactive users and don\'t allow them to interact with in-game systems until they get a lot.',
         'categories' => array('problems', 'in-game', 'lots', 'rules', 'commands', 'userlevels'),
-    )
+    ),
+    33 => array(
+        'question' => 'Why can\'t I build a nether portal in my empire lot?',
+        'answer' => 'It is NOT possible to build a working nether portal on your lot. The nether can be only reached through the portal in the spawn area. This is a technical matter. Reasons are:
+            The normal world is size limited. Since the nether is at a larger scale than normal worlds, 100 blocks there is 800 blocks in the empire. If you walk only a couple of hundred blocks away from the nether spawn, you would already be far out from the borders of the empire map limits due to the size ratios 1:8.
+            Creating a nether portal in the normal world makes one in the nether, and making one in the nether either outside of the empire limits or at best in the middle of someone’s lot and building - damaging it.
+            Also, the nether is not that far away. You can type /spawn and walk a few steps to get to the nether portal, so it’s not as if it was hard to reach the nether
+            However, you can create a nether portal (standard with obsidian and flint & steel) when in the nether, and that portal will bring you to the darklands. The nether scales to the darklands 1:8 so you can make a portal in the nether every 100 blocks which will bring you 800 blocks further in the darklands. HOWEVER, you cannot go back through these portals! They are a one-way street into the darklands!',
+        'categories' => array('worlds', 'in-game', 'lots', 'rules'),
+    ),
 );
 
 /**
@@ -282,10 +291,11 @@ function umc_faq_web($id = 'accordion') {
             $cat_arr[$cat] = ucwords($cat);
         }
         $cat_text = implode(", ", $F['categories']);
+        $answer_text = nl2br($F['answer']);
         if (($presel_cat == 'all') || in_array($presel_cat, $F['categories'])) {
             $out .= "    <h3 id=\"FAQ$faq_id\">$faq_id: {$F['question']}</h3>
             <div>
-                <p class=\"answer\">{$F['answer']}</p>
+                <p class=\"answer\">$answer_text</p>
                 <p class=\"categories\"><a href=\"?id=$faq_id#FAQ$faq_id\">Direct link</a> | Categories: $cat_text</p>
             </div>";
         }

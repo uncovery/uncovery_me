@@ -18,13 +18,13 @@
  */
 
 /*
- * This file attempts to create a central config file. There are still MANY 
+ * This file attempts to create a central config file. There are still MANY
  * parts of the code where information is hard-coded such as paths, userlevels etc.
  */
 global $UMC_SETTING, $UMC_PATH_MC;
 
 $UMC_PATH_MC = "/home/minecraft";
-$UMC_DOMAIN = "http://uncovery.me";
+$UMC_DOMAIN = "https://uncovery.me";
 
 ini_set('display_errors', 1);
 
@@ -44,7 +44,7 @@ $UMC_SETTING = array(
     'world_folder' => $UMC_PATH_MC . '/server/bukkit/city/',
     'banned_players_file' => $UMC_PATH_MC . '/server/bin/data/banned-players.json',
     'map_css_file'=> $UMC_PATH_MC . '/server/bin/data/map.css',
-    'admins' => array('uncovery', '@console', '@Console', 'floored1585'),
+    'admins' => array('uncovery', '@console', '@Console'),
     'restart_time' => '16:00',
     'donation_users' => array( // these users want to be identified as donators
         '03a1544d-cd1f-4d39-8be4-8b4f71e4827c' => 'pagreifer',
@@ -76,22 +76,16 @@ $UMC_SETTING = array(
         'Guest'                 => array('empire' => 1, 'aether' => 0, 'kingdom' =>  0, 'skyblock' => 0, 'draftlands' =>  0),
         'Settler'               => array('empire' => 1, 'aether' => 0, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'SettlerDonator'        => array('empire' => 1, 'aether' => 0, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
-        'SettlerDonatorPlus'    => array('empire' => 1, 'aether' => 0, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'Citizen'               => array('empire' => 1, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'CitizenDonator'        => array('empire' => 1, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
-        'CitizenDonatorPlus'    => array('empire' => 1, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'Architect'             => array('empire' => 2, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'ArchitectDonator'      => array('empire' => 2, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
-        'ArchitectDonatorPlus'  => array('empire' => 2, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'Designer'              => array('empire' => 3, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'DesignerDonator'       => array('empire' => 3, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
-        'DesignerDonatorPlus'   => array('empire' => 3, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'Master'                => array('empire' => 4, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'MasterDonator'         => array('empire' => 4, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
-        'MasterDonatorPlus'     => array('empire' => 4, 'aether' => 1, 'kingdom' => 99, 'skyblock' => 1, 'draftlands' =>  0),
         'Elder'                 => array('empire' => 4, 'aether' => 2, 'kingdom' => 199, 'skyblock' => 1, 'draftlands' =>  199),
         'ElderDonator'          => array('empire' => 4, 'aether' => 2, 'kingdom' => 199, 'skyblock' => 1, 'draftlands' =>  199),
-        'ElderDonatorPlus'      => array('empire' => 4, 'aether' => 2, 'kingdom' => 199, 'skyblock' => 1, 'draftlands' =>  199),
         'Owner'                 => array('empire' => 91, 'aether' => 92, 'kingdom' => 193, 'skyblock' => 94, 'draftlands' =>  195),
     ),
     'lot_costs' => array(
@@ -119,19 +113,19 @@ $UMC_SETTING = array(
         'draftlands' => array(
         ),
     ),
-    'longterm' => array('SettlerDonatorPlus', 'CitizenDonatorPlus',
-        'Architect', 'ArchitectDonator', 'ArchitectDonatorPlus',
-        'Designer', 'DesignerDonator', 'DesignerDonatorPlus',
-        'Master', 'MasterDonator', 'MasterDonatorPlus',
-        'Elder', 'ElderDonator', 'ElderDonatorPlus',
+    'longterm' => array('SettlerDonator', 'CitizenDonator',
+        'Architect', 'ArchitectDonator',
+        'Designer', 'DesignerDonator',
+        'Master', 'MasterDonator',
+        'Elder', 'ElderDonator',
     ),
     'ranks' => array('Guest',
-        'Settler','SettlerDonator','SettlerDonatorPlus',
-        'Citizen','CitizenDonator','CitizenDonatorPlus',
-        'Architect','ArchitectDonator','ArchitectDonatorPlus',
-        'Designer','DesignerDonator','DesignerDonatorPlus',
-        'Master','MasterDonator','MasterDonatorPlus',
-        'Elder','ElderDonator','ElderDonatorPlus',
+        'Settler','SettlerDonator',
+        'Citizen','CitizenDonator',
+        'Architect','ArchitectDonator',
+        'Designer','DesignerDonator',
+        'Master','MasterDonator',
+        'Elder','ElderDonator',
         'Owner'
     ),
 );

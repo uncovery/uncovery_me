@@ -75,6 +75,7 @@ function umc_check_inventory($item_name, $data, $meta) {
  * @return boolean
  */
 function umc_clear_inv($id, $data, $amount, $meta = '') {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // umc_echo("trying to remove id $id, data $data, amount $amount, Enchantment $meta");
     global $UMC_USER;
     $inv = $UMC_USER['inv'];
@@ -130,7 +131,7 @@ function umc_check_space($amount, $item_name, $type) {
     // first find how many free slots we have
     $free = 0;
     for ($i = 0; $i < 36; $i++) {
-        if (!isset($inv[$i])) {
+        if (!isset($inv[$i]) || ($inv[$i]['amount'] == 0)) {
             $free++;
         }
     }
@@ -142,7 +143,7 @@ function umc_check_space($amount, $item_name, $type) {
     if (isset($UMC_DATA[$item_name]['stack'])) {
         $stack_size = $UMC_DATA[$item_name]['stack'];
     } else {
-        XMPP_ERROR_trigger("umc_check_space error with item $item and type $type");
+        XMPP_ERROR_trigger("umc_check_space error with item $item_name and type $type");
     }
 
     $need_slots = ceil($amount / $stack_size);
@@ -150,7 +151,7 @@ function umc_check_space($amount, $item_name, $type) {
     if ($free >= $need_slots) {
         return true;
     } else {
-        umc_error("{red}You have {white}$free{red} empty slots but need {white}$need_slots{red}. "
+        umc_error("{red}You only have {white}$free{red} empty slots but need {white}$need_slots{red}. "
             . "{red}Try a smaller amount, or free up some inventory space.;");
     }
 }
@@ -165,7 +166,7 @@ function umc_check_space_multiple($items) {
     // first find how many free slots we have
     $free = 0;
     for ($i = 0; $i < 36; $i++) {
-        if (!isset($inv[$i])) {
+        if (!isset($inv[$i]) || ($inv[$i]['amount'] == 0)) {
             $free++;
         }
     }
@@ -221,11 +222,14 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
             $sql = "SELECT * FROM minecraft_iconomy.stock WHERE id='$id' LIMIT 1;";
         }
     } else if ($table == 'deposit') {
-        $sql = "SELECT * FROM minecraft_iconomy.deposit WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id' LIMIT 1;";
+        $sql = "SELECT * FROM minecraft_iconomy.deposit
+            WHERE (sender_uuid='$uuid' OR recipient_uuid='$uuid') AND id='$id'LIMIT 1;";
     }
     $D = umc_mysql_fetch_all($sql);
     if (count($D) == 0) {
         umc_error("{red}Id {white}$id{red} not found! Please try again.;");
+    } else if ($D[0]['amount'] == 0) {
+        umc_error("That depositslot is empty!");
     } else {
         $row = $D[0];
         $item = umc_goods_get_text($row['item_name'], $row['damage'], $row['meta']);
@@ -320,4 +324,130 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         }
         return $amount_left;
     }
+}
+
+/**
+ * Reset a user's world inventory, used in various applications
+ *
+ * @global type $UMC_PATH_MC
+ * @param type $uuid
+ * @param type $world
+ */
+function umc_inventory_delete_world($uuid, $world) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_PATH_MC;
+    $username = umc_uuid_getone($uuid, 'username');
+
+    $status = false;
+    $inv_yml = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.yml';
+    if (file_exists($inv_yml)) {
+        unlink($inv_yml);
+        umc_log('mod_event', 'inventory-reset', "$inv_yml was deleted");
+        $status = true;
+    }
+    $inv_json = "$UMC_PATH_MC/server/bukkit/plugins/Multiverse-Inventories/worlds/$world/" . $username . '.json';
+    if (file_exists($inv_json)) {
+        unlink($inv_json);
+        umc_log('mod_event', 'inventory-reset', "$inv_json was deleted");
+        $status = true;
+    }
+    return $status;
+}
+
+function umc_inventory_import() {
+    $path_root = '/home/minecraft/server/bukkit/plugins/Multiverse-Inventories';
+    // enderchest content path: /groups/enderchest
+    $paths = array(
+        'groups/invshares',
+        'groups/enderchest',
+        'groups/creative',
+        'groups/xpshares',
+        'worlds/aether',
+        'worlds/city',
+        'worlds/darklands',
+        'worlds/deathlands',
+        'worlds/draftlands',
+        'worlds/empire',
+        'worlds/flatlands',
+        'worlds/hunger',
+        'worlds/kingdom',
+        'worlds/nether',
+        'worlds/skyblock',
+        'worlds/the_end',
+        'players',
+    );
+    foreach ($paths as $path) {
+        $inv = file_get_contents("$path_root/$path/uncovery.json");
+        $inv_array = json_decode($inv, true);
+        XMPP_ERROR_trace("$path Inv:", $inv_array);
+    }
+
+    $active_users = umc_get_active_members('name');
+
+    $sql = "TRUNCATE minecraft_iconomy.multiinv_multiinv;";
+    umc_mysql_execute_query($sql);
+
+    $usernames = array();
+
+    $dirs = array("$path_root/groups/xpshares", "$path_root/groups/invshares");
+    foreach ($dirs as $dir) {
+        $files = array_diff(scandir($dir), array('..', '.'));
+        foreach ($files as $userfile) {
+            $username = strtolower(substr($userfile, 0, -5));
+            $usernames[$username] = $userfile;
+        }
+    }
+
+    $empty_str = 'AIR,0,0,0;';
+    $new_inv = '';
+    // IRON_SWORD,1,0,0;
+    // CLAY,2,0,0;
+    // BOW,1,0,ARROW_DAMAGE-10000#ARROW_FIRE-10000#DURABILITY-10000#ARROW_INFINITE-10000,#NM#NQ2h1Y2sgTm9ycmlzJyBHdW4=#L#R0;
+    // WOOD_SPADE,1,6,0;
+    // DIRT,6,0,0;
+    // SEEDS,1,0,0;
+
+
+    // STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0:DIAMOND_BOOTS,1,0,0;DIAMOND_LEGGINGS,1,0,0;DIAMOND_CHESTPLATE,1,0,0;DIAMOND_HELMET,1,0,0
+    //foreach ($active_users as $uuid => $username) {
+        $username = 'uncovery';
+        $real_name = $usernames[$username];
+        //$XP = file_get_contents("$path_root/groups/xpshares/$real_name");
+        $INV = file_get_contents("$path_root/groups/invshares/$real_name");
+
+        if (!$XP || !$INV) {
+            XMPP_ERROR_trigger("$username / $uuid file could nto be found!");
+        }
+        $inv_array = json_decode($INV, true);
+        //$xp_array = json_decode($XP, true);
+        $inv_root = $inv_array['SURVIVAL']['inventoryContents'];
+        for ($i=0; $i<=39; $i++) {
+            if (isset($inv_root[$i])) {
+                $item_name = $inv_root[$i]['type'];
+                $damage = '0';
+                if (isset($inv_root[$i]['damage'])) {
+                    $damage = $inv_root[$i]['damage'];
+                }
+                $amount = '1';
+                if (isset($inv_root[$i]['amount'])) {
+                    $amount = $inv_root[$i]['amount'];
+                }
+                $ench_txt = '0';
+                if (isset($inv_root[$i]['meta'])) {
+                    $enchs = $inv_root[$i]['meta']['enchants'];
+                    foreach ($enchs as $ench => $strength) {
+                        $ench_arr[] = $ench . "-" . $strength;
+                    }
+                    $ench_txt = implode("#",$ench_arr);
+                }
+                $new_inv .= "$item_name,$amount,$damage,$ench_txt;";
+            } else {
+                $new_inv .= $empty_str;
+            }
+        }
+
+        XMPP_ERROR_trace("$username Inv:", $inv_array);
+        XMPP_ERROR_trace("$username New Inv:", $new_inv);
+        return;
+    //}
 }

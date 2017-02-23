@@ -22,33 +22,6 @@
  * to UUID and back as well as the retrieval of UUIDs from Mojang and other sources.
  */
 
-function umc_tmp_fixtables() {
-    $tables = array(
-        'minecraft_srvr.proposals' => array('username' => 'uuid', 'proposer' => 'proposer_uuid'),
-        'minecraft_srvr.proposals_votes' => array('voter' => 'voter_uuid'),
-    );
-
-    foreach ($tables as $table => $fields) {
-        foreach ($fields as $userfield => $uuidfield) {
-            $sql = "SELECT $userfield FROM $table WHERE $uuidfield = '' GROUP BY $userfield;";
-            echo $sql. "<br>";
-            $data = umc_mysql_fetch_all($sql);
-            foreach ($data as $row) {
-                $username = $row[$userfield];
-                $json = file_get_contents("https://api.mojang.com/users/profiles/minecraft/$username?at=141321800");
-                $object = json_decode($json);
-                $uuid_raw = $object->id;
-                $uuid = umc_uuid_format($uuid_raw);
-                if ($uuid) {
-                    $update_sql = "UPDATE $table SET $uuidfield='$uuid' WHERE $userfield='$username';";
-                    echo $update_sql;
-                    umc_mysql_query($update_sql, true);
-                }
-            }
-        }
-    }
-}
-
 /**
  * Update last login time, last logout time, onlinetime
  *
@@ -136,64 +109,68 @@ function umc_uuid_record_lotcount($user = false) {
         $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$lots WHERE UUID='$uuid';";
         umc_mysql_query($sql);
     } else {
-
-
+        // get all lot counts
+        $data = umc_get_active_members('counter');
+        foreach ($data as $uuid => $counter) {
+            $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$counter WHERE UUID='$uuid';";
+            umc_mysql_query($sql);
+        }
     }
 }
 
 
 /**
- * This checks if the username has changed and updates the wordpress table accordingly
+ * takes the current username from the logged-in user and checks if the databases are matching
+ * It assumes that the values passed by websend and are correct (which they should be).
  *
- * @param type $username
- * @param type $uuid
+ * @param string $uuid
+ * @param string $username_raw
  */
-function umc_uuid_check_usernamechange($uuid) {
+function umc_uuid_check_usernamechange($uuid, $username_raw) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    $sql = "SELECT ID, user_login, display_name, UUID, username, wp_users.user_registered, UUID.lastlogin FROM minecraft.`wp_users`
-        LEFT JOIN minecraft.wp_usermeta ON ID=wp_usermeta.user_id
-        LEFT JOIN minecraft_srvr.UUID ON UUID.UUID=wp_usermeta.meta_value
-        WHERE meta_key='minecraft_uuid' AND meta_value='$uuid';";
-    $D = umc_mysql_fetch_all($sql);
+    $username = strtolower($username_raw);
+    // safety check
+    if (strlen($uuid) < 17 || strlen($username_raw) < 2) {
+        XMPP_ERROR_trigger("Username change error!");
+        return;
+    }
 
-    foreach ($D as $d) {
-        // get proper username from Mojang
-        $uuid = $d['UUID'];
-        $wordpress_name = strtolower($d['display_name']);
-        $uuid_name = strtolower($d['username']);
-        $wp_login = $d['user_login'];
-        // $wp_id = $d['ID'];
-        $mojang_raw = umc_uuid_get_from_mojang($uuid);
-        $mojang_name = strtolower($mojang_raw);
-        if (!$mojang_name || $mojang_name == '') {
-            //XMPP_ERROR_trigger("Tried to check for username change, failed to confirm ($sql)");
-            $s_server = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
-            $referer = "\nREQUEST_URI: " . $s_server['REQUEST_URI'];
-            XMPP_ERROR_send_msg("Fail on Username change check umc_uuid_check_usernamechange: Mojang name for $uuid is $mojang_name $referer");
-            return;
-            // let's try the user_login
-        /*    $mojang_uuid = umc_uuid_get_from_mojang($wp_login);
-            // update the meta table
-            $u_sql_meta = "UPDATE minecraft.wp_usermeta SET meta_value='$mojang_uuid' WHERE user_id='$wp_id' AND meta_key='minecraft_uuid'";
-            umc_mysql_query($u_sql_meta, true);
-         *
-         */
-        }
-        if ($wordpress_name != $mojang_name) {
-            $u_sql_wp = "UPDATE minecraft.wp_users SET display_name='$mojang_name' WHERE user_login='$wp_login'";
-            $logtext = "User $uuid changed username from $wordpress_name to $mojang_name in Wordpress";
-            XMPP_ERROR_send_msg($logtext);
-            umc_log('UUID', 'Username Change', $logtext);
-            umc_mysql_query($u_sql_wp, true);
-        }
-        if ($uuid_name != $mojang_name) {
-            $u_sql_uuid = "UPDATE minecraft_srvr.UUID SET username='$mojang_name' WHERE UUID='$uuid'";
-            $logtext = "User $uuid changed username from $uuid_name to $mojang_name in UUID table";
-            XMPP_ERROR_send_msg($logtext);
-            umc_log('UUID', 'Username Change', $logtext);
-            umc_mysql_query($u_sql_uuid, true);
-        }
+    $change = false;
+
+    // step one: check if the displayname matches the wordpress meta UUID
+    // in wordpress, we keep the actual capitalization
+    $wp_username = umc_uuid_get_from_wordpress($uuid);
+    if ($wp_username != $username_raw) {
+        // first we get the worpress ID so we can update it
+        $wp_login = umc_wp_get_login_from_uuid($uuid);
+        $sql_wp_login = umc_mysql_real_escape_string($wp_login);
+        $sql_username = umc_mysql_real_escape_string($username_raw);
+        $u_sql_wp = "UPDATE minecraft.wp_users SET display_name=$sql_username WHERE user_login=$sql_wp_login;";
+        umc_mysql_execute_query($u_sql_wp);
+
+        $logtext = "User $uuid changed username from $wp_username to $username_raw in Wordpress";
+        XMPP_ERROR_send_msg($logtext);
+        umc_log('UUID', 'Username Change', $logtext);
+        $change = true;
+    }
+
+    // step two: check if the UUID table has the right username
+    $utable_username = umc_uuid_get_from_uuid_table($uuid);
+    if ($utable_username != $username) {
+        $sql_username = umc_mysql_real_escape_string($username);
+        $u_sql_uuid = "UPDATE minecraft_srvr.UUID SET username=$sql_username WHERE UUID='$uuid'";
+        umc_mysql_execute_query($u_sql_uuid);
+        $logtext = "User $uuid changed username from $utable_username to $username in UUID table";
+
+        XMPP_ERROR_send_msg($logtext);
+        umc_log('UUID', 'Username Change', $logtext);
+
+        $change = true;
+    }
+    // log the complete username history since it changed
+    if ($change) {
+        umc_uuid_mojang_usernames($uuid);
     }
 }
 
@@ -205,17 +182,18 @@ function umc_uuid_check_usernamechange($uuid) {
     $username = $U['username'];
  *
  * @param string $query
+ * @param boolean $existing_only looks only for already known users
  * @return array('uuid'=> $uuid, 'user'=>$username)
  */
-function umc_uuid_getboth($query) {
+function umc_uuid_getboth($query, $existing_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // input is a uuid
     if (strlen($query) > 18) {
         $uuid = $query;
-        $username = umc_user2uuid($query);
+        $username = umc_user2uuid($query, $existing_only);
     } else {
         $username = $query;
-        $uuid = umc_user2uuid($query);
+        $uuid = umc_user2uuid($query, $existing_only);
     }
 
     return array('uuid'=> $uuid, 'username'=>$username);
@@ -225,16 +203,17 @@ function umc_uuid_getboth($query) {
  * get's either the uuid or username, depending on format
  * @param string $query username or uuid
  * @param string $format of array('username', 'uuid')
+ * @param boolean $existing_only looks only for already known users
  * @return string
  */
-function umc_uuid_getone($query, $format = 'uuid') {
+function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($format == 'uuid' && strlen($query) > 18) {
         return $query;
     } else if ($format == 'uuid' && strlen($query) < 18) {
-        return umc_user2uuid($query);
+        return umc_user2uuid($query, $existing_only);
     } else if ($format == 'username' && strlen($query) > 18) {
-        return umc_user2uuid($query);
+        return umc_user2uuid($query, $existing_only);
     } else if ($format == 'username' && strlen($query) < 18) {
         return $query;
     } else {
@@ -246,10 +225,10 @@ function umc_uuid_getone($query, $format = 'uuid') {
  * retrieves current uuid from username and vice-versa from various sources
  *
  * @param string $query either uuid or username
- * @param boolean $critical if critical, an error would be thrown if the user cannot be found
+ * @param boolean $existing_only looks only for already known users
  * @return string either username or uuid
  */
-function umc_user2uuid($query) {
+function umc_user2uuid($query, $existing_only = false) {
     // get a username
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -266,13 +245,22 @@ function umc_user2uuid($query) {
         return $UMC_USER['username'];
     }
 
-    $checks = array(
-        'umc_uuid_get_system_users',
-        'umc_uuid_get_from_wordpress',
-        'umc_uuid_get_from_uuid_table',
-        'umc_uuid_get_from_logfile',
-        'umc_uuid_get_from_mojang'
-    );
+    if ($existing_only) {
+        $checks = array(
+            'umc_uuid_get_system_users',
+            'umc_uuid_get_from_wordpress',
+            'umc_uuid_get_from_uuid_table',
+        );
+    } else {
+        $checks = array(
+            'umc_uuid_get_system_users',
+            'umc_uuid_get_from_wordpress',
+            'umc_uuid_get_from_uuid_table',
+            'umc_uuid_get_from_logfile',
+            'umc_uuid_get_from_mojang'
+        );
+    }
+
 
     foreach ($checks as $function) {
         $result = $function($query);
@@ -405,15 +393,15 @@ function umc_uuid_get_from_logfile($query) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $str_query = strtolower($query);
-    $text = file("/home/minecraft/server/bukkit/logs/latest.log");
+    // TODO: this is often too large for memory, we should do this line-by-line
+    $text_path = "/home/minecraft/server/bukkit/logs/latest.log";
     // reverse
-    $back_text = array_reverse($text);
     $pattern = '/\[id=(.*),name=(.*),/U';
     $pattern2 = '/UUID of player (.*) is (.*)/';
     $result = array();
     $result2 = array();
     $userdata = array();
-    foreach ($back_text as $line_text) {
+    foreach (new SplFileObject($text_path) as $line_text) {
         preg_match($pattern, $line_text, $result);
         if (count($result) == 0) {
             preg_match($pattern2, $line_text, $result2);
@@ -465,7 +453,7 @@ function umc_uuid_get_from_logfile($query) {
 function umc_uuid_get_from_mojang($username, $timer = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    if(strlen($username) < 17) {
+    if (strlen($username) < 17) {
         if (!preg_match('/^[A-Za-z_\d ]{1,16}$/', $username)) {
             return false;
         }
@@ -508,24 +496,58 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
     }
 }
 
+/**
+ * checks if the username history exists. If not, we update it.
+ * returns the history
+ *
+ * @param type $uuid
+ */
+function umc_uuid_check_history($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT username_history FROM minecraft_srvr.UUID
+        WHERE UUID=$sql_uuid
+	LIMIT 1;";
+    $D = umc_mysql_fetch_all($sql);
+    if ($D[0]['username_history'] == '') {
+        // no record available let's get from mojang
+        $previous_names = umc_uuid_mojang_usernames($uuid);
+    } else {
+        $previous_names = unserialize($D[0]['username_history']);
+    }
+    return $previous_names;
+}
+
+/**
+ * Get historical usernames from Mojang and update the database
+ * Should be only executed when we know that the username changed
+ * or when we do not have a record on file
+ *
+ * @param type $uuid
+ * @return boolean
+ */
 function umc_uuid_mojang_usernames($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid_raw = str_replace("-", "", $uuid);
     // https://api.mojang.com/user/profiles/a0130adc42ad4e619da2f90a5bc310d3/names
     $url = "https://api.mojang.com/user/profiles/$uuid_raw/names";
     $json_result = file_get_contents($url, false);
-    $json_data = json_decode($json_result, true);
-    if (count($json_data) == 0) {
-        $text = var_export($json_data, true);
-        XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url ($text)");
+    $data_array = json_decode($json_result, true);
+    if (count($data_array) == 0) {
+        $text = var_export($data_array, true);
+        XMPP_ERROR_trace("JSON Reply:", $text);
+        XMPP_ERROR_trigger("Could not find username for $uuid at Mojang $url");
         return false; // invalid uuid or too long username
     }
-    return $json_data;
+    // insert into database
+    $sql = "UPDATE minecraft_srvr.UUID SET username_history=" . umc_mysql_real_escape_string(serialize($data_array))
+        . "WHERE uuid=" .     umc_mysql_real_escape_string($uuid);
+    umc_mysql_execute_query($sql);
+    return $data_array;
 }
 
 function umc_uuid_username_history($uuid) {
-    $previous_names = umc_uuid_mojang_usernames($uuid);
-
+    $previous_names = umc_uuid_check_history($uuid);
     if (count($previous_names) > 1) {
         $names = array();
         foreach ($previous_names as $name_data) {

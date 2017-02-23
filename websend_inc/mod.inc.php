@@ -99,7 +99,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
         ),
         'function' => 'umc_mod_error_message',
         'security' => array(
-           'level' => 'Owner'
+           //'level' => 'Owner'
         ),
     ),
     'blockcheck' => array (
@@ -125,12 +125,61 @@ $WS_INIT['mod'] = array(  // the name of the plugin
          ),
     ),
 );
+$WS_INIT['mod']['broadcast'] = 'broadcast';
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
-    XMPP_ERROR_trigger("test");
+    $username = $UMC_USER['username'];
+    umc_echo("Thanks for the test, Uncovery received the message!");
+    XMPP_ERROR_trigger("User $username ran a mod test");
+}
+
+function umc_temp_backup_activeusers() {
+    $sourcepath = '/home/minecraft/server/bukkit/city/playerdata';
+    $targetpath = '/home/minecraft/server/bukkit/userfile_backup';
+    $users = umc_get_active_members();
+    foreach ($users as $uuid => $username) {
+        $cmd = "cp $sourcepath/$uuid.dat $targetpath";
+        //XMPP_ERROR_send_msg($cmd);
+        //exec($cmd, $output);
+        XMPP_ERROR_send_msg($cmd);
+    }
+}
+
+/**
+ * Sends a message to all users in-game
+ * This is a bridge so we do not need to change hundreds of lines of code
+ * in case the chat plugin changes again.
+ * 
+ * @param type $msg
+ */
+function umc_mod_broadcast($msg) {
+    global $WS_INIT;
+    $chat_command = $WS_INIT['mod']['broadcast'];
+    // we can send several messages as an array.
+    if (!is_array($msg)) {
+        $msg = array($msg);
+    }
+    foreach ($msg as $line) {
+        $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $line);
+        $full_command = "$chat_command $str;";
+        umc_exec_command($full_command, 'asConsole');
+    }
+}
+
+/**
+ * Command to send a message to a specific user. 
+ * See http://minecraft.gamepedia.com/Commands#Raw_JSON_text for more options
+ * 
+ * @param type $user
+ * @param type $message
+ */
+function umc_mod_message($user, $message) {
+    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
+    $cmd = "tellraw $user {\"text\":\"$str\",\"bold\":false}";
+    umc_exec_command($cmd, 'asConsole');
 }
 
 function umc_mod_banrequest() {
@@ -161,7 +210,7 @@ function umc_mod_banrequest() {
     $content .= umc_attach_logfile($user);
 
     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-    mail('minecraft@uncovery.me', $subject, $content, $headers);
+    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
     umc_header("Ban request for $user", true);
     umc_echo("An email with a logfile has been sent to the admin. Action will be taken if appropriate!", true);
     umc_footer(true);
@@ -210,11 +259,12 @@ function umc_mod_ban() {
     $content .= umc_attach_logfile($user);
 
     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-    mail('minecraft@uncovery.me', $subject, $content, $headers);
+    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
     umc_header("Ban of $user by $player", true);
     umc_echo("Thanks for the ban! An email with a logfile has been sent to the admin.", true);
     umc_footer(true);
     umc_user_ban($uuid, $reason);
+    // trigger plugin-even userban
 }
 
 
@@ -454,5 +504,26 @@ function umc_mod_warp_lot() {
     $x = $row['min_x'];
     $z = $row['min_z'];
     $y = 70;
-    umc_ws_cmd("tppos $x $y $z 135", 'asPlayer');
+    umc_ws_cmd("tppos $x $y $z 135 0 $playerworld", 'asPlayer');
+}
+
+function umc_mod_command($player) {
+    $chances = array(
+        'trick' => array(
+            "smite $player 2" => "$player was struck by lightning!",
+            "burn $player" => "$player has caught fire!",
+            "kick $player" => "$player as been kicked!",
+            "spawnmob creeper 3 $player" => "$player is suddenly in VERY bad company!",
+            "spawnmob zombie  3 $player" => "$player is suddenly in bad company!",
+            "tempban $player 5 minutes" => "$player was banned for 5 minutes!",
+            "tjail $player 10 minutes" => "$player was jailed for 10 minutes!",
+        ),
+        'treat' => array(
+            "heal player" => "$player was healed!",
+            "feed player" => "$player was fed!",
+            "exp $player give 50 " => "$player received 50 XP!",
+            "spawnmob cat 1 $player" => "$player has a new cat!",
+            "spawnmob dog 1 $player" => "$player has a new dog!",
+        ),
+    );
 }

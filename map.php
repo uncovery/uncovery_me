@@ -28,9 +28,14 @@ $UMC_FUNCTIONS['create_map'] = 'umc_create_map';
 $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
 
 function umc_create_map() {
-    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_ENV;
+    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER, $UMC_ENV;
     $timer = array();
-    $UMC_ENV = '2Dmap';
+    if (!isset($UMC_ENV)) {
+        $UMC_ENV = '2Dmap';
+    }
+
+    require_once($UMC_SETTING['path']['wordpress'] . '/wp-load.php');
+    umc_wp_get_vars();
 
     $file = $UMC_SETTING['map_css_file'];
     $css = "\n" . '<style type="text/css">' . file_get_contents($file) . "\n";
@@ -43,18 +48,19 @@ function umc_create_map() {
     if (isset($s_get['world'])) {
         $world = $s_get['world'];
         if (!in_array($world, $worlds)) {
-            exit;
+            die;
         }
     } else if (isset($s_post['world'])) {
         $world = $s_post['world'];
         if (!in_array($world, $worlds)) {
-            exit;
+            die;
         }
     } else {
         $world = 'empire';
     }
+
     // get donators
-    $donators = umc_users_donators();
+    $donators = umc_userlevel_donators_list();
 
     $track_player_icon = '';
     $find_lot = false;
@@ -177,6 +183,10 @@ function umc_create_map() {
     } else {
         $html .= umc_read_markers_file('html', $world);
     }
+    // add home markers if user is logged in
+    if ($UMC_USER) {
+        $html .= umc_home_2d_map($UMC_USER['uuid'], $world);
+    }
 
     //$repl_arr = array(',','-');
     $kingdom = '';
@@ -275,21 +285,15 @@ function umc_create_map() {
             $owner_username = $opt['owners'][$owner_uuid];
 
             // donation level
-            $donation_level = false;
-            if (isset($donators[$owner_uuid])) {
-                $donation_level = $donators[$owner_uuid];
+            $is_donator = false;
+            if (in_array($owner_uuid, $donators)) {
+                $is_donator = true;
             }
 
             // find out who can keep their lot longer than 1 months
             $retain_lot = false;
 
-            // kick out banned users
-            if (isset($owner_uuid, $banned_users)) {
-                $class = ' redout';
-                $lastlogin_str = "Banned!";
-            }
-
-            $owner_lastlogin = $all_lastlogins[$owner_uuid]['lastlogin'];
+            $owner_lastlogin = substr($all_lastlogins[$owner_uuid]['lastlogin'], 0, 10);
             if (!isset($all_lastlogins[$owner_uuid]['userlevel'])) {
                 XMPP_ERROR_trigger("$owner_username has no userlevel for the map!");
             }
@@ -306,13 +310,17 @@ function umc_create_map() {
                 // $box_color = ' background: rgba(0, 255, 255, 0.2);';
             }
 
-            if ($retain_lot && ($owner_lastlogin < $two_months_ago) && $donation_level < 2) { // too late
+            // kick out banned users
+            if (isset($banned_users[$owner_uuid])) {
                 $class .= ' red' . $border;
-            } else if ($retain_lot && ($owner_lastlogin < $one_months_ago) && $donation_level < 2) { // still yellow
+                $lastlogin_str = "Banned!";
+            } else if ($retain_lot && ($owner_lastlogin < $two_months_ago) && !$is_donator) { // too late
+                $class .= ' red' . $border;
+            } else if ($retain_lot && ($owner_lastlogin < $one_months_ago) && $is_donator) { // still yellow
                 $class .= ' yellow' . $border;
-            } else if (!$retain_lot && ($owner_lastlogin < $two_months_ago) && ($world == 'aether') && $donation_level < 1) {
+            } else if (!$retain_lot && ($owner_lastlogin < $two_months_ago) && ($world == 'aether') && !$is_donator) {
                 $class .= ' red' . $border;
-            } else if (!$retain_lot && ($owner_lastlogin < $one_months_ago) && $donation_level < 1) {
+            } else if (!$retain_lot && ($owner_lastlogin < $one_months_ago) && !$is_donator) {
                 $class .= ' red'  . $border;
             } else {
                 if (isset($new_choices[$lowercase_lot]) && !in_array($new_choices[$lowercase_lot]['choice'], array('keep', 'reset'))) {
@@ -463,7 +471,7 @@ if ($find_lot) {
 
     $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
         . "</div>n</body>\n</html>\n";
-    XMPP_ERROR_trace("construction done");
+    // XMPP_ERROR_trigger("construction done");
     echo $out;
 }
 
@@ -742,13 +750,19 @@ function umc_region_data($world_name) {
 }
 
 function umc_map_menu($worlds, $current_world, $freeswitch) {
-    global $UMC_DOMAIN, $UMC_PATH_MC;
+    global $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER;
     $freevalue = 'false';
     if ($freeswitch) {
         $freevalue = 'true';
     }
     $this_uc_map = ucwords($current_world);
-    $menu = "\n<!-- Menu -->\n<strong>Uncovery $this_uc_map map</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
+    if ($UMC_USER) {
+        $title = ucwords($UMC_USER['username']) . "'s $this_uc_map map";
+    } else {
+        $title = "Uncovery $this_uc_map map";
+    }
+
+    $menu = "\n<!-- Menu -->\n<strong>$title</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
         . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
         . " Choose world:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
         . "        <input type='hidden' name='freeonly' value='$freevalue'>\n"
@@ -787,9 +801,9 @@ function umc_map_menu($worlds, $current_world, $freeswitch) {
 
 
 // this is called with URL
-// http://uncovery.me/admin/index.php?function=display_markers&world=world
+// https://uncovery.me/admin/index.php?function=display_markers&world=world
 // or
-// http://uncovery.me/admin/index.php?function=display_markers&world=empire&track_player=uncovery
+// https://uncovery.me/admin/index.php?function=display_markers&world=empire&track_player=uncovery
 //
 // and returns ONLY the userpositions HTML/CSS with images for the selected map
 // used for dynamic map location updates
@@ -798,19 +812,24 @@ function umc_display_markers() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $UMC_ENV = 'markers';
 
-    if (isset($_GET['world'])) {
-        $world = $_GET['world'];
+    $get_world = filter_input(INPUT_GET, 'world', FILTER_SANITIZE_STRING);
+    if ($get_world != NULL) {
+        $world = $get_world;
     } else {
         $world = 'city';
     }
-    if (isset($_GET['track_user'])) {
-        $user = $_GET['track_user'];
+    $track_user = filter_input(INPUT_GET, 'track_user', FILTER_SANITIZE_STRING);
+    $identify_user = filter_input(INPUT_GET, 'identify_user', FILTER_SANITIZE_STRING);
+    $get_format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_STRING);
+
+    if (!is_null($track_user)) {
+        $user = $track_user;
         return umc_read_markers_file('track_user', $world, $user);
-    } else if (isset($_GET['identify_user'])) {
-        $user = $_GET['identify_user'];
+    } else if (!is_null($identify_user)) {
+        $user = $identify_user;
         return umc_read_markers_file('identify_user', $world, $user);
-    } else if (isset($_GET['format'])) {
-        $format = $_GET['format'];
+    } else if (!is_null($get_format)) {
+        $format = $get_format;
     } else {
         $format = 'html';
     }
@@ -855,6 +874,23 @@ function umc_read_data_files($world = 'city', $map = '') {
     return array('html'=>$html, 'css'=>$css);
 }
 
+/**
+ * Converts in-game X & Z cvariables into 2D-map X&Z variables
+ *
+ * @global type $UMC_SETTING
+ * @param type $x
+ * @param type $z
+ * @param type $world
+ * @return type
+ */
+function umc_map_convert_coorindates($x, $z, $world) {
+    global $UMC_SETTING;
+    $map = $UMC_SETTING['world_img_dim'][$world];
+    $new_z = conv_z($z, $map);
+    $new_x = conv_x($x, $map);
+    return array('x' => $new_x, 'z' => $new_z);
+}
+
 
 function umc_read_markers_file($format = 'html', $world = 'empire', $user = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -866,7 +902,7 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         ["y"]=> float(50)
         ["x"]=> float(448.69999998808)
     */
-    global $UMC_SETTING, $UMC_PATH_MC;
+    global $UMC_PATH_MC;
     $file = "$UMC_PATH_MC/server/bin/data/markers.json"; // $UMC_SETTING['markers_file'];
     $text = file_get_contents($file);
     if (!$file ) {
@@ -878,7 +914,6 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         return '';
     }
     $out_arr = array();
-    $map = $UMC_SETTING['world_img_dim'][$world];
 
     if (count($m) == 0) {
         return '';
@@ -897,8 +932,9 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
         $x = $marker->x;
         $x_text = round($x);
         $z_text = round($z);
-        $top = conv_z($marker->z, $map);// + $map['img_top_offset'];
-        $left = conv_x($marker->x, $map);// + $map['img_left_offset'];
+        $map_coords = umc_map_convert_coorindates($x, $z, $world);
+        $top = $map_coords['z'];// + $map['img_top_offset'];
+        $left = $map_coords['x'];// + $map['img_left_offset'];
         $username = strtolower($marker->msg);
         $playerworld = $marker->world;
         if ($username == 'uncovery') {

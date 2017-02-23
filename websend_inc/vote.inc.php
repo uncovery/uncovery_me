@@ -19,7 +19,7 @@
 
 /*
  * This manages user level upgrades based on user votes. The amount of votes needed
- * to upgrade depends on the active Elder (=max) level users on the server. 
+ * to upgrade depends on the active Elder (=max) level users on the server.
  * This makes sure that the max. amount of Elder users is proportional to the overall
  * amount of users on the server.
  */
@@ -43,22 +43,16 @@ $vote_ranks = array(
     'Guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'next' => 'Settler'),
     'Settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'Citizen'),
     'SettlerDonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonator'),
-    'SettlerDonatorPlus'    => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonatorPlus'),
     'Citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'Architect'),
     'CitizenDonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonator'),
-    'CitizenDonatorPlus'    => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonatorPlus'),
     'Architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'Designer'),
     'ArchitectDonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonator'),
-    'ArchitectDonatorPlus'  => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonatorPlus'),
     'Designer'              => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'Master'),
     'DesignerDonator'       => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonator'),
-    'DesignerDonatorPlus'   => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonatorPlus'),
     'Master'                => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'Elder'),
     'MasterDonator'         => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonator'),
-    'MasterDonatorPlus'     => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonatorPlus'),
     'Elder'                 => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
     'ElderDonator'          => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'ElderDonatorPlus'      => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
     'Owner'                 => array('lvl' => 7, 'vote' => 16, 'code' => 'o', 'next' => false)
 );
 
@@ -75,6 +69,12 @@ function umc_vote_get_votable($username = false, $web = false) {
         $uuid = $UMC_USER['uuid'];
     } else {
         $uuid = umc_uuid_getone($username, 'uuid');
+    }
+
+    // only active users can vote
+    $is_active = umc_users_is_active($uuid);
+    if (!$is_active) {
+        return;
     }
 
     if (!$username && !isset($UMC_USER['username'])) {
@@ -211,6 +211,12 @@ function umc_vote_web() {
         $user_lvl = $UMC_USER['userlevel'];
     }
 
+    // only active users can vote
+    $is_active = umc_users_is_active($uuid);
+    if (!$is_active) {
+        return "Sorry, but you do not have a lot, so you cannot vote.";
+    }
+
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return "Sorry, you need to be Designer or above to vote!";
@@ -218,10 +224,10 @@ function umc_vote_web() {
 
     // get user numbers for levels
     $lvl_str_arr = array(
-        'a' => "'Architect', 'ArchitectDonator', 'ArchitectDonatorPlus'",
-        'd' => "'Designer', 'DesignerDonator', 'DesignerDonatorPlus'",
-        'm' => "'Master', 'MasterDonator', 'MasterDonatorPlus'",
-        'e' => "'Elder', 'ElderDonator', 'ElderDonatorPlus'",
+        'a' => "'Architect', 'ArchitectDonator'",
+        'd' => "'Designer', 'DesignerDonator'",
+        'm' => "'Master', 'MasterDonator'",
+        'e' => "'Elder', 'ElderDonator'",
     );
 
     $lvl_amounts = array('a' => 0, 'd' => 0, 'm' => 0, 'e' => 0);
@@ -304,9 +310,9 @@ function umc_vote_web() {
                         . "Please note that the vote will be closed as 'failed' unless all Elders cast a vote within the coming 2 months.\r\n"
                         . "Thanks a lot for supporting Uncovery Minecraft!\r\n\r\nBest regards,\r\nUncovery";
                     $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-                    mail('minecraft@uncovery.me', $subject, $content, $headers);
+                    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
                     foreach ($D as $row) {
-                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers);
+                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers, "-fminecraft@uncovery.me");
                         umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
                     }
                 }
@@ -435,7 +441,7 @@ function umc_vote_web() {
             // send email with status report
             $email_text = $email_close . "Total Score: $total_score\n\rRequired: " . abs($lvl_min_req[$lvl_code]);
             $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-            mail('minecraft@uncovery.me', "Voting closed for " . $row['username'], $email_text, $headers);
+            mail('minecraft@uncovery.me', "Voting closed for " . $row['username'], $email_text, $headers, "-fminecraft@uncovery.me");
             $prop_status = 'closed';
         } else if (($prop_status == 'closed') && ($total_score < abs($lvl_min_req[$lvl_code]))) {
             //$sql = "UPDATE minecraft_srvr.`proposals` SET `status` = 'voting' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1 ";

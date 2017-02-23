@@ -88,24 +88,14 @@ function umc_websend_main() {
  * This handles automated WSEVENTS events for plugins.
  */
 function umc_ws_eventhandler($event) {
-    global $WS_INIT, $UMC_USER;
+    global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    $player  = $UMC_USER['username'];
+    $player = $UMC_USER['username'];
 
-    // iterate all plugins
-    foreach ($WS_INIT as $data) {
-        // check if there is a setting for the current event
-        if (($data['events'] != false) && (isset($data['events'][$event]))) {
-            // execute function
-            $function = $data['events'][$event];
-            if (!is_string($function)) {
-                XMPP_ERROR_trigger("plugin eventhandler failed event $event");
-            }
-            // execute the function
-            $function();
-        }
-    }
+    // run plugin events
+    umc_plugin_eventhandler($event);
+
     // non-plugin events
     switch ($event) {
         case 'PlayerQuitEvent':
@@ -113,9 +103,8 @@ function umc_ws_eventhandler($event) {
             umc_uuid_record_usertimes('lastlogout');
             break;
         case 'PlayerJoinEvent':
-            umc_uuid_check_usernamechange($UMC_USER['uuid']);
-            umc_donation_level($player);
-            umc_promote_citizen($player, false);
+            umc_uuid_check_usernamechange($UMC_USER['uuid'], $UMC_USER['username']);
+            umc_uuid_check_history($UMC_USER['uuid']);
             umc_log('system', 'login', "$player logged in");
             umc_uuid_record_usertimes('lastlogin');
             // check if the user has a skin stored, if not, get it
@@ -130,72 +119,17 @@ function umc_ws_eventhandler($event) {
     }
 }
 
-// returns the TOTAL points of experience of a player based on level fraction and xp
-function umc_ws_convert_xp($rawlevelfraction, $rawlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    $points_in_levels = umc_ws_convert_xplvl_to_points($rawlevel);
-    $points_in_fraction = round(umc_ws_get_xptolvl($rawlevel) * $rawlevelfraction);
-    $total_xp_as_points = $points_in_levels + $points_in_fraction;
-    //XMPP_ERROR_trace('$total_xp_as_points', $total_xp_as_points);
-    return $total_xp_as_points;
-
-}
-
-// returns the amount of exp needed to be obtained to advance from specific level as a points value
-function umc_ws_get_xptolvl($inputlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    // reference material
-    // http://minecraft.gamepedia.com/Experience
-    // conversions dated 12/01/2016 - v 1.8.9 accurate
-
-    $xp = 0;
-    if (is_numeric($inputlevel) && $inputlevel > 0) {
-        // levels 0-16
-        if ($inputlevel <= 16 && $inputlevel > 0) {
-            $xp = 2 * $inputlevel + 7;
-        }
-        // levels 17-31
-        if ($inputlevel >= 17 && $inputlevel <= 31) {
-            $xp = 5 * $inputlevel - 38;
-        }
-        // levels 32+
-        if ($inputlevel >= 32) {
-            $xp = 9 * $inputlevel - 158;
-        }
-    }
-    return $xp;
-}
-
-// returns the amount of exp points equivalent to input level
-function umc_ws_convert_xplvl_to_points($inputlevel){
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    // reference material
-    // http://minecraft.gamepedia.com/Experience
-    // conversions dated 12/01/2016 - v 1.8.9 accurate
-
-    $xp = 0;
-    if (is_numeric($inputlevel) && $inputlevel > 0) {
-        // levels 0-16
-        if ($inputlevel <= 16) {
-            $xp = ($inputlevel ^ 2) + (6 * $inputlevel);
-        } else if ($inputlevel >= 17 && $inputlevel <= 31) {
-            $xp = (2.5 * pow($inputlevel,2)) - (40.5 * $inputlevel) + 360;
-        } else if ($inputlevel >= 32) {
-            $xp = (4.5 * pow($inputlevel,2)) - (162.5 * $inputlevel) + 2220;
-        }
-    }
-    return $xp;
-}
-
-
 /**
- * This retrieves the websend environment variables and returns them
+ * This command runs on every user interaction with websend.
+ * It fills all the user variables so we can use them in other functions.
+ *
+ * @global type $UMC_ENV
+ * @global type $UMC_USER
+ * @global type $UMC_USERS
  */
 function umc_ws_get_vars() {
     // make sure we are on websend
-    global $UMC_ENV, $UMC_USER, $UMC_USERS;
+    global $UMC_ENV, $UMC_USER; //, $UMC_USERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($UMC_ENV !== 'websend') {
         XMPP_ERROR_trigger("Tried to get websend vars, but environment did not match: " . var_export($UMC_ENV, true));
@@ -211,7 +145,7 @@ function umc_ws_get_vars() {
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
-        $UMC_USER['donator'] = 'DonatorPlus';
+        $UMC_USER['donator'] = 'Donator';
         $UMC_USER['uuid'] = 'Console0-0000-0000-0000-000000000000';
     } else {
         $UMC_USER['username'] = $json['Invoker']['Name'];
@@ -219,16 +153,14 @@ function umc_ws_get_vars() {
             $uuid = $json['Invoker']['UUID'];
         } else {
             // this is mostly used for pre-logins. it will check if the user exists and add them to the table if not.
-            XMPP_ERROR_trace("Getting UUID for UMC_USER array", "n/a");
+            XMPP_ERROR_trace("Getting UUID for UMC_USER array", $json);
             $uuid = umc_user2uuid($json['Invoker']['Name']);
         }
 
 
         $UMC_USER['uuid'] = $uuid;
         $UMC_USER['userlevel'] = umc_get_uuid_level($uuid);
-        if (strstr($UMC_USER['userlevel'], 'DonatorPlus')) {
-            $UMC_USER['donator'] = 'DonatorPlus';
-        } else if (strstr($UMC_USER['userlevel'], 'Donator')) {
+        if (strstr($UMC_USER['userlevel'], 'Donator')) {
             $UMC_USER['donator'] = 'Donator';
         } else {
             $UMC_USER['donator'] = false;
@@ -248,7 +180,8 @@ function umc_ws_get_vars() {
             // xp converted to points value obtained total. JSON returns fractional value.
             $UMC_USER['xplevel'] = $json['Invoker']['XPLevel'];
             $UMC_USER['xpfraction'] = $json['Invoker']['XP'];
-            $UMC_USER['xp'] = umc_ws_convert_xp($json['Invoker']['XP'], $json['Invoker']['XPLevel']);
+            $user_xp = umc_plugin_eventhandler('ws_user_init_xp', array('xp' => $json['Invoker']['XP'], 'xplevel' => $json['Invoker']['XPLevel']));
+            $UMC_USER['xp'] = $user_xp[0];
 
             //IP Address
             $ip_raw = $json['Invoker']['IP']; // ip ⇒ "/210.176.194.100:11567"
@@ -264,7 +197,11 @@ function umc_ws_get_vars() {
             $UMC_USER['current_item'] = $json['Invoker']['CurrentItemIndex'];
         }
     }
-    $UMC_USER["args"] = $_POST['args'];
+    // import command arguments
+    foreach ($_POST['args'] as $arg) {
+        $UMC_USER["args"][] = filter_var(trim($arg), FILTER_SANITIZE_STRING);
+    }
+
     // online players; we do not retrieve userlevels etc here yet
     $players = array();
     if (isset($json['ServerStatus']['OnlinePlayers'])) {
@@ -365,6 +302,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
         //$check = $ws->writeOutputToConsole("error");
     }
     $ws->disconnect();
+    return $check;
 }
 
 /*
@@ -429,7 +367,7 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     $return = true;
     // if a command is executed by console, return messages back to console instead
     // of trying to echo to player
-    if (strtolower($fromplayer) == '@console' && $how == 'toPlayer') {
+    if ($UMC_USER['username'] == '@console' && $how == 'toPlayer') {
         $how = 'toConsole';
     } else if (strtolower($fromplayer) == '@console' && $how == 'asPlayer') {
         $how = 'asConsole';
@@ -438,11 +376,11 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     $cmd = str_replace(';', '', $cmd_raw);
 
     // this is debugging info
-    if (!$silent) {
+    /* if (!$silent) {
         $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
-        // $log_cmd = str_replace($color_arr, '', $cmd);
-        // print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
-    }
+        $log_cmd = str_replace($color_arr, '', $cmd);
+        print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
+    } */
 
     switch ($how) {
         case 'asConsole':
@@ -473,27 +411,6 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     return true;
 }
 
-function umc_random_command($player) {
-    $chances = array(
-        'trick' => array(
-            "smite $player 2" => "$player was struck by lightning!",
-            "burn $player" => "$player has caught fire!",
-            "kick $player" => "$player as been kicked!",
-            "spawnmob creeper 3 $player" => "$player is suddenly in VERY bad company!",
-            "spawnmob zombie  3 $player" => "$player is suddenly in bad company!",
-            "tempban $player 5 minutes" => "$player was banned for 5 minutes!",
-            "tjail $player 10 minutes" => "$player was jailed for 10 minutes!",
-        ),
-        'treat' => array(
-            "heal player" => "$player was healed!",
-            "feed player" => "$player was fed!",
-            "exp $player give 50 " => "$player received 50 XP!",
-            "spawnmob cat 1 $player" => "$player has a new cat!",
-            "spawnmob dog 1 $player" => "$player has a new dog!",
-        ),
-    );
-}
-
 /**
  * Return an array of the logged-in player's inventory
  *
@@ -517,15 +434,15 @@ function umc_ws_get_inv($inv_data) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
                     $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
-
-                    XMPP_ERROR_trigger("ITEM ISSUE: $item_typename not found in \$UMC_DATA, item {$item['Type']} : {$item['Durability']}, should be {$inv[$slot]['item_name']}");
+                    $out = "ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
+                    XMPP_ERROR_send_msg($out);
                 }
             } else if ($name == "Type") {
                 $inv[$slot]['id'] = $item['Type'];
             } else if ($name == 'Durability') {
                 $name = 'data';
                 if ($value == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
-                    umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
+                    // umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
                     umc_echo("{red}You had a bugged item in your inventory, it had to be removed!");
                     XMPP_ERROR_trigger("Invalid item with -1 damage found!");
                 } else {
@@ -567,21 +484,6 @@ function umc_echo($string, $silent = false) {
 }
 
 
-/* messages a user from the console or code
- * will return false in case the user does not exist or is not online
- */
-function umc_msg_user($username, $message) {
-    global $UMC_USER;
-    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
-    if (!in_array($username, $UMC_USER['online_players'])) {
-        return false;
-    } else {
-        umc_ws_cmd("msg $username $str", 'asConsole');
-    }
-    return true;
-}
-
-
 function umc_header($string = 'Uncovery Minecraft', $silent = false) {
     $bar = "{blue}--{darkcyan}-{cyan}-{green}-=[ {white}$string{green} ]=-{cyan}-{darkcyan}-{blue}--";
     umc_pretty_bar("darkblue", "-", $bar, 52, $silent);
@@ -591,13 +493,12 @@ function umc_header($string = 'Uncovery Minecraft', $silent = false) {
  *
  * @param type $silent
  */
-function umc_footer($silent = false) {
-    umc_pretty_bar("darkblue", "-", "", 49, $silent);
-}
-
-function umc_announce($string, $channel = 't') {
-    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $string);
-    umc_ws_cmd("ch qm $channel $str", 'asConsole');
+function umc_footer($silent = false, $footer_text = false) {
+    $footer = '';
+    if ($footer_text) {
+        $footer = " {blue}$footer_text{darkblue} ";
+    }
+    umc_pretty_bar("darkblue", "-", $footer, 49, $silent);
 }
 
 /**

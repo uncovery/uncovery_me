@@ -59,6 +59,14 @@ function umc_error_log() {
     return $out;
 }
 
+/**
+ * Make an entry into the universal logfile
+ *
+ * @global type $UMC_USER
+ * @param type $plugin
+ * @param type $action
+ * @param type $text
+ */
 function umc_log($plugin, $action, $text) {
     global $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -69,22 +77,13 @@ function umc_log($plugin, $action, $text) {
         $player = 'system';
     }
 
-    /*
-     * File log
-     */
-    //$logfolder = "/home/minecraft/server/logs/";
-    //$logfile = $logfolder . $plugin . ".log";
-    //$date_now = umc_datetime();
-    //$now = $date_now->format("Y-m-d H:i:s");
-    //$logtext = "$now | $action | $text\n";
-    //file_put_contents($logfile, $logtext, FILE_APPEND);
-    /*
-     * database log
-     */
     $sqlaction = umc_mysql_real_escape_string($action);
     $sqltext = umc_mysql_real_escape_string($text);
+    $sql_plugin = umc_mysql_real_escape_string($plugin);
+    $sql_player = umc_mysql_real_escape_string($player);
+
     $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
-        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),'$plugin', '$player', $sqlaction, $sqltext);";
+        VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),$sql_plugin, $sql_player, $sqlaction, $sqltext);";
     umc_mysql_query($sql, true);
 }
 
@@ -113,6 +112,11 @@ function umc_log_get_usernames() {
 }
 
 function umc_log_web_display() {
+
+    /*
+     *
+     */
+
     global $UMC_USER, $UMC_DOMAIN;
     $out = '';
     if (!$UMC_USER) {
@@ -323,12 +327,12 @@ function umc_display_logblock() {
     }
 
     $userlevel = $UMC_USER['userlevel'];
-    $admins = array('Owner', 'Elder', 'ElderDonator', 'ElderDonatorPlus');
+    $admins = array('Owner', 'Elder', 'ElderDonator');
     if (!in_array($userlevel, $admins)) {
         return "This page is admin-only!";
     }
 
-    $worlds = array('empire', 'nether', 'darklands');
+    $worlds = array('empire', 'nether', 'darklands', 'kingdom');
     $usernames = umc_logblock_get_usernames();
     $post_world = filter_input(INPUT_POST, 'world', FILTER_SANITIZE_STRING);
     $post_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
@@ -480,6 +484,7 @@ function umc_log_logblock() {
     }
 
     $uuid = $UMC_USER['uuid'];
+    $types = array('blocks' => false, 'kills' => '-kills', 'chest' => '-chest',); //
     $worlds = array('empire', 'kingdom');
     $lots = umc_user_getlots($uuid, $worlds);
     if (count($lots) == 0 ) {
@@ -489,6 +494,7 @@ function umc_log_logblock() {
     $post_lot = filter_input(INPUT_POST, 'lot', FILTER_SANITIZE_STRING);
     $post_line = filter_input(INPUT_POST, 'line', FILTER_SANITIZE_STRING);
     $post_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+    $post_type = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING);
 
     // world filter
     if (!is_null($post_lot)) {
@@ -500,14 +506,34 @@ function umc_log_logblock() {
         list($post_lot, $lot_data) = each($lots);
     }
 
+    // type filter
+    if (!isset($types[$post_type])) {
+        $post_type = 'blocks';
+    }
+    // switch fields for kills vs blocks
+    $player_field = 'playerid';
+    if ($post_type == 'kills') {
+        $player_field = 'killer';
+    }
+
+    $type_filter = '';
+    if ($types[$post_type]) {// don't do anything for blocks
+        $type_filter = $types[$post_type];
+    }
+
     $post_world = $lots[$post_lot]['world'];
     $lot_filter = umc_logblock_get_coord_filter_from_lot($post_lot);
-    $world_filter = "lb-$post_world";
+    $world_filter = "lb-$post_world" . $type_filter;
 
     // user filter
-    $username_filter = "AND UUID <> '$uuid'";
+    $username_filter = "AND `lb-players`.UUID <> '$uuid'";
     if (isset($post_username) && $post_username != 'none') {
         $username_filter = "AND playername='$post_username'";
+    }
+
+    $kill_join = '';
+    if ($post_type == 'kills') {
+        $kill_join = " LEFT JOIN `minecraft_log`.`lb-players` as killers ON `$world_filter`.`victim`=`killers`.`playerid`" ;
     }
 
     // line filter
@@ -516,9 +542,18 @@ function umc_log_logblock() {
     }
 
     $nodata = false;
-    $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
-        LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
-        WHERE 1 $username_filter $lot_filter;";
+    if ($post_type != 'chest') {
+        $count_sql = "SELECT count(id) AS counter FROM `minecraft_log`.`$world_filter`
+            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
+            WHERE 1 $username_filter $lot_filter;";
+    } else {
+        $count_sql = "SELECT count(`lb-$post_world-chest`.id) AS counter
+            FROM minecraft_log.`lb-$post_world-chest`
+            LEFT JOIN minecraft_log.`lb-$post_world` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
+            LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
+            WHERE 1 $username_filter $lot_filter";
+    }
+
     $C = umc_mysql_fetch_all($count_sql);
     if (count($C) > 0) {
         $num_rows = $C[0]['counter'];
@@ -530,7 +565,11 @@ function umc_log_logblock() {
     }
 
     $out .= "<form action=\"\" method=\"post\">\n"
-        . "Lot: <select name=\"lot\">";
+        . "Type: <select name=\"types\">";
+    foreach ($types as $type => $type_data) {
+        $out .= umc_log_dropdown_preselect($type, $type, $post_type);
+    }
+    $out .= "</select> Lot: <select name=\"lot\">";
     foreach ($lots as $one_lot => $lot_data) {
         $out .= umc_log_dropdown_preselect($one_lot, $one_lot, $post_lot);
     }
@@ -553,13 +592,26 @@ function umc_log_logblock() {
         $out .= "<input type=\"submit\" name=\"proposebutton\" value=\"Check\"></form>There is no data for this lot!";
         return $out;
     }
-    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th><th>Removed</th><th>Placed</th><th>Lot</th><th>Coordinates</th></tr>\n";
+    $chest_headers = '<th>Removed</th><th>Placed</th>';
+    if ($post_type == 'chest') {
+        $chest_headers = "<th>Block</th><th>Source</th><td>Amount</td>";
+    }
+    $out .= "<table style=\"font-size:80%\" class=\"log_table\">\n<tr><th>ID</th><th>Date</th><th>Time</th><th>Username</th>$chest_headers<th>Coordinates</th></tr>\n"; //<th>Lot</th>
     $yesterday = '';
 
-    $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
-            LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`playerid`=`lb-players`.`playerid`
-            WHERE 1 $username_filter $lot_filter
-	    ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+    if ($post_type != 'chest') {
+        $sql = "SELECT * FROM `minecraft_log`.`$world_filter`
+                LEFT JOIN `minecraft_log`.`lb-players` ON `$world_filter`.`$player_field`=`lb-players`.`playerid`
+                $kill_join
+                WHERE 1 $username_filter $lot_filter
+                ORDER BY `id` DESC LIMIT $post_line,$line_limit;";
+    } else {
+        $sql = "SELECT `lb-$post_world-chest`.id as id, playername, uuid, itemtype as replaced, itemamount, itemdata as data, type, x,y,z, date
+            FROM minecraft_log.`lb-$post_world-chest`
+            LEFT JOIN minecraft_log.`lb-$post_world` ON `lb-$post_world`.id=`lb-$post_world-chest`.id
+            LEFT JOIN minecraft_log.`lb-players` on `lb-$post_world`.playerid=`lb-players`.playerid
+            WHERE 1 $username_filter $lot_filter";
+    }
     $D = umc_mysql_fetch_all($sql);
     foreach ($D as $row) {
         $row_style = '';
@@ -568,20 +620,31 @@ function umc_log_logblock() {
             $row_style = ' style="background-color:#CCCCCC;"';
         }
 
-        if ($row['replaced'] == 0) {
+        if (isset($row['replaced']) && $row['replaced'] == 0) {
             $remove_item = "";
-        } else {
+        } else if (isset($row['replaced'])) {
             $remove_item = umc_logores_item_name($row['replaced']);
-        }
-        if ($row['type'] == 0) {
-            $place_item = "XXX";
         } else {
-            $place_item = umc_logores_item_name($row['type'], $row['data']);
+            $remove_item = "";
+        }
+        $place_item = '-';
+        if (isset($row['type'])) {
+            if ($row['type'] == 0) {
+                $place_item = "XXX";
+            } else {
+                $place_item = umc_logores_item_name($row['type'], $row['data']);
+            }
+        }
+        $chest_line = '';
+        if ($post_type == 'chest') {
+            $chest_line = "<td>{$row['itemamount']}</td>";
         }
 
-        $one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
+        // do not requery the lot, we should be in one only already
+        //$one_lot = umc_logblock_get_lot_from_coord($post_world, $row['x'], $row['z']);
+        // <td>$one_lot</td>
 
-        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td><td>$one_lot</td><td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
+        $out .="<tr$row_style><td>{$row['id']}</td><td>{$date_arr[0]}</td><td>{$date_arr[1]}</td><td>{$row['playername']}</td><td>$remove_item</td><td>$place_item</td>$chest_line<td>{$row['x']} / {$row['y']} / {$row['z']}</td></tr>";
 	$yesterday = $date_arr[0];
     }
     $out .= "</table>\n";
@@ -610,110 +673,6 @@ function umc_logores_item_name($type, $data = 0) {
     return $item_arr['name'];
 }
 
-function umc_universal_web_stats() {
-    global $UMC_DOMAIN;
-    $sql = "SELECT `date`, COUNT( DISTINCT username) AS users
-        FROM minecraft_log.universal_log
-        WHERE (plugin,action) IN (('system','login'))
-        GROUP BY `date`
-        ORDER BY `date`;";
-
-    $out = '<h2>Unique user logins per day</h2>';
-    $maxval = 0;
-    $minval = 0;
-    $legend = array();
-    $ydata = array();
-    $sites = array();
-
-    // Some data (line 1):
-    foreach ($sites as $site) {
-        $g->set_data($ydata[$site]);
-        // $g->line( 1, '#0000FF', $site, 10 );
-        $g->area_hollow( 2, 3, 25, '#CC3399' );
-    }
-    $out .= "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts/amcharts.js\"></script>\n"
-        . "<script type='text/javascript' src=\"$UMC_DOMAIN/admin/js/amcharts/serial.js\"></script>\n"
-        . "<div id=\"chartdiv\" style=\"width: 100%; height: 362px;\"></div>\n"
-        . "<script type='text/javascript'>//<![CDATA[\n"
-        . "var chart;\n"
-        . "var chartData = [\n";
-    //
-    $D = umc_mysql_fetch_all($sql);
-    foreach ($D as $row) {
-        $maxval = max($maxval, $row['users']);
-        $minval = min($minval, $row['users']);
-        $date = $row['date'];
-        $legend[$date] = $date;
-        $ydata[$date] = $row['users'];
-    }
-
-    foreach ($ydata as $date => $count) {
-        $out .= "{\"Date\": \"$date\",";
-        $out .= "\"Users\": $count,";
-        $out .= "},\n";
-    }
-    $out .= "];\n";
-
-    $out .= 'AmCharts.ready(function () {
-    // SERIAL CHART
-    chart = new AmCharts.AmSerialChart();
-    chart.pathToImages = "http://www.amcharts.com/lib/3/images/";
-    chart.dataProvider = chartData;
-    chart.marginTop = 10;
-    chart.categoryField = "Date";
-
-    // AXES
-    // Category
-    var categoryAxis = chart.categoryAxis;
-    categoryAxis.gridAlpha = 0.07;
-    categoryAxis.axisColor = "#DADADA";
-    categoryAxis.startOnAxis = true;
-
-    // Value
-    var valueAxis = new AmCharts.ValueAxis();
-    valueAxis.stackType = "regular"; // this line makes the chart "stacked"
-    valueAxis.gridAlpha = 0.07;
-    valueAxis.title = "Users";
-    chart.addValueAxis(valueAxis);';
-
-    $out .= "var graph = new AmCharts.AmGraph();
-        graph.type = \"line\";
-        graph.hidden = false;
-        graph.title = \"Users\";
-        graph.valueField = \"Users\";
-        graph.lineAlpha = 1;
-        graph.fillAlphas = 0.6; // setting fillAlphas to > 0 value makes it area graph
-        graph.balloonText = \"<span style=\'font-size:12px; color:#000000;\'>Logins: <b>[[value]]</b></span>\";
-        chart.addGraph(graph);";
-
-    $out .= '// LEGEND
-        var legend = new AmCharts.AmLegend();
-        legend.position = "top";
-        legend.valueText = "[[value]]";
-        legend.valueWidth = 100;
-        legend.valueAlign = "left";
-        legend.equalWidths = false;
-        legend.periodValueText = "total: [[value.sum]]"; // this is displayed when mouse is not over the chart.
-        chart.addLegend(legend);
-
-        // CURSOR
-        var chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorAlpha = 0;
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.color = "#FFFFFF";
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-        });
-        //]]></script>';
-
-    return $out;
-}
-
 function umc_log_kill_display() {
     global $UMC_USER, $UMC_DOMAIN;
     $out = '';
@@ -726,7 +685,7 @@ function umc_log_kill_display() {
     }
 
     $userlevel = $UMC_USER['userlevel'];
-    $admins = array('Owner', 'Elder', 'ElderDonator', 'ElderDonatorPlus');
+    $admins = array('Owner', 'Elder', 'ElderDonator');
     if (!in_array($userlevel, $admins)) {
         return "This page is admin-only!";
     }

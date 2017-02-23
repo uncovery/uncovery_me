@@ -171,10 +171,8 @@ function umc_vanity_cancel() {
         $time_out = $date_out->format('Y-m-d H:i:s');
         $userlevel = umc_get_userlevel($player);
         $donator_str = false;
-        if (strstr($userlevel, 'DonatorPlus')) {
+        if (strstr($userlevel, 'Donator')) {
             $donator_str = '&6++&f';
-        } else if (strstr($userlevel, 'Donator')){
-            $donator_str = '&6+&f';
         } else if ($userlevel == 'Owner') {
             $donator_str = '&6++&f';
         }
@@ -219,31 +217,39 @@ function umc_vanity_sanitize($vanity) {
     }
 }
 
-function umc_vanity_set() {
+function umc_vanity_set($days = false, $vanity = false) {
     global $UMC_USER;
     $player = $UMC_USER['username'];
     $args = $UMC_USER['args'];
     $userlevel = umc_get_userlevel($player);
-    // umc_echo("$userlevel");
-    if (!isset($args[2]) || !is_numeric($args[2]) || ($args[2] < 1)) {
-        umc_error("{red}You need to specify a number of days");
-    } else if (!isset($args[3])) {
-        umc_error("{red}You need to specify the title you want to have. See {yellow}/helpme vanity");
+
+    if (!$days) {
+        if (!isset($args[2])) {
+            umc_error("{red}You need to specify a number of days");
+        }
+        $days = $args[2];
     }
 
-    $days = $args[2];
     $vanity_raw = '';
-    // concatenate all into a string
-    for ($i=3; $i<count($args); $i++) {
-        $vanity_raw .= " " . $args[$i];
+    if (!$vanity) {
+        // concatenate all into a string
+        if (!isset($args[3])) {
+            umc_error("{red}You need to specify the title you want to have. See {yellow}/helpme vanity");
+        }
+        for ($i=3; $i<count($args); $i++) {
+            $vanity_raw .= " " . $args[$i];
+        }
+        $vanity = trim($vanity_raw);
     }
-    $vanity = trim($vanity_raw);
+
+    // umc_echo("$userlevel");
+    if (!is_numeric($days) || ($days < 1)) {
+        umc_error("{red}You need to specify a number of days");
+    }
 
     $donator_str = '';
-    if (strstr($userlevel, 'DonatorPlus')) {
+    if (strstr($userlevel, 'Donator')){
         $donator_str = '&6++&f';
-    } else if (strstr($userlevel, 'Donator')){
-        $donator_str = '&6+&f';
     } else if ($userlevel == 'Owner') {
         $donator_str = '&6++&f';
     }
