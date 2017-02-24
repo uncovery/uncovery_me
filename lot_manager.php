@@ -1405,11 +1405,8 @@ function umc_lot_reset_process() {
         $owner_lastlogin = $row['lastlogin'];
         $owner_level = $row['userlevel'];
 
-        if ($owner_username == 'uncovery') { // we do not reset uncovery's lots
-            continue;
-        }
-
-        if ($owner_username == 'riedi77') { // we do not reset uncovery's lots
+        $no_reset = array('uncovery', 'riedi77', 'psiber');
+        if (in_array($owner_username, $no_reset)) {
             continue;
         }
 
