@@ -460,7 +460,7 @@ function umc_home_2d_map($uuid, $world) {
             $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
             $top = $map_coords['z'];
             $left = $map_coords['x'];
-            $out .= "<img class='marker' style='width:20px; height:20px; z-index:99; top:{$top}px; left:{$left}px;' src='$icon' alt='Home $home'>\n";
+            $out .= "<img class='marker' style='width:20px; height:20px; z-index:99; top:{$top}px; left:{$left}px;' src='$icon' alt='Home $home $uuid'>\n";
         }
     }
     return $out;
