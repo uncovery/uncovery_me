@@ -227,15 +227,18 @@ function umc_home_buy() {
     $cost = $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
-
+    
     // sanitise input and check if home name valid
     if (isset($args[2])) {
+        
+        $sanitised_Name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[2]);
+        
         // check if the name already exists
-        $name_check = umc_home_count(trim($args[2]));
+        $name_check = umc_home_count($sanitised_Name);
         if ($name_check > 0) {
             umc_error("{red}You already have a home with that name!");
         }
-        $name = umc_mysql_real_escape_string(trim($args[2]));
+        $name = umc_mysql_real_escape_string($sanitised_Name);
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
@@ -271,7 +274,7 @@ function umc_home_buy() {
     umc_echo("Your home slot has been purchased and set to your current location.");
     umc_echo("You can edit it with the {blue}rename{white} and {blue}update{white} commands!");
     umc_footer();
-    umc_log('home', 'buy', "{$UMC_USER['uuid']}/{$UMC_USER['username']} bought a home called {$args[2]} for $cost!");
+    umc_log('home', 'buy', "{$UMC_USER['uuid']}/{$UMC_USER['username']} bought a home called $sanitised_Name for $cost!");
 }
 
 function umc_home_sell() {
@@ -310,12 +313,16 @@ function umc_home_update() {
 
     // check if the home exists
     if (isset($args[2])) {
+        
+        // leave existing badly formatted names as valid things to replace
+        $unsanitised_Name = $args[2];
+        
         // check if the name actually exists to replace
-        $name_check = umc_home_count(trim($args[2]));
+        $name_check = umc_home_count($unsanitised_Name);
         if ($name_check <> 1) {
-            umc_error("{red}You do not have a home called " . trim($args[2]) . " to replace!");
+            umc_error("{red}You do not have a home called " . $unsanitised_Name . " to replace!");
         }
-        $replacing = umc_mysql_real_escape_string(trim($args[2]));
+        $replacing = umc_mysql_real_escape_string($unsanitised_Name);
     } else {
         umc_error("{red}You need to specify the name of the home you want to update home!");
     }
@@ -324,14 +331,15 @@ function umc_home_update() {
     $name_update = '';
     $log_addon = '';
     if (isset($args[3])) {
+        $sanitised_Name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[3]);
         // check if the name already exists
-        $name_check = umc_home_count(trim($args[3]));
+        $name_check = umc_home_count($sanitised_Name);
         if ($name_check == 1) {
             umc_error("{red}You do already have a home with that name!");
         }
-        $new_name = umc_mysql_real_escape_string(trim($args[3]));
+        $new_name = umc_mysql_real_escape_string($sanitised_Name);
         $name_update = " `name`=$new_name,";
-        $log_addon = " and the name of the home was changed to " . $args[3];
+        $log_addon = " and the name of the home was changed to " . $sanitised_Name;
     }
     if ($UMC_USER['world'] == 'nether' && $UMC_USER['coords']['y'] > 110) {
         umc_error("Sorry, you cannot set a home this high in the nether!");
@@ -341,8 +349,8 @@ function umc_home_update() {
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
 
     umc_mysql_query($sql, true);
-    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]} $log_addon!");
-    umc_echo("The coordinates of home {$args[2]} were updated to the current location $log_addon!");
+    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home $sanitised_Name $log_addon!");
+    umc_echo("The coordinates of home $sanitised_Name were updated to the current location $log_addon!");
 }
 
 function umc_home_rename() {
