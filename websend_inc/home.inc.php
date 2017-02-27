@@ -365,19 +365,20 @@ function umc_home_rename() {
             umc_error("{red}You do not have a home with that name!");
         }
         $old_name = umc_mysql_real_escape_string(trim($args[2]));
-        $new_name_check = umc_home_count(trim($args[3]));
+        $sanitised_Name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[3]);
+        $new_name_check = umc_home_count($sanitised_Name);
         if ($new_name_check == 1) {
             umc_error("{red}You already have a home with that name!");
         }
-        $new_name = umc_mysql_real_escape_string(trim($args[3]));
+        $new_name = umc_mysql_real_escape_string($sanitised_Name);
     } else {
         umc_error("{red}You need to specify the name of your new home!");
     }
     $sql = "UPDATE minecraft_srvr.`homes` SET `name`=$new_name "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$old_name LIMIT 1;";
     umc_mysql_query($sql, true);
-    umc_log('home', 'rename', "{$UMC_USER['uuid']}/{$UMC_USER['username']} renamed home {$args[2]} to {$args[3]}!");
-    umc_echo("The name of home {$args[2]} was updated to {$args[3]}!");
+    umc_log('home', 'rename', "{$UMC_USER['uuid']}/{$UMC_USER['username']} renamed home {$args[2]} to $sanitised_Name!");
+    umc_echo("The name of home {$args[2]} was updated to $sanitised_Name!");
 }
 
 // find out how many homes a user has already
