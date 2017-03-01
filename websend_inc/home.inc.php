@@ -231,9 +231,9 @@ function umc_home_buy() {
     // sanitise input and check if home name valid
     if (isset($args[2])) {
         
-        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[2]);
+        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', trim($args[2]));
         
-        if ($sanitised_name != $args[2]){
+        if ($sanitised_name != trim($args[2])){
             umc_error("{red}Home names must only contain numbers, letters, dashes(-) and underscores(_)");
         }
         
@@ -335,9 +335,9 @@ function umc_home_update() {
     $name_update = '';
     $log_addon = '';
     if (isset($args[3])) {
-        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[3]);
+        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', trim($args[3]));
         
-        if ($sanitised_name != $args[3]){
+        if ($sanitised_name != trim($args[3])){
             umc_error("{red}Home names must only contain numbers, letters, dashes(-) and underscores(_)");
         }
         
@@ -374,8 +374,8 @@ function umc_home_rename() {
             umc_error("{red}You do not have a home with that name!");
         }
         $old_name = umc_mysql_real_escape_string(trim($args[2]));
-        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', $args[3]);
-        if ($sanitised_name != $args[3]){
+        $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', trim($args[3]));
+        if ($sanitised_name != trim($args[3])) {
             umc_error("{red}Home names must only contain numbers, letters, dashes(-) and underscores(_)");
         }
         $new_name_check = umc_home_count($sanitised_name);
