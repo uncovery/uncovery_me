@@ -181,6 +181,9 @@ function umc_userlevel_assign_level($uuid, $newlevel) {
         XMPP_ERROR_trigger("Tried to set invalid userlevel $newlevel for user $uuid!");
         return;
     }
+    
+    //always make sure first letter of groupname is capitalised
+    $newlevel = ucfirst($newlevel);
 
     // upgrade on the server
     $check = umc_exec_command("pex user $uuid group set $newlevel");

@@ -3884,7 +3884,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/e/e7/Iron_Nugget.png',
-    ),    
+    ),
 
     /*************************************************/
     /*                RECORDS                        */
@@ -4087,5 +4087,6 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'boat_dark_oak' => 'dark_oak_boat',
     'boat_jungle' => 'jungle_boat',
     'snow_ball' => 'snowball',
-    'snow_block' => 'snow',    
+    'snow_block' => 'snow',
+    'storage_minecart' => 'chest_minecart',
 );

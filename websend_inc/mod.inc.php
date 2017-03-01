@@ -102,6 +102,17 @@ $WS_INIT['mod'] = array(  // the name of the plugin
            //'level' => 'Owner'
         ),
     ),
+    'whatsit' => array (
+        'help' => array (
+            'short' => 'Get details on the item in hand',
+            'long' => "Get details on the item in hand",
+            'args' => '<message>',
+        ),
+        'function' => 'umc_mod_whatsit',
+        'security' => array(
+           //'level' => 'Owner'
+        ),
+    ),    
     'blockcheck' => array (
         'help' => array (
             'short' => 'Check the block info',

@@ -16,12 +16,13 @@ function run_umc_scheduler() {
     // list of what to do & undo or temp permissions
     global $WS_INIT;
     $chat_command = $WS_INIT['mod']['broadcast'];
-    
+
     $schedule_arr = array(
         1 => array( // Monday
             'on_cmd' => array(
-                0 => "$chat_command Today bloody is Monday, beware of the mobs!",
-                1 => 'bloodmoon start darklands',
+                0 => "$chat_command Today is Monday, nothing special!",
+                //0 => "$chat_command Today bloody is Monday, beware of the mobs!",
+                //1 => 'bloodmoon start darklands',
             ),
             'off_cmd' => array(
             ),
@@ -29,8 +30,8 @@ function run_umc_scheduler() {
         2 => array( // Tuesday
             'on_cmd' => array(
                 0 => "$chat_command Today is Tuesday, nothing special!",
-                1 => 'bloodmoon stop darklands',
-		2 => 'time 00:00 darklands', // set it to midnight^
+                //1 => 'bloodmoon stop darklands',
+		//1 => 'time 00:00 darklands', // set it to midnight^
             ),
             'off_cmd' => array(
             ),
