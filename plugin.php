@@ -90,7 +90,7 @@ function umc_wsplg_dispatch($module) {
 
     $command = umc_wsplg_find_command($module);
     if (!$command) {
-        return umc_show_help($UMC_USER['args']);
+        umc_error("{red}Sorry $player, that command is not found.");
     }
     // we call this here since $UMC_USER was changes in the line above
     $args = $UMC_USER['args'];
