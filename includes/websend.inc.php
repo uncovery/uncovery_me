@@ -638,7 +638,7 @@ function umc_tellraw_text($text, $attributes = false) {
     if ($formats) {
         // bold is ON by default, need to switch it off unless otherwise specified
         if (!in_array('bold', $formats)) {
-            $out .= ",\"bold\":\"false\"";
+            $out .= ',"bold":"false"';
         }
         $valid_formats = array(
             'bold','italic','strikethrough','underlined','obfuscated',
