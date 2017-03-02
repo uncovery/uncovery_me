@@ -622,8 +622,19 @@ function umc_do_offer_internal($deposit) {
 	}
         umc_echo("{green}[+]{gray} You now have {yellow}$sum {$item['full']}{gray} in the shop (ID: $posted_id).");
         if (!$silent) {
-            umc_mod_broadcast("Offer: {yellow}$sum {$item['full']}{darkgray} "
-            . "@ {cyan}{$price}/pc{darkgray}, ID {gray}{$posted_id} from {gold}$player");
+            // calculate total listing value for hovertext
+            $listing_value = $sum * $price;
+            // compose raw JSON message with @a selector (all online players)
+            $cmd = 'tellraw @a [';
+            $cmd = $cmd . '{"text":"[!] ' . $player . 'offers ","color":"gold"},';
+            $cmd = $cmd . '{"text":"' . $sum . ' ' . $item['full'] . ' @ ' . $price . '/pc!",';
+            $cmd = $cmd .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},';
+            $cmd = $cmd . '{"text":"ID:' . $posted_id . '","color":"green",';
+            $cmd = $cmd .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},';
+            $cmd = $cmd .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}';
+            $cmd = $cmd . ']';
+            // issue the command
+            umc_ws_cmd($cmd, 'asConsole');
         }
     } else {
         if ($row) {
