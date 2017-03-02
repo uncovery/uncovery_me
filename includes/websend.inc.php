@@ -529,7 +529,7 @@ function umc_exit_msg($msg) {
 /**
  * Sends an error message to the user
  * Terminates  with a ;
- *
+ 
  * @param $message to send
  */
 function umc_error($message, $silent = false) {
@@ -545,4 +545,115 @@ function umc_ws_vardump($var) {
     $search = array("\n", "\r", "  ");
     $line = str_replace($search, " ", $exoport_var);
     return $line;
+}
+
+/**
+ * TELLRAW SECTION
+ */
+
+
+/**
+ * Base Tellraw execution
+ * 
+ * @param type $selector
+ * @param type $msg_arr
+ */
+function umc_tellraw($selector, $msg_arr) {
+    $valid_selectors = array(
+        '@p','@r','@a','@e',
+    );
+    /* $selector_choice = array(
+        'nearest' => '@p',
+        'random' => '@r',
+        'all' => '@a',
+        'all_entities' => '@e', // includes all players
+        'username' => "@a[name=$username]",
+    ); */
+    if (in_array($selector, $valid_selectors)) {
+        $sel = $selector;
+    } else {
+        $sel = "@a[name=$selector]";
+    }
+    
+    $texts = array();
+    foreach ($msg_arr as $msg) {
+        $texts[] = umc_tellraw_text($msg['text'], $msg['atts']);
+    }
+    
+    // glue the pieces with commas
+    $text_line = implode(",", $texts);
+    
+    $cmd = "tellraw $sel= [$text_line]";
+    umc_ws_cmd($cmd, 'asConsole');
+}
+
+/**
+ * Tellraw element abstraction layer
+ * 
+ * @param string $text your text
+ * @param array $attributes
+ * @return string
+ */
+function umc_tellraw_text($text, $attributes) {
+    if (strlen(trim($text)) == 0) {
+        return false;
+    } 
+    $out = "{\"text\":\"$text\"";
+    
+    $valid_attributes = array('color', 'formats', 'click', 'tooltip');
+    
+    // let's first assume they are not set
+    $color = false;
+    $formats = false;
+    $click = false;
+    $tooltip = false;
+    // then assing from array if exists
+    foreach ($attributes as $att_name => $att_value) {
+        if (in_array($att_name, $valid_attributes)) {
+            $$att_name = $att_value;
+        }
+    }
+    // then we go through them 1 by 1
+    
+    // color
+    $valid_colors = array(
+        'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
+        'gold','gray','dark_gray','blue','green','aqua','red','light_purple','yellow','white'
+    );
+    if ($color && in_array($color, $valid_colors)) {
+        $out .= ",\"color\":\"$color\"";
+    }
+    
+    // bold etc formats
+    if ($formats) {
+        $valid_formats = array(
+            'bold','italic','strikethrough','underlined','obfuscated',
+        );
+        foreach ($formats as $format) {
+            if (in_array($format, $valid_formats)) {
+                $out .= ",\"$format\":\"true\"";
+            }
+        }
+    }
+    
+    // click event
+    if ($click && isset($click['action']) && isset($click['value'])) {
+        $valid_clicks = array('open_url','suggest_command','run_command','insertion');
+        if (in_array($click['action'], $valid_clicks)) {
+            $out .= ",\"clickEvent\":{\"action\":\"{$click['action']}\",\"value\":\"{$click['value']}\"}";
+        }
+    }
+    
+    // tooltip
+    if ($tooltip && isset($tooltip['action']) && isset($tooltip['value'])) {
+        // achievements also work for stats with the value being stats.stats_id
+        $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
+        // we might need to validate items, entity and achievement/stats names
+        if (in_array($tooltip['action'], $valid_tool_types)) {
+            $out .= ",\"hoverEvent\":{\"action\":\"{$click['action']}\",\"value\":\"{$click['value']}\"}";
+        }
+    }
+    
+    $out .= "}";
+    return $out;
 }
