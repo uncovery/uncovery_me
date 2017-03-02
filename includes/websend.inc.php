@@ -585,6 +585,7 @@ function umc_tellraw($selector, $msg_arr) {
     $text_line = implode(",", $texts);
     
     $cmd = "tellraw $sel [$text_line]";
+    XMPP_ERROR_send_msg($cmd);
     umc_ws_cmd($cmd, 'asConsole');
     
     // we likely need to check if the environment is websend or not and if not 
@@ -606,7 +607,7 @@ function umc_tellraw_text($text, $attributes = false) {
     
     // no attributes, close now
     if (!$attributes) {
-        $out .= "}";
+        $out .= ',"bold":"false"}'; // bold format is ON by default
         return $out;
     }
     
@@ -648,6 +649,8 @@ function umc_tellraw_text($text, $attributes = false) {
                 $out .= ",\"$format\":\"true\"";
             }
         }
+    } else {
+        $out .= ',"bold":"false"';
     }
     
     // click event
@@ -664,7 +667,7 @@ function umc_tellraw_text($text, $attributes = false) {
         $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
         // we might need to validate items, entity and achievement/stats names
         if (in_array($tooltip['action'], $valid_tool_types)) {
-            $out .= ",\"hoverEvent\":{\"action\":\"{$click['action']}\",\"value\":\"{$click['value']}\"}";
+            $out .= ",\"hoverEvent\":{\"action\":\"{$tooltip['action']}\",\"value\":\"{$tooltip['value']}\"}";
         }
     }
     
