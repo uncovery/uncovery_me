@@ -209,6 +209,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     $out = array(
         'full' => $full,
+        'full_nocolor' => "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text",
         'item_id' => $UMC_DATA[$item_name]['id'],
         'type' => $item_data,
         'full_clean' => $full_clean,
