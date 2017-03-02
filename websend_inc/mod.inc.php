@@ -148,13 +148,14 @@ function umc_mod_error_message() {
     $thanks2 = umc_txt_format($thanks, array('bold'));
     
     $uncovery = umc_txt_color('Uncovery', 'green');
-    $uncovery2 = umc_txt_format($uncovery, array('underlined'));
+    $uncovery2 = umc_txt_format($uncovery, array('underlined', 'normal'));
     $uncovery3 = umc_txt_click($uncovery2, 'open_url', 'http://uncovery.me');
     
     $msg = umc_txt_color('received the message!', 'red');
-    $msg2 = umc_txt_hover($msg, 'show_item', '{id:minecraft:stone,Damage:0,Count:1}');
+    $msg2 = umc_txt_format($uncovery, array('normal'));
+    $msg3 = umc_txt_hover($msg2, 'show_item', '{id:minecraft:stone,Damage:0,Count:1}');
     
-    umc_tellraw($username, array($thanks2, $uncovery3, $msg2), true);
+    umc_tellraw($username, array($thanks2, $uncovery3, $msg3), true);
     
     // XMPP_ERROR_trigger("User $username ran a mod test");
 }
