@@ -625,14 +625,14 @@ function umc_do_offer_internal($deposit) {
             // calculate total listing value for hovertext
             $listing_value = $sum * $price;
             // compose raw JSON message with @a selector (all online players)
-            $cmd = 'tellraw @a [';
-            $cmd = $cmd . '{"text":"[!] ' . $player . 'offers ","color":"gold"},';
-            $cmd = $cmd . '{"text":"' . $sum . ' ' . $item['full'] . ' @ ' . $price . '/pc!",';
-            $cmd = $cmd .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},';
-            $cmd = $cmd . '{"text":"ID:' . $posted_id . '","color":"green",';
-            $cmd = $cmd .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},';
-            $cmd = $cmd .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}';
-            $cmd = $cmd . ']';
+            $cmd = 'tellraw @a ['
+                . '{"text":"[!] ' . $player . 'offers ","color":"gold"},'
+                . '{"text":"' . $sum . ' ' . $item['full'] . ' @ ' . $price . '/pc!",'
+                .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},'
+                . '{"text":"ID:' . $posted_id . '","color":"green",'
+                .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},'
+                .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}'
+                . ']';
             // issue the command
             umc_ws_cmd($cmd, 'asConsole');
         }
