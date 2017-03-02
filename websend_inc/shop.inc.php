@@ -626,14 +626,15 @@ function umc_do_offer_internal($deposit) {
             $listing_value = $sum * $price;
             // compose raw JSON message with @a selector (all online players)
             $cmd = 'tellraw @a ['
-                . '{"text":"[!] ' . $player . 'offers ","color":"gold"},'
-                . '{"text":"' . $sum . ' ' . $item['full'] . ' @ ' . $price . '/pc!",'
+                . '{"text":"[!] ' . $player . ' offers ","color":"gold"},'
+                . '{"text":"' . $sum . ' ' . $item['meta'] . ' ' . $item['name'] . ' ' . $item['damage'] . ' @ ' . $price . '/pc!",'
                 .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},'
                 . '{"text":"ID:' . $posted_id . '","color":"green",'
                 .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},'
                 .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}'
                 . ']';
             // issue the command
+            XMPP_ERROR_trigger($cmd);
             umc_ws_cmd($cmd, 'asConsole');
         }
     } else {
