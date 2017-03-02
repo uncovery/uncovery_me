@@ -620,12 +620,16 @@ function umc_txt_format($msg, $formats = array()) {
         $formats = array($formats);
     }
     $valid_formats = array(
-        'bold','italic','strikethrough','underlined','obfuscated',
+        'bold','italic','strikethrough','underlined','obfuscated','normal',
     );
     $out = '';
     foreach ($formats as $format) {
         if (in_array($format, $valid_formats)) {
-            $out .= ",\"$format\":\"true\"";
+            if ($format == 'normal') {
+                $out .= ",\"bold\":\"false\"";
+            } else {
+                $out .= ",\"$format\":\"true\"";
+            }
         }
     }
     if (is_array($msg)) {
