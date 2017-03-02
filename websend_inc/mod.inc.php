@@ -152,7 +152,7 @@ function umc_mod_error_message() {
     $uncovery3 = umc_txt_click($uncovery2, 'open_url', 'http://uncovery.me');
     
     $msg = umc_txt_color('received the message!', 'red');
-    $msg2 = umc_txt_format($uncovery, array('normal'));
+    $msg2 = umc_txt_format($msg, array('normal'));
     $msg3 = umc_txt_hover($msg2, 'show_item', '{id:minecraft:stone,Damage:0,Count:1}');
     
     umc_tellraw($username, array($thanks2, $uncovery3, $msg3), true);
