@@ -575,7 +575,7 @@ function umc_tellraw($selector, $msg_arr) {
     foreach ($msg_arr as $msg) {
         // check if we have attributes
         $atts = false;
-        if ($msg['atts']) {
+        if (isset($msg['atts'])) {
             $atts = $msg['atts'];
         }
         $texts[] = umc_tellraw_text($msg['text'], $atts);
@@ -584,7 +584,7 @@ function umc_tellraw($selector, $msg_arr) {
     // glue the pieces with commas
     $text_line = implode(",", $texts);
     
-    $cmd = "tellraw $sel= [$text_line]";
+    $cmd = "tellraw $sel [$text_line]";
     umc_ws_cmd($cmd, 'asConsole');
     
     // we likely need to check if the environment is websend or not and if not 
@@ -636,6 +636,10 @@ function umc_tellraw_text($text, $attributes = false) {
     
     // bold etc formats
     if ($formats) {
+        // bold is ON by default, need to switch it off unless otherwise specified
+        if (!in_array('bold', $formats)) {
+            $out .= ",\"bold\":\"false\"";
+        }
         $valid_formats = array(
             'bold','italic','strikethrough','underlined','obfuscated',
         );
