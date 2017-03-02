@@ -573,7 +573,12 @@ function umc_tellraw($selector, $msg_arr) {
     
     $texts = array();
     foreach ($msg_arr as $msg) {
-        $texts[] = umc_tellraw_text($msg['text'], $msg['atts']);
+        // check if we have attributes
+        $atts = false;
+        if ($msg['atts']) {
+            $atts = $msg['atts'];
+        }
+        $texts[] = umc_tellraw_text($msg['text'], $atts);
     }
     
     // glue the pieces with commas
@@ -581,6 +586,9 @@ function umc_tellraw($selector, $msg_arr) {
     
     $cmd = "tellraw $sel= [$text_line]";
     umc_ws_cmd($cmd, 'asConsole');
+    
+    // we likely need to check if the environment is websend or not and if not 
+    // use umc_exec_command($cmd, 'asConsole'); instead
 }
 
 /**
@@ -590,11 +598,17 @@ function umc_tellraw($selector, $msg_arr) {
  * @param array $attributes
  * @return string
  */
-function umc_tellraw_text($text, $attributes) {
+function umc_tellraw_text($text, $attributes = false) {
     if (strlen(trim($text)) == 0) {
         return false;
     } 
     $out = "{\"text\":\"$text\"";
+    
+    // no attributes, close now
+    if (!$attributes) {
+        $out .= "}";
+        return $out;
+    }
     
     $valid_attributes = array('color', 'formats', 'click', 'tooltip');
     
