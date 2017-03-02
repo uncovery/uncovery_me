@@ -548,9 +548,8 @@ function umc_ws_vardump($var) {
 }
 
 /**
- * TELLRAW SECTION
+ * TELLRAW SECTION *************************************************************
  */
-
 
 /**
  * Base Tellraw execution
@@ -560,15 +559,12 @@ function umc_ws_vardump($var) {
  */
 function umc_tellraw($selector, $msg_arr) {
     $valid_selectors = array(
-        '@p','@r','@a','@e',
+        '@p', // nearest
+        '@r', // random
+        '@a', // all users
+        '@e', // all entities, including users
     );
-    /* $selector_choice = array(
-        'nearest' => '@p',
-        'random' => '@r',
-        'all' => '@a',
-        'all_entities' => '@e', // includes all players
-        'username' => "@a[name=$username]",
-    ); */
+
     if (in_array($selector, $valid_selectors)) {
         $sel = $selector;
     } else {
