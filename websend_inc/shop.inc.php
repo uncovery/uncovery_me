@@ -634,7 +634,6 @@ function umc_do_offer_internal($deposit) {
                 .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}'
                 . ']';
             // issue the command
-            XMPP_ERROR_trigger($cmd);
             umc_ws_cmd($cmd, 'asConsole');
         }
     } else {
