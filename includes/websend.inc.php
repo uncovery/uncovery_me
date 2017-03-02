@@ -553,11 +553,12 @@ function umc_ws_vardump($var) {
 
 /**
  * Base Tellraw execution
- * 
+ *
  * @param type $selector
  * @param type $msg_arr
+ * @param type $spacer
  */
-function umc_tellraw($selector, $msg_arr) {
+function umc_tellraw($selector, $msg_arr, $spacer) {
     $valid_selectors = array(
         '@p', // nearest
         '@r', // random
@@ -570,19 +571,23 @@ function umc_tellraw($selector, $msg_arr) {
     } else {
         $sel = "@a[name=$selector]";
     }
-    
+
     $texts = array();
     foreach ($msg_arr as $msg) {
-        // check if we have attributes
-        $atts = false;
-        if (isset($msg['atts'])) {
-            $atts = $msg['atts'];
+        $out = "{\"text\":\"{$msg['txt']}\"";
+        if (isset($msg['att'])) {
+            $out .= $msg['att'];
         }
-        $texts[] = umc_tellraw_text($msg['text'], $atts);
+        $out .= "}";
+        $texts[] = $out;
     }
     
     // glue the pieces with commas
-    $text_line = implode(",", $texts);
+    $spacer_str = ",";
+    if ($spacer == true) {
+        $spacer_str = ",{\"text\":\" \"},";
+    }
+    $text_line = implode($spacer_str, $texts);
     
     $cmd = "tellraw $sel [$text_line]";
     XMPP_ERROR_send_msg($cmd);
@@ -592,85 +597,70 @@ function umc_tellraw($selector, $msg_arr) {
     // use umc_exec_command($cmd, 'asConsole'); instead
 }
 
-/**
- * Tellraw element abstraction layer
- * 
- * @param string $text your text
- * @param array $attributes
- * @return string
- */
-function umc_tellraw_text($text, $attributes = false) {
-    if (strlen(trim($text)) == 0) {
-        return false;
-    } 
-    $out = "{\"text\":\"$text\"";
-    
-    // no attributes, close now
-    if (!$attributes) {
-        $out .= ',"bold":"false"}'; // bold format is ON by default
-        return $out;
-    }
-    
-    $valid_attributes = array('color', 'formats', 'click', 'tooltip');
-    
-    // let's first assume they are not set
-    $color = false;
-    $formats = false;
-    $click = false;
-    $tooltip = false;
-    // then assing from array if exists
-    foreach ($attributes as $att_name => $att_value) {
-        if (in_array($att_name, $valid_attributes)) {
-            $$att_name = $att_value;
-        }
-    }
-    // then we go through them 1 by 1
-    
-    // color
+function umc_txt_color($msg, $color) {
     $valid_colors = array(
         'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
         'gold','gray','dark_gray','blue','green','aqua','red','light_purple','yellow','white'
     );
     if ($color && in_array($color, $valid_colors)) {
-        $out .= ",\"color\":\"$color\"";
-    }
-    
-    // bold etc formats
-    if ($formats) {
-        // bold is ON by default, need to switch it off unless otherwise specified
-        if (!in_array('bold', $formats)) {
-            $out .= ',"bold":"false"';
-        }
-        $valid_formats = array(
-            'bold','italic','strikethrough','underlined','obfuscated',
-        );
-        foreach ($formats as $format) {
-            if (in_array($format, $valid_formats)) {
-                $out .= ",\"$format\":\"true\"";
-            }
+        $out = ",\"color\":\"$color\"";
+        
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
         }
     } else {
-        $out .= ',"bold":"false"';
+        return false;
     }
-    
-    // click event
-    if ($click && isset($click['action']) && isset($click['value'])) {
-        $valid_clicks = array('open_url','suggest_command','run_command','insertion');
-        if (in_array($click['action'], $valid_clicks)) {
-            $out .= ",\"clickEvent\":{\"action\":\"{$click['action']}\",\"value\":\"{$click['value']}\"}";
+}
+
+function umc_txt_format($msg, $formats = array()) {
+    if (!is_array($formats)) {
+        $formats = array($formats);
+    }
+    $valid_formats = array(
+        'bold','italic','strikethrough','underlined','obfuscated',
+    );
+    $out = '';
+    foreach ($formats as $format) {
+        if (in_array($format, $valid_formats)) {
+            $out .= ",\"$format\":\"true\"";
         }
     }
-    
-    // tooltip
-    if ($tooltip && isset($tooltip['action']) && isset($tooltip['value'])) {
-        // achievements also work for stats with the value being stats.stats_id
-        $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
-        // we might need to validate items, entity and achievement/stats names
-        if (in_array($tooltip['action'], $valid_tool_types)) {
-            $out .= ",\"hoverEvent\":{\"action\":\"{$tooltip['action']}\",\"value\":\"{$tooltip['value']}\"}";
-        }
+    if (is_array($msg)) {
+        return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+    } else {
+        return array('txt' => $msg, 'att' => $out);
     }
-    
-    $out .= "}";
-    return $out;
+}
+
+function umc_txt_click($msg, $action, $value) {
+    $valid_clicks = array('open_url','suggest_command','run_command','insertion');
+    if (in_array($action, $valid_clicks)) {
+        $out = ",\"clickEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
+        }
+    } else {
+        return false;
+    }
+}
+
+function umc_txt_hover($msg, $action, $value) {
+    // achievements also work for stats with the value being stats.stats_id
+    $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
+    // we might need to validate items, entity and achievement/stats names
+    if (in_array($action, $valid_tool_types)) {
+        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
+        }
+    } else {
+        return false;
+    }
 }
