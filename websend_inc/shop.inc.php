@@ -627,7 +627,7 @@ function umc_do_offer_internal($deposit) {
             // compose raw JSON message with @a selector (all online players)
             $cmd = 'tellraw @a ['
                 . '{"text":"[!] ' . $player . ' offers ","color":"gold"},'
-                . '{"text":"' . $sum . ' ' . $item['meta'] . ' ' . $item['name'] . ' ' . $item['damage'] . ' @ ' . $price . '/pc!",'
+                . '{"text":"' . $sum . ' ' . $item['full_nocolor'] .  ' @ ' . $price . '/pc!",'
                 .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},'
                 . '{"text":"ID:' . $posted_id . '","color":"green",'
                 .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},'
