@@ -597,6 +597,15 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
     // use umc_exec_command($cmd, 'asConsole'); instead
 }
 
+/**
+ * Apply a color to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply 
+ * several effects on the same text.
+ * 
+ * @param type $msg
+ * @param type $color
+ * @return boolean
+ */
 function umc_txt_color($msg, $color) {
     $valid_colors = array(
         'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
@@ -615,6 +624,15 @@ function umc_txt_color($msg, $color) {
     }
 }
 
+/**
+ * apply a format to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply 
+ * several effects on the same text.
+ * 
+ * @param type $msg
+ * @param type $formats
+ * @return type
+ */
 function umc_txt_format($msg, $formats = array()) {
     if (!is_array($formats)) {
         $formats = array($formats);
@@ -639,6 +657,16 @@ function umc_txt_format($msg, $formats = array()) {
     }
 }
 
+/**
+ * Apply a click event to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply 
+ * several effects on the same text.
+ * 
+ * @param type $msg
+ * @param type $action
+ * @param type $value
+ * @return boolean
+ */
 function umc_txt_click($msg, $action, $value) {
     $valid_clicks = array('open_url','suggest_command','run_command','insertion');
     if (in_array($action, $valid_clicks)) {
@@ -653,6 +681,16 @@ function umc_txt_click($msg, $action, $value) {
     }
 }
 
+/**
+ * Apply a hover tooltip to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply 
+ * several effects on the same text.
+ *  
+ * @param type $msg
+ * @param type $action
+ * @param type $value
+ * @return boolean
+ */
 function umc_txt_hover($msg, $action, $value) {
     // achievements also work for stats with the value being stats.stats_id
     $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
