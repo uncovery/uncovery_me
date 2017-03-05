@@ -3333,6 +3333,9 @@ $UMC_DATA = array(
         'group' => 'spawn_egg_types',
         'icon_url' => '/f/fc/Grid_Spawn_Creeper.png',
         'subtypes' => array(
+            29 => array('name' => 'zombie_horse_egg', 'avail' => true, 'icon_url' => '/4/46/Undeadhorse.png'), //not sure if egg exists
+            31 => array('name' => 'donkey_egg', 'avail' => true, 'icon_url' => '/9/95/Donkey.png'), //lottery
+            32 => array('name' => 'mule_egg', 'avail' => true, 'icon_url' => '/e/e7/Mule.png'), //lottery
             50 => array('name' => 'creeper_egg', 'avail' => true, 'icon_url' => '/f/fc/Grid_Spawn_Creeper.png'),
             51 => array('name' => 'skeleton_egg', 'avail' => true, 'icon_url' => '/3/35/Grid_Spawn_Skeleton.png'),
             52 => array('name' => 'spider_egg', 'avail' => true, 'icon_url' => '/5/50/Grid_Spawn_Spider.png'),
@@ -3345,23 +3348,24 @@ $UMC_DATA = array(
             60 => array('name' => 'silverfish_egg', 'avail' => true, 'icon_url' => '/1/11/Grid_Spawn_Silverfish.png'),
             61 => array('name' => 'blaze_egg', 'avail' => true, 'icon_url' => '/f/ff/Grid_Spawn_Blaze.png'),
             62 => array('name' => 'magma_cube_egg', 'avail' => true, 'icon_url' => '/2/25/Grid_Spawn_Magma_Cube.png'),
-            65 => array('name' => 'bat_egg', 'avail' => true, 'icon_url' => '/f/f3/Grid_Spawn_Bat.png'),
+            65 => array('name' => 'bat_egg', 'avail' => true, 'icon_url' => '/f/f3/Grid_Spawn_Bat.png'),  //lottery
             66 => array('name' => 'witch_egg', 'avail' => true, 'icon_url' => '/7/7c/Grid_Spawn_Witch.png'),
             67 => array('name' => 'endermite_egg', 'avail' => true, 'icon_url' => '/a/af/Grid_Spawn_Endermite.png'),
             68 => array('name' => 'guardian_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'),
             69 => array('name' => 'shulker_egg', 'avail' => true, 'icon_url' => '/c/c7/Grid_Spawn_Shulker.png'),
-            90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'),
-            91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'),
-            92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'),
-            93 => array('name' => 'chicken_egg', 'avail' => true, 'icon_url' => '/b/b0/Grid_Spawn_Chicken.png'),
-            94 => array('name' => 'squid_egg', 'avail' => true, 'icon_url' => '/5/58/Grid_Spawn_Squid.png'),
-            95 => array('name' => 'wolf_egg', 'avail' => true, 'icon_url' => '/4/4b/Grid_Spawn_Wolf.png'),
-            96 => array('name' => 'mooshroom_egg', 'avail' => true, 'icon_url' => '/9/91/Grid_Spawn_Mooshroom.png'),
-            97 => array('name' => 'polar_bear_egg', 'avail' => true, 'icon_url' => '/3/3f/Grid_Spawn_Ghast.png'),
-            98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'),
-            100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'),
-            101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'),
-            120 => array('name' => 'villager_egg', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'),
+            90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'), //lottery
+            91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'), //lottery
+            92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'), //lottery
+            93 => array('name' => 'chicken_egg', 'avail' => true, 'icon_url' => '/b/b0/Grid_Spawn_Chicken.png'), //lottery
+            94 => array('name' => 'squid_egg', 'avail' => true, 'icon_url' => '/5/58/Grid_Spawn_Squid.png'), //lottery
+            95 => array('name' => 'wolf_egg', 'avail' => true, 'icon_url' => '/4/4b/Grid_Spawn_Wolf.png'), //lottery
+            96 => array('name' => 'mooshroom_egg', 'avail' => true, 'icon_url' => '/9/91/Grid_Spawn_Mooshroom.png'), //lottery
+            98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'), //lottery
+            100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'), //lottery
+            101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'), //lottery
+            102 => array('name' => 'polar_bear_egg', 'avail' => true 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery
+            103 => array('name' => 'llama_egg', 'avail' => true 'icon_url' => ''), //lottery
+            120 => array('name' => 'villager_egg', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'), //lottery
         ),
     ),
     'experience_bottle' => array(
