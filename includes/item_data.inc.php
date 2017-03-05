@@ -3363,8 +3363,8 @@ $UMC_DATA = array(
             98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'), //lottery
             100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'), //lottery
             101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'), //lottery
-            102 => array('name' => 'polar_bear_egg', 'avail' => true 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery
-            103 => array('name' => 'llama_egg', 'avail' => true 'icon_url' => ''), //lottery
+            102 => array('name' => 'polar_bear_egg', 'avail' => true, 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery
+            103 => array('name' => 'llama_egg', 'avail' => true, 'icon_url' => ''), //lottery
             120 => array('name' => 'villager_egg', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'), //lottery
         ),
     ),
