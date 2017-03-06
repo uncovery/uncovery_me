@@ -522,7 +522,7 @@ function umc_do_deposit_internal($all = false) {
         }
         
         if ($item['notrade']) {
-            umc_error("Sorry, this item is not able to deposit (yet).");
+            umc_error("Sorry, this item is not enabled for deposit (yet).");
         }
 
         // check for more bugs
