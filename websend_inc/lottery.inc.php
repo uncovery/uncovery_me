@@ -193,8 +193,20 @@ $lottery = array(
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
         'blocks' => array(
-            'spawn_egg:90', 'spawn_egg:91', 'spawn_egg:92', 'spawn_egg:93', 'spawn_egg:94',
-            'spawn_egg:95', 'spawn_egg:96', 'spawn_egg:98', 'spawn_egg:100', 'spawn_egg:120',
+            'spawn_egg:31', //donkey
+            'spawn_egg:32', //mule
+            'spawn_egg:90', //pig
+            'spawn_egg:91', //sheep
+            'spawn_egg:92', //cow
+            'spawn_egg:93', //chicken
+            'spawn_egg:94', //squid
+            'spawn_egg:95', //wolf
+            'spawn_egg:96', //mooshroom
+            'spawn_egg:98', //ocelot
+            'spawn_egg:100', //horse
+            'spawn_egg:102', //polar_bear
+            'spawn_egg:103', //llama
+            'spawn_egg:120', //villager
         ),
     ),
     'random_unc' => array(
@@ -623,7 +635,7 @@ function umc_lottery() {
             $item_txt = "a " . $full;
             break;
         case 'random_pet': // same as blocks below but only 1 always
-            umc_echo($type);
+            // umc_echo($type);
             $block = $prize['blocks'];
             $luck2 = mt_rand(0, count($prize['blocks']) - 1);
             $given_block = explode(":", $block[$luck2]);

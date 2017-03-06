@@ -210,6 +210,7 @@ function umc_item_data_id2namelist() {
 
 $ENCH_ITEMS = array(
     'PROTECTION_ENVIRONMENTAL'=> array( // 0
+        'id' => 0,
         'short'=> 'Prot',
         'name'=>'Protection',
         'items'=> array(
@@ -222,6 +223,7 @@ $ENCH_ITEMS = array(
         'max'=> 4
     ),
     'PROTECTION_FIRE' =>array( // 1
+        'id' => 1,
         'short'=> 'FP',
         'name'=>'FireProtection',
         'items'=> array(
@@ -233,7 +235,8 @@ $ENCH_ITEMS = array(
         ),
         'max'=>4
     ),
-    'PROTECTION_FALL' => array( // 3
+    'PROTECTION_FALL' => array( // 2
+        'id' => 2,
         'short'=> 'Fall',
         'name'=>'FeatherFalling',
         'items'=> array(
@@ -242,6 +245,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'PROTECTION_EXPLOSIONS' => array( // 3
+        'id' => 3,
         'short'=> 'BP',
         'name'=>'BlastProtection',
         'items'=> array(
@@ -254,6 +258,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'PROTECTION_PROJECTILE' => array( // 4
+        'id' => 4,
         'short'=> 'PP',
         'name'=>'ProjectileProtection',
         'items'=> array(
@@ -266,6 +271,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'OXYGEN' => array( // 5
+        'id' => 5,
         'short' => 'Res',
         'name' =>'Respiration',
         'items' => array(
@@ -274,6 +280,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'WATER_WORKER' => array( // 6
+        'id' => 6,
         'short' => 'Aqua',
         'name' =>'AquaAffinity',
         'items' => array(
@@ -282,6 +289,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'THORNS' => array( // 7
+        'id' => 7,
         'short' => 'Thorn',
         'name' =>'Thorn',
         'items' => array(
@@ -294,6 +302,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'DEPTH_STRIDER' => array( // 8
+        'id' => 8,
         'short' => 'Depth',
         'name' => 'DepthStrider',
         'items' => array(
@@ -302,6 +311,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'FROST_WALKER' => array( // 9
+        'id' => 9,
         'short' => 'Depth',
         'name' => 'DepthStrider',
         'items' => array(
@@ -310,6 +320,7 @@ $ENCH_ITEMS = array(
         'max' => 2
     ),
     'BINDING_CURSE' => array( // 10
+        'id' => 10,
         'short' => 'Binding',
         'name' =>'BindingCurse',
         'items' => array(
@@ -322,6 +333,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'DAMAGE_ALL' => array( // 16
+        'id' => 16,
         'short'=> 'Sharp',
         'name'=>'Sharpness',
         'items'=> array(
@@ -330,7 +342,8 @@ $ENCH_ITEMS = array(
         ),
         'max' => 5
     ),
-    'DAMAGE_UNDEAD' =>array( // 17
+    'DAMAGE_UNDEAD' => array( // 17
+        'id' => 17,
         'short' => 'Smite',
         'name' => 'Smite',
         'items' => array(
@@ -339,7 +352,8 @@ $ENCH_ITEMS = array(
         ),
         'max'=>5
     ),
-    'DAMAGE_ARTHROPODS' =>array( // 18
+    'DAMAGE_ARTHROPODS' => array( // 18
+        'id' => 18,
         'short' => 'Bane',
         'name' => 'BaneOfArthropods',
         'items' => array(
@@ -349,6 +363,7 @@ $ENCH_ITEMS = array(
         'max'=>5
     ),
     'KNOCKBACK' => array( // 19
+        'id' => 19,
         'short' => 'Knock',
         'name' => 'Knockback',
         'items' => array(
@@ -357,6 +372,7 @@ $ENCH_ITEMS = array(
         'max'=>2
     ),
     'FIRE_ASPECT' => array( // 20
+        'id' => 20,
         'short' => 'Fire',
         'name' => 'FireAspect',
         'items' => array(
@@ -365,6 +381,7 @@ $ENCH_ITEMS = array(
         'max'=>2
     ),
     'LOOT_BONUS_MOBS' =>array( // 21
+        'id' => 21,
         'short' => 'Loot',
         'name' => 'Looting',
         'items' => array(
@@ -373,6 +390,7 @@ $ENCH_ITEMS = array(
         'max'=>3
     ),
     'DIG_SPEED' =>array( // 32
+        'id' => 32,
         'short' => 'Eff',
         'name' => 'Efficiency',
         'items' => array(
@@ -384,6 +402,7 @@ $ENCH_ITEMS = array(
         'max' => 5
     ),
     'SILK_TOUCH' => array( // 33
+        'id' => 33,
         'short' => 'Silk',
         'name' => 'SilkTouch',
         'items' => array(
@@ -394,6 +413,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'DURABILITY' => array( // 34
+        'id' => 34,
         'short'=> 'Unb',
         'name'=>'Unbreaking',
         'items' => array(
@@ -412,6 +432,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'LOOT_BONUS_BLOCKS' => array( // 35
+        'id' => 35,
         'short' => 'Fort',
         'name' => 'Fortune',
         'items' => array(
@@ -422,42 +443,49 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'ARROW_DAMAGE' => array( //48
+        'id' => 48,
         'short' => 'Power',
         'name' => 'Power',
         'items' => array('bow'),
         'max'=>5
     ),
     'ARROW_KNOCKBACK' => array( //49
+        'id' => 49,
         'short'=> 'Punch',
         'name'=>'Punch',
         'items' => array('bow'),
         'max' => 2
     ),
     'ARROW_FIRE' => array( // 50
+        'id' => 50,
         'short' => 'Flame',
         'name' => 'Flame',
         'items' => array('bow'),
         'max' => 1
     ),
     'ARROW_INFINITE' => array( // 51
+        'id' => 51,
         'short' => 'Inf',
         'name' => 'Infinity',
         'items' => array('bow'),
         'max'=>1
     ),
     'LUCK' =>array( // 61
+        'id' => 61,
         'short' => 'Luck',
         'name' => 'Luck',
         'items' => array('fishing_rod'),
         'max'=>1
     ),
     'LURE' => array( // 62
+        'id' => 62,
         'short' => 'Lure',
         'name' => 'Lure',
         'items' => array('fishing_rod'),
         'max'=>1
     ),
     'MENDING' => array( // 70
+        'id' => 70,
         'short' => 'Mending',
         'name' => 'Mending',
         'items' => array(
@@ -494,6 +522,7 @@ $ENCH_ITEMS = array(
         'max'=>1
     ),
     'VANISHING_CURSE' =>array(  // 71
+        'id' => 71,
         'short' => 'Vanish',
         'name' => 'Curse of Vanishing',
         'items' => array(
@@ -1176,7 +1205,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/2/2e/Grid_Ice.png',
     ),
-    'snow' => array(
+    'snow_block' => array(
         'id' => 80,
         'stack' => 64,
         'avail' => true,
@@ -2229,90 +2258,105 @@ $UMC_DATA = array(
         'id' => 220,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/d/d2/Orange_Shulker_Box.png',
     ),
     'magenta_shulker_box' => array(
         'id' => 221,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/b/bd/Magenta_Shulker_Box.png',
     ),
     'light_blue_shulker_box' => array(
         'id' => 222,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/d/d8/Light_Blue_Shulker_Box.png',
     ),
     'yellow_shulker_box' => array(
         'id' => 223,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/f/f9/Yellow_Shulker_Box.png',
     ),
     'lime_shulker_box' => array(
         'id' => 224,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/7/7a/Lime_Shulker_Box.png',
     ),
     'pink_shulker_box' => array(
         'id' => 225,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/f/fd/Pink_Shulker_Box.png',
     ),
     'gray_shulker_box' => array(
         'id' => 226,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/7/73/Gray_Shulker_Box.png',
     ),
     'light_gray_shulker_box' => array(
         'id' => 227,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/6/6c/Light_Gray_Shulker_Box.png',
     ),
     'cyan_shulker_box' => array(
         'id' => 228,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/7/76/Cyan_Shulker_Box.png',
     ),
     'purple_shulker_box' => array(
         'id' => 229,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/f/f9/Purple_Shulker_Box.png',
     ),
     'blue_shulker_box' => array(
         'id' => 230,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/e/e9/Blue_Shulker_Box.png',
     ),
     'brown_shulker_box' => array(
         'id' => 231,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/7/73/Brown_Shulker_Box.png',
     ),
     'green_shulker_box' => array(
         'id' => 232,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/2/2a/Green_Shulker_Box.png',
     ),
     'red_shulker_box' => array(
         'id' => 233,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/f/f2/Red_Shulker_Box.png',
     ),
     'black_shulker_box' => array(
         'id' => 234,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/e/e2/Black_Shulker_Box.png',
     ),
     'structure_block' => array(
@@ -2840,7 +2884,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/f/fd/Grid_Redstone.png',
     ),
-    'snowball' => array(
+    'snow_ball' => array(
         'id' => 332,
         'stack' => 16,
         'avail' => true,
@@ -3333,6 +3377,9 @@ $UMC_DATA = array(
         'group' => 'spawn_egg_types',
         'icon_url' => '/f/fc/Grid_Spawn_Creeper.png',
         'subtypes' => array(
+            29 => array('name' => 'zombie_horse_egg', 'avail' => true, 'icon_url' => '/4/46/Undeadhorse.png'), //not sure if egg exists
+            31 => array('name' => 'donkey_egg', 'avail' => true, 'icon_url' => '/9/95/Donkey.png'), //lottery
+            32 => array('name' => 'mule_egg', 'avail' => true, 'icon_url' => '/e/e7/Mule.png'), //lottery
             50 => array('name' => 'creeper_egg', 'avail' => true, 'icon_url' => '/f/fc/Grid_Spawn_Creeper.png'),
             51 => array('name' => 'skeleton_egg', 'avail' => true, 'icon_url' => '/3/35/Grid_Spawn_Skeleton.png'),
             52 => array('name' => 'spider_egg', 'avail' => true, 'icon_url' => '/5/50/Grid_Spawn_Spider.png'),
@@ -3345,23 +3392,24 @@ $UMC_DATA = array(
             60 => array('name' => 'silverfish_egg', 'avail' => true, 'icon_url' => '/1/11/Grid_Spawn_Silverfish.png'),
             61 => array('name' => 'blaze_egg', 'avail' => true, 'icon_url' => '/f/ff/Grid_Spawn_Blaze.png'),
             62 => array('name' => 'magma_cube_egg', 'avail' => true, 'icon_url' => '/2/25/Grid_Spawn_Magma_Cube.png'),
-            65 => array('name' => 'bat_egg', 'avail' => true, 'icon_url' => '/f/f3/Grid_Spawn_Bat.png'),
+            65 => array('name' => 'bat_egg', 'avail' => true, 'icon_url' => '/f/f3/Grid_Spawn_Bat.png'),  //lottery
             66 => array('name' => 'witch_egg', 'avail' => true, 'icon_url' => '/7/7c/Grid_Spawn_Witch.png'),
             67 => array('name' => 'endermite_egg', 'avail' => true, 'icon_url' => '/a/af/Grid_Spawn_Endermite.png'),
             68 => array('name' => 'guardian_egg', 'avail' => true, 'icon_url' => '/5/5f/Grid_Spawn_Guardian.png'),
             69 => array('name' => 'shulker_egg', 'avail' => true, 'icon_url' => '/c/c7/Grid_Spawn_Shulker.png'),
-            90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'),
-            91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'),
-            92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'),
-            93 => array('name' => 'chicken_egg', 'avail' => true, 'icon_url' => '/b/b0/Grid_Spawn_Chicken.png'),
-            94 => array('name' => 'squid_egg', 'avail' => true, 'icon_url' => '/5/58/Grid_Spawn_Squid.png'),
-            95 => array('name' => 'wolf_egg', 'avail' => true, 'icon_url' => '/4/4b/Grid_Spawn_Wolf.png'),
-            96 => array('name' => 'mooshroom_egg', 'avail' => true, 'icon_url' => '/9/91/Grid_Spawn_Mooshroom.png'),
-            97 => array('name' => 'polar_bear_egg', 'avail' => true, 'icon_url' => '/3/3f/Grid_Spawn_Ghast.png'),
-            98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'),
-            100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'),
-            101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'),
-            120 => array('name' => 'villager_egg', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'),
+            90 => array('name' => 'pig_egg', 'avail' => true, 'icon_url' => '/0/09/Grid_Spawn_Pig.png'), //lottery
+            91 => array('name' => 'sheep_egg', 'avail' => true, 'icon_url' => '/f/f8/Grid_Spawn_Sheep.png'), //lottery
+            92 => array('name' => 'cow_egg', 'avail' => true, 'icon_url' => '/8/80/Grid_Spawn_Cow.png'), //lottery
+            93 => array('name' => 'chicken_egg', 'avail' => true, 'icon_url' => '/b/b0/Grid_Spawn_Chicken.png'), //lottery
+            94 => array('name' => 'squid_egg', 'avail' => true, 'icon_url' => '/5/58/Grid_Spawn_Squid.png'), //lottery
+            95 => array('name' => 'wolf_egg', 'avail' => true, 'icon_url' => '/4/4b/Grid_Spawn_Wolf.png'), //lottery
+            96 => array('name' => 'mooshroom_egg', 'avail' => true, 'icon_url' => '/9/91/Grid_Spawn_Mooshroom.png'), //lottery
+            98 => array('name' => 'ocelot_egg', 'avail' => true, 'icon_url' => '/e/e8/Grid_Spawn_Ocelot.png'), //lottery
+            100 => array('name' => 'horse_egg', 'avail' => true, 'icon_url' => '/e/e0/Grid_Spawn_Horse.png'), //lottery
+            101 => array('name' => 'rabbit_egg', 'avail' => true, 'icon_url' => '/3/33/Grid_Spawn_Rabbit.png'), //lottery
+            102 => array('name' => 'polar_bear_egg', 'avail' => true, 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery
+            103 => array('name' => 'llama_egg', 'avail' => true, 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery //TODO: find the right image
+            120 => array('name' => 'villager_egg', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'), //lottery
         ),
     ),
     'experience_bottle' => array(
@@ -3593,6 +3641,7 @@ $UMC_DATA = array(
         'id' => 416,
         'stack' => 16,
         'avail' => false,
+        'notrade' => true,
         'icon_url' => '/4/47/Grid_Armor_Stand.png',
     ),
     'iron_horse_armor' => array(
@@ -3647,6 +3696,7 @@ $UMC_DATA = array(
         'id' => 425,
         'stack' => 16,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/2/24/Grid_White_Banner.png',
     ),
     'end_crystal' => array(
@@ -3829,7 +3879,8 @@ $UMC_DATA = array(
         'id' => 442,
         'stack' => 1,
         'avail' => true,
-        'icon_url' => '/4/41/Arrow.png',
+        'notrade' => true,
+        'icon_url' => '/4/41/Arrow.png', // TODO Find correct item icon
     ),
     'elytra' => array(
         'id' => 443,
@@ -3965,128 +4016,126 @@ $UMC_DATA = array(
 );
 
 $UMC_DATA_SPIGOT2ITEM = array(
-    'piston_sticky_base' => 'sticky_piston',
-    'piston_base' => 'piston',
-    'sugar_cane' => 'reeds',
-    'cobble_wall' => 'cobblestone_wall',
-    'red_rose' => 'red_flower',
-    'redstone_torch_on' => 'redstone_torch',
-    'nether_stalk' => 'nether_wart',
-    'wood_sword' => 'wooden_sword',
-    'spruce_wood_stairs' => 'spruce_stairs',
-    'leaves_2' => 'leaves2',
-    'log_2' => 'log2',
-    'smooth_brick' => 'stonebrick',
-    'rails' => 'rail',
-    'powered_rail' => 'golden_rail',
-    'snow_ball' => 'snowball',
-    'step' => 'stone_slab',
-    'diamond_spade' => 'diamond_shovel',
-    'seeds' => 'wheat_seeds',
-    'wood' => 'planks',
-    'wood_button' => 'wooden_button',
-    'sulphur' => 'gunpowder',
-    'stone_spade' => 'stone_shovel',
-    'workbench' => 'crafting_table',
-    'wood_door' => 'wooden_door',
-    'birch_door_item' => 'birch_door',
-    'grilled_pork' => 'cooked_porkchop',
-    'wood_pickaxe' => 'wooden_pickaxe',
-    'diode' => 'unpowered_repeater',
-    'stained_clay' => 'stained_hardened_clay',
-    'wood_stairs' => 'oak_stairs',
-    'cobblestone_stairs' => 'stone_stairs',
-    'thin_glass' => 'glass_pane',
-    'wood_step' => 'wooden_slab',
-    'redstone_lamp_off' => 'redstone_lamp',
-    'iron_barding' => 'iron_horse_armor',
-    'diamond_barding' => 'diamond_horse_armor',
-    'smooth_stairs' => 'stone_brick_stairs',
-    'nether_fence' => 'nether_brick_fence',
-    'carrot_item' => 'carrot',
-    'mycel' => 'mycelium',
-    'brewing_stand_item' => 'brewingstand',
-    'potato_item' => 'potato',
-    'wood_axe' => 'wooden_axe',
-    'iron_spade' => 'iron_shovel',
-    'trap_door' => 'trapdoor',
-    'iron_fence' => 'iron_bars',
-    'raw_chicken' => 'chicken',
-    'snow_block' => 'snow',
-    'grilled_pork' => 'cooked_porkchop',
-    'watch' => 'clock',
-    'skull_item' => 'skeletonskull',
-    'gold_record' => 'record_13',
-    'record_12' => 'record_wait',
-    'raw_fish' => 'fish',
-    'pork' => 'porkchop',
-    'ink_sack' => 'dye',
-    'leash' => 'lead',
-    'redstone_comparator' => 'comparator',
-    'gold_chestplate' => 'golden_chestplate',
-    'clay_brick' => 'brick',
-    'brick' => 'brick_block',
-    'gold_sword' => 'golden_sword',
-    'gold_helmet' => 'golden_helmet',
-    'stone_plate' => 'stone_pressure_plate',
-    'gold_boots' => 'golden_boots',
-    'huge_mushroom_2' => 'red_mushroom_block',
-    'spruce_door_item' => 'spruce_door',
-    'enchantment_table' => 'enchanting_table',
-    'slime_block' => 'slime_block',
-    'water_lily' => 'waterlily',
-    'record_7' => 'record_mellohi',
-    'long_grass' => 'tallgrass',
-    'birch_wood_stairs' => 'birch_stairs',
-    'iron_plate' => 'heavy_weighted_pressure_plate',
-    'dark_oak_door_item' => 'dark_oak_door',
-    'note_block' => 'noteblock',
-    'hard_clay' => 'hardened_clay',
-    'gold_leggings' => 'golden_leggings',
-    'exp_bottle' => 'experience_bottle',
-    'ender_stone' => 'end_stone',
-    'green_record' => 'record_cat',
-    'eye_of_ender' => 'ender_eye',
-    'jack_o_lantern' => 'lit_pumpkin',
-    'record_6' => 'record_mall',
-    'wood_hoe' => 'wooden_hoe',
     'acacia_door_item' => 'acacia_door',
-    'book_and_quill' => 'writable_book',
-    'gold_barding' => 'golden_horse_armor',
-    'mushroom_soup' => 'mushroom_stew',
-    'jungle_wood_stairs' => 'jungle_stairs',
-    'wood_plate' => 'wooden_pressure_plate',
-    'firework' => 'fireworks',
-    'fireball' => 'fire_charge',
-    'cauldron_item' => 'cauldron',
-    'gold_pickaxe' => 'golden_pickaxe',
-    'wood_spade' => 'wooden_shovel',
-    'record_3' => 'record_blocks',
-    'record_8' => 'record_stal',
-    'ender_portal_frame' => 'end_portal_frame',
-    'gold_axe' => 'golden_axe',
-    'empty_map' => 'map',
-    'gold_spade' => 'golden_shovel',
-    'record_5' => 'record_far',
-    'record_4' => 'record_chirp',
-    'dead_bush' => 'deadbush',
-    'carrot_stick' => 'carrot_on_a_stick',
-    'record_9' => 'record_strad',
-    'jungle_door_item' => 'jungle_door',
-    'monster_eggs' => 'monster_egg',
-    'gold_plate' => 'light_weighted_pressure_plate',
-    'huge_mushroom_1' => 'brown_mushroom_block',
-    'record_10' => 'record_ward',
-    'monster_egg' => 'spawn_egg',
-    'melon' => 'melonslice',
-    'clay' => 'clayblock',
-    'boat_spruce' => 'spruce_boat',
+    'birch_door_item' => 'birch_door',
+    'birch_wood_stairs' => 'birch_stairs',
     'boat_acacia' => 'acacia_boat',
     'boat_birch' => 'birch_boat',
-    'dragons_breath' => 'dragon_breath',
     'boat_dark_oak' => 'dark_oak_boat',
     'boat_jungle' => 'jungle_boat',
-    'snow_ball' => 'snowball',
-    'snow_block' => 'snow',
+    'boat_spruce' => 'spruce_boat',
+    'book_and_quill' => 'writable_book',
+    'brewing_stand_item' => 'brewingstand',
+    'brick' => 'brick_block',
+    'carrot_item' => 'carrot',
+    'carrot_stick' => 'carrot_on_a_stick',
+    'cauldron_item' => 'cauldron',
+    'clay' => 'clayblock',
+    'clay_brick' => 'brick',
+    'cobble_wall' => 'cobblestone_wall',
+    'cobblestone_stairs' => 'stone_stairs',
+    'dark_oak_door_item' => 'dark_oak_door',
+    'dead_bush' => 'deadbush',
+    'diamond_barding' => 'diamond_horse_armor',
+    'diamond_pick' => 'diamond_pickaxe',
+    'diamond_spade' => 'diamond_shovel',
+    'diode' => 'unpowered_repeater',
+    'dragons_breath' => 'dragon_breath',
+    'empty_map' => 'map',
+    'enchantment_table' => 'enchanting_table',
+    'ender_portal_frame' => 'end_portal_frame',
+    'ender_stone' => 'end_stone',
+    'exp_bottle' => 'experience_bottle',
+    'eye_of_ender' => 'ender_eye',
+    'fireball' => 'fire_charge',
+    'firework' => 'fireworks',
+    'gold_axe' => 'golden_axe',
+    'gold_barding' => 'golden_horse_armor',
+    'gold_boots' => 'golden_boots',
+    'gold_chestplate' => 'golden_chestplate',
+    'gold_helmet' => 'golden_helmet',
+    'gold_leggings' => 'golden_leggings',
+    'gold_pickaxe' => 'golden_pickaxe',
+    'gold_plate' => 'light_weighted_pressure_plate',
+    'gold_record' => 'record_13',
+    'gold_spade' => 'golden_shovel',
+    'gold_sword' => 'golden_sword',
+    'green_record' => 'record_cat',
+    'grilled_pork' => 'cooked_porkchop',
+    'grilled_pork' => 'cooked_porkchop',
+    'hard_clay' => 'hardened_clay',
+    'huge_mushroom_1' => 'brown_mushroom_block',
+    'huge_mushroom_2' => 'red_mushroom_block',
+    'ink_sack' => 'dye',
+    'iron_barding' => 'iron_horse_armor',
+    'iron_fence' => 'iron_bars',
+    'iron_plate' => 'heavy_weighted_pressure_plate',
+    'iron_spade' => 'iron_shovel',
+    'jack_o_lantern' => 'lit_pumpkin',
+    'jungle_door_item' => 'jungle_door',
+    'jungle_wood_stairs' => 'jungle_stairs',
+    'leash' => 'lead',
+    'leaves_2' => 'leaves2',
+    'log_2' => 'log2',
+    'long_grass' => 'tallgrass',
+    'melon' => 'melonslice',
+    'monster_egg' => 'spawn_egg',
+    'monster_eggs' => 'monster_egg',
+    'mushroom_soup' => 'mushroom_stew',
+    'mycel' => 'mycelium',
+    'nether_fence' => 'nether_brick_fence',
+    'nether_stalk' => 'nether_wart',
+    'note_block' => 'noteblock',
+    'piston_base' => 'piston',
+    'piston_sticky_base' => 'sticky_piston',
+    'pork' => 'porkchop',
+    'potato_item' => 'potato',
+    'powered_rail' => 'golden_rail',
+    'rails' => 'rail',
+    'raw_chicken' => 'chicken',
+    'raw_fish' => 'fish',
+    'record_10' => 'record_ward',
+    'record_12' => 'record_wait',
+    'record_3' => 'record_blocks',
+    'record_4' => 'record_chirp',
+    'record_5' => 'record_far',
+    'record_6' => 'record_mall',
+    'record_7' => 'record_mellohi',
+    'record_8' => 'record_stal',
+    'record_9' => 'record_strad',
+    'red_rose' => 'red_flower',
+    'redstone_comparator' => 'comparator',
+    'redstone_lamp_off' => 'redstone_lamp',
+    'redstone_torch_on' => 'redstone_torch',
+    'seeds' => 'wheat_seeds',
+    'skull_item' => 'skeletonskull',
+    'slime_block' => 'slime_block',
+    'smooth_brick' => 'stonebrick',
+    'smooth_stairs' => 'stone_brick_stairs',
+    'snow' => 'snow_ball',
+    'spruce_door_item' => 'spruce_door',
+    'spruce_wood_stairs' => 'spruce_stairs',
+    'stained_clay' => 'stained_hardened_clay',
+    'step' => 'stone_slab',
+    'stone_plate' => 'stone_pressure_plate',
+    'stone_spade' => 'stone_shovel',
     'storage_minecart' => 'chest_minecart',
+    'sugar_cane' => 'reeds',
+    'sulphur' => 'gunpowder',
+    'thin_glass' => 'glass_pane',
+    'trap_door' => 'trapdoor',
+    'watch' => 'clock',
+    'water_lily' => 'waterlily',
+    'wood' => 'planks',
+    'wood_axe' => 'wooden_axe',
+    'wood_button' => 'wooden_button',
+    'wood_door' => 'wooden_door',
+    'wood_hoe' => 'wooden_hoe',
+    'wood_pickaxe' => 'wooden_pickaxe',
+    'wood_plate' => 'wooden_pressure_plate',
+    'wood_spade' => 'wooden_shovel',
+    'wood_stairs' => 'oak_stairs',
+    'wood_step' => 'wooden_slab',
+    'wood_sword' => 'wooden_sword',
+    'workbench' => 'crafting_table',
 );

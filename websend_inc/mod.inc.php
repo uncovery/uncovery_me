@@ -143,20 +143,21 @@ function umc_mod_error_message() {
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
     $username = $UMC_USER['username'];
-    umc_echo("Thanks for the test, Uncovery received the message!");
-    XMPP_ERROR_trigger("User $username ran a mod test");
-}
-
-function umc_temp_backup_activeusers() {
-    $sourcepath = '/home/minecraft/server/bukkit/city/playerdata';
-    $targetpath = '/home/minecraft/server/bukkit/userfile_backup';
-    $users = umc_get_active_members();
-    foreach ($users as $uuid => $username) {
-        $cmd = "cp $sourcepath/$uuid.dat $targetpath";
-        //XMPP_ERROR_send_msg($cmd);
-        //exec($cmd, $output);
-        XMPP_ERROR_send_msg($cmd);
-    }
+   
+    $thanks = umc_txt_color('Thanks for the test', 'red');
+    $thanks2 = umc_txt_format($thanks, array('bold'));
+    
+    $uncovery = umc_txt_color('Uncovery', 'green');
+    $uncovery2 = umc_txt_format($uncovery, array('underlined', 'normal'));
+    $uncovery3 = umc_txt_click($uncovery2, 'open_url', 'http://uncovery.me');
+    
+    $msg = umc_txt_color('received the message!', 'red');
+    $msg2 = umc_txt_format($msg, array('normal'));
+    $msg3 = umc_txt_hover($msg2, 'show_item', '{id:minecraft:stone,Damage:0,Count:1}');
+    
+    umc_tellraw($username, array($thanks2, $uncovery3, $msg3), true);
+    
+    // XMPP_ERROR_trigger("User $username ran a mod test");
 }
 
 /**

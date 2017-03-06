@@ -206,9 +206,16 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     } else {
         $group = false;
     }
+    
+    if (isset($UMC_DATA[$item_name]['notrade'])) {
+        $notrade = $UMC_DATA[$item_name]['notrade'];
+    } else {
+        $notrade = false;
+    }    
 
     $out = array(
         'full' => $full,
+        'full_nocolor' => "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text",
         'item_id' => $UMC_DATA[$item_name]['id'],
         'type' => $item_data,
         'full_clean' => $full_clean,
@@ -218,6 +225,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         'item_name' => $item_name,
         'dmg' => $damage_text,
         'group' => $group,
+        'notrade' => $notrade,
     );
     return $out;
 }

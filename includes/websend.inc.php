@@ -426,7 +426,8 @@ function umc_ws_get_inv($inv_data) {
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
         foreach ($item as $name => $value) {
-            if ($name == 'TypeName') {
+            $fix_name = strtolower($name);
+            if ($fix_name == 'typename') {
                 $item_typename = strtolower($item['TypeName']);
                 if (isset($UMC_DATA_SPIGOT2ITEM[$item_typename])) {
                     $inv[$slot]['item_name'] = $UMC_DATA_SPIGOT2ITEM[$item_typename];
@@ -437,9 +438,9 @@ function umc_ws_get_inv($inv_data) {
                     $out = "ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
                     XMPP_ERROR_send_msg($out);
                 }
-            } else if ($name == "Type") {
+            } else if ($fix_name == "type") {
                 $inv[$slot]['id'] = $item['Type'];
-            } else if ($name == 'Durability') {
+            } else if ($fix_name == 'durability') {
                 $name = 'data';
                 if ($value == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
                     // umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
@@ -448,7 +449,7 @@ function umc_ws_get_inv($inv_data) {
                 } else {
                     $inv[$slot][$name] = $value;
                 }
-            } else if ($name == 'Meta') {
+            } else if ($fix_name == 'meta') {
                 foreach ($value as $meta_type => $meta_value) {
                     // enchantments
                     if ($meta_type == 'Enchantments' || $meta_type == 'EnchantmentStorage') {
@@ -461,6 +462,11 @@ function umc_ws_get_inv($inv_data) {
                         $inv[$slot]['meta'] = array($meta_value => $value['Patterns']);
                     }
                 }
+            } else if ($fix_name == 'nbt') {
+                // regex: =(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)
+                $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
+                $nbt = preg_replace($regex, ":", $value);
+                $inv[$slot]['nbt'] = $nbt;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -529,7 +535,7 @@ function umc_exit_msg($msg) {
 /**
  * Sends an error message to the user
  * Terminates  with a ;
- *
+
  * @param $message to send
  */
 function umc_error($message, $silent = false) {
@@ -545,4 +551,163 @@ function umc_ws_vardump($var) {
     $search = array("\n", "\r", "  ");
     $line = str_replace($search, " ", $exoport_var);
     return $line;
+}
+
+/**
+ * TELLRAW SECTION *************************************************************
+ */
+
+/**
+ * Base Tellraw execution
+ *
+ * @param type $selector
+ * @param type $msg_arr
+ * @param type $spacer
+ */
+function umc_tellraw($selector, $msg_arr, $spacer) {
+    $valid_selectors = array(
+        '@p', // nearest
+        '@r', // random
+        '@a', // all users
+        '@e', // all entities, including users
+    );
+
+    if (in_array($selector, $valid_selectors)) {
+        $sel = $selector;
+    } else {
+        $sel = "@a[name=$selector]";
+    }
+
+    $texts = array();
+    foreach ($msg_arr as $msg) {
+        $out = "{\"text\":\"{$msg['txt']}\"";
+        if (isset($msg['att'])) {
+            $out .= $msg['att'];
+        }
+        $out .= "}";
+        $texts[] = $out;
+    }
+
+    // glue the pieces with commas
+    $spacer_str = ",";
+    if ($spacer == true) {
+        $spacer_str = ",{\"text\":\" \"},";
+    }
+    $text_line = implode($spacer_str, $texts);
+
+    $cmd = "tellraw $sel [$text_line]";
+    umc_ws_cmd($cmd, 'asConsole');
+
+    // we likely need to check if the environment is websend or not and if not
+    // use umc_exec_command($cmd, 'asConsole'); instead
+}
+
+/**
+ * Apply a color to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply
+ * several effects on the same text.
+ *
+ * @param type $msg
+ * @param type $color
+ * @return boolean
+ */
+function umc_txt_color($msg, $color) {
+    $valid_colors = array(
+        'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
+        'gold','gray','dark_gray','blue','green','aqua','red','light_purple','yellow','white'
+    );
+    if ($color && in_array($color, $valid_colors)) {
+        $out = ",\"color\":\"$color\"";
+
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
+        }
+    } else {
+        return false;
+    }
+}
+
+/**
+ * apply a format to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply
+ * several effects on the same text.
+ *
+ * @param type $msg
+ * @param type $formats
+ * @return type
+ */
+function umc_txt_format($msg, $formats = array()) {
+    if (!is_array($formats)) {
+        $formats = array($formats);
+    }
+    $valid_formats = array(
+        'bold','italic','strikethrough','underlined','obfuscated','normal',
+    );
+    $out = '';
+    foreach ($formats as $format) {
+        if (in_array($format, $valid_formats)) {
+            if ($format == 'normal') {
+                $out .= ",\"bold\":\"false\"";
+            } else {
+                $out .= ",\"$format\":\"true\"";
+            }
+        }
+    }
+    if (is_array($msg)) {
+        return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+    } else {
+        return array('txt' => $msg, 'att' => $out);
+    }
+}
+
+/**
+ * Apply a click event to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply
+ * several effects on the same text.
+ *
+ * @param type $msg
+ * @param type $action
+ * @param type $value
+ * @return boolean
+ */
+function umc_txt_click($msg, $action, $value) {
+    $valid_clicks = array('open_url','suggest_command','run_command','insertion');
+    if (in_array($action, $valid_clicks)) {
+        $out = ",\"clickEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
+        }
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Apply a hover tooltip to a text for tellraw
+ * Can receive the output of other umc_txt_* functions as $msg input to apply
+ * several effects on the same text.
+ *
+ * @param type $msg
+ * @param type $action
+ * @param type $value
+ * @return boolean
+ */
+function umc_txt_hover($msg, $action, $value) {
+    // achievements also work for stats with the value being stats.stats_id
+    $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
+    // we might need to validate items, entity and achievement/stats names
+    if (in_array($action, $valid_tool_types)) {
+        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
+        if (is_array($msg)) {
+            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
+        } else {
+            return array('txt' => $msg, 'att' => $out);
+        }
+    } else {
+        return false;
+    }
 }

@@ -622,8 +622,19 @@ function umc_do_offer_internal($deposit) {
 	}
         umc_echo("{green}[+]{gray} You now have {yellow}$sum {$item['full']}{gray} in the shop (ID: $posted_id).");
         if (!$silent) {
-            umc_mod_broadcast("Offer: {yellow}$sum {$item['full']}{darkgray} "
-            . "@ {cyan}{$price}/pc{darkgray}, ID {gray}{$posted_id} from {gold}$player");
+            // calculate total listing value for hovertext
+            $listing_value = $sum * $price;
+            // compose raw JSON message with @a selector (all online players)
+            $cmd = 'tellraw @a ['
+                . '{"text":"[!] ' . $player . ' offers ","color":"gold"},'
+                . '{"text":"' . $sum . ' ' . $item['full_nocolor'] .  ' @ ' . $price . '/pc! ",'
+                .     '"hoverEvent":{"action":"show_text","value":"Listing value ' . $listing_value . '"}},'
+                . '{"text":"ID:' . $posted_id . '","color":"green",'
+                .     '"clickEvent":{"action":"suggest_command","value":"/buy ' . $posted_id . ' ' . $sum . '"},'
+                .     '"hoverEvent":{"action":"show_text","value":"Click to prefill buy command"}}'
+                . ']';
+            // issue the command
+            umc_ws_cmd($cmd, 'asConsole');
         }
     } else {
         if ($row) {
@@ -876,6 +887,9 @@ function umc_do_sell_internal($from_deposit=false) {
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
 	    umc_error("{red}The item in deposit-id {white}$depot_id{red} doesn't match request {white}$id{red}.");
 	}
+        if ($depot_item['notrade']) {
+            umc_error("Sorry, this item is not able to be traded (yet).");
+        }          
     } else {
 	$item_slot = $UMC_USER['current_item'];
 	$check_inv = $UMC_USER['inv'];
@@ -888,6 +902,9 @@ function umc_do_sell_internal($from_deposit=false) {
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
 	    umc_error("{red}The item you're holding doesn't match request id {white}$id{red}.");
 	}
+        if ($inv_item['notrade']) {
+            umc_error("Sorry, this item is not able to be traded (yet).");
+        }         
     }
 
     if (!isset($args[3])) {
@@ -1001,6 +1018,9 @@ function umc_do_request() {
     $meta = '';
     $meta_txt = '';
 
+    if ($item['notrade']) {
+        umc_error("Sorry, this item is not able to be traded (yet).");
+    }    
 
     $do_check = false;
     $pos = array_search('check', $args);

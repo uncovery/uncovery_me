@@ -358,8 +358,8 @@ function umc_home_update() {
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
 
     umc_mysql_query($sql, true);
-    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home $sanitised_name $log_addon!");
-    umc_echo("The coordinates of home $sanitised_name were updated to the current location $log_addon!");
+    umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]} $log_addon!");
+    umc_echo("The coordinates of home {$args[2]} were updated to the current location $log_addon!");
 }
 
 function umc_home_rename() {

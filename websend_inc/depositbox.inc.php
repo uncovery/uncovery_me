@@ -520,6 +520,10 @@ function umc_do_deposit_internal($all = false) {
         if (isset($seen[$item['full']])) {
             continue;
         }
+        
+        if ($item['notrade']) {
+            umc_error("Sorry, this item is not enabled for deposit (yet).");
+        }
 
         // check for more bugs
         $inv = umc_check_inventory($slot['item_name'], $slot['data'], $slot['meta']);
