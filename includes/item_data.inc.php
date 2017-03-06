@@ -210,6 +210,7 @@ function umc_item_data_id2namelist() {
 
 $ENCH_ITEMS = array(
     'PROTECTION_ENVIRONMENTAL'=> array( // 0
+        'id' => 0,
         'short'=> 'Prot',
         'name'=>'Protection',
         'items'=> array(
@@ -222,6 +223,7 @@ $ENCH_ITEMS = array(
         'max'=> 4
     ),
     'PROTECTION_FIRE' =>array( // 1
+        'id' => 1,
         'short'=> 'FP',
         'name'=>'FireProtection',
         'items'=> array(
@@ -233,7 +235,8 @@ $ENCH_ITEMS = array(
         ),
         'max'=>4
     ),
-    'PROTECTION_FALL' => array( // 3
+    'PROTECTION_FALL' => array( // 2
+        'id' => 2,
         'short'=> 'Fall',
         'name'=>'FeatherFalling',
         'items'=> array(
@@ -242,6 +245,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'PROTECTION_EXPLOSIONS' => array( // 3
+        'id' => 3,
         'short'=> 'BP',
         'name'=>'BlastProtection',
         'items'=> array(
@@ -254,6 +258,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'PROTECTION_PROJECTILE' => array( // 4
+        'id' => 4,
         'short'=> 'PP',
         'name'=>'ProjectileProtection',
         'items'=> array(
@@ -266,6 +271,7 @@ $ENCH_ITEMS = array(
         'max'=>4
     ),
     'OXYGEN' => array( // 5
+        'id' => 5,
         'short' => 'Res',
         'name' =>'Respiration',
         'items' => array(
@@ -274,6 +280,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'WATER_WORKER' => array( // 6
+        'id' => 6,
         'short' => 'Aqua',
         'name' =>'AquaAffinity',
         'items' => array(
@@ -282,6 +289,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'THORNS' => array( // 7
+        'id' => 7,
         'short' => 'Thorn',
         'name' =>'Thorn',
         'items' => array(
@@ -294,6 +302,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'DEPTH_STRIDER' => array( // 8
+        'id' => 8,
         'short' => 'Depth',
         'name' => 'DepthStrider',
         'items' => array(
@@ -302,6 +311,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'FROST_WALKER' => array( // 9
+        'id' => 9,
         'short' => 'Depth',
         'name' => 'DepthStrider',
         'items' => array(
@@ -310,6 +320,7 @@ $ENCH_ITEMS = array(
         'max' => 2
     ),
     'BINDING_CURSE' => array( // 10
+        'id' => 10,
         'short' => 'Binding',
         'name' =>'BindingCurse',
         'items' => array(
@@ -322,6 +333,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'DAMAGE_ALL' => array( // 16
+        'id' => 16,
         'short'=> 'Sharp',
         'name'=>'Sharpness',
         'items'=> array(
@@ -330,7 +342,8 @@ $ENCH_ITEMS = array(
         ),
         'max' => 5
     ),
-    'DAMAGE_UNDEAD' =>array( // 17
+    'DAMAGE_UNDEAD' => array( // 17
+        'id' => 17,
         'short' => 'Smite',
         'name' => 'Smite',
         'items' => array(
@@ -339,7 +352,8 @@ $ENCH_ITEMS = array(
         ),
         'max'=>5
     ),
-    'DAMAGE_ARTHROPODS' =>array( // 18
+    'DAMAGE_ARTHROPODS' => array( // 18
+        'id' => 18,
         'short' => 'Bane',
         'name' => 'BaneOfArthropods',
         'items' => array(
@@ -349,6 +363,7 @@ $ENCH_ITEMS = array(
         'max'=>5
     ),
     'KNOCKBACK' => array( // 19
+        'id' => 19,
         'short' => 'Knock',
         'name' => 'Knockback',
         'items' => array(
@@ -357,6 +372,7 @@ $ENCH_ITEMS = array(
         'max'=>2
     ),
     'FIRE_ASPECT' => array( // 20
+        'id' => 20,
         'short' => 'Fire',
         'name' => 'FireAspect',
         'items' => array(
@@ -365,6 +381,7 @@ $ENCH_ITEMS = array(
         'max'=>2
     ),
     'LOOT_BONUS_MOBS' =>array( // 21
+        'id' => 21,
         'short' => 'Loot',
         'name' => 'Looting',
         'items' => array(
@@ -373,6 +390,7 @@ $ENCH_ITEMS = array(
         'max'=>3
     ),
     'DIG_SPEED' =>array( // 32
+        'id' => 32,
         'short' => 'Eff',
         'name' => 'Efficiency',
         'items' => array(
@@ -384,6 +402,7 @@ $ENCH_ITEMS = array(
         'max' => 5
     ),
     'SILK_TOUCH' => array( // 33
+        'id' => 33,
         'short' => 'Silk',
         'name' => 'SilkTouch',
         'items' => array(
@@ -394,6 +413,7 @@ $ENCH_ITEMS = array(
         'max' => 1
     ),
     'DURABILITY' => array( // 34
+        'id' => 34,
         'short'=> 'Unb',
         'name'=>'Unbreaking',
         'items' => array(
@@ -412,6 +432,7 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'LOOT_BONUS_BLOCKS' => array( // 35
+        'id' => 35,
         'short' => 'Fort',
         'name' => 'Fortune',
         'items' => array(
@@ -422,42 +443,49 @@ $ENCH_ITEMS = array(
         'max' => 3
     ),
     'ARROW_DAMAGE' => array( //48
+        'id' => 48,
         'short' => 'Power',
         'name' => 'Power',
         'items' => array('bow'),
         'max'=>5
     ),
     'ARROW_KNOCKBACK' => array( //49
+        'id' => 49,
         'short'=> 'Punch',
         'name'=>'Punch',
         'items' => array('bow'),
         'max' => 2
     ),
     'ARROW_FIRE' => array( // 50
+        'id' => 50,
         'short' => 'Flame',
         'name' => 'Flame',
         'items' => array('bow'),
         'max' => 1
     ),
     'ARROW_INFINITE' => array( // 51
+        'id' => 51,
         'short' => 'Inf',
         'name' => 'Infinity',
         'items' => array('bow'),
         'max'=>1
     ),
     'LUCK' =>array( // 61
+        'id' => 61,
         'short' => 'Luck',
         'name' => 'Luck',
         'items' => array('fishing_rod'),
         'max'=>1
     ),
     'LURE' => array( // 62
+        'id' => 62,
         'short' => 'Lure',
         'name' => 'Lure',
         'items' => array('fishing_rod'),
         'max'=>1
     ),
     'MENDING' => array( // 70
+        'id' => 70,
         'short' => 'Mending',
         'name' => 'Mending',
         'items' => array(
@@ -494,6 +522,7 @@ $ENCH_ITEMS = array(
         'max'=>1
     ),
     'VANISHING_CURSE' =>array(  // 71
+        'id' => 71,
         'short' => 'Vanish',
         'name' => 'Curse of Vanishing',
         'items' => array(
