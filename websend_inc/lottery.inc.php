@@ -635,7 +635,7 @@ function umc_lottery() {
             $item_txt = "a " . $full;
             break;
         case 'random_pet': // same as blocks below but only 1 always
-            umc_echo($type);
+            // umc_echo($type);
             $block = $prize['blocks'];
             $luck2 = mt_rand(0, count($prize['blocks']) - 1);
             $given_block = explode(":", $block[$luck2]);
