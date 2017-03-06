@@ -887,6 +887,9 @@ function umc_do_sell_internal($from_deposit=false) {
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
 	    umc_error("{red}The item in deposit-id {white}$depot_id{red} doesn't match request {white}$id{red}.");
 	}
+        if ($depot_item['notrade']) {
+            umc_error("Sorry, this item is not able to be traded (yet).");
+        }          
     } else {
 	$item_slot = $UMC_USER['current_item'];
 	$check_inv = $UMC_USER['inv'];
@@ -899,6 +902,9 @@ function umc_do_sell_internal($from_deposit=false) {
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
 	    umc_error("{red}The item you're holding doesn't match request id {white}$id{red}.");
 	}
+        if ($inv_item['notrade']) {
+            umc_error("Sorry, this item is not able to be traded (yet).");
+        }         
     }
 
     if (!isset($args[3])) {
@@ -1012,6 +1018,9 @@ function umc_do_request() {
     $meta = '';
     $meta_txt = '';
 
+    if ($item['notrade']) {
+        umc_error("Sorry, this item is not able to be traded (yet).");
+    }    
 
     $do_check = false;
     $pos = array_search('check', $args);
