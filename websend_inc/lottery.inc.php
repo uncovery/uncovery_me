@@ -576,93 +576,105 @@ function umc_lottery() {
     }
     $type = $prize['type'];
 
-    // instantiate block variables
-    $given_block_data = 0;
-    $given_block_type = 0;
-
     //var_dump($prize);
 
     // based on item type, give reward to the player
-    switch ($type) {
-        case 'item':
-            umc_deposit_give_item($uuid, $detail['type'], $detail['data'],  $detail['ench'], '', 1, 'lottery');
-            $item_txt = $prize['txt'];
-            break;
-        case 'additional_home':
-            $newname = 'lottery' . "_" . umc_random_code_gen(4);
-            umc_home_add($uuid, $newname, true);
-            $item_txt = "an addtional home!!";
-            break;
-        case 'additional_deposit':
-            umc_depositbox_create($uuid);
-            $item_txt = "an addtional deposit box!!";
-            break;
-        case 'vanity_title':
-            $current_title = umc_vanity_get_title();
-            if ($current_title) {
-                return umc_lottery();
-            }
-            $luck2 = mt_rand(7, 14);
-            umc_vanity_set($luck2, "I won the lottery!");
-            $item_txt = "a vanity title fo $luck2 days!!";
-            break;
-        case 'random_unc':
-            $luck2 = mt_rand(1, 500);
-            umc_money(false, $user, $luck2);
-            $item_txt = "$luck2 Uncs";
-            break;
-        case 'random_potion':
-            $luck2 = mt_rand(0, 63);
-            umc_deposit_give_item($uuid, 373, $luck2, '', '', 1, 'lottery');
-            $item_txt = $prize['txt'];
-            break;
-        case 'random_ench':
-            // pick which enchantment
-            $rand_ench = array_rand($ENCH_ITEMS);
+    $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
+    if (in_array($type, $non_deposit)) {
+        switch ($type) {
+            case 'additional_home':
+                $newname = 'lottery' . "_" . umc_random_code_gen(4);
+                umc_home_add($uuid, $newname, true);
+                $item_txt = "an addtional home!!";
+                break;
+            case 'additional_deposit':
+                umc_depositbox_create($uuid);
+                $item_txt = "an addtional deposit box!!";
+                break;
+            case 'vanity_title':
+                $current_title = umc_vanity_get_title();
+                if ($current_title) {
+                    return umc_lottery();
+                }
+                $luck2 = mt_rand(7, 14);
+                umc_vanity_set($luck2, "I won the lottery!");
+                $item_txt = "a vanity title fo $luck2 days!!";
+                break;
+            case 'random_unc':
+                $luck2 = mt_rand(1, 500);
+                umc_money(false, $user, $luck2);
+                $item_txt = "$luck2 Uncs";
+                break;
+        }
+    } else {
+        // instantiate block variables
+        $give_data = 0;
+        $give_type = 0;
+        $give_amount = 1;
+        $give_ench = '';
 
-            $ench_arr = $ENCH_ITEMS[$rand_ench];
-            //pick which item to enchant
-            $rand_item = array_rand($ench_arr['items']);
-            $rand_item_id = $ench_arr['items'][$rand_item];
-            // pick level of enchantment
-            $lvl_luck = mt_rand(1, $ench_arr['max']);
-            //echo "$item $ench_txt $lvl_luck";
-            $item_ench_arr = array($rand_ench => $lvl_luck);
-            $item = umc_goods_get_text($rand_item_id, 0, $item_ench_arr);
-            $item_name = $item['item_name'];
-            $full = $item['full'];
-            umc_deposit_give_item($uuid, $item_name, 0, $item_ench_arr, '', 1, 'lottery');
-            $item_txt = "a " . $full;
-            break;
-        case 'random_pet': // same as blocks below but only 1 always
-            // umc_echo($type);
-            $block = $prize['blocks'];
-            $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-            $given_block = explode(":", $block[$luck2]);
-            $given_block_type = $given_block[0];
-            $given_block_data = $given_block[1];
-            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', 1, 'lottery');
-            $item = umc_goods_get_text($given_block_type, $given_block_data);
-            $item_txt = "a " .$item['full'];
-            break;
-        case 'random_common':
-        case 'random_ore':
-        case 'random_manuf':
-            $block = $prize['blocks'];
-            $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-            $luck3 = mt_rand(1, 64);
-            $given_block = explode(":", $block[$luck2]);
-            $given_block_type = $given_block[0];
-            $given_block_data = $given_block[1];
-            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', $luck3, 'lottery');
-            $item = umc_goods_get_text($given_block_type, $given_block_data);
-            $item_txt = "$luck3 " . $item['full'];
-            break;
+        switch ($type) {
+            case 'item':
+                $item_txt = $prize['txt'];
+                $give_type = $detail['type'];
+                $give_data = $detail['data'];
+                $give_ench = $detail['ench'];
+                break;
+            case 'random_potion':
+                $luck2 = mt_rand(0, 63);
+                $item_txt = $prize['txt'];
+                $give_type = 373;
+                $give_data = $luck2;
+                break;
+            case 'random_ench':
+                // pick which enchantment
+                $rand_ench = array_rand($ENCH_ITEMS);
+
+                $ench_arr = $ENCH_ITEMS[$rand_ench];
+                //pick which item to enchant
+                $rand_item = array_rand($ench_arr['items']);
+                $rand_item_id = $ench_arr['items'][$rand_item];
+                // pick level of enchantment
+                $lvl_luck = mt_rand(1, $ench_arr['max']);
+                //echo "$item $ench_txt $lvl_luck";
+                $item_ench_arr = array($rand_ench => $lvl_luck);
+                $item = umc_goods_get_text($rand_item_id, 0, $item_ench_arr);
+                $item_name = $item['item_name'];
+                $full = $item['full'];
+                $item_txt = "a " . $full;
+                $give_type = $item_name;
+                $give_ench = $item_ench_arr;
+                break;
+            case 'random_pet': // same as blocks below but only 1 always
+                // umc_echo($type);
+                $block = $prize['blocks'];
+                $luck2 = mt_rand(0, count($prize['blocks']) - 1);
+                $given_block = explode(":", $block[$luck2]);
+                $give_type = $given_block[1];
+                $item = umc_goods_get_text($give_type, $give_data);
+                $item_txt = "a " .$item['full'];
+                break;
+            case 'random_common':
+            case 'random_ore':
+            case 'random_manuf':
+                $block = $prize['blocks'];
+                $luck2 = mt_rand(0, count($prize['blocks']) - 1);
+                $luck3 = mt_rand(1, 64);
+                $given_block = explode(":", $block[$luck2]);
+                $give_type = $given_block[1];
+                $item = umc_goods_get_text($give_type, $give_data);
+                $item_txt = "$luck3 " . $item['full'];
+                $give_amount = $luck3;
+                break;
+        }
+        umc_deposit_give_item($uuid, $give_type, $give_data, $give_ench, $give_amount, 'lottery');
     }
+
+
     if ($user != 'uncovery') {// testing only
         $item_nocolor = umc_ws_color_remove($item_txt);
         umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
-        umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($given_block_type:$given_block_data)");
+        umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($give_type:$give_data)");
         $userlevel = umc_get_userlevel($user);
         if (in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
