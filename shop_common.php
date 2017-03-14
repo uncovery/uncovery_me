@@ -24,6 +24,7 @@
 
 /**
  * Removes an item from stock or deposit; does not record the transaction
+ * Does not do anything with the item
  *
  * @param type $table
  * @param type $id
@@ -81,6 +82,16 @@ function umc_db_take_item($table, $id, $amount, $player) {
     }
 }
 
+/**
+ * convert Meta data into nice text
+ * TODO: This is deprecated and nbt data should override this.
+ *
+ * @global type $ENCH_ITEMS
+ * @global type $UMC_BANNERS
+ * @param type $meta_arr
+ * @param type $size
+ * @return string
+ */
 function umc_get_meta_txt($meta_arr, $size = 'long') {
     global $ENCH_ITEMS, $UMC_BANNERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -201,17 +212,21 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         $full = "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text";
         $img = '';
     }
+
+    $nbt_raw = $meta;
+    $nbt_nice_text = ''; //TODO:make nice text from NBT
+
     if (isset($UMC_DATA[$item_name]['group'])) {
         $group = umc_pretty_name($UMC_DATA[$item_name]['group']);
     } else {
         $group = false;
     }
-    
+
     if (isset($UMC_DATA[$item_name]['notrade'])) {
         $notrade = $UMC_DATA[$item_name]['notrade'];
     } else {
         $notrade = false;
-    }    
+    }
 
     $out = array(
         'full' => $full,
@@ -226,6 +241,8 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         'dmg' => $damage_text,
         'group' => $group,
         'notrade' => $notrade,
+        'nbt_raw' => $nbt_raw,
+        'nbt_text' => $nbt_nice_text,
     );
     return $out;
 }
