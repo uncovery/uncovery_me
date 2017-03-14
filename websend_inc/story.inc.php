@@ -244,7 +244,7 @@ function umc_story_show() {
                     $data = explode(':', $item);
                     if ((count($data) == 3) && (!in_array($data[0], $disallowed_items))) {
                         if (is_numeric($data[0]) && is_numeric($data[1]) && is_numeric($data[2])) {
-                            umc_ws_cmd("give $username {$data[0]}:{$data[1]} {$data[2]};", 'asConsole');
+                            umc_ws_give($username, $data[0], $data[2], $data[1]);
                         }
                     }
                 }
