@@ -561,7 +561,7 @@ function umc_do_deposit_internal($all = false) {
         // retrieve the data from the db
         $sql = "SELECT * FROM minecraft_iconomy.deposit
             WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid'
-            AND damage='$data' AND meta='$meta' AND nbt='$nbt' AND sender_uuid='$uuid';";
+            AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
         $D = umc_mysql_fetch_all($sql);
 
         // create the seen entry so we do not do this again
