@@ -466,7 +466,7 @@ function umc_mod_blockcheck_check_inv($count) {
 function umc_mod_blockcheck_fill_inv($start) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA, $UMC_USER;
-    $end_item = 'record_wait';
+
     $username = $UMC_USER['username'];
     $inv_slots = 36;
     $c = 0;
