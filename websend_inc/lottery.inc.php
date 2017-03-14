@@ -580,7 +580,12 @@ function umc_lottery() {
 
     // based on item type, give reward to the player
     $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
+    $give_data = 0;
+    $give_type = 0;
+    $give_amount = 1;
+    $give_ench = '';
     if (in_array($type, $non_deposit)) {
+        $give_type = $type;
         switch ($type) {
             case 'additional_home':
                 $newname = 'lottery' . "_" . umc_random_code_gen(4);
@@ -608,11 +613,6 @@ function umc_lottery() {
         }
     } else {
         // instantiate block variables
-        $give_data = 0;
-        $give_type = 0;
-        $give_amount = 1;
-        $give_ench = '';
-
         switch ($type) {
             case 'item':
                 $item_txt = $prize['txt'];
