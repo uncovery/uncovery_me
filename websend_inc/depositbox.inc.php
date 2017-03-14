@@ -467,7 +467,6 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
         $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
             VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
     }
-    //umc_echo($sql);
     umc_mysql_execute_query($sql);
 }
 
@@ -520,7 +519,7 @@ function umc_do_deposit_internal($all = false) {
         if (isset($seen[$item['full']])) {
             continue;
         }
-        
+
         if ($item['notrade']) {
             umc_error("Sorry, this item is not enabled for deposit (yet).");
         }
@@ -562,7 +561,7 @@ function umc_do_deposit_internal($all = false) {
         // retrieve the data from the db
         $sql = "SELECT * FROM minecraft_iconomy.deposit
             WHERE item_name='{$item['item_name']}' AND recipient_uuid='$recipient_uuid'
-            AND damage='$data' AND meta='$meta' AND sender_uuid='$uuid';";
+            AND damage='$data' AND meta='$meta' AND nbt='$nbt' AND sender_uuid='$uuid';";
         $D = umc_mysql_fetch_all($sql);
 
         // create the seen entry so we do not do this again
@@ -743,8 +742,8 @@ function umc_depositbox_consolidate() {
             // existing entry must be made by user
             $sql_fix = "SELECT * FROM minecraft_iconomy.deposit
                 WHERE item_name='{$row['item_name']}'
-		    AND damage='{$row['damage']}
-		    AND meta='{$row['meta']}
+		    AND damage='{$row['damage']}'
+		    AND meta='{$row['meta']}'
 		    AND recipient_uuid='$uuid'
 		    AND sender_uuid !='$uuid';";
             $fix_data = umc_mysql_fetch_all($sql_fix);
