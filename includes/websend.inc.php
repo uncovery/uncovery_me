@@ -463,10 +463,7 @@ function umc_ws_get_inv($inv_data) {
                     }
                 }
             } else if ($fix_name == 'nbt') {
-                // regex: =(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)
-                $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
-                $nbt = preg_replace($regex, ":", $value);
-                $inv[$slot]['nbt'] = $nbt;
+                $inv[$slot]['nbt'] = $value;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -710,4 +707,20 @@ function umc_txt_hover($msg, $action, $value) {
     } else {
         return false;
     }
+}
+
+
+/**
+ * Give an item to a a user. This is an abstraction layer for /give... commands to make sure
+ * that if something changes in the way we give things to users, we find it easier to change it.
+ *
+ * @param type $user
+ * @param type $item_name
+ * @param type $amount
+ * @param type $damage
+ * @param type $meta
+ */
+function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
+
+    umc_ws_cmd("give $user $item_name $amount $damage $meta;", 'asConsole');
 }
