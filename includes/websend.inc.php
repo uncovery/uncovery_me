@@ -713,6 +713,8 @@ function umc_txt_hover($msg, $action, $value) {
 /**
  * Give an item to a a user. This is an abstraction layer for /give... commands to make sure
  * that if something changes in the way we give things to users, we find it easier to change it.
+ * give command explanation: http://minecraft.gamepedia.com/Commands#give
+ * Example: https://ezekielelin.com/give/
  *
  * @param type $user
  * @param type $item_name
