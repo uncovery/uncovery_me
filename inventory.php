@@ -298,13 +298,12 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         if(!$to_deposit) {
             umc_check_space($sellamount, $item['item_name'], $item['type']);
             // the in-game command does not understand item_names yet
-            umc_ws_cmd("give $player {$item['item_name']}:{$item['type']} $sellamount$meta_cmd;", 'asConsole');
+            umc_ws_give($player, $item['item_name'], $sellamount, $item['type'], $meta_cmd);
             umc_log('inventory', 'give', "$player received {$item['full_clean']} $sellamount");
         } else {
             umc_deposit_give_item($target, $item['item_name'], $item['type'], $row['meta'], $sellamount, $source);
             umc_log('inventory', 'give_deposit', "$player recived in deposit {$item['full_clean']} $sellamount");
         }
-        //umc_echo("./give $player {$item['id']}:{$item['type']} $sellamount$meta_cmd");
 
         // check status
         umc_shop_transaction_record($source, $target, $sellamount, $cost, $item['item_name'], $item['type'], $row['meta']);
