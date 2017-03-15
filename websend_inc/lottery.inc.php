@@ -555,8 +555,6 @@ function umc_lottery() {
         $chance = $UMC_USER['args'][3];
         umc_echo("Rolling a $chance!");
     }
-
-    XMPP_ERROR_trigger("test");
     
     // get the roll array based on chance
     $roll = umc_lottery_roll_dice($chance);
