@@ -527,7 +527,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
+    global $UMC_USER, $lottery, $ENCH_ITEMS;
 
     $user_input = $UMC_USER['args'][2];
 
@@ -551,10 +551,13 @@ function umc_lottery() {
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
-    if (($user == 'uncovery') && (isset($UMC_USER['args'][5]))) {
-        $chance = $UMC_USER['args'][5];
+    if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
+        $chance = $UMC_USER['args'][3];
+        umc_echo("Rolling a $chance!");
     }
 
+    XMPP_ERROR_trigger("test");
+    
     // get the roll array based on chance
     $roll = umc_lottery_roll_dice($chance);
 
@@ -650,7 +653,8 @@ function umc_lottery() {
                 $block = $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
                 $given_block = explode(":", $block[$luck2]);
-                $give_type = $given_block[1];
+                $give_type = $given_block[0];
+                $give_data = $given_block[1];
                 $item = umc_goods_get_text($give_type, $give_data);
                 $item_txt = "a " .$item['full'];
                 break;
@@ -661,7 +665,8 @@ function umc_lottery() {
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
                 $luck3 = mt_rand(1, 64);
                 $given_block = explode(":", $block[$luck2]);
-                $give_type = $given_block[1];
+                $give_type = $given_block[0];
+                $give_data = $given_block[1];
                 $item = umc_goods_get_text($give_type, $give_data);
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
@@ -680,21 +685,23 @@ function umc_lottery() {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
             umc_mod_message($user, $msg);
         }
+        
+        // add vote to the database
+        $service_raw = strtolower($UMC_USER['args'][3]);
+        // fix service
+        $search = array('http://www.', 'https://www.', 'http://', 'https://');
+        $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
+        // sql log
+        $sql_reward = umc_mysql_real_escape_string($type);
+        $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+        $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
+            VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
+        umc_mysql_query($sql, true);        
     } else {
         umc_echo("$user voted, rolled a $luck and got $item_txt!");
     }
-    // add vote to the database
-    $service_raw = strtolower($UMC_USER['args'][3]);
-    // fix service
-    $search = array('http://www.', 'https://www.', 'http://', 'https://');
-    $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
-    // sql log
-    $sql_reward = umc_mysql_real_escape_string($type);
-    $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
-    $uuid_sql = umc_mysql_real_escape_string($uuid);
-    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
-        VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
-    umc_mysql_query($sql, true);
+
 
     //TODO: Match the site with the lottery_urls
 
