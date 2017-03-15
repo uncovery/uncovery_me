@@ -458,12 +458,12 @@ function umc_ws_get_inv($inv_data) {
                             $inv[$slot]['meta'][$e_name] = $ench_data['Level'];
                         }
                     }
-                    if ($meta_type == 'BaseColor') {
-                        $inv[$slot]['meta'] = array($meta_value => $value['Patterns']);
-                    }
                 }
             } else if ($fix_name == 'nbt') {
-                $inv[$slot]['nbt'] = $value;
+                // convert spigot NBT to minecraft NBT
+                $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
+                $meta_cmd = preg_replace($regex, ":", $value);                
+                $inv[$slot]['nbt'] = $meta_cmd;                
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
