@@ -724,5 +724,18 @@ function umc_txt_hover($msg, $action, $value) {
  */
 function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
 
-    umc_ws_cmd("give $user $item_name $amount $damage $meta;", 'asConsole');
+    // is the meta an array or NBT Data?
+    if (substr($meta, 0, 2) == 'a:') { // we have an array
+        $meta_arr = unserialize($meta);
+        if (!is_array($meta_arr)) {
+            XMPP_ERROR_trigger("Could not get Meta Data array: " . var_export($meta, true));
+        }
+        foreach ($meta_arr as $type => $lvl) {
+            $meta_cmd .= " $type:$lvl";
+        }
+    } else { // otherwise we use the raw NBT meta
+        $meta_cmd = $meta;
+    }
+    
+    umc_ws_cmd("give $user $item_name $amount $damage $meta_cmd;", 'asConsole');
 }
