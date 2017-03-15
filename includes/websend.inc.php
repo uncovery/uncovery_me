@@ -434,7 +434,7 @@ function umc_ws_get_inv($inv_data) {
                 } else if (isset($UMC_DATA[$item_typename])) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
-                    $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
+                    $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['TypeName']];
                     $out = "ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
                     XMPP_ERROR_send_msg($out);
                 }
