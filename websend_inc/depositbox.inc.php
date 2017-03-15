@@ -509,7 +509,11 @@ function umc_do_deposit_internal($all = false) {
         // deal with item metadata
         $data = $slot['data'];
         if ($slot['meta']) {
-            $meta = serialize($slot['meta']);
+            if (is_array($slot['meta'])) {
+                $meta = serialize($slot['meta']); // enchanted stuff
+            } else {
+                $meta = $slot['meta']; // we have NBT data
+            }
         } else {
             $meta = false;
         }
