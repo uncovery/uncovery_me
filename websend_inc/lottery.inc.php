@@ -216,7 +216,7 @@ $lottery = array(
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_common' => array(
-        'chance' => 200,
+        'chance' => 150,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
@@ -227,6 +227,15 @@ $lottery = array(
             'soul_sand:0', 'mycelium:0',
         ),
     ),
+    'random_sapling' => array(
+        'chance' => 50,
+        'type' => 'random_sapling',
+        'data' => 'common',
+        'txt' => '1-64 of random sapling',
+        'blocks' => array(
+            'sapling:0', 'sapling:1', 'sapling:2', 'sapling:3', 'sapling:4', 
+        ),
+    ),    
     'random_ore' => array(
         'chance' => 50,
         'type' => 'random_ore',
@@ -658,6 +667,7 @@ function umc_lottery() {
                 break;
             case 'random_common':
             case 'random_ore':
+            case 'random_sapling':
             case 'random_manuf':
                 $block = $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
