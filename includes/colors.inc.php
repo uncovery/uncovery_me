@@ -21,7 +21,7 @@
  * This file manages the conversion of in-game color codes to web-readable color codes
  * or removes color information from text to be B&W.
  */
-global $UMC_COLORS;
+global $UMC_COLORS, $UMC_COLORS_DEC;
 
 $UMC_COLORS = array(
     '0' => array('html' => 'color:#000;',    'names' => array('black')),
