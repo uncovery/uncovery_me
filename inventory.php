@@ -233,20 +233,6 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
     } else {
         $row = $D[0];
         $item = umc_goods_get_text($row['item_name'], $row['damage'], $row['meta']);
-        $meta_cmd = $meta = '';
-        if ($row['meta'] != '') {
-            $meta_arr = unserialize($row['meta']);
-            if (!is_array($meta_arr)) {
-                XMPP_ERROR_trigger("Could not get Meta Data array for $table id $id: " . var_export($row, true));
-            }
-            if ($row['item_name'] == "banner") {
-                $meta_cmd = umc_banner_get_data($meta_arr);
-            } else {
-                foreach ($meta_arr as $type => $lvl) {
-                    $meta_cmd .= " $type:$lvl";
-                }
-            }
-        }
 
         // handle unlimited items
         $unlimited = false;
@@ -298,7 +284,7 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         if(!$to_deposit) {
             umc_check_space($sellamount, $item['item_name'], $item['type']);
             // the in-game command does not understand item_names yet
-            umc_ws_give($player, $item['item_name'], $sellamount, $item['type'], $meta_cmd);
+            umc_ws_give($player, $item['item_name'], $sellamount, $item['type'], $row['meta']);
             umc_log('inventory', 'give', "$player received {$item['full_clean']} $sellamount");
         } else {
             umc_deposit_give_item($target, $item['item_name'], $item['type'], $row['meta'], $sellamount, $source);
