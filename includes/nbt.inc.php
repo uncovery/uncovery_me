@@ -27,8 +27,8 @@ function umc_nbt_to_array($nbt) {
     $nbt_array = json_decode($json, true);
     // we sort it so that same items with different order are displayed the same
     // I am not sure this is necessary though.
-    $sorted_nbt = array_multisort($nbt_array);
-    return $sorted_nbt;
+    // array_multisort($nbt_array);
+    return $nbt_array;
 }
 
 /**
@@ -37,7 +37,7 @@ function umc_nbt_to_array($nbt) {
  * @param type $nbt
  */
 function umc_nbt_display($nbt, $format) {
-    $json = umc_nbt_to_json($nbt);
+    $json = umc_nbt_to_array($nbt);
     $formats = array(
         'long_text',
     );
@@ -58,27 +58,43 @@ function umc_nbt_display_long_text($json) {
             case 'ench': 
                 $text .= "Enchantments: ";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
+                $enchs = array();
                 foreach ($data as $ench) {
                     // find the id in the enchantments data
                     $ench_name = umc_enchant_text_find('id', $ench['id'], 'name');
-                    $text .= $ench_name . " Lvl {$ench['lvl']}, "; 
+                    $enchs[] = $ench_name . " Lvl {$ench['lvl']}"; 
                 }
-                
+                $text .= implode(", ", $enchs) . '\n';
                 break;
-            case 'display':
-                $text .= $feature;
+            case 'display':               
+                if (isset($data['Name'])) {
+                    $text .= "Called " . $data['Name'] . '\n';
+                }
                 break;
             case 'repaircost':
-                $text .= $feature;
+                $text .= "Repair Costs: $data". '\n';
                 break;
             case 'attributemodifiers':
-                $text .= $feature;
+                // this is so far ignored. We have to find out if we really need this
+                // $text .= $feature;
                 break;
             case 'candestroy':
-                $text .= $feature;
+                $text .= "Can be destroy: ";
+                $items = array();
+                foreach ($data as $item_name) {
+                    $item = umc_goods_get_text($item_name);
+                    $items[] = $item['name'];
+                }
+                $text .= implode(", ", $items) . '\n';
                 break;
             case 'canplaceon':
-                $text .= $feature;
+                $text .= "Can be placed on: ";
+                $items = array();
+                foreach ($data as $item_name) {
+                    $item = umc_goods_get_text($item_name);
+                    $items[] = $item['name'];
+                }
+                $text .= implode(", ", $items) . '\n';
                 break;
             case 'blockentitytag': //shields, shulker boxes, banners
                 //banner/shield example  {BlockEntityTag:{Patterns:[{Color:2,Pattern:"dls"},{Color:5,Pattern:"rud"}]}}
