@@ -17,7 +17,7 @@ function umc_patterns_get_text($nbt, $format) {
         $pat_code = $pat['Pattern'];
         $col_code = $pat['Color'];
         $pattern = $UMC_PATTERNS[$pat_code]['text'];
-        $color = strtolower($UMC_PATTERNS['colors'][$col_code]);
+        $color = strtolower($UMC_COLORS_DEC[$col_code]);
         switch ($format) {
             case 'long':
                 $texts[] = "$color $pattern";
