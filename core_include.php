@@ -26,7 +26,7 @@
  * The list needs to be maintained so that the function can actually be called. See index_wp for the mechanism.
  */
 global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
-global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_BANNERS;
+global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_PATTERNS, $UMC_COLORS_DEC;
 
 $UMC_PATH_MC = "/home/minecraft";
 
@@ -63,6 +63,7 @@ require_once($UMC_PATH_MC . '/server/bin/plugin.php');
 require_once($UMC_PATH_MC . '/server/bin/inventory.php');
 require_once($UMC_PATH_MC . '/server/bin/settler_test.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/colors.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/patterns.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
