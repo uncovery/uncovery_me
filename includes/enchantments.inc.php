@@ -4,15 +4,18 @@
  * returns the text of an enchantment based on a value in the array
  * this is used if we do not have that ALL_CAPS value but the ID for example
  * returns the value of the field
- * 
+ *  
  * @global array $ENCH_ITEMS
- * @param type $field
- * @param type $value
+ * @param type $search_field
+ * @param type $search_value
+ * @param type $return_field
+ * @return type
  */
-function umc_enchant_text_find($field, $value) {
+function umc_enchant_text_find($search_field, $search_value, $return_field) {
     global $ENCH_ITEMS;
-    $ench_type = array_search($value, array_column($ENCH_ITEMS, $field));
-    $text .= $ENCH_ITEMS[$ench_type]['name'] . " Lvl {$ench['lvl']}, ";
+    $ench_type = array_search($search_value, array_column($ENCH_ITEMS, $search_field));
+    $text = $ENCH_ITEMS[$ench_type][$return_field];
+    return $text;
 }
 
 $ENCH_ITEMS = array(
