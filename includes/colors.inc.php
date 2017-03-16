@@ -48,6 +48,26 @@ $UMC_COLORS = array(
     'r' => array('html' => 'color:#000;',    'names' => array('reset')),
 );
 
+// decimal codes, should be unified with above
+$UMC_COLORS_DEC = array(
+    15 => 'WHITE', 
+    14 => 'ORANGE', 
+    13 => 'MAGENTA', 
+    12 => 'LIGHT_BLUE', 
+    11 => 'YELLOW', 
+    10 => 'LIME', 
+    9 => 'PINK', 
+    8 => 'GRAY', 
+    7 => 'LIGHT_GRAY', 
+    6 => 'CYAN', 
+    5 => 'PURPLE', 
+    4 => 'BLUE', 
+    3 => 'BROWN', 
+    2 => 'GREEN', 
+    1 => 'RED', 
+    0 => 'BLACK',
+);
+
 function umc_ws_color_remove($input) {
     global $UMC_COLORS;
     // get array for replacement
@@ -95,4 +115,3 @@ function color_map($color = null) {
     }
     return $keys;
 }
-?>
