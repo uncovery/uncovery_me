@@ -561,6 +561,7 @@ function umc_ws_vardump($var) {
  * @param type $spacer
  */
 function umc_tellraw($selector, $msg_arr, $spacer) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $valid_selectors = array(
         '@p', // nearest
         '@r', // random
