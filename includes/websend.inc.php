@@ -463,7 +463,10 @@ function umc_ws_get_inv($inv_data) {
                 // convert spigot NBT to minecraft NBT
                 $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
                 $meta_cmd = preg_replace($regex, ":", $value);                
-                $inv[$slot]['nbt'] = $meta_cmd;                
+                $inv[$slot]['nbt'] = $meta_cmd;
+                $split_regex = '/([,{]{1,2})([^,}:]*):/';
+                $json = preg_replace($split_regex, '$1"$2":', $meta_cmd);  
+                $inv[$slot]['json'] = $json;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
