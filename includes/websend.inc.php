@@ -461,12 +461,10 @@ function umc_ws_get_inv($inv_data) {
                 }
             } else if ($fix_name == 'nbt') {
                 // convert spigot NBT to minecraft NBT
-                $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
-                $meta_cmd = preg_replace($regex, ":", $value);                
-                $inv[$slot]['nbt'] = $meta_cmd;
-                $split_regex = '/([,{]{1,2})([^,}:]*):/';
-                $json = preg_replace($split_regex, '$1"$2":', $meta_cmd);  
-                $inv[$slot]['json'] = $json;
+                $nbt = umc_nbt_cleanup($value);
+                $inv[$slot]['nbt'] = $nbt;
+                // this is temp while we develop it
+                $inv[$slot]['text'] = unc_nbt_display($nbt, 'long_text'); 
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
