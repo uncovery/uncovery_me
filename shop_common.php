@@ -148,6 +148,11 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
+    // filter 'minecraft:' from string
+    if (strpos($item_name_raw, 'minecraft:')) {
+        $item_name_raw = substr($item_name_raw, 10);
+    }
+    
     // cast part capitalized text to lowercase.
     $item_name = strtolower($item_name_raw);
 
