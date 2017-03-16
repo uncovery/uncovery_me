@@ -728,6 +728,7 @@ function umc_txt_hover($msg, $action, $value) {
  */
 function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
 
+    $meta_cmd = '';
     // is the meta an array or NBT Data?
     if (substr($meta, 0, 2) == 'a:') { // we have an array
         $meta_arr = unserialize($meta);
