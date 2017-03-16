@@ -93,7 +93,7 @@ function umc_db_take_item($table, $id, $amount, $player) {
  * @return string
  */
 function umc_get_meta_txt($meta_arr, $size = 'long') {
-    global $ENCH_ITEMS, $UMC_BANNERS;
+    global $ENCH_ITEMS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = '';
     $e = 0;
