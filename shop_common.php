@@ -115,9 +115,6 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
                 $meta_name = $ENCH_ITEMS[$meta_name]['short'];
             }
             $out .= "$meta_name $lvl";
-        } else if (isset($UMC_BANNERS['colors'][$meta_name])) {
-            $meta_name = 'various patterns & colors, ';
-            $out .= count($lvl) . "-Layered";
         } else { // some enchantments are stored wrong, with lowercase names instead of codes
             // this should not be needed anymore once there are no lowercase enchantments in the deposit
             foreach ($ENCH_ITEMS as $code => $data) {
