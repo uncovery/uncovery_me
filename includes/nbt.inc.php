@@ -99,6 +99,9 @@ function umc_nbt_display_long_text($json) {
             case 'blockentitytag': //shields, shulker boxes, banners
                 //banner/shield example  {BlockEntityTag:{Patterns:[{Color:2,Pattern:"dls"},{Color:5,Pattern:"rud"}]}}
                 // patterns 
+                if (isset($data['Patterns'])) {
+                    $text .= umc_patterns_get_text($data['Patterns'], 'long')  . '\n';
+                }
                 // items
                 
                 $text .= $feature;
