@@ -12,9 +12,19 @@
  * @return type
  */
 function umc_enchant_text_find($search_field, $search_value, $return_field) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $ENCH_ITEMS;
-    $ench_type = array_search($search_value, array_column($ENCH_ITEMS, $search_field));
-    $text = $ENCH_ITEMS[$ench_type][$return_field];
+    //TODO: This needs to be simplified. Either we find a better way to directly
+    // get the text key, or we change the array once we do not need the text 
+    // keys anymore when NBT is fully implemented.
+    
+    // we get the numeric key
+    $ench_key = array_search($search_value, array_column($ENCH_ITEMS, $search_field));
+    // get the text key from the numeric
+    $keys = array_keys($ENCH_ITEMS);
+    $text_key = $keys[$ench_key];
+
+    $text = $ENCH_ITEMS[$text_key][$return_field];
     return $text;
 }
 
