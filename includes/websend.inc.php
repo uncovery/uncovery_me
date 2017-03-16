@@ -462,9 +462,7 @@ function umc_ws_get_inv($inv_data) {
             } else if ($fix_name == 'nbt') {
                 // convert spigot NBT to minecraft NBT
                 $nbt = umc_nbt_cleanup($value);
-                $inv[$slot]['nbt'] = $nbt;
-                // this is temp while we develop it
-                $inv[$slot]['text'] = unc_nbt_display($nbt, 'long_text'); 
+                $inv[$slot]['nbt'] = $nbt;                
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -578,11 +576,15 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
 
     $texts = array();
     foreach ($msg_arr as $msg) {
-        $out = "{\"text\":\"{$msg['txt']}\"";
-        if (isset($msg['att'])) {
-            $out .= $msg['att'];
+        if (is_array($msg)) {
+            $out = "{\"text\":\"{$msg['txt']}\"";
+            if (isset($msg['att'])) {
+                $out .= $msg['att'];
+            }
+            $out .= "}";
+        } else {
+            $out = "{\"text\":\"$msg\"}";
         }
-        $out .= "}";
         $texts[] = $out;
     }
 
