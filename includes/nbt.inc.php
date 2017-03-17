@@ -22,12 +22,30 @@ function umc_nbt_cleanup($nbt_raw) {
 function umc_nbt_to_array($nbt) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // this regex basically takes all the array keys from the NBT data into $2 and puts quotes around them.
-    $regex = '/([,{]{1,2})([^,}:]*):/';
-    $json = preg_replace($regex, '$1"$2":', $nbt);
+
+    // check if we have encapsulated JSON
+    $fix_regex = '/(?<front>.*:\["{)(?<inside>.+)(?<back>}"\],.*)/';
+    $matches = false;
+    preg_match_all($fix_regex, $nbt, $matches);
+
+    // XMPP_ERROR_trace("nbt_matches", $matches);
+
+    $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
+
+    // do we have a multi-level JSON?
+    if ($matches && isset($matches['inside'][0])) {
+        $front = preg_replace($fix_nbt_regex, '$1"$2":', $matches['front'][0]);
+        $back = preg_replace($fix_nbt_regex, '$1"$2":', $matches['back'][0]);
+        $json = $front . addslashes($matches['inside'][0]) . $back;
+    } else {
+        $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
+    }
+    // XMPP_ERROR_trace("nbt_fixed", $json);
+
     // now we have valid json, decode it please
     $nbt_array = json_decode($json, true);
     if (!$nbt_array) {
-        XMPP_ERROR_trigger("NBT Array invalid!");
+        XMPP_ERROR_trigger("NBT Array invalid: $json");
     }
     // we sort it so that same items with different order are displayed the same
     // I am not sure this is necessary though.
