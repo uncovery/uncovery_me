@@ -6,7 +6,7 @@
  * @param type $nbt
  */
 function umc_patterns_get_text($nbt, $format) {
-    global $UMC_PATTERNS, $UMC_COLORS_DEC;
+    global $UMC_PATTERNS;
     // sample: [{Pattern:"ld",Color:1},{Pattern:"mc",Color:2}]
     $texts = array();
     $formats = array(
@@ -17,7 +17,7 @@ function umc_patterns_get_text($nbt, $format) {
         $pat_code = $pat['Pattern'];
         $col_code = $pat['Color'];
         $pattern = $UMC_PATTERNS[$pat_code]['text'];
-        $color = strtolower($UMC_COLORS_DEC[$col_code]);
+        $color = strtolower(unc_color_decimal($col_code));
         switch ($format) {
             case 'long':
                 $texts[] = "$color $pattern";
