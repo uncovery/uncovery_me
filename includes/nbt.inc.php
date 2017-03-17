@@ -24,21 +24,28 @@ function umc_nbt_to_array($nbt) {
     // this regex basically takes all the array keys from the NBT data into $2 and puts quotes around them.
 
     // check if we have encapsulated JSON
+    // we try to find quotes between :[ and { as well as on the backside between } and ],
+    // we split in three pards, the inside is the book pages
     $fix_regex = '/(?<front>.*:\[)"(?<inside>{.+})"(?<back>\],.*)/';
     $matches = false;
     preg_match_all($fix_regex, $nbt, $matches);
 
     // XMPP_ERROR_trace("nbt_matches", $matches);
 
+    // this regex marks the array keys so that they can be put in quotes.
     $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
 
     // do we have a multi-level JSON?
     if ($matches && isset($matches['inside'][0])) {
+        // put quotes around the keys in "normal" part of the JSON
         $front = preg_replace($fix_nbt_regex, '$1"$2":', $matches['front'][0]);
         $back = preg_replace($fix_nbt_regex, '$1"$2":', $matches['back'][0]);
+        // eliminate quotes around the comma between pages
         $inside_fix = str_replace('"}","{"', '"},{"', $matches['inside'][0]);
+        // put everything back together
         $json = $front . $inside_fix . $back;
     } else {
+        // put quotes around the keys
         $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
     }
     // XMPP_ERROR_trace("nbt_fixed", $json);
