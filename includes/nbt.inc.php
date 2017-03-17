@@ -70,6 +70,9 @@ function umc_nbt_display_long_text($nbt_array) {
                 if (isset($data['Name'])) {
                     $text .= "Called " . $data['Name'] . '\n';
                 }
+                if (isset($data['Lore'])) {
+                    $text .= "Lore: " . implode('\n', $data['Lore']) . '\n';
+                }                
                 break;
             case 'repaircost':
                 $text .= "Repair Costs: $data". '\n';
@@ -103,11 +106,19 @@ function umc_nbt_display_long_text($nbt_array) {
                 if (isset($data['Items'])) {
                     $items = array();
                     foreach ($data['Items'] as $slot) {
+                        $nbt_text = '';
+                        if (isset($slot['tag'])) { // we have additional per-item NBT data
+                            $nbt_text = umc_nbt_display_long_text($slot['tag']);
+                        }
                         $item = umc_goods_get_text($slot['id'], $slot['Damage']);
-                        $items[] = $slot['Count'] . " " . $item['name'];
+                        $items[] = $slot['Count'] . " " . $item['name'] . $nbt_text;
                     }
                     $text .= implode(", ", $items) . '\n';
                 }
+                break;
+            case 'fireworks': 
+                // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
+                $text .= $feature;
                 break;
             case 'pages': // for books
                 $text .= $feature;
