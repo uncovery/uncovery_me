@@ -28,7 +28,7 @@ function umc_nbt_to_array($nbt) {
     $matches = false;
     preg_match_all($fix_regex, $nbt, $matches);
 
-    XMPP_ERROR_trace("nbt_matches", $matches);
+    // XMPP_ERROR_trace("nbt_matches", $matches);
 
     $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
 
@@ -41,7 +41,7 @@ function umc_nbt_to_array($nbt) {
     } else {
         $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
     }
-    XMPP_ERROR_trace("nbt_fixed", $json);
+    // XMPP_ERROR_trace("nbt_fixed", $json);
 
     // now we have valid json, decode it please
     $nbt_array = json_decode($json, true);
