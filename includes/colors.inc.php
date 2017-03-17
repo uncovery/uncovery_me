@@ -48,25 +48,20 @@ $UMC_COLORS = array(
     'r' => array('html' => 'color:#000;',    'names' => array('reset')),
 );
 
-// decimal codes, should be unified with above
-$UMC_COLORS_DEC = array(
-    15 => 'WHITE', 
-    14 => 'ORANGE', 
-    13 => 'MAGENTA', 
-    12 => 'LIGHT_BLUE', 
-    11 => 'YELLOW', 
-    10 => 'LIME', 
-    9 => 'PINK', 
-    8 => 'GRAY', 
-    7 => 'LIGHT_GRAY', 
-    6 => 'CYAN', 
-    5 => 'PURPLE', 
-    4 => 'BLUE', 
-    3 => 'BROWN', 
-    2 => 'GREEN', 
-    1 => 'RED', 
-    0 => 'BLACK',
-);
+/**
+ * NBT Codes use decimal colors, not HEX. So to get a color name we need to 
+ * convert the dec into hex and then get it out of the above array.
+ * 
+ * @global array $UMC_COLORS
+ * @param type $decimal
+ * @return array
+ */
+function unc_color_decimal($decimal) {
+    global $UMC_COLORS;
+    $hex = dechex($decimal);
+    $col_data = $UMC_COLORS[$hex]['names'][0];
+    return $col_data;
+}
 
 function umc_ws_color_remove($input) {
     global $UMC_COLORS;
