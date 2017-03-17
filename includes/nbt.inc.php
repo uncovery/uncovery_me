@@ -24,11 +24,11 @@ function umc_nbt_to_array($nbt) {
     // this regex basically takes all the array keys from the NBT data into $2 and puts quotes around them.
 
     // check if we have encapsulated JSON
-    $fix_regex = '/(?<front>.*:\["{)(?<inside>.+)(?<back>}"\],.*)/';
+    $fix_regex = '/(?<front>.*:\[)"(?<inside>{.+})"(?<back>\],.*)/';
     $matches = false;
     preg_match_all($fix_regex, $nbt, $matches);
 
-    // XMPP_ERROR_trace("nbt_matches", $matches);
+    XMPP_ERROR_trace("nbt_matches", $matches);
 
     $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
 
@@ -36,11 +36,12 @@ function umc_nbt_to_array($nbt) {
     if ($matches && isset($matches['inside'][0])) {
         $front = preg_replace($fix_nbt_regex, '$1"$2":', $matches['front'][0]);
         $back = preg_replace($fix_nbt_regex, '$1"$2":', $matches['back'][0]);
-        $json = $front . addslashes($matches['inside'][0]) . $back;
+        $inside_fix = str_replace('"}","{"', '"},{"', $matches['inside'][0]);
+        $json = $front . $inside_fix . $back;
     } else {
         $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
     }
-    // XMPP_ERROR_trace("nbt_fixed", $json);
+    XMPP_ERROR_trace("nbt_fixed", $json);
 
     // now we have valid json, decode it please
     $nbt_array = json_decode($json, true);
@@ -150,16 +151,15 @@ function umc_nbt_display_long_text($nbt_array) {
                 $text .= $feature;
                 break;
             case 'pages': // for books
-                $text .= $feature;
+                $text .= ucwords($feature) . ": " . count($data) . '\n';
                 break;
             case 'title': // for books
-                $text .= $feature;
-                break;
-            case 'author': // for books
-                $text .= $feature;
+            case 'author':
+                $text .= ucwords("$feature: $data") . '\n';
                 break;
             case 'generation': // for books
-                $text .= $feature;
+                $generations = array('0' => 'original', '1' => 'copy of original', '2' => 'copy of copy', '3' => 'tattered');
+                $text .= ucwords("$feature: " . $generations[$data]) . '\n';
                 break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type $feature");
