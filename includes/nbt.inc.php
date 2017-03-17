@@ -37,22 +37,22 @@ function umc_nbt_to_array($nbt) {
  * @param type $nbt
  */
 function umc_nbt_display($nbt, $format) {
-    $json = umc_nbt_to_array($nbt);
+    $nbt_array = umc_nbt_to_array($nbt);
     $formats = array(
         'long_text',
     );
     $text = '';
     if (in_array($format, $formats) && function_exists('umc_nbt_display_' . $format)) {
         $function = 'umc_nbt_display_' . $format;
-        $text = $function($json);
+        $text = $function($nbt_array);
     }
     return $text;
 }
 
-function umc_nbt_display_long_text($json) {
+function umc_nbt_display_long_text($nbt_array) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $text = '';
-    foreach ($json as $feature => $data) {
+    foreach ($nbt_array as $feature => $data) {
         $feat = strtolower($feature);
         switch ($feat) {
             case 'ench': 
@@ -96,15 +96,18 @@ function umc_nbt_display_long_text($json) {
                 }
                 $text .= implode(", ", $items) . '\n';
                 break;
-            case 'blockentitytag': //shields, shulker boxes, banners
-                //banner/shield example  {BlockEntityTag:{Patterns:[{Color:2,Pattern:"dls"},{Color:5,Pattern:"rud"}]}}
-                // patterns 
+            case 'blockentitytag': //shields, shulker boxes, banners, fireworks?
                 if (isset($data['Patterns'])) {
                     $text .= umc_patterns_get_text($data['Patterns'], 'long')  . '\n';
                 }
-                // items
-                
-                $text .= $feature;
+                if (isset($data['Items'])) {
+                    $items = array();
+                    foreach ($data['Items'] as $slot) {
+                        $item = umc_goods_get_text($slot['id'], $slot['Damage']);
+                        $items[] = $slot['Count'] . " " . $item['name'];
+                    }
+                    $text .= implode(", ", $items) . '\n';
+                }
                 break;
             case 'pages': // for books
                 $text .= $feature;
