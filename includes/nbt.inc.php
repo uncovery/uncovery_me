@@ -93,6 +93,11 @@ function umc_nbt_display_long_text($nbt_array) {
     foreach ($nbt_array as $feature => $data) {
         $feat = strtolower($feature);
         switch ($feat) {
+            case 'display': // armor dyes
+                if (isset($data['color'])) {
+                    $text .= "dyed";
+                }
+                break;
             case 'ench':
             case 'storedenchantments':
                 $text .= "Enchantments: ";
@@ -183,7 +188,7 @@ function umc_nbt_display_long_text($nbt_array) {
                 $generations = array('0' => 'original', '1' => 'copy of original', '2' => 'copy of copy', '3' => 'tattered');
                 $text .= ucwords("$feature: " . $generations[$data]) . '\n';
                 break;
-            case 'resolved':
+            case 'resolved': // "closed books"
                 break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
