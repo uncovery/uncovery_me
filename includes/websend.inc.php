@@ -140,7 +140,7 @@ function umc_ws_get_vars() {
     // Since the input is authenticated with the code, it should be fine, but better safe than sorry
     $json = json_decode(stripslashes($_POST["jsonData"]), true);
     if (!isset($json['Invoker']['Name'])) {
-        XMPP_ERROR_trigger("No invoker name in " . var_export($json,true));
+        XMPP_ERROR_trigger("No invoker name in " . var_export($json, true));
     }
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
@@ -462,7 +462,7 @@ function umc_ws_get_inv($inv_data) {
             } else if ($fix_name == 'nbt') {
                 // convert spigot NBT to minecraft NBT
                 $nbt = umc_nbt_cleanup($value);
-                $inv[$slot]['nbt'] = $nbt;                
+                $inv[$slot]['nbt'] = $nbt;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -578,13 +578,15 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
     $texts = array();
     foreach ($msg_arr as $msg) {
         if (is_array($msg)) {
-            $out = "{\"text\":\"{$msg['txt']}\"";
+            $text_safe = str_replace('"', '\"', $msg['txt']);
+            $out = "{\"text\":\"$text_safe\"";
             if (isset($msg['att'])) {
                 $out .= $msg['att'];
             }
             $out .= "}";
         } else {
-            $out = "{\"text\":\"$msg\"}";
+            $text_safe = str_replace('"', '\"', $msg);
+            $out = "{\"text\":\"$text_safe\"}";
         }
         $texts[] = $out;
     }
@@ -741,6 +743,6 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     } else { // otherwise we use the raw NBT meta
         $meta_cmd = $meta;
     }
-    
+
     umc_ws_cmd("give $user $item_name $amount $damage $meta_cmd;", 'asConsole');
 }
