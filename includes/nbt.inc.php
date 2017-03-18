@@ -28,6 +28,7 @@ function umc_nbt_to_array($nbt) {
     // we split in three pards, the inside is the book pages
     $fix_regex = '/(?<front>.*:\[)"(?<inside>{.+})"(?<back>\],.*)/';
     $matches = false;
+    // TODO: do this regex only if we actually have a book (or whatever else this applies to)
     preg_match_all($fix_regex, $nbt, $matches);
 
     // XMPP_ERROR_trace("nbt_matches", $matches);
@@ -93,6 +94,7 @@ function umc_nbt_display_long_text($nbt_array) {
         $feat = strtolower($feature);
         switch ($feat) {
             case 'ench':
+            case 'storedenchantments':
                 $text .= "Enchantments: ";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
                 $enchs = array();
@@ -168,8 +170,10 @@ function umc_nbt_display_long_text($nbt_array) {
                 $generations = array('0' => 'original', '1' => 'copy of original', '2' => 'copy of copy', '3' => 'tattered');
                 $text .= ucwords("$feature: " . $generations[$data]) . '\n';
                 break;
+            case 'resolved':
+                break;
             default:
-                XMPP_ERROR_trigger("Unknown NBT Type $feature");
+                XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
         }
     }
     return $text;
