@@ -196,3 +196,83 @@ function umc_nbt_display_long_text($nbt_array) {
     }
     return $text;
 }
+
+/**
+ * pure text output with all details.
+ *
+ * @param type $nbt_array
+ * @return type
+ */
+function umc_nbt_display_short_text($nbt_array) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $text = '';
+    foreach ($nbt_array as $feature => $data) {
+        $feat = strtolower($feature);
+        switch ($feat) {
+            case 'display': // armor dyes
+                if (isset($data['color'])) {
+                    $text .= "dyed";
+                }
+                break;
+            case 'ench':
+            case 'storedenchantments':
+                $text .= "Enchantments: ";
+                // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
+                $enchs = array();
+                foreach ($data as $ench) {
+                    // find the id in the enchantments data
+                    $ench_name = umc_enchant_text_find('id', $ench['id'], 'short');
+                    $enchs[] = $ench_name . "  {$ench['lvl']}";
+                }
+                $text .= implode(", ", $enchs);
+                break;
+            case 'display':
+                if (isset($data['Name'])) {
+                    $text .= ' "' . $data['Name'] . '"' ;
+                }
+                break;
+            case 'generation': // for books
+            case 'resolved': // "closed books"
+            case 'repaircost':
+            case 'attributemodifiers':
+            case 'candestroy':
+            case 'canplaceon':
+                break;
+            case 'blockentitytag': //shields, shulker boxes, banners, fireworks?
+                if (isset($data['Patterns'])) {
+                    $text .= umc_patterns_get_text($data['Patterns'], 'long')  . '\n';
+                }
+                if (isset($data['Items'])) {
+                    $text .= 'with ' . count($data['Items']) . ' items';
+                }
+                break;
+            case 'fireworks':
+                // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
+                $text .= "Flight Duration: " . $data['Flight'] . '\n';
+                $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
+                $e_data = $data['Explosions'][0];
+                $explosion_type = $e_data['Type'];
+                $text .= "Explosion " . $explosions[$explosion_type];
+                if (isset($e_data['Flicker']) && $e_data['Flicker'] == 1) {
+                    $text .= ', Flicker';
+                }
+                if (isset($e_data['Trail']) && $e_data['Trail'] == 1) {
+                    $text .= ', Trail';
+                }
+                $text .= '\n';
+                $text .= "Colors: " . count($e_data['Colors']) . '\n';
+                $text .= "Fade Colors: " . count($e_data['FadeColors']) . '\n';
+                break;
+            case 'pages': // for books
+                $text .= count($data) . ' Pages';
+                break;
+            case 'title': // for books
+            case 'author':
+                $text .= ucwords("$feature: $data") . '\n';
+                break;
+            default:
+                XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
+        }
+    }
+    return $text;
+}
