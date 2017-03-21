@@ -233,13 +233,13 @@ function umc_nbt_display_short_text($nbt_array) {
                 break;
             case 'ench':
             case 'storedenchantments':
-                $text .= "Enchantments: ";
+                $text .= "Ench: ";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
                 $enchs = array();
                 foreach ($data as $ench) {
                     // find the id in the enchantments data
                     $ench_name = umc_enchant_text_find('id', $ench['id'], 'short');
-                    $enchs[] = $ench_name . "  {$ench['lvl']}";
+                    $enchs[] = $ench_name . " {$ench['lvl']}";
                 }
                 $text .= implode(", ", $enchs);
                 break;
