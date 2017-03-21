@@ -1907,6 +1907,7 @@ $UMC_DATA = array(
         'id' => 219,
         'stack' => 64,
         'avail' => true,
+        'notrade' => true,
         'icon_url' => '/8/80/White_Shulker_Box.png',
     ),
     'orange_shulker_box' => array(
@@ -3296,7 +3297,6 @@ $UMC_DATA = array(
         'id' => 416,
         'stack' => 16,
         'avail' => false,
-        'notrade' => true,
         'icon_url' => '/4/47/Grid_Armor_Stand.png',
     ),
     'iron_horse_armor' => array(
@@ -3351,7 +3351,6 @@ $UMC_DATA = array(
         'id' => 425,
         'stack' => 16,
         'avail' => true,
-        'notrade' => true,
         'icon_url' => '/2/24/Grid_White_Banner.png',
     ),
     'end_crystal' => array(
@@ -3534,7 +3533,6 @@ $UMC_DATA = array(
         'id' => 442,
         'stack' => 1,
         'avail' => true,
-        'notrade' => true,
         'icon_url' => '/4/41/Arrow.png', // TODO Find correct item icon
     ),
     'elytra' => array(
