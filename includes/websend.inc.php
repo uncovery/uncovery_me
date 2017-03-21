@@ -425,6 +425,7 @@ function umc_ws_get_inv($inv_data) {
         $slot = $item['Slot'];
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
+        $inv[$slot]['nbt'] = false;
         foreach ($item as $name => $value) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
@@ -449,7 +450,7 @@ function umc_ws_get_inv($inv_data) {
                 } else {
                     $inv[$slot][$name] = $value;
                 }
-            } else if ($fix_name == 'meta') {
+            } else if ($fix_name == 'meta' && (!isset($item['nbt']))) {
                 foreach ($value as $meta_type => $meta_value) {
                     // enchantments
                     if ($meta_type == 'Enchantments' || $meta_type == 'EnchantmentStorage') {
@@ -463,6 +464,7 @@ function umc_ws_get_inv($inv_data) {
                 // convert spigot NBT to minecraft NBT
                 $nbt = umc_nbt_cleanup($value);
                 $inv[$slot]['nbt'] = $nbt;
+                $inv[$slot]['meta'] = false;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -744,5 +746,7 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $meta_cmd = $meta;
     }
 
-    umc_ws_cmd("minecraft:give $user $item_name $amount $damage $meta_cmd;", 'asConsole');
+    $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
+    XMPP_ERROR_send_msg($cmd);
+    umc_ws_cmd($cmd, 'asConsole');
 }
