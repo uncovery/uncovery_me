@@ -731,7 +731,7 @@ function umc_txt_hover($msg, $action, $value) {
  * @param type $meta
  */
 function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
-
+    global $UMC_DATA;
     $meta_cmd = '';
     // is the meta an array or NBT Data?
     if (substr($meta, 0, 2) == 'a:') { // we have an array
@@ -746,6 +746,14 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $meta_cmd = $meta;
     }
 
+    $stack_size = $UMC_DATA[$item_name]['stack'];
+    XMPP_ERROR_send_msg(" Stack size = $stack_size");
+
+    while ($amount > $stack_size) {
+        $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
+        umc_ws_cmd($cmd, 'asConsole');
+        $amount = $amount - $stack_size;
+    }
     $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
     XMPP_ERROR_send_msg($cmd);
     umc_ws_cmd($cmd, 'asConsole');
