@@ -45,18 +45,21 @@ function umc_check_inventory($item_name, $data, $meta) {
     }
      *
      */
-    if (!is_array($meta)) {
+    if (strpos($meta, "{") === 0) {
+        $comparator = 'nbt';
+    } else if (!is_array($meta)) {
+        $comparator = 'meta';
         $meta = unserialize($meta);
     }
     //umc_error_longmsg($meta);
 
     foreach ($inv as $inv_item) {
         // we have to make sure we do not compare enchanted w. non-enchated items
-        if ($inv_item['meta'] && (count($meta) >= 1)) {
-            if (($inv_item['item_name'] == $item_name) && ($inv_item['data'] == $data) && ($inv_item['meta'] == $meta)) {
+        if ($inv_item[$comparator] && (count($meta) >= 1)) {
+            if (($inv_item['item_name'] == $item_name) && ($inv_item['data'] == $data) && ($inv_item[$comparator] == $meta)) {
                 $amount = $amount + $inv_item['amount'];
             }
-        } else if (!$inv_item['meta'] && !$meta) {
+        } else if (!$inv_item[$comparator] && !$meta) {
             if ($inv_item['item_name'] == $item_name && $inv_item['data'] == $data) {
                 $amount = $amount + $inv_item['amount'];
             }
@@ -80,25 +83,38 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
     global $UMC_USER;
     $inv = $UMC_USER['inv'];
     $player = $UMC_USER["username"];
-    if ($meta == '') {
+
+    if ($meta == '') { // websend sets default meta to false, let's do the same
         $meta = serialize(false);
     }
+
     if (is_array($meta)) {
         $meta = serialise($meta);
     }
+
     $removed = 0;
     foreach ($inv as $slot => $item) {
-        $item['meta'] = serialize($item['meta']);
+        $comparator = 'meta';
+        if (!is_array($meta) && strpos($meta, "{") === 0) {
+            // we have nbt
+            $comparator = 'nbt';
+        } else if (is_array($item['meta'])) { //we have a meta tag (legacy)
+            $item['meta'] = serialize($item['meta']);
+        } else { // we do not have any valid meta
+            $item['meta'] = serialize(false);
+        }
         // echo "$slot:{$item['id']}:{$item['data']}:{$item['meta']} vs $meta";
-        if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item['meta'] == $meta)) {
+        XMPP_ERROR_trace("compare $comparator $slot", $item);
+        XMPP_ERROR_trace("comparing", "$id, $data, $amount, $meta");
+        if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
             if ($amount >= $item['amount']) {
                 umc_ws_cmd("removeitem $player $slot", 'asConsole');
-                //umc_echo("removeitem $player $slot");
+                XMPP_ERROR_trace('item removed', "removeitem $player $slot");
                 $amount = $amount - $item['amount'];
                 $removed = $removed + $item['amount'];
             } else {
                 umc_ws_cmd("removeitem $player $slot $amount", 'asConsole');
-                //umc_echo("removeitem $player $slot $aomunt");
+                XMPP_ERROR_trace('item removed', "removeitem $player $slot $amount");
                 $amount = $amount - $amount;
                 $removed = $amount;
             }
@@ -108,7 +124,7 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
         }
     }
     if ($amount != $removed && $amount > 0) {
-        XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . "from user $player!");
+        XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . ") from user $player!");
     }
     if ($amount == 0) {
         return true;
