@@ -508,7 +508,9 @@ function umc_do_deposit_internal($all = false) {
 
         // deal with item metadata
         $data = $slot['data'];
-        if ($slot['meta']) {
+        if ($slot['nbt']) {
+            $meta = $slot['nbt'];
+        } else if ($slot['meta']) {
             if (is_array($slot['meta'])) {
                 $meta = serialize($slot['meta']); // enchanted stuff
             } else {
@@ -519,7 +521,7 @@ function umc_do_deposit_internal($all = false) {
         }
 
         // don't assign the same item twice
-        $item = umc_goods_get_text($slot['item_name'], $slot['data'], $slot['meta']);
+        $item = umc_goods_get_text($slot['item_name'], $slot['data'], $meta);
         if (isset($seen[$item['full']])) {
             continue;
         }
@@ -529,9 +531,9 @@ function umc_do_deposit_internal($all = false) {
         }
 
         // check for more bugs
-        $inv = umc_check_inventory($slot['item_name'], $slot['data'], $slot['meta']);
+        $inv = umc_check_inventory($slot['item_name'], $slot['data'], $meta);
         if ($inv == 0) {
-            XMPP_ERROR_trigger("Item held could not be found in inventory: {$slot['item_name']}, {$slot['data']}, " . var_export($slot['meta'], true));
+            XMPP_ERROR_trigger("Item held could not be found in inventory: {$slot['item_name']}, {$slot['data']}, " . var_export($meta, true));
             umc_error("There was a system error. The admin has been notified. Deposit aborted.");
         }
 
