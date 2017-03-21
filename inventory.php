@@ -104,8 +104,6 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
             $item['meta'] = serialize(false);
         }
         // echo "$slot:{$item['id']}:{$item['data']}:{$item['meta']} vs $meta";
-        XMPP_ERROR_trace("compare $comparator $slot", $item);
-        XMPP_ERROR_trace("comparing", "$id, $data, $amount, $meta");
         if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
             if ($amount >= $item['amount']) {
                 umc_ws_cmd("removeitem $player $slot", 'asConsole');
@@ -114,7 +112,6 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
                 $removed = $removed + $item['amount'];
             } else {
                 umc_ws_cmd("removeitem $player $slot $amount", 'asConsole');
-                XMPP_ERROR_trace('item removed', "removeitem $player $slot $amount");
                 $amount = $amount - $amount;
                 $removed = $amount;
             }
