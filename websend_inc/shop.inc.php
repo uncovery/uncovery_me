@@ -505,7 +505,9 @@ function umc_do_offer_internal($deposit) {
 	}
 	$item_name = $inv[$item_slot]['item_name'];
 	$item_type = $inv[$item_slot]['data'];
-        if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
+        if (strpos($inv[$item_slot]['nbt'], "{") === 0) {
+            $meta = $inv[$item_slot]['nbt'];
+        } else if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
             $meta = serialize($inv[$item_slot]['meta']);
         } else {
             $meta = '';
@@ -889,7 +891,7 @@ function umc_do_sell_internal($from_deposit=false) {
 	}
         if ($depot_item['notrade']) {
             umc_error("Sorry, this item is not able to be traded (yet).");
-        }          
+        }
     } else {
 	$item_slot = $UMC_USER['current_item'];
 	$check_inv = $UMC_USER['inv'];
@@ -904,7 +906,7 @@ function umc_do_sell_internal($from_deposit=false) {
 	}
         if ($inv_item['notrade']) {
             umc_error("Sorry, this item is not able to be traded (yet).");
-        }         
+        }
     }
 
     if (!isset($args[3])) {
@@ -1010,7 +1012,6 @@ function umc_do_request() {
     if (!$item_check) {
         umc_error("{red}Unknown item ({yellow}$args[2]{red}). Try using {yellow}/search{red} to find names.");
     } else {
-        XMPP_ERROR_trace("item_check", $item_check);
         $item = umc_goods_get_text($item_check['item_name'], $item_check['type']);
     }
     $item_name = $item['item_name'];
@@ -1020,7 +1021,7 @@ function umc_do_request() {
 
     if ($item['notrade']) {
         umc_error("Sorry, this item is not able to be traded (yet).");
-    }    
+    }
 
     $do_check = false;
     $pos = array_search('check', $args);
