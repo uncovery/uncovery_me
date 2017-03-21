@@ -3709,6 +3709,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'gold_boots' => 'golden_boots',
     'gold_chestplate' => 'golden_chestplate',
     'gold_helmet' => 'golden_helmet',
+    'gold_hoe' => 'golden_hoe',
     'gold_leggings' => 'golden_leggings',
     'gold_pickaxe' => 'golden_pickaxe',
     'gold_plate' => 'light_weighted_pressure_plate',
