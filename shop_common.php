@@ -98,13 +98,11 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
     $e = 0;
     if (strpos($meta_arr, "{") === 0) { // we have NBT, not legacy meta data
         $out = umc_nbt_display($meta_arr, $size . '_text');
-        XMPP_ERROR_trigger("NBT Meta");
-        XMPP_ERROR_trace("text", $out);
         return $out;
     } else if (!is_array($meta_arr)) {
         $meta_arr = unserialize($meta_arr);
     }
-    
+
     // faulty arrays
     if ((!is_array($meta_arr)) && (strlen($meta_arr) > 1)) {
         XMPP_ERROR_trigger("error unserializing metadata array: " . var_export($meta_arr, true));
@@ -151,13 +149,13 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // check if we have "minecraft:" in the beginning.
     $check = strpos($item_name_raw, ':');
     if ($check > 0) {
         $item_name_raw = substr($item_name_raw, 10);
     }
-    
+
     // cast part capitalized text to lowercase.
     $item_name = strtolower($item_name_raw);
 
@@ -207,7 +205,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $meta_spacer = '';
     if ($meta != '') {
         $tmp_var = umc_get_meta_txt($meta, 'short');
-        $meta_spacer = ' ';      
+        $meta_spacer = ' ';
         // differentiate between meta and nbt
         if (strpos($meta, "{") === 0) { // we have nbt
             $nbt_string = " " . $tmp_var;
@@ -240,7 +238,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     } else {
         $notrade = false;
     }
-    
+
     $out = array(
         'full' => $full,
         'full_nocolor' => "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text",
@@ -258,7 +256,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         'nbt_text' => $nbt_string,
     );
     XMPP_ERROR_trace('get_text', $out);
-    
+
     return $out;
 }
 
