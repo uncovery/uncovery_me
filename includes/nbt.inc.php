@@ -71,7 +71,7 @@ function umc_nbt_display($nbt, $format) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $nbt_array = umc_nbt_to_array($nbt);
     $formats = array(
-        'long_text',
+        'long_text', 'short_text',
     );
     $text = '';
     if (in_array($format, $formats) && function_exists('umc_nbt_display_' . $format)) {
