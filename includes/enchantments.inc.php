@@ -4,7 +4,7 @@
  * returns the text of an enchantment based on a value in the array
  * this is used if we do not have that ALL_CAPS value but the ID for example
  * returns the value of the field
- *  
+ *
  * @global array $ENCH_ITEMS
  * @param type $search_field
  * @param type $search_value
@@ -15,9 +15,9 @@ function umc_enchant_text_find($search_field, $search_value, $return_field) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $ENCH_ITEMS;
     //TODO: This needs to be simplified. Either we find a better way to directly
-    // get the text key, or we change the array once we do not need the text 
+    // get the text key, or we change the array once we do not need the text
     // keys anymore when NBT is fully implemented.
-    
+
     // we get the numeric key
     $ench_key = array_search($search_value, array_column($ENCH_ITEMS, $search_field));
     // get the text key from the numeric
@@ -232,7 +232,7 @@ $ENCH_ITEMS = array(
         'short' => 'Eff',
         'name' => 'Efficiency',
         'items' => array(
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'shears'
@@ -245,7 +245,7 @@ $ENCH_ITEMS = array(
         'short' => 'Silk',
         'name' => 'SilkTouch',
         'items' => array(
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
         ),
@@ -262,7 +262,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
@@ -277,7 +277,7 @@ $ENCH_ITEMS = array(
         'short' => 'Fort',
         'name' => 'Fortune',
         'items' => array(
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
         ),
@@ -330,7 +330,7 @@ $ENCH_ITEMS = array(
         'name' => 'Lure',
         'items' => array('fishing_rod'),
         'max'=>1
-    ),   
+    ),
     'MENDING' => array( // 70
         'id' => 70,
         'key' => 'MENDING',
@@ -342,7 +342,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
@@ -361,7 +361,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
@@ -381,7 +381,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'diamond_pick', 'golden_pick', 'iron_pick', 'stone_pick', 'wooden_pick',
+            'diamond_pickaxe', 'golden_pickaxe', 'iron_pickaxe', 'stone_pickaxe', 'wooden_pickaxe',
             'diamond_shovel', 'golden_shovel', 'iron_shovel', 'stone_shovel', 'wooden_shovel',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
