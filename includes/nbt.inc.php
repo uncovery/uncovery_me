@@ -77,6 +77,8 @@ function umc_nbt_display($nbt, $format) {
     if (in_array($format, $formats) && function_exists('umc_nbt_display_' . $format)) {
         $function = 'umc_nbt_display_' . $format;
         $text = $function($nbt_array);
+    } else {
+        XMPP_ERROR_trigger("ERROR: NBT display format '$format' does not exist!");
     }
     return $text;
 }
