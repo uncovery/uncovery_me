@@ -97,9 +97,15 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = '';
     $e = 0;
-    if (!is_array($meta_arr)) {
+    if (strpos($meta_arr, "{") === 0) { // we have NBT, not legacy meta data
+        $out = umc_nbt_display($meta_arr, $size . '_text');
+        XMPP_ERROR_trigger("NBT Meta");
+        XMPP_ERROR_trace("text", $out);
+        return $out;
+    } else if (!is_array($meta_arr)) {
         $meta_arr = unserialize($meta_arr);
     }
+    
     // faulty arrays
     if ((!is_array($meta_arr)) && (strlen($meta_arr) > 1)) {
         XMPP_ERROR_trigger("error unserializing metadata array: " . var_export($meta_arr, true));
