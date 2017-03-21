@@ -87,7 +87,6 @@ function umc_db_take_item($table, $id, $amount, $player) {
  * TODO: This is deprecated and nbt data should override this.
  *
  * @global type $ENCH_ITEMS
- * @global type $UMC_BANNERS
  * @param type $meta_arr
  * @param type $size
  * @return string
@@ -203,10 +202,19 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $icon_path = "$UMC_PATH_MC/server/bin/data/";
 
     $meta_text = '';
+    $nbt_string = '';
+    $nbt_raw = '';
     $meta_spacer = '';
     if ($meta != '') {
-        $meta_text = umc_get_meta_txt($meta, 'short');
-        $meta_spacer = ' ';
+        $tmp_var = umc_get_meta_txt($meta, 'short');
+        $meta_spacer = ' ';      
+        // differentiate between meta and nbt
+        if (strpos($meta, "{") === 0) { // we have nbt
+            $nbt_string = " " . $tmp_var;
+            $nbt_raw = $meta;
+        } else {
+            $meta = $tmp_var;
+        }
     }
 
     $full_clean = trim("$nice_name$meta_text$damage_text");
@@ -214,15 +222,12 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
         $full = "$img $full_clean";
     } else if ($UMC_ENV == 'websend') {
-        $full = "{magenta}$meta_text$meta_spacer{green}$nice_name{red}$damage_spacer$damage_text{white}";
+        $full = "{green}$nice_name{magenta}$meta_text$nbt_string$meta_spacer{red}$damage_spacer$damage_text{white}";
         $img = '';
     } else {
         $full = "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text";
         $img = '';
     }
-
-    $nbt_raw = $meta;
-    $nbt_nice_text = ''; //TODO:make nice text from NBT
 
     if (isset($UMC_DATA[$item_name]['group'])) {
         $group = umc_pretty_name($UMC_DATA[$item_name]['group']);
@@ -235,7 +240,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     } else {
         $notrade = false;
     }
-
+    
     $out = array(
         'full' => $full,
         'full_nocolor' => "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text",
@@ -250,8 +255,10 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         'group' => $group,
         'notrade' => $notrade,
         'nbt_raw' => $nbt_raw,
-        'nbt_text' => $nbt_nice_text,
+        'nbt_text' => $nbt_string,
     );
+    XMPP_ERROR_trace('get_text', $out);
+    
     return $out;
 }
 
