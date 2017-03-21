@@ -186,7 +186,7 @@ $lottery = array(
             'data' => 0,
             'ench' => '',
         ),
-    ),/*
+    ),
     'random_pet' => array(
         'chance' => 10,
         'type' => 'random_pet',
@@ -196,9 +196,9 @@ $lottery = array(
             'donkey', 'mule', 'pig', 'sheep', 'cow', 'chicken', 'squid', 'wolf',
             'mooshroom', 'ocelot', 'horse', 'polar_bear', 'llama', 'villager',
         ),
-    ),*/
+    ),
     'random_unc' => array(
-        'chance' => 190,
+        'chance' => 180,
         'type' => 'random_unc',
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
@@ -652,6 +652,7 @@ function umc_lottery() {
                 $given_block = $block[$luck2];
                 $give_ench = "{EntityTag:{id:\"minecraft:$given_block\"}}";
                 $give_data = 0;
+                $give_type = 'spawn_egg';
                 $item = umc_goods_get_text($give_type, $give_data, $give_ench);
                 $item_txt = "a " . $item['full'];
                 break;
