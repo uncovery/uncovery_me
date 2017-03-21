@@ -93,6 +93,12 @@ function umc_nbt_display_long_text($nbt_array) {
     foreach ($nbt_array as $feature => $data) {
         $feat = strtolower($feature);
         switch ($feat) {
+            case 'entitytag':
+                // Spawn eggs: {EntityTag:{id:"minecraft:blaze"}} 
+                $item_text_arr = explode(":", $data['id']);
+                $item_text = $item_text_arr[1];
+                $text .= umc_pretty_name($item_text);
+                break;
             case 'display': // armor dyes
                 if (isset($data['color'])) {
                     $text .= "dyed";
@@ -190,6 +196,9 @@ function umc_nbt_display_long_text($nbt_array) {
                 break;
             case 'resolved': // "closed books"
                 break;
+            case 'potion':
+                
+                break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
         }
@@ -209,6 +218,12 @@ function umc_nbt_display_short_text($nbt_array) {
     foreach ($nbt_array as $feature => $data) {
         $feat = strtolower($feature);
         switch ($feat) {
+            case 'entitytag':
+                // Spawn eggs: {EntityTag:{id:"minecraft:blaze"}} 
+                $item_text_arr = explode(":", $data['id']);
+                $item_text = $item_text_arr[1];
+                $text .= umc_pretty_name($item_text);
+                break;            
             case 'display': // armor dyes
                 if (isset($data['color'])) {
                     $text .= "dyed";
@@ -245,7 +260,7 @@ function umc_nbt_display_short_text($nbt_array) {
                 if (isset($data['Items'])) {
                     $text .= 'with ' . count($data['Items']) . ' items';
                 }
-                break;
+                break;                
             case 'fireworks':
                 // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
                 $text .= "Flight Duration: " . $data['Flight'] . '\n';
@@ -270,6 +285,10 @@ function umc_nbt_display_short_text($nbt_array) {
             case 'author':
                 $text .= ucwords("$feature: $data") . '\n';
                 break;
+            case 'potion':
+                global $UMC_POTION_EFFECTS;
+                
+                break;            
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
         }
