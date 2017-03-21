@@ -210,7 +210,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         $meta_spacer = ' ';      
         // differentiate between meta and nbt
         if (strpos($meta, "{") === 0) { // we have nbt
-            $nbt_string = " (" . $tmp_var. ")";
+            $nbt_string = " " . $tmp_var;
             $nbt_raw = $meta;
         } else {
             $meta = $tmp_var;
