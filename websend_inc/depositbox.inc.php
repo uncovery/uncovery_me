@@ -436,6 +436,7 @@ function umc_do_depositall() {
  * @param type $sender
  */
 function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $sender) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA_ID2NAME, $UMC_DATA;
     if (is_numeric($item_name)) {
         $item_name = $UMC_DATA_ID2NAME[$item_name];
@@ -447,6 +448,8 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
 
     if (is_array($meta) > 0) {
         $meta = serialize($meta);
+    } else if (strpos($meta, "{") === 0) {
+        $meta = $meta;
     } else {
         $meta = '';
     }
