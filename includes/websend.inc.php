@@ -744,5 +744,5 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $meta_cmd = $meta;
     }
 
-    umc_ws_cmd("give $user $item_name $amount $damage $meta_cmd;", 'asConsole');
+    umc_ws_cmd("minecraft:give $user $item_name $amount $damage $meta_cmd;", 'asConsole');
 }
