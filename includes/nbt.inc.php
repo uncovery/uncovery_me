@@ -9,8 +9,10 @@
  */
 function umc_nbt_cleanup($nbt_raw) {
     $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
-    $meta_cmd = preg_replace($regex, ":", $nbt_raw);
-    return $meta_cmd;
+    $nbt_clean = preg_replace($regex, ":", $nbt_raw);
+    
+    $nbt_sorted = umc_nbt_sort_enchantments($nbt_clean);
+    return $nbt_sorted;
 }
 
 /**
