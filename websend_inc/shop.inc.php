@@ -505,8 +505,9 @@ function umc_do_offer_internal($deposit) {
 	}
 	$item_name = $inv[$item_slot]['item_name'];
 	$item_type = $inv[$item_slot]['data'];
-        if (strpos($inv[$item_slot]['nbt'], "{") === 0) {
-            $meta = $inv[$item_slot]['nbt'];
+        if (strpos($inv[$item_slot]['nbt'], "{") === 0) { //we have nbt
+            $meta_unsorted = $inv[$item_slot]['nbt'];
+            $meta = umc_nbt_sort_enchantments($meta_unsorted);
         } else if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
             $meta = serialize($inv[$item_slot]['meta']);
         } else {
