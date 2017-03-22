@@ -204,7 +204,7 @@ $lottery = array(
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_common' => array(
-        'chance' => 150,
+        'chance' => 100,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
@@ -258,6 +258,12 @@ $lottery = array(
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
     ),
+    'random_potion' => array(
+        'chance' => 50, // rate of 69 in 1000
+        'type' => 'random_potion',
+        'data' => 'potion',
+        'txt' => 'a random potion',
+    ),    
     'additional_home' => array(
         'chance' => 1, // rate of 1 in 1000
         'type' => 'additional_home',
@@ -618,12 +624,6 @@ function umc_lottery() {
                 $give_data = $detail['data'];
                 $give_ench = $detail['ench'];
                 break;
-            case 'random_potion':
-                $luck2 = mt_rand(0, 63);
-                $item_txt = $prize['txt'];
-                $give_type = 373;
-                $give_data = $luck2;
-                break;
             case 'random_ench':
                 // pick which enchantment
                 $rand_ench = array_rand($ENCH_ITEMS);
@@ -670,6 +670,18 @@ function umc_lottery() {
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
                 break;
+            case 'random_potion':
+                $types = array('lingering_potion', 'potion', 'splash_potion');
+                $type_luck = mt_rand(0, count($types) - 1);
+                $give_type = $types[$type_luck];
+                global $UMC_POTIONS;
+                $potion_luck = mt_rand(0, count($UMC_POTIONS) - 1);
+                $potion_keys = array_keys($UMC_POTIONS);
+                $potion_code = $potion_keys[$potion_luck];
+                $give_data = 0;
+                $item_txt = $give_type;
+                $give_ench = "{Potion:\"minecraft:$potion_code\"}";
+                $give_amount = 1;
         }
         umc_deposit_give_item($uuid, $give_type, $give_data, $give_ench, $give_amount, 'lottery');
     }
