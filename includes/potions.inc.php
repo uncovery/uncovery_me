@@ -29,6 +29,11 @@ function umc_potion_text_find($search_value, $return_field) {
     return $text;
 }
 
+// note: Those are not the potion effects but just the potions that are available in cretive mode.
+// Potion effects are less detailed, have different names and are split between duration and strength modifier
+// Websend seems to have issues with custom potions however. It's better to stick with those default potions.
+// see custom potion examples here: https://minecraftcommand.science/potion-generator
+// effect list is here: http://minecraft.gamepedia.com/Status_effect
 
 $UMC_POTIONS = array(
   'water' => array('long_text' => 'Water', 'short_text' => 'Water'),
@@ -69,11 +74,11 @@ $UMC_POTIONS = array(
     'long_weakness' => array('long_text' => 'Weakness (long)', 'short_text' => 'Weak'),    
 );
 
+// this was just for testing
 function umc_potions_give_all() {
     global $UMC_POTION_EFFECTS;
     foreach ($UMC_POTION_EFFECTS as $D) {
         $code = $D['code'];
         umc_ws_give('uncovery', 'potion', 1, 0, "{Potion:\"minecraft:$code\"}");
     }
-    
 }
