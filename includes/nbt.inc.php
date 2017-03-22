@@ -249,7 +249,7 @@ function umc_nbt_display_long_text($nbt_array) {
             case 'resolved': // "closed books"
                 break;
             case 'potion':
-                $text .= "(no further info available)";
+                $text .= umc_potion_text_find($data, 'long_text');
                 break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
@@ -337,9 +337,8 @@ function umc_nbt_display_short_text($nbt_array) {
             case 'author':
                 $text .= ucwords("$feature: $data") . '\n';
                 break;
-            case 'potion':
-                global $UMC_POTION_EFFECTS;
-                $text .= "";
+            case 'potion': 
+                $text .= umc_potion_text_find($data, 'short_text');
                 break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
