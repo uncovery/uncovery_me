@@ -56,10 +56,58 @@ function umc_nbt_to_array($nbt) {
     if (!$nbt_array) {
         XMPP_ERROR_trigger("NBT Array invalid: $json");
     }
-    // we sort it so that same items with different order are displayed the same
-    // I am not sure this is necessary though.
-    // array_multisort($nbt_array);
+
     return $nbt_array;
+}
+
+/**
+ * takes an NBT string, converts it to an array, sorts the enchantments,
+ * then converts it back to an NBT String.
+ * 
+ * @param type $nbt
+ */
+function umc_nbt_sort_enchantments($nbt) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    // only do this if we have enchantments in the array
+    if (strpos($nbt, 'ench:') === false) {
+        return $nbt;
+    }
+    // convert the NBT to an array so we can search it
+    $array = umc_nbt_to_array($nbt);
+
+    // let's iterate the array
+    foreach ($array as $key => $value) {
+        if (strtolower($key) == 'ench') { // find the enchantment
+            $types = array();
+            $levels = array();
+            foreach ($value as $valkey => $row) { // get a sortable array for array_multisort
+                $types[$valkey]  = $row['id'];
+                $levels[$valkey] = $row['lvl'];
+            }
+            array_multisort($types, SORT_DESC, $levels, SORT_DESC, $value); // sort it
+            $array[$key] = $value; //re-insert
+        }
+    }
+
+    $json = json_encode($array); // convert the array to JSON
+    $out_nbt = umc_nbt_from_json($json); // fix the JSON to valid NBT
+
+    return $out_nbt;
+}
+
+/**
+ * take the quotes away from keys and leave them around string values
+ * IN: {"ench":[{"lvl":3,"id":34},{"lvl":5,"id":48},{"lvl":2,"id":49},{"lvl":1,"id":50},{"lvl":1,"id":51}]} 
+ * OUT: {ench:[{lvl:5,id:48},{lvl:2,id:49},{lvl:1,id:50},{lvl:3,id:34},{lvl:1,id:51}]}
+ * @param type $json
+ * @return type
+ * 
+ */
+function umc_nbt_from_json($json) {
+    $regex = '/([,{]{1,2})"([^,}:]*)":/';
+    $nbt = preg_replace($regex, '$1$2:', $json);
+    return $nbt;
 }
 
 /**
