@@ -517,7 +517,8 @@ function umc_do_deposit_internal($all = false) {
             if (is_array($slot['meta'])) {
                 $meta = serialize($slot['meta']); // enchanted stuff
             } else {
-                $meta = $slot['meta']; // we have NBT data
+                $meta_unsorted = $slot['meta']; // we have NBT data
+                $meta = umc_nbt_sort_enchantments($meta_unsorted);
             }
         } else {
             $meta = false;
