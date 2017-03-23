@@ -505,7 +505,7 @@ function umc_do_deposit_internal($all = false) {
     if (!$all) {
         $item_slot = $UMC_USER['current_item'];
         if (!isset($all_inv[$item_slot])) {
-            umc_error("{red}You need to hold the item you want to deposit! (current slot: $item_slot);");
+            umc_error("{red}You need to hold the item you want to deposit! (current slot: $item_slot)");
         }
         $all_inv = array($item_slot => $all_inv[$item_slot]);
     }
@@ -775,7 +775,7 @@ function umc_depositbox_consolidate() {
                 if (umc_depositbox_system_UUID_check($row['sender_uuid'])) {
                     // check empty box count to ensure they have space
                     if(umc_depositbox_realcount($uuid, 'empty') <= 0) {
-                        umc_error("{red}You have no free deposit slots to consolidate into. Free some space and try again.;");
+                        umc_error("{red}You have no free deposit slots to consolidate into. Free some space and try again.");
                     }
                 }
 
