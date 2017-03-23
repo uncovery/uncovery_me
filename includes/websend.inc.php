@@ -483,9 +483,10 @@ function umc_echo($string, $silent = false) {
     $color_regex = color_regex();
     $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $string);
 
-    // echo $str;
-    $format_str = umc_txt_format("$str");
-    umc_tellraw(false, $format_str, false);
+    $data = array(
+        array('text' => $str, 'format' => array('normal')),
+    );
+    umc_text_format($data);
 }
 
 
@@ -594,7 +595,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
         'show_entity' => 'hover',
         'show_achievement' => 'hover',
     );
-    
+
     $tell_data = array();
     foreach ($data as $D) {
         if (!isset($D['format'])) {
@@ -635,7 +636,8 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                     if ($format == 'show_item') {
                         $nbt = ''; // we add nbt only if we have one
                         if ($variable['nbt']) {
-                            $nbt = ",tag:{$variable['nbt']}";
+                            $nbt_safe = addslashes($variable['nbt']);
+                            $nbt = ",tag:$nbt_safe";
                         }
                         $extras = "{id:minecraft:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
                     } else {
@@ -644,7 +646,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                     $att .= ",\"hoverEvent\":{\"action\":\"$format\",\"value\":\"$extras\"}";
                     break;
                 default:
-                    
+
                     break;
             }
         }
@@ -678,7 +680,7 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
     } else {
         $sel = "@a[name=$selector]";
     }
-    
+
     $texts = array();
     foreach ($msg_arr as $msg) {
         if (is_array($msg)) {
