@@ -481,8 +481,11 @@ function umc_ws_get_inv($inv_data) {
  */
 function umc_echo($string, $silent = false) {
     $color_regex = color_regex();
-    $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $string);
 
+    // remove colons so we don't mess up JSON
+    $json_str = str_replace(";", "", $string);
+
+    $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $json_str);
     $data = array(
         array('text' => $str, 'format' => array('normal')),
     );
