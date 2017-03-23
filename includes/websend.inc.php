@@ -484,7 +484,8 @@ function umc_echo($string, $silent = false) {
     $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $string);
 
     // echo $str;
-    umc_ws_cmd($str, 'toPlayer', false, $silent);
+    $format_str = umc_txt_format($str);
+    umc_tellraw(false, $format_str, false);
 }
 
 
