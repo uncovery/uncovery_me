@@ -706,7 +706,12 @@ function umc_txt_hover($msg, $action, $value) {
     $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
     // we might need to validate items, entity and achievement/stats names
     if (in_array($action, $valid_tool_types)) {
-        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
+        if ($action == 'show_item') {
+            $extras = "{id:minecraft:{$value['item_name']},Damage:{$value['damage']},Count:{$value['count']},tag:{$value['nbt']}}";
+        } else {
+            $extras = $value;
+        }
+        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$extras\"}";
         if (is_array($msg)) {
             return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
         } else {
