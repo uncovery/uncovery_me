@@ -316,19 +316,23 @@ function umc_show_depotlist($silent = false) {
                 $format_color = 'green';
                 if ($item['nbt_raw']) { // magix items are aqua
                     $format_color = 'aqua';
-                }             
+                }
                 $data = array(
                     array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
                     array('text' => $row['amount'], 'format' => 'yellow'),
                     array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                    array('text' => "  [\u25BC]", "format" => array('blue', 'run_command' => '/withdraw ' . $row['id'], 'show_text' => 'Withdraw all')),
                 );
+                if ($row['amount'] > 1) {
+                    $data[] = array('text' => "  [\u25BC1]", "format" => array('blue', 'run_command' => '/withdraw ' . $row['id'] . " 1", 'show_text' => 'Withdraw one only'));
+                }
                 umc_text_format($data, false, false);
             }
         }
         if (!$web) {
             $allowed = umc_depositbox_realcount($uuid, 'total') - umc_depositbox_realcount($uuid, 'system');
             umc_pretty_bar("darkblue", "-", " {green}$count / $allowed slots used ");
-            umc_echo("{cyan}[*] {green}Withdraw with {yellow}/withdraw <Depot-Id>");
+            umc_echo("{cyan}[*] {green}Withdraw with {yellow}/withdraw <Depot-Id> {green} or click on {blue}[\u25BC]");
             umc_footer();
         } else {
             return $web_arr;
