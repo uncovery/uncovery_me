@@ -484,7 +484,7 @@ function umc_echo($string, $silent = false) {
     $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $string);
 
     // echo $str;
-    $format_str = umc_txt_format($str);
+    $format_str = umc_txt_format("$str");
     umc_tellraw(false, $format_str, false);
 }
 
@@ -556,6 +556,104 @@ function umc_ws_vardump($var) {
  * TELLRAW SECTION *************************************************************
  */
 
+function umc_text_format($data, $target = false, $auto_space = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $format_types = array(
+        // COLOR
+        'black' => 'color',
+        'dark_blue' => 'color',
+        'dark_green' => 'color',
+        'dark_aqua' => 'color',
+        'dark_red' => 'color',
+        'dark_purple' => 'color',
+        'gold' => 'color',
+        'gray' => 'color',
+        'dark_gray' => 'color',
+        'blue' => 'color',
+        'green' => 'color',
+        'aqua' => 'color',
+        'red' => 'color',
+        'light_purple' => 'color',
+        'yellow' => 'color',
+        'white' => 'color',
+        // FORMAT
+        'bold' => 'format',
+        'italic' => 'format',
+        'strikethrough' => 'format',
+        'underlined' => 'format',
+        'obfuscated' => 'format',
+        'normal' => 'format',
+        // CLICK
+        'open_url' => 'click',
+        'suggest_command' => 'click',
+        'run_command' => 'click',
+        'insertion' => 'click',
+        // HOVER
+        'show_text' => 'hover',
+        'show_item' => 'hover',
+        'show_entity' => 'hover',
+        'show_achievement' => 'hover',
+    );
+    
+    $tell_data = array();
+    foreach ($data as $D) {
+        if (!isset($D['format'])) {
+            $D['format'] = 'normal';
+        }
+        $formats = $D['format'];
+        $att = '';
+        if (!is_array($formats)) {
+            $formats = array($formats);
+        }
+        foreach ($formats as $format_key => $format_value) {
+            if (isset($format_types[$format_key])) {
+                $format = $format_key;
+                $variable = $format_value;
+            } else if (isset($format_types[$format_value])) {
+                $format = $format_value;
+            } else {
+                XMPP_ERROR_trigger("Invalid tellraw format ($format_key / $format_value");
+                continue;
+            }
+            $type = $format_types[$format];
+            // iterate actions, compound effects
+            switch ($type) {
+                case 'color':
+                    $att .= ",\"color\":\"$format\"";
+                    break;
+                case 'format':
+                    if ($format == 'normal') {
+                        $att .= ",\"bold\":\"false\"";
+                    } else {
+                        $att .= ",\"$format\":\"true\"";
+                    }
+                    break;
+                case 'click':
+                    $att .= ",\"clickEvent\":{\"action\":\"$format\",\"value\":\"$variable\"}";
+                    break;
+                case 'hover':
+                    if ($format == 'show_item') {
+                        $nbt = ''; // we add nbt only if we have one
+                        if ($variable['nbt']) {
+                            $nbt = ",tag:{$variable['nbt']}";
+                        }
+                        $extras = "{id:minecraft:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
+                    } else {
+                        $extras = $variable;
+                    }
+                    $att .= ",\"hoverEvent\":{\"action\":\"$format\",\"value\":\"$extras\"}";
+                    break;
+                default:
+                    
+                    break;
+            }
+        }
+        $tell_data[] = array('txt' => $D['text'], 'att' => $att);
+    }
+    umc_tellraw($target, $tell_data, $auto_space);
+}
+
+
 /**
  * Base Tellraw execution
  *
@@ -580,7 +678,7 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
     } else {
         $sel = "@a[name=$selector]";
     }
-
+    
     $texts = array();
     foreach ($msg_arr as $msg) {
         if (is_array($msg)) {
@@ -605,131 +703,12 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
     $text_line = implode($spacer_str, $texts);
 
     $cmd = "tellraw $sel [$text_line]";
-    umc_ws_cmd($cmd, 'asConsole');
+    XMPP_ERROR_trace('tellraw final', $cmd);
+    print("/Command/ExecuteConsoleCommand:" . $cmd . ";");
+    // umc_ws_cmd($cmd, 'asConsole');
     // we likely need to check if the environment is websend or not and if not
     // use umc_exec_command($cmd, 'asConsole'); instead
 }
-
-/**
- * Apply a color to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $color
- * @return boolean
- */
-function umc_txt_color($msg, $color) {
-    $valid_colors = array(
-        'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
-        'gold','gray','dark_gray','blue','green','aqua','red','light_purple','yellow','white'
-    );
-    if ($color && in_array($color, $valid_colors)) {
-        $out = ",\"color\":\"$color\"";
-
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
-        }
-    } else {
-        XMPP_ERROR_trigger("umc_txt_color ERROR: $color is invalid color");
-        return false;
-    }
-}
-
-/**
- * apply a format to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $formats
- * @return type
- */
-function umc_txt_format($msg, $formats = array()) {
-    if (!is_array($formats)) {
-        $formats = array($formats);
-    }
-    $valid_formats = array(
-        'bold','italic','strikethrough','underlined','obfuscated','normal',
-    );
-    $out = '';
-    foreach ($formats as $format) {
-        if (in_array($format, $valid_formats)) {
-            if ($format == 'normal') {
-                $out .= ",\"bold\":\"false\"";
-            } else {
-                $out .= ",\"$format\":\"true\"";
-            }
-        }
-    }
-    if (is_array($msg)) {
-        return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-    } else {
-        return array('txt' => $msg, 'att' => $out);
-    }
-}
-
-/**
- * Apply a click event to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $action
- * @param type $value
- * @return boolean
- */
-function umc_txt_click($msg, $action, $value) {
-    $valid_clicks = array('open_url','suggest_command','run_command','insertion');
-    if (in_array($action, $valid_clicks)) {
-        $out = ",\"clickEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
-        }
-    } else {
-        return false;
-    }
-}
-
-/**
- * Apply a hover tooltip to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $action
- * @param type $value
- * @return boolean
- */
-function umc_txt_hover($msg, $action, $value) {
-    // achievements also work for stats with the value being stats.stats_id
-    $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
-    // we might need to validate items, entity and achievement/stats names
-    if (in_array($action, $valid_tool_types)) {
-        if ($action == 'show_item') {
-            $nbt = ''; // we add nbt only if we have one
-            if ($value['nbt']) {
-                $nbt = ",tag:{$value['nbt']}";
-            }
-            $extras = "{id:minecraft:{$value['item_name']},Damage:{$value['damage']},Count:1$nbt}";
-        } else {
-            $extras = $value;
-        }
-        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$extras\"}";
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
-        }
-    } else {
-        return false;
-    }
-}
-
 
 /**
  * Give an item to a a user. This is an abstraction layer for /give... commands to make sure
