@@ -313,8 +313,16 @@ function umc_show_depotlist($silent = false) {
                     'recipient' => $recipient,
                 );
             } else {
-                umc_echo(sprintf("{green}%7d     {yellow}%s", $row['id'], $row['amount']
-                    ." {$item['full']} $label"));
+                $format_color = 'green';
+                if ($item['nbt_raw']) { // magix items are aqua
+                    $format_color = 'aqua';
+                }             
+                $data = array(
+                    array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
+                    array('text' => $row['amount'], 'format' => 'yellow'),
+                    array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                );
+                umc_text_format($data, false, false);
             }
         }
         if (!$web) {
