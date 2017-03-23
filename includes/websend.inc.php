@@ -562,8 +562,9 @@ function umc_ws_vardump($var) {
  * @param type $msg_arr
  * @param type $spacer
  */
-function umc_tellraw($selector, $msg_arr, $spacer) {
+function umc_tellraw($selector, $msg_arr, $spacer = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
     $valid_selectors = array(
         '@p', // nearest
         '@r', // random
@@ -573,6 +574,8 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
 
     if (in_array($selector, $valid_selectors)) {
         $sel = $selector;
+    } else if (!$selector && isset($UMC_USER['username'])) {
+        $sel = "@a[name={$UMC_USER['username']}]";
     } else {
         $sel = "@a[name=$selector]";
     }
@@ -602,7 +605,6 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
 
     $cmd = "tellraw $sel [$text_line]";
     umc_ws_cmd($cmd, 'asConsole');
-
     // we likely need to check if the environment is websend or not and if not
     // use umc_exec_command($cmd, 'asConsole'); instead
 }
@@ -630,6 +632,7 @@ function umc_txt_color($msg, $color) {
             return array('txt' => $msg, 'att' => $out);
         }
     } else {
+        XMPP_ERROR_trigger("umc_txt_color ERROR: $color is invalid color");
         return false;
     }
 }
@@ -707,7 +710,11 @@ function umc_txt_hover($msg, $action, $value) {
     // we might need to validate items, entity and achievement/stats names
     if (in_array($action, $valid_tool_types)) {
         if ($action == 'show_item') {
-            $extras = "{id:minecraft:{$value['item_name']},Damage:{$value['damage']},Count:{$value['count']},tag:{$value['nbt']}}";
+            $nbt = ''; // we add nbt only if we have one
+            if ($value['nbt']) {
+                $nbt = ",tag:{$value['nbt']}";
+            }
+            $extras = "{id:minecraft:{$value['item_name']},Damage:{$value['damage']},Count:1$nbt}";
         } else {
             $extras = $value;
         }
