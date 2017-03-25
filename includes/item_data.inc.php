@@ -872,7 +872,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/f/fb/Grid_Cactus.png',
     ),
-    'clayblock' => array(
+    'clay' => array(
         'id' => 82,
         'stack' => 64,
         'avail' => true,
@@ -3683,7 +3683,6 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'carrot_item' => 'carrot',
     'carrot_stick' => 'carrot_on_a_stick',
     'cauldron_item' => 'cauldron',
-    'clay' => 'clayblock',
     'clay_brick' => 'brick',
     'cobble_wall' => 'cobblestone_wall',
     'cobblestone_stairs' => 'stone_stairs',
