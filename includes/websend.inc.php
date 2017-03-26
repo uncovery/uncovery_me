@@ -676,14 +676,6 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
         '@e', // all entities, including users
     );
 
-    if (in_array($selector, $valid_selectors)) {
-        $sel = $selector;
-    } else if (!$selector && isset($UMC_USER['username'])) {
-        $sel = "@a[name={$UMC_USER['username']}]";
-    } else {
-        $sel = "@a[name=$selector]";
-    }
-
     $texts = array();
     foreach ($msg_arr as $msg) {
         if (is_array($msg)) {
@@ -707,9 +699,16 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
     }
     $text_line = implode($spacer_str, $texts);
 
-    $cmd = "tellraw $sel [$text_line]";
+    if (in_array($selector, $valid_selectors)) {
+        $cmd = "/Command/ExecuteConsoleCommand:tellraw $selector [$text_line];";
+    } else if (!$selector && isset($UMC_USER['username'])) {
+        $cmd = "/Output/PrintToPlayer:[$text_line];";
+    } else {
+        $cmd = "/Command/ExecuteConsoleCommand:tellraw @a[name=$selector] [$text_line];";
+    }
+
+    print($cmd);
     XMPP_ERROR_trace('tellraw final', $cmd);
-    print("/Command/ExecuteConsoleCommand:" . $cmd . ";");
     // umc_ws_cmd($cmd, 'asConsole');
     // we likely need to check if the environment is websend or not and if not
     // use umc_exec_command($cmd, 'asConsole'); instead
