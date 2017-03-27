@@ -208,12 +208,9 @@ function umc_shop_list() {
         umc_echo("Shop-Id  {gold} $player{gray} is $verb");
         foreach ($D as $row) {
             $item = umc_goods_get_text($row["item_name"], $row["damage"], $row['meta']);
-            $item_name = $item['full'];
             if ($row['amount'] == -1) {
                 $row['amount'] = 'inf.';
             }
-            $label = "{darkgray} @ {cyan}" . $row['price'];
-            umc_echo(sprintf("{green}%7d     {yellow}%s", $row['id'], "{yellow}{$row['amount']} $item_name $label"));
             $format_color = 'green';
             if ($item['nbt_raw']) { // magix items are aqua
                 $format_color = 'aqua';
