@@ -698,11 +698,14 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
         $spacer_str = ",{\"text\":\" \"},";
     }
     $text_line = implode($spacer_str, $texts);
-
-    if (in_array($selector, $valid_selectors)) {
+    $cmd = "/Output/PrintToConsole:$selector;";
+    if (!$selector && isset($UMC_USER['username']) && $UMC_USER['username'] == '@console') {
+        $cmd = "/Output/PrintToConsole:[$text_line];";
+    } else if (in_array($selector, $valid_selectors)) {
         $cmd = "/Command/ExecuteConsoleCommand:tellraw $selector [$text_line];";
     } else if (!$selector && isset($UMC_USER['username'])) {
-        $cmd = "/Output/PrintToPlayer:[$text_line];";
+        $cmd = "/Command/ExecuteConsoleCommand:tellraw {$UMC_USER['username']} [$text_line];";
+        //$cmd = "/Output/PrintToPlayer:[$text_line];";
     } else {
         $cmd = "/Command/ExecuteConsoleCommand:tellraw @a[name=$selector] [$text_line];";
     }
