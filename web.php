@@ -400,7 +400,6 @@ function umc_web_table_format_column($name, $value) {
         $out = "<a href=\"?page=goods&amp;item={$id_parts[0]}$type\">" . $item_arr['full'] . "</a>\n";
         return $out;
     } else if ($name == 'item') {
-        $meta = '';
         $id_parts = explode("|",$value);
         if (is_numeric($id_parts[0]))  {
             $item_name = $UMC_DATA_ID2NAME[$id_parts[0]];
@@ -416,23 +415,13 @@ function umc_web_table_format_column($name, $value) {
             $item_dmg = 0;
         }
 
-        if ($item_meta != '') {
-            $meta = unserialize($item_meta);
-            $meta_list = array();
-            foreach ($meta as $type => $level) {
-                $nice_meta = $ENCH_ITEMS[$type]['short'];
-                array_push($meta_list, "$nice_meta $level");
-            }
-            $meta = ", " . implode(", ", $meta_list);
-        }
-
         if (isset($UMC_DATA[$item_name]['subtypes']) && $UMC_DATA[$item_name]['subtypes'][$item_dmg]['icon_url'] == '?') {
             $icon_dmg = 0;
         } else {
             $icon_dmg = $item_dmg;
         }
         if ($item['name']) {
-            $text = "{$item['icon']}&nbsp;" . $item['name'] . $meta;
+            $text = "{$item['icon']}&nbsp;" . $item['full_clean'];
         } else {
             $text = "($value)";
         }
