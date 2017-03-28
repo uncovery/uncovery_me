@@ -261,6 +261,7 @@ function umc_ws_yaw_fix($raw_yaw) {
 }
 
 /**
+ * DEPRECATED: use umc_ws_command insted
  * Executes a command without the initiation of Websend
  * always does this as the console since no user initiating it.
  *.
@@ -271,10 +272,9 @@ function umc_ws_yaw_fix($raw_yaw) {
 function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     $ws = umc_ws_connect();
     if (!$ws) {
-        return;
+        return false;
     }
-    // $ws->writeOutputToConsole("starting ws communication;");
-    // $ws->writeOutputToConsole("Executing Command '$cmd' Method '$how' Player '$player';");
+    
     switch ($how) {
         case 'asConsole':
             $check = $ws->doCommandAsConsole($cmd);
@@ -297,10 +297,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     }
     if (!$check) {
         XMPP_ERROR_trigger("Could not verify correct connection to websend (umc_exec_command / $cmd / $how / $player)");
-    } else {
-        //echo "nah.";
-        //$check = $ws->writeOutputToConsole("error");
-    }
+    } 
     $ws->disconnect();
     return $check;
 }
@@ -325,6 +322,13 @@ function umc_ws_plugin_comms($plugin, $cmd) {
     XMPP_ERROR_trigger("Done!");
 }
 
+
+/**
+ * Connect to websend from external application (wordpress etc)
+ * 
+ * @global type $UMC_PATH_MC
+ * @return boolean|\Websend
+ */
 function umc_ws_connect() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
@@ -338,7 +342,7 @@ function umc_ws_connect() {
         $ws = new Websend("74.208.45.80"); //, 4445
         $ws->password = $password;
         if (!$ws->connect()) { // fail agin? bail.
-            XMPP_ERROR_trigger("Could not connect to websend server (umc_exec_command)");
+            XMPP_ERROR_trigger("Could not connect to websend server (umc_ws_connect)");
             return false;
         }
     }
@@ -347,6 +351,7 @@ function umc_ws_connect() {
 
 
 /**
+ * DEPRECATED: use umc_ws_command insted
  * Send a command back to websend.
  * This function serves as an abstraction layer for websend
  * Terminates the command with a ;
@@ -375,12 +380,6 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     // remove colons, just in case
     $cmd = str_replace(';', '', $cmd_raw);
 
-    // this is debugging info
-    /* if (!$silent) {
-        $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
-        $log_cmd = str_replace($color_arr, '', $cmd);
-        print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
-    } */
 
     switch ($how) {
         case 'asConsole':
@@ -410,6 +409,7 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     }
     return true;
 }
+
 
 /**
  * Return an array of the logged-in player's inventory
@@ -560,6 +560,27 @@ function umc_ws_vardump($var) {
  * TELLRAW SECTION *************************************************************
  */
 
+
+/**
+ * This function only serves as an external place where we define the broadcast
+ * format for all messages that go to all users.
+ */
+function umc_ws_text_prefix_broadcast() {
+    $format = array(
+        array('text' => '[', 'format' => array('white')),
+        array('text' => 'Broadcast', 'format' => array('yellow')),
+        array('text' => ']', 'format' => array('white')),
+    );
+    return $format;
+}
+
+/**
+ * Parse text format and send to tellraw
+ * 
+ * @param type $data
+ * @param type $target
+ * @param type $auto_space
+ */
 function umc_text_format($data, $target = false, $auto_space = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $format_types = array(
@@ -658,9 +679,8 @@ function umc_text_format($data, $target = false, $auto_space = false) {
     umc_tellraw($target, $tell_data, $auto_space);
 }
 
-
 /**
- * Base Tellraw execution
+ * Base Tellraw formatting
  *
  * @param type $selector
  * @param type $msg_arr
@@ -694,27 +714,40 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
 
     // glue the pieces with commas
     $spacer_str = ",";
-    if ($spacer == true) {
+    if ($spacer == true) { // or with spaces
         $spacer_str = ",{\"text\":\" \"},";
     }
     $text_line = implode($spacer_str, $texts);
-    $cmd = "/Output/PrintToConsole:$selector;";
+    
+    $target = false;
+    
+    // print to console
     if (!$selector && isset($UMC_USER['username']) && $UMC_USER['username'] == '@console') {
-        $cmd = "/Output/PrintToConsole:[$text_line];";
+        $cmd = "[$textline]";
+        // todo: filter out tellraw, convert colors to commandline colors
+        $type = 'toConsole';
+
+    // print to all users
     } else if (in_array($selector, $valid_selectors)) {
-        $cmd = "/Command/ExecuteConsoleCommand:tellraw $selector [$text_line];";
+        $cmd = "tellraw $selector [$text_line]";
+        $type = 'asConsole';
+
+    // print to current user
     } else if (!$selector && isset($UMC_USER['username'])) {
-        $cmd = "/Command/ExecuteConsoleCommand:tellraw {$UMC_USER['username']} [$text_line];";
-        //$cmd = "/Output/PrintToPlayer:[$text_line];";
+        $cmd = "tellraw {$UMC_USER['username']} [$text_line]";
+        $type = 'asConsole';
+        // $target  = $UMC_USER['username'];
+        // $type = 'toPlayer';
+
+    // print to specific user
     } else {
-        $cmd = "/Command/ExecuteConsoleCommand:tellraw @a[name=$selector] [$text_line];";
+        $cmd = "tellraw @a[name=$selector] [$text_line]";
+        $type = 'asConsole';
     }
 
-    print($cmd);
     XMPP_ERROR_trace('tellraw final', $cmd);
-    // umc_ws_cmd($cmd, 'asConsole');
-    // we likely need to check if the environment is websend or not and if not
-    // use umc_exec_command($cmd, 'asConsole'); instead
+    $check = umc_ws_command($type, $cmd, $target, false);
+    return $check;
 }
 
 /**
@@ -749,9 +782,90 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
 
     while ($amount > $stack_size) {
         $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
-        umc_ws_cmd($cmd, 'asConsole');
+        $check = umc_ws_command('asConsole', $cmd);
         $amount = $amount - $stack_size;
     }
     $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
-    umc_ws_cmd($cmd, 'asConsole');
+    $check = umc_ws_command('asConsole', $cmd);
+    return $check;
+}
+
+
+/**
+ * Revised, consolidated in-game command execution module
+ * combines both websend and wordpress sourcces
+ * 
+ * @global type $UMC_ENV
+ * @param type $type
+ * @param type $cmd
+ * @param type $source
+ * @return boolean
+ */
+function umc_ws_command($type, $cmd, $player) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    global $UMC_ENV;
+    
+    // check the environment
+    if ($UMC_ENV == 'websend') {
+        switch ($type) {
+            case 'asConsole':
+                $prefix = "/Command/ExecuteConsoleCommand:";
+                break;
+            case 'asPlayer':
+                $prefix = "/Command/ExecutePlayerCommand:";
+                break;
+            case 'toConsole':
+                $prefix = "/Output/PrintToConsole:";
+                break;
+            case 'asPlayer':
+                $prefix = "/Output/PrintToPlayer-$player:";
+            case 'toPlayer':
+                $prefix = "/Output/PrintToPlayer:";
+                break;
+            case 'broadcast':
+                $prefix = "/Command/Broadcast:";
+                break;
+            default:
+                XMPP_ERROR_trigger("Websend = > game command execution error, unknown type!");
+                return false;
+        }
+        print("$prefix$cmd;"); // now execute 
+        
+    } else { // wordpress
+        $ws = umc_ws_connect();
+        if (!$ws) {
+            XMPP_ERROR_trigger("Wordpress => game connection error! Server offline?");
+            return false;
+        }
+        switch ($type) {
+            case 'asConsole':
+                $check = $ws->doCommandAsConsole($cmd);
+                break;
+            case 'asPlayer':
+                $check = $ws->doCommandAsPlayer($cmd, $player);
+                break;
+            case 'toConsole':
+                $check = $ws->writeOutputToConsole($cmd);
+                break;
+            case 'toPlayer':
+                $check = $ws->writeOutputToPlayer($cmd, $player);
+                break;
+            case 'broadcast':
+                $check = $ws->broadcast($cmd);
+                break;
+            case 'doScript':
+                $check = $ws->doScript($cmd);
+                break;
+            default:
+                XMPP_ERROR_trigger("Websend = > game command execution error, unknown type!");
+                return false;
+        }
+        if (!$check) {
+            XMPP_ERROR_trigger("Wordpress => game command execution error!");
+            return false;
+        } 
+        $ws->disconnect();
+        return $check;
+    }
 }
