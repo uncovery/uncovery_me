@@ -23,19 +23,17 @@ function umc_nbt_cleanup($nbt_raw) {
  */
 function umc_nbt_to_array($nbt) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    // this regex basically takes all the array keys from the NBT data into $2 and puts quotes around them.
 
     // check if we have encapsulated JSON
     // we try to find quotes between :[ and { as well as on the backside between } and ],
-    // we split in three pards, the inside is the book pages
+    // we split in three parts, the inside is the book pages
     $fix_regex = '/(?<front>.*:\[)"(?<inside>{.+})"(?<back>\],.*)/';
     $matches = false;
     // TODO: do this regex only if we actually have a book (or whatever else this applies to)
     preg_match_all($fix_regex, $nbt, $matches);
 
-    // XMPP_ERROR_trace("nbt_matches", $matches);
-
     // this regex marks the array keys so that they can be put in quotes.
+    // this regex basically puts all the array keys from the NBT data into match $2 and puts quotes around them.
     $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
 
     // do we have a multi-level JSON?
@@ -121,7 +119,7 @@ function umc_nbt_display($nbt, $format) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $nbt_array = umc_nbt_to_array($nbt);
     $formats = array(
-        'long_text', 'short_text',
+        'long_text', 'short_text','in_game'
     );
     $text = '';
     if (in_array($format, $formats) && function_exists('umc_nbt_display_' . $format)) {
@@ -345,4 +343,38 @@ function umc_nbt_display_short_text($nbt_array) {
         }
     }
     return $text;
+}
+
+/** Legacy **/
+
+
+/**
+ * temp maintenance to convert legacy enchantments to NBT
+ * @global type $ENCH_ITEMS
+ */
+function umc_nbt_fix() {
+    global $ENCH_ITEMS;
+    $sql = 'SELECT * FROM minecraft_iconomy.stock WHERE meta LIKE "a:%" ORDER BY id DESC' ;
+    $D = umc_mysql_fetch_all($sql);
+    foreach ($D as $row) {
+        $meta = trim($row['meta']);
+        $meta_arr = unserialize($meta);
+        if (!is_array($meta_arr)) {
+            continue;
+        }
+        // {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
+        $nbt = '{ench:[';
+        $nbt_arr = array();
+        foreach ($meta_arr as $ench => $lvl) {
+            $id = $ENCH_ITEMS[$ench]['id'];
+            $nbt_arr[] = "{lvl:$lvl,id:$id}";
+        }
+        $nbt .= implode(",", $nbt_arr);
+        $nbt .= "]}";
+        $line_id = $row['id'];
+        $update_sql = "UPDATE minecraft_iconomy.stock SET `meta` = '$nbt' WHERE `id` = $line_id;";
+        umc_mysql_execute_query($update_sql);
+        XMPP_ERROR_send_msg("$meta => $nbt");
+
+    }
 }
