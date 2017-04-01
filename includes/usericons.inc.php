@@ -24,6 +24,14 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['usericon_get'] = 'umc_usericon_get';
 
+
+/**
+ * Get the usericon from the minecraft server
+ * 
+ * @global type $UMC_PATH_MC
+ * @param type $users
+ * @param type $update
+ */
 function umc_usericon_get($users = false, $update = true) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
@@ -97,7 +105,7 @@ function umc_usericon_get($users = false, $update = true) {
             if ($d_arr->properties[$i]->name == 'textures') {
                 $base64_texture = $d_arr->properties[$i]->value;
             } else {
-                echo "Wrong property: " . $d_arr->properties[$i]->name;
+                // echo "Wrong property: " . $d_arr->properties[$i]->name;
             }
         }
         $raw_texture = base64_decode($base64_texture);
