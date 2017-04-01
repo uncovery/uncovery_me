@@ -804,7 +804,7 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
  * @param type $source
  * @return boolean
  */
-function umc_ws_command($type, $cmd, $player) {
+function umc_ws_command($type, $cmd, $player = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     global $UMC_ENV;
