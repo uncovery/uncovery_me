@@ -274,7 +274,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     if (!$ws) {
         return false;
     }
-    
+
     switch ($how) {
         case 'asConsole':
             $check = $ws->doCommandAsConsole($cmd);
@@ -297,7 +297,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     }
     if (!$check) {
         XMPP_ERROR_trigger("Could not verify correct connection to websend (umc_exec_command / $cmd / $how / $player)");
-    } 
+    }
     $ws->disconnect();
     return $check;
 }
@@ -325,7 +325,7 @@ function umc_ws_plugin_comms($plugin, $cmd) {
 
 /**
  * Connect to websend from external application (wordpress etc)
- * 
+ *
  * @global type $UMC_PATH_MC
  * @return boolean|\Websend
  */
@@ -575,8 +575,10 @@ function umc_ws_text_prefix_broadcast() {
 }
 
 /**
- * Parse text format and send to tellraw
- * 
+ * We created a custom, simple text formatting system.
+ * This function here converts that system into minecraft-ready text formats and
+ * uses /tellraw to send it formatted to the user
+ *
  * @param type $data
  * @param type $target
  * @param type $auto_space
@@ -670,7 +672,8 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                     $att .= ",\"hoverEvent\":{\"action\":\"$format\",\"value\":\"$extras\"}";
                     break;
                 default:
-
+                    // we check for invalid array keys already above
+                    // the array value is set in the above array so let's assume they are correct
                     break;
             }
         }
@@ -718,9 +721,9 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
         $spacer_str = ",{\"text\":\" \"},";
     }
     $text_line = implode($spacer_str, $texts);
-    
+
     $target = false;
-    
+
     // print to console
     if (!$selector && isset($UMC_USER['username']) && $UMC_USER['username'] == '@console') {
         $cmd = "[$textline]";
@@ -794,7 +797,7 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
 /**
  * Revised, consolidated in-game command execution module
  * combines both websend and wordpress sourcces
- * 
+ *
  * @global type $UMC_ENV
  * @param type $type
  * @param type $cmd
@@ -803,9 +806,9 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
  */
 function umc_ws_command($type, $cmd, $player) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     global $UMC_ENV;
-    
+
     // check the environment
     if ($UMC_ENV == 'websend') {
         switch ($type) {
@@ -830,8 +833,8 @@ function umc_ws_command($type, $cmd, $player) {
                 XMPP_ERROR_trigger("Websend = > game command execution error, unknown type!");
                 return false;
         }
-        print("$prefix$cmd;"); // now execute 
-        
+        print("$prefix$cmd;"); // now execute
+
     } else { // wordpress
         $ws = umc_ws_connect();
         if (!$ws) {
@@ -864,7 +867,7 @@ function umc_ws_command($type, $cmd, $player) {
         if (!$check) {
             XMPP_ERROR_trigger("Wordpress => game command execution error!");
             return false;
-        } 
+        }
         $ws->disconnect();
         return $check;
     }
