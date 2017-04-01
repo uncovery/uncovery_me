@@ -268,7 +268,17 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
             umc_error("{red}Amount {white}'$amount'{red} is not numeric;");
         }
         if ($table != 'stock') {
-            umc_echo("{green}[+]{gray} You are withdrawing {yellow} $amount {gray} of {$item['full']}{gray}.");
+            $format_color = 'green';
+            if ($item['nbt_raw']) { // magix items are aqua
+                $format_color = 'aqua';
+            }
+            $data = array(
+                array('text' => '[+]', 'format' => 'green'),
+                array('text' => 'You are withdrawing', 'format' => 'gray'),
+                array('text' => $amount, 'format' => 'yellow'),
+                array('text' => $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+            );
+            umc_text_format($data, false, true);
         }
 
         if ($table == 'stock') {
@@ -314,10 +324,30 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         // fix the stock levels
         $amount_left = umc_db_take_item($table, $id, $sellamount, $source);
         if ($UMC_ENV == 'websend') {
-            if ($amount_left == 0) {
-                umc_echo("{green}[+]{gray} No more {green}{$item['full']}{gray} now in stock.");
+                if ($amount_left == 0) {
+                $format_color = 'green';
+                if ($item['nbt_raw']) { // magix items are aqua
+                    $format_color = 'aqua';
+                }
+                $data = array(
+                    array('text' => '[+]', 'format' => 'green'),
+                    array('text' => 'No more', 'format' => 'gray'),
+                    array('text' => $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                    array('text' => "now in stock", 'format' => 'gray'),
+                );
+                umc_text_format($data, false, true);
             } else {
-                umc_echo("{green}[+]{yellow} $amount_left{green} {$item['full']}{gray} remaining in stock.");
+                $format_color = 'green';
+                if ($item['nbt_raw']) { // magix items are aqua
+                    $format_color = 'aqua';
+                }
+                $data = array(
+                    array('text' => '[+]', 'format' => 'green'),
+                    array('text' => $amount_left, 'format' => 'yellow'),
+                    array('text' => $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                    array('text' => "remaining in stock.", 'format' => 'gray'),
+                );
+                umc_text_format($data, false, true);
             }
         }
         return $amount_left;
