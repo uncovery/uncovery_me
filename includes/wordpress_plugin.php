@@ -197,12 +197,12 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
     $title = $post['post_title'];
     $post_link = "https://uncovery.me/?p=" . $post['ID'];
 
-    $msgs = array(
-        "New Comment on Post &a$title &fby $author&f",
-        "Link: &a$post_link&f",
-        "Type &a/web read c$comment_id&f to read in-game");
     require_once('/home/minecraft/server/bin/index_wp.php');
-    umc_mod_broadcast($msgs);
+    $msg = umc_ws_text_prefix_broadcast();
+    $msg[] = array('text' => "New Comment on Post &a$title &fby $author&f", 'format' => array('normal'));
+    $msg[] = array('text' => '[Read online]', 'format' => array('open_url' => $post_link, 'blue'));
+    $msg[] = array('text' => '[Read in-game]', 'format' => array('run_command' => "/web read c$comment_id", 'red'));
+    umc_text_format($msg, '@a', true);
 }
 
 /**
@@ -219,13 +219,13 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
         return;
     }
 
-    $cmds = array();
+    $username = false;
     if ($old_status != 'publish' && $new_status == 'publish') {
         $post_title = $post->post_title;
         $post_link = "https://uncovery.me/?p=" . $post->ID;
         $id = $post->ID;
         if ($post->post_type == 'post' && $post->post_parent == 0) {
-            $cmds[] = "New Blog Post: &a$post_title&f";
+            $intro = "New Blog Post:";
         } else {
             $type = ucwords($post->post_type);
             if ($type == 'Reply') {
@@ -235,12 +235,18 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $author_id = $post->post_author;
             $user = get_userdata($author_id);
             $username = $user->display_name;
-            $cmd[] = "New Forum $type: &a$post_title &fby $username&f";
+            $intro = "New Forum $type:";
         }
-        $cmd[] = "Link: &a$post_link&f";
-        $cmd[] = "Type &a/web read $id&f to read in-game";
+        $msg = array();
         require_once('/home/minecraft/server/bin/index_wp.php');
-        umc_mod_broadcast($cmd);
+        $msg[] = array('text' => $intro, 'format' => array('normal'));
+        $msg[] = array('text' => $post_title, 'format' => array('yellow'));
+        if ($username) {
+            $msg[] = array('text' => "by $username", 'format' => array('normal'));
+        }
+        $msg[] = array('text' => '[Read online]', 'format' => array('open_url' => $post_link, 'blue'));
+        $msg[] = array('text' => '[Read in-game]', 'format' => array('run_command' => "/web read $id", 'red'));
+        umc_text_format($msg, '@a', true);
     }
 }
 
@@ -463,10 +469,11 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 $XD = umc_mysql_fetch_all($sql);
                 $count = count($XD);
                 if ($count !== 0) {
-                    XMPP_ERROR_trigger('User tried to register 2nd account!');
+                    XMPP_ERROR_trigger("User $user_login tried to register 2nd account!");
                     $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account!
                             If you changed your username, there is no need for a second website account.
-                            Please simply continue using your existing account, your username will be displayed correctly,the user login remains the same.
+                            It also means you should be already able to login on the minecraft server.
+                            Please simply continue using your existing account, your username will be displayed correctly, the user login remains the same.
                             If you have any trouble please contact an admin!";
                     $errors->add('demo_error',__($error_msg));
                     return $errors;
