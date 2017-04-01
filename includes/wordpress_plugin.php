@@ -199,7 +199,10 @@ function umc_wp_notify_new_comment($comment_id, $arg2){
 
     require_once('/home/minecraft/server/bin/index_wp.php');
     $msg = umc_ws_text_prefix_broadcast();
-    $msg[] = array('text' => "New Comment on Post &a$title &fby $author&f", 'format' => array('normal'));
+    $msg[] = array('text' => "New Comment on Post", 'format' => array('normal'));
+    $msg[] = array('text' => $title, 'format' => array('yellow'));
+    $msg[] = array('text' => "by", 'format' => array('normal'));
+    $msg[] = array('text' => $author, 'format' => array('yellow'));
     $msg[] = array('text' => '[Read online]', 'format' => array('open_url' => $post_link, 'blue'));
     $msg[] = array('text' => '[Read in-game]', 'format' => array('run_command' => "/web read c$comment_id", 'red'));
     umc_text_format($msg, '@a', true);
@@ -237,8 +240,8 @@ function umc_wp_notify_new_post($new_status, $old_status, $post) {
             $username = $user->display_name;
             $intro = "New Forum $type:";
         }
-        $msg = array();
         require_once('/home/minecraft/server/bin/index_wp.php');
+        $msg = umc_ws_text_prefix_broadcast();
         $msg[] = array('text' => $intro, 'format' => array('normal'));
         $msg[] = array('text' => $post_title, 'format' => array('yellow'));
         if ($username) {
