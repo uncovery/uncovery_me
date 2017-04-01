@@ -726,7 +726,7 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
 
     // print to console
     if (!$selector && isset($UMC_USER['username']) && $UMC_USER['username'] == '@console') {
-        $cmd = "[$textline]";
+        $cmd = "[$text_line]";
         // todo: filter out tellraw, convert colors to commandline colors
         $type = 'toConsole';
 
