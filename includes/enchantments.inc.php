@@ -28,78 +28,78 @@ function umc_enchant_text_find($search_field, $search_value, $return_field) {
     return $text;
 }
 
-$ENCH_ITEMS = array(
-    'PROTECTION_ENVIRONMENTAL' => array( // 0
+
+$ENCH_ITEMS = ['PROTECTION_ENVIRONMENTAL' => array( // 0
         'id' => 0,
         'key' => 'PROTECTION_ENVIRONMENTAL',
-        'short'=> 'Prot',
-        'name'=>'Protection',
-        'items'=> array(
+        'short' => 'Prot',
+        'name' => 'Protection',
+        'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
         ),
-        'max'=> 4
+        'max' => 4
     ),
     'PROTECTION_FIRE' => array( // 1
         'id' => 1,
         'key' => 'PROTECTION_FIRE',
-        'short'=> 'FP',
-        'name'=>'FireProtection',
-        'items'=> array(
+        'short' => 'FP',
+        'name' => 'FireProtection',
+        'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
         ),
-        'max'=>4
+        'max' =>4
     ),
     'PROTECTION_FALL' => array( // 2
         'id' => 2,
         'key' => 'PROTECTION_FALL',
-        'short'=> 'Fall',
-        'name'=>'FeatherFalling',
-        'items'=> array(
+        'short' => 'Fall',
+        'name' => 'FeatherFalling',
+        'items' => array(
             'diamond_boots', 'golden_boots', 'iron_boots', 'chainmail_boots', 'leather_boots',
         ),
-        'max'=>4
+        'max' =>4
     ),
     'PROTECTION_EXPLOSIONS' => array( // 3
         'id' => 3,
         'key' => 'PROTECTION_EXPLOSIONS',
-        'short'=> 'BP',
-        'name'=>'BlastProtection',
-        'items'=> array(
+        'short' => 'BP',
+        'name' => 'BlastProtection',
+        'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
         ),
-        'max'=>4
+        'max' =>4
     ),
     'PROTECTION_PROJECTILE' => array( // 4
         'id' => 4,
         'key' => 'PROTECTION_PROJECTILE',
-        'short'=> 'PP',
-        'name'=>'ProjectileProtection',
-        'items'=> array(
+        'short' => 'PP',
+        'name' => 'ProjectileProtection',
+        'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
         ),
-        'max'=>4
+        'max' =>4
     ),
     'OXYGEN' => array( // 5
         'id' => 5,
         'key' => 'OXYGEN',
         'short' => 'Res',
-        'name' =>'Respiration',
+        'name' => 'Respiration',
         'items' => array(
             'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
         ),
@@ -109,7 +109,7 @@ $ENCH_ITEMS = array(
         'id' => 6,
         'key' => 'WATER_WORKER',
         'short' => 'Aqua',
-        'name' =>'AquaAffinity',
+        'name' => 'AquaAffinity',
         'items' => array(
             'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
         ),
@@ -119,7 +119,7 @@ $ENCH_ITEMS = array(
         'id' => 7,
         'key' => 'THORNS',
         'short' => 'Thorn',
-        'name' =>'Thorn',
+        'name' => 'Thorn',
         'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
@@ -153,7 +153,7 @@ $ENCH_ITEMS = array(
         'id' => 10,
         'key' => 'BINDING_CURSE',
         'short' => 'Binding',
-        'name' =>'BindingCurse',
+        'name' => 'BindingCurse',
         'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
@@ -166,9 +166,9 @@ $ENCH_ITEMS = array(
     'DAMAGE_ALL' => array( // 16
         'id' => 16,
         'key' => 'DAMAGE_ALL',
-        'short'=> 'Sharp',
-        'name'=>'Sharpness',
-        'items'=> array(
+        'short' => 'Sharp',
+        'name' => 'Sharpness',
+        'items' => array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
         ),
@@ -183,7 +183,7 @@ $ENCH_ITEMS = array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
         ),
-        'max'=>5
+        'max' =>5
     ),
     'DAMAGE_ARTHROPODS' => array( // 18
         'id' => 18,
@@ -194,7 +194,7 @@ $ENCH_ITEMS = array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
         ),
-        'max'=>5
+        'max' =>5
     ),
     'KNOCKBACK' => array( // 19
         'id' => 19,
@@ -204,7 +204,7 @@ $ENCH_ITEMS = array(
         'items' => array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
         ),
-        'max'=>2
+        'max' =>2
     ),
     'FIRE_ASPECT' => array( // 20
         'id' => 20,
@@ -214,7 +214,7 @@ $ENCH_ITEMS = array(
         'items' => array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
         ),
-        'max'=>2
+        'max' =>2
     ),
     'LOOT_BONUS_MOBS' =>array( // 21
         'id' => 21,
@@ -224,7 +224,7 @@ $ENCH_ITEMS = array(
         'items' => array(
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
         ),
-        'max'=>3
+        'max' =>3
     ),
     'DIG_SPEED' =>array( // 32
         'id' => 32,
@@ -254,8 +254,8 @@ $ENCH_ITEMS = array(
     'DURABILITY' => array( // 34
         'id' => 34,
         'key' => 'DURABILITY',
-        'short'=> 'Unb',
-        'name'=>'Unbreaking',
+        'short' => 'Unb',
+        'name' => 'Unbreaking',
         'items' => array(
             'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
             'golden_helmet', 'golden_chestplate', 'golden_leggings', 'golden_boots',
@@ -289,13 +289,13 @@ $ENCH_ITEMS = array(
         'short' => 'Power',
         'name' => 'Power',
         'items' => array('bow'),
-        'max'=>5
+        'max' =>5
     ),
     'ARROW_KNOCKBACK' => array( //49
         'id' => 49,
         'key' => 'ARROW_KNOCKBACK',
-        'short'=> 'Punch',
-        'name'=>'Punch',
+        'short' => 'Punch',
+        'name' => 'Punch',
         'items' => array('bow'),
         'max' => 2
     ),
@@ -313,7 +313,7 @@ $ENCH_ITEMS = array(
         'short' => 'Inf',
         'name' => 'Infinity',
         'items' => array('bow'),
-        'max'=>1
+        'max' =>1
     ),
     'LUCK' =>array( // 61
         'id' => 61,
@@ -321,7 +321,7 @@ $ENCH_ITEMS = array(
         'short' => 'Luck',
         'name' => 'Luck',
         'items' => array('fishing_rod'),
-        'max'=>1
+        'max' =>1
     ),
     'LURE' => array( // 62
         'id' => 62,
@@ -329,7 +329,7 @@ $ENCH_ITEMS = array(
         'short' => 'Lure',
         'name' => 'Lure',
         'items' => array('fishing_rod'),
-        'max'=>1
+        'max' =>1
     ),
     'MENDING' => array( // 70
         'id' => 70,
@@ -349,7 +349,7 @@ $ENCH_ITEMS = array(
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
             'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
         ),
-        'max'=>1
+        'max' =>1
     ),
     'UNKNOWN_ENCHANT_71' =>array( // 71 // this here is faulty but still exists sometimes
         'short' => 'Vanish',
@@ -368,7 +368,7 @@ $ENCH_ITEMS = array(
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
             'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
         ),
-        'max'=>1
+        'max' =>1
     ),
     'VANISHING_CURSE' =>array(  // 71
         'id' => 71,
@@ -390,4 +390,4 @@ $ENCH_ITEMS = array(
         ),
         'max' => 1
     ),
-);
+    ];
