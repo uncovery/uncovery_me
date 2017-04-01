@@ -29,7 +29,9 @@ function umc_enchant_text_find($search_field, $search_value, $return_field) {
 }
 
 
-$ENCH_ITEMS = ['PROTECTION_ENVIRONMENTAL' => array( // 0
+$ENCH_ITEMS =
+
+    array('PROTECTION_ENVIRONMENTAL' => array( // 0
         'id' => 0,
         'key' => 'PROTECTION_ENVIRONMENTAL',
         'short' => 'Prot',
@@ -390,4 +392,4 @@ $ENCH_ITEMS = ['PROTECTION_ENVIRONMENTAL' => array( // 0
         ),
         'max' => 1
     ),
-    ];
+);
