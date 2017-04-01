@@ -321,7 +321,7 @@ function umc_show_depotlist($silent = false) {
                     array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
                     array('text' => $row['amount'], 'format' => 'yellow'),
                     array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
-                    array('text' => "  [\u25BC]", "format" => array('blue', 'run_command' => '/withdraw ' . $row['id'], 'show_text' => 'Withdraw all')),
+                    array('text' => "  [\u25BC]", 'format' => array('blue', 'run_command' => '/withdraw ' . $row['id'], 'show_text' => 'Withdraw all')),
                 );
                 if ($row['amount'] > 1) {
                     $data[] = array('text' => "  [\u25BC1]", "format" => array('blue', 'run_command' => '/withdraw ' . $row['id'] . " 1", 'show_text' => 'Withdraw one only'));
