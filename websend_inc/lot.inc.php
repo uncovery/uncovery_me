@@ -58,13 +58,13 @@ $WS_INIT['lot'] = array(
     ),
     'give' => array(
         'help' => array(
-            'short' => 'Remove all members and owners from a lot and give it to someone',
+            'short' => 'Give a lot to someone. Removes all other members.',
             'args' => '<lot> give [user]',
-            'long' => '',
+            'long' => 'Give a lot to someone. Removes all other members.',
         ),
         'function' => 'umc_lot_addrem',
         'security' => array(
-            'level'=>'Owner',
+            'level' => 'Owner',
          ),
     ),
     'mod' => array(
@@ -152,7 +152,7 @@ function umc_lot_mod() {
     }
     umc_ws_cmd('region load -w flatlands', 'asConsole');
     umc_log('lot', 'mod', "$player added himself to lot $lot to fix something");
-    XMPP_ERROR_trigger("$player added himself to lot $lot to fix something");
+    XMPP_ERROR_send_msg("$player added himself to lot $lot to fix something");
 }
 
 
@@ -356,7 +356,9 @@ function umc_lot_warp() {
 
     if (!in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
-    } else if (isset($args[2])) {
+    }
+
+    if (isset($args[2])) {
         $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
@@ -371,8 +373,7 @@ function umc_lot_warp() {
         if (!$lot_check) {
             umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
         }
-
-    } else{
+    } else {
         umc_error("Sorry, you need to enter the lot name after /lot warp!");
     }
 
