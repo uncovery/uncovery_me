@@ -1375,9 +1375,9 @@ function umc_lot_reset_process() {
 
     // get dates for -1 Month and -2 months
     $now_datetime = umc_datetime();
-    $now_datetime->modify('-1 month');
+    $now_datetime->modify('-31 days');
     $one_months_ago = $now_datetime->format('Y-m-d H:i:s');
-    $now_datetime->modify('-1 month');
+    $now_datetime->modify('-31 days');
     // what date was 2 months ago?
     $two_months_ago = $now_datetime->format('Y-m-d H:i:s');
 
