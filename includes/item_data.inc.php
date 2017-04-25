@@ -3227,7 +3227,7 @@ $UMC_DATA = array(
             1 => array('name' => 'redstone_comparator_(inactive)', 'avail' => true, 'icon_url' => '/e/ea/Grid_Redstone_Comparator.png'),
         ),
     ),
-    'nether_brick_item' => array(
+    'netherbrick' => array(
         'id' => 405,
         'stack' => 64,
         'avail' => true,
@@ -3738,6 +3738,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'mycel' => 'mycelium',
     'nether_fence' => 'nether_brick_fence',
     'nether_stalk' => 'nether_wart',
+    'nether_brick_item' => 'netherbrick',
     'note_block' => 'noteblock',
     'piston_base' => 'piston',
     'piston_sticky_base' => 'sticky_piston',
