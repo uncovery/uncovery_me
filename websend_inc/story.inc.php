@@ -304,7 +304,6 @@ function umc_story_show() {
     foreach ($lines as $line) {
         umc_echo(trim($line), true);
     }
-    XMPP_ERROR_trigger("story");
 }
 
 function umc_get_code() {
