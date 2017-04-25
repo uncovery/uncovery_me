@@ -354,6 +354,7 @@ $ENCH_ITEMS =
         'max' =>1
     ),
     'UNKNOWN_ENCHANT_71' =>array( // 71 // this here is faulty but still exists sometimes
+        'id' => 70,
         'short' => 'Vanish',
         'key' => 'VANISHING_CURSE',
         'name' => 'Curse of Vanishing',
