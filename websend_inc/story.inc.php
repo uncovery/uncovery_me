@@ -283,7 +283,7 @@ function umc_story_show() {
         foreach ($UMC_COLORS as $colorcode => $data) {
             foreach ($data['names'] as $color_name) {
                 $search[] = "[". $color_name . "]";
-                $replace[] = "&" . $colorcode;
+                $replace[] = "{" . $color_name . "}";
             }
         }
 
@@ -302,8 +302,9 @@ function umc_story_show() {
     }
     $lines = explode(";", $out);
     foreach ($lines as $line) {
-        umc_echo($line, true);
+        umc_echo(trim($line), true);
     }
+    XMPP_ERROR_trigger("story");
 }
 
 function umc_get_code() {
