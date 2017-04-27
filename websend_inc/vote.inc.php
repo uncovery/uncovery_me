@@ -127,6 +127,11 @@ function umc_vote_get_votable($username = false, $web = false) {
     }
 }
 
+/**
+ * Voting statistics for the website
+ * 
+ * @return string
+ */
 function umc_vote_stats() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $pr_stats = array('success' => 0, 'voting' => 0, 'closed' => 0);
@@ -161,7 +166,7 @@ function umc_vote_stats() {
     $row = $D[0];
     $prop_freq = $row['counter'];
 
-    // how many proposals per day
+    // how many proposals votes per day
     $sql = "SELECT count( `vote_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals_votes` ";
     $D = umc_mysql_fetch_all($sql);
     $row = $D[0];
@@ -191,12 +196,20 @@ function umc_vote_stats() {
     return $out;
 }
 
-
+/**
+ * website display of voting process
+ * 
+ * @global array $vote_ranks
+ * @global type $UMC_DOMAIN
+ * @global type $UMC_USER
+ * @return string
+ */
 function umc_vote_web() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $vote_ranks, $UMC_DOMAIN, $UMC_USER;
     $lvl_percent = array('a' => 0.30, 'd' => 0.40, 'm' => 0.7, 'e' => 1);
 
+    // display the stats first
     $out = umc_vote_stats();
 
     // return "<h1>Sorry, due to technical issues, voting is temporarily suspended</h1>";
@@ -217,12 +230,13 @@ function umc_vote_web() {
         return "Sorry, but you do not have a lot, so you cannot vote.";
     }
 
+    // only designers ++ can vote
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return "Sorry, you need to be Designer or above to vote!";
     }
 
-    // get user numbers for levels
+    // get user numbers for levels, make SQL code
     $lvl_str_arr = array(
         'a' => "'Architect', 'ArchitectDonator'",
         'd' => "'Designer', 'DesignerDonator'",
@@ -299,22 +313,7 @@ function umc_vote_web() {
                 $out .= "Thanks $username, $proposed_username as been submitted for voting, and your vote has been set, too!";
 
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
-                    $sql = "SELECT user_email, UUID, username FROM minecraft_srvr.`UUID`
-                        LEFT JOIN minecraft.wp_usermeta ON UUID.UUID=meta_value
-                        LEFT JOIN minecraft.wp_users ON user_id=ID
-                        WHERE `userlevel` LIKE 'Elder%' AND lot_count > 0";
-                    $D = umc_mysql_fetch_all($sql);
-                    $subject = "$proposed proposed for Elder, please vote!";
-                    $content = "Dear Elder, \r\n\r\nthe user $proposed has been proposed to be promoted to Elder. Please go to\r\n\r\n$UMC_DOMAIN/vote-for-users/\r\n\r\n"
-                        . "and vote on this proposal. Please either SUPPORT or VETO the proposal.\r\n"
-                        . "Please note that the vote will be closed as 'failed' unless all Elders cast a vote within the coming 2 months.\r\n"
-                        . "Thanks a lot for supporting Uncovery Minecraft!\r\n\r\nBest regards,\r\nUncovery";
-                    $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
-                    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
-                    foreach ($D as $row) {
-                        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers, "-fminecraft@uncovery.me");
-                        umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
-                    }
+                    umc_vote_elder_notify($proposed);
                 }
 
 
@@ -454,8 +453,8 @@ function umc_vote_web() {
         }
 
         // load your own score
-        $sql = "SELECT * FROM minecraft_srvr.proposals_votes WHERE voter_uuid = '$uuid' AND pr_id=$pr_id";
-        $D = umc_mysql_fetch_all($sql);
+        $score_sql = "SELECT * FROM minecraft_srvr.proposals_votes WHERE voter_uuid = '$uuid' AND pr_id=$pr_id";
+        $D = umc_mysql_fetch_all($score_sql);
         $vote_date = "n/a";
         if (count($D) > 0) {
             $row_votes = $D[0];
@@ -471,7 +470,6 @@ function umc_vote_web() {
         }
 
         // show voting buttons
-        $vote_close = '';
         $min_req = $lvl_min_req[$lvl_code];
         if ($prop_status == 'closed') {
             $vote = "Voting closed!<input type=\"hidden\" name=\"PR_$pr_id\" value=\"done\">";
@@ -493,25 +491,59 @@ function umc_vote_web() {
 
     // process successful votes, create post to blog
     if (count($upgraded_users) >0) {
-        $text = "Please see the latest upgrades from the voting system:<ul>";
-        $userlist_arr = array();
-        foreach ($upgraded_users as $upgraded_user => $userlvl) {
-            $nextrank = $vote_ranks[$userlvl]['next'];
-            $text .= "<li>$upgraded_user (from $userlvl to $nextrank)</li>";
-            $userlist_arr[] = $upgraded_user;
-        }
-        $userlist = implode(", ", $userlist_arr);
-        $text .= "</ul>Congratz and thanks to all voters!";
-        $post = array(
-            'comment_status' => 'open', // 'closed' means no comments.
-            'ping_status' => 'closed', // 'closed' means pingbacks or trackbacks turned off
-            'post_author' => 1, //The user ID number of the author.
-            'post_content' => $text, //The full text of the post.
-            'post_status' => 'publish', //Set the status of the new post.
-            'post_title' => "Today's upgrades: $userlist", //The title of your post.
-            'post_type' => 'post' //You may want to insert a regular post, page, link, a menu item or some custom post type
-        );
-        wp_insert_post($post);
+        umc_vote_post_news($upgraded_users, $vote_ranks);
     }
     return $out;
+}
+
+/**
+ * Post news to the blog when a user has been promoted.
+ */
+function umc_vote_post_news($upgraded_users, $vote_ranks) {
+    $text = "Please see the latest upgrades from the voting system:<ul>";
+    $userlist_arr = array();
+    foreach ($upgraded_users as $upgraded_user => $userlvl) {
+        $nextrank = $vote_ranks[$userlvl]['next'];
+        $text .= "<li>$upgraded_user (from $userlvl to $nextrank)</li>";
+        $userlist_arr[] = $upgraded_user;
+    }
+    $userlist = implode(", ", $userlist_arr);
+    $text .= "</ul>Congratz and thanks to all voters!";
+    $post = array(
+        'comment_status' => 'open', // 'closed' means no comments.
+        'ping_status' => 'closed', // 'closed' means pingbacks or trackbacks turned off
+        'post_author' => 1, //The user ID number of the author.
+        'post_content' => $text, //The full text of the post.
+        'post_status' => 'publish', //Set the status of the new post.
+        'post_title' => "Today's upgrades: $userlist", //The title of your post.
+        'post_type' => 'post' //You may want to insert a regular post, page, link, a menu item or some custom post type
+    );
+    wp_insert_post($post);
+}
+
+
+/**
+ * notify elders when someone is proposed for elder vote
+ * 
+ * @global type $UMC_DOMAIN
+ * @param type $proposed
+ */
+function umc_vote_elder_notify($proposed) {
+    global $UMC_DOMAIN;
+    $sql = "SELECT user_email, UUID, username FROM minecraft_srvr.`UUID`
+        LEFT JOIN minecraft.wp_usermeta ON UUID.UUID=meta_value
+        LEFT JOIN minecraft.wp_users ON user_id=ID
+        WHERE `userlevel` LIKE 'Elder%' AND lot_count > 0";
+    $D = umc_mysql_fetch_all($sql);
+    $subject = "$proposed proposed for Elder, please vote!";
+    $content = "Dear Elder, \r\n\r\nthe user $proposed has been proposed to be promoted to Elder. Please go to\r\n\r\n$UMC_DOMAIN/vote-for-users/\r\n\r\n"
+        . "and vote on this proposal. Please either SUPPORT or VETO the proposal.\r\n"
+        . "Please note that the vote will be closed as 'failed' unless all Elders cast a vote within the coming 2 months.\r\n"
+        . "Thanks a lot for supporting Uncovery Minecraft!\r\n\r\nBest regards,\r\nUncovery";
+    $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
+    mail('minecraft@uncovery.me', $subject, $content, $headers, "-fminecraft@uncovery.me");
+    foreach ($D as $row) {
+        mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers, "-fminecraft@uncovery.me");
+        umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
+    }
 }
