@@ -362,7 +362,7 @@ function umc_lot_warp() {
 
     $allowed_worlds = array('empire', 'flatlands');
 
-    if (!in_array($world, $allowed_worlds)) {
+    if ($player != 'uncovery' && !in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
     }
 
@@ -370,8 +370,8 @@ function umc_lot_warp() {
         $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
-        if (!in_array($target_world, $allowed_worlds)) {
-            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+        if ($player != 'uncovery' && !in_array($target_world, $allowed_worlds)) {
+            umc_error("Sorry, $player, you need to enter a lot name from the empire or flatlands. Lot names are for example 'emp_a1'");
         }
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
@@ -379,7 +379,7 @@ function umc_lot_warp() {
         // check if lot exists
         $lot_check = umc_check_lot_exists($target_world, $lot);
         if (!$lot_check) {
-            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+            umc_error('Sorry, this lot does not exist! Lot names are for example "emp_a1"');
         }
     } else {
         umc_error("Sorry, you need to enter the lot name after /lot warp!");
