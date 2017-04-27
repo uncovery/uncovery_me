@@ -1356,12 +1356,13 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/c/c6/Grid_Wooden_Button.png',
     ),
-    'skull' => array(
+    'skull_block' => array( // there is a duplicate name, this should be called 'skull'
+        // but since this one is not available anyhow, we ignore that
         'id' => 144,
         'stack' => 64,
         'avail' => false,
         'icon_url' => '/c/c9/Grid_Skeleton_Skull.png',
-    ),
+    ),   
     'anvil' => array(
         'id' => 145,
         'stack' => 64,
@@ -3146,7 +3147,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/a/a7/Grid_Golden_Carrot.png',
     ),
-    'skeletonskull' => array(
+    'skull' => array(
         'id' => 397,
         'stack' => 64,
         'avail' => true,
@@ -3763,7 +3764,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'redstone_torch_on' => 'redstone_torch',
     'seeds' => 'wheat_seeds',
     'silver_shulker_box' => 'light_grey_shulker_box',
-    'skull_item' => 'skeletonskull',
+    'skull_item' => 'skull',
     'slime_block' => 'slime_block',
     'smooth_brick' => 'stonebrick',
     'smooth_stairs' => 'stone_brick_stairs',
