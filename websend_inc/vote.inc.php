@@ -40,20 +40,20 @@ $WS_INIT['voting'] = array(  // the name of the plugin
 );
 
 $vote_ranks = array(
-    'Guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'next' => 'Settler'),
-    'Settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'Citizen'),
-    'SettlerDonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonator'),
-    'Citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'Architect'),
-    'CitizenDonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonator'),
-    'Architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'Designer'),
-    'ArchitectDonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonator'),
-    'Designer'              => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'Master'),
-    'DesignerDonator'       => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonator'),
-    'Master'                => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'Elder'),
-    'MasterDonator'         => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonator'),
-    'Elder'                 => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'ElderDonator'          => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'Owner'                 => array('lvl' => 7, 'vote' => 16, 'code' => 'o', 'next' => false)
+    'guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'next' => 'Settler'),
+    'settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'Citizen'),
+    'settlerdonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonator'),
+    'citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'Architect'),
+    'citizendonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonator'),
+    'architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'Designer'),
+    'architectdonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonator'),
+    'designer'              => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'Master'),
+    'designerdonator'       => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonator'),
+    'master'                => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'Elder'),
+    'masterdonator'         => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonator'),
+    'elder'                 => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
+    'elderdonator'          => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
+    'owner'                 => array('lvl' => 7, 'vote' => 16, 'code' => 'o', 'next' => false)
 );
 
 /**
@@ -81,7 +81,7 @@ function umc_vote_get_votable($username = false, $web = false) {
         XMPP_ERROR_trigger("websend player undidentified");
     }
 
-    $user_lvl = umc_get_userlevel($username);
+    $user_lvl = strtolower(umc_get_userlevel($username));
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return;
@@ -97,7 +97,7 @@ function umc_vote_get_votable($username = false, $web = false) {
     foreach ($D as $row) {
         $proposal = $row['uuid'];
         $proposal_username = $row['username'];
-        $prop_lvl = umc_get_uuid_level($proposal);
+        $prop_lvl = strtolower(umc_get_uuid_level($proposal));
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
         if ($prop_lvl_id < $user_lvl_id) {
             $days_left = $row['remainder'];
@@ -221,7 +221,7 @@ function umc_vote_web() {
         $out .= "<h2>Proposals & Votes</h2>";
         $username = $UMC_USER['username'];
         $uuid = $UMC_USER['uuid'];
-        $user_lvl = $UMC_USER['userlevel'];
+        $user_lvl = strtolower($UMC_USER['userlevel']);
     }
 
     // only active users can vote
@@ -260,7 +260,7 @@ function umc_vote_web() {
     }
 
     // calc needed votes
-    $full_vote = $lvl_amounts['e'] * $vote_ranks['Elder']['vote'];
+    $full_vote = $lvl_amounts['e'] * $vote_ranks['elder']['vote'];
     foreach ($lvl_amounts as $lvl => $lvl_amount) {
         $lvl_min_req[$lvl] = round($full_vote * $lvl_percent[$lvl]);
     }
@@ -279,7 +279,7 @@ function umc_vote_web() {
             $proposed_username = $proposed_data['username'];
             $proposed_uuid = $proposed_data['uuid'];
             // what user level is it?
-            $prop_lvl = umc_get_uuid_level($proposed_uuid);
+            $prop_lvl = strtolower(umc_get_uuid_level($proposed_uuid));
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             // check if the user was recently promoted
             $sql = "SELECT UNIX_TIMESTAMP(`date`) as mysql_ts FROM minecraft_srvr.proposals  WHERE `uuid` LIKE '$proposed_uuid' ORDER BY `date` DESC;";
@@ -350,7 +350,7 @@ function umc_vote_web() {
     $upgraded_users = array();
 
     foreach ($D as $row) {
-        $prop_lvl =  umc_get_userlevel($row['username']);
+        $prop_lvl =  strtolower(umc_get_userlevel($row['username']));
         $prop_status = $row['status'];
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
         $proposed = $row['uuid'];
@@ -419,7 +419,7 @@ function umc_vote_web() {
         $email_close = "$UMC_DOMAIN/vote-for-users/\n";
         foreach ($R as $row_calc) {
             $vote_date = $row_calc['date'];
-            $voter_lvl = umc_get_uuid_level($row_calc['voter_uuid']);
+            $voter_lvl = strtolower(umc_get_uuid_level($row_calc['voter_uuid']));
             $voter_weight = $vote_ranks[$voter_lvl]['vote'];
             $voter_score = $voter_weight * $row_calc['vote'];
             $total_score = $total_score + $voter_score;
