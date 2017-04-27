@@ -484,8 +484,10 @@ function umc_echo($string, $silent = false) {
 
     // remove colons so we don't mess up JSON
     $json_str = str_replace(";", "", $string);
+    // replace line breaks
+    $json_str2 = str_replace("\n", " ", $json_str);
 
-    $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $json_str);
+    $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $json_str2);
     $data = array(
         array('text' => $str, 'format' => array('normal')),
     );
