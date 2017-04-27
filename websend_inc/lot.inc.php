@@ -39,6 +39,14 @@ $WS_INIT['lot'] = array(
             'long' => 'Allow others to build on your lot, en/disable snow accumulation, ice formation;',
             ),
     ),
+    'manage' => array(
+        'help' => array(
+            'short' => 'Display an in-game menu for your lot;',
+            'args' => '<lot>',
+            'long' => 'This will display an in-game menu for your lot for easier management. If you do not give a lot argument, it will use your current lot.',
+        ),
+        'function' => 'umc_lot_manage',
+    ),    
     'add' => array(
         'help' => array(
             'short' => 'Add features to your lot;',
@@ -501,4 +509,61 @@ function umc_lot_reset_flags() {
     umc_check_lot_owner($lot, $uuid);
     umc_lot_flags_set_defaults($lot);
     umc_echo("The flags for lot $lot have been reset!");
+}
+
+function umc_lot_manage() {
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
+
+    if (isset($args[2])) {
+        $lot = strtolower($args[2]);
+    } else { // no lot given, get the current user's lot
+        $world = $UMC_USER['world'];
+        $x = round($UMC_USER['coords']['x'],1);
+        $z = round($UMC_USER['coords']['z'],1);    
+        $lot = umc_lot_get_from_coords($x, $z, $world);
+        if (!$lot) {
+            umc_error('There is no lot here!');
+        }
+        $lot_owners = umc_get_lot_members($lot, true);
+        if (!in_array(strtolower($player), $lot_owners)) {
+            $text = 'You are not owner of this lot! Owners are ' . implode(",", $lot_owners);
+            XMPP_ERROR_trigger($text);
+            umc_error($text);
+        }
+    }
+    $lot_members = umc_get_lot_members($lot, false);
+    $online_users = $UMC_USER['online_players'];
+    
+    umc_header("Lot $lot");
+    // show current users for removal
+    $members_str = array();
+    $members_str[] = array('text' => 'Members: ', 'format' => 'blue');
+    if (!$lot_members || count($lot_members) == 0) {
+        $members_str[] = array('text' => "(No members)", 'format' => 'white');
+    } else {
+        foreach ($lot_members as $member) {
+           $members_str[] = array('text' => "$member ", 'format' => 'white');
+           $members_str[] = array('text' => "[x] ", 'format' => array('red', 'run_command' => "/lot rem $lot member $member", 'show_text' => "Remove $member from lot"));
+        }
+    }
+    umc_text_format($members_str, false, false);
+    
+    // show active users for adding
+    $new_members_str = array();
+    $new_members_str[] = array('text' => 'Current Users: ', 'format' => 'blue');
+    if (count($online_users) == 0) {
+        $members_str[] = array('text' => "(No online users)", 'format' => 'white');
+    }    
+    foreach ($online_users as $user) {
+       if (($lot_members && in_array($user, $lot_members)) || $user == strtolower($player)) {
+           continue;
+       }
+       $new_members_str[] = array('text' => "$user ", 'format' => 'white');
+       $new_members_str[] = array('text' => "[+] ", 'format' => array('green', 'run_command' => "/lot add $lot member $user", 'show_text' => "Add $user to lot"));
+    } 
+    umc_text_format($new_members_str, false, false);
+    
+    umc_footer();
 }
