@@ -645,7 +645,7 @@ function umc_hunger_trophy() {
     umc_echo("[Hunger] {yellow}[$]{gray} You have been charged {yellow}{$HUNGER['trophy_cost']}{gray} uncs.");
     umc_echo("[Hunger] getting head...");
 
-    umc_ws_cmd("minecraft:give $player skull 1 3 {SkullOwner:'$victim'}","asConsole");
+    umc_ws_cmd("minecraft:give $player skull 1 3 {SkullOwner:\"$victim\"}","asConsole");
     umc_echo("[Hunger] {purple}Enjoy this small memento of your victory!");
     umc_log('hunger', 'trophy', "$player got the head of $victim");
 }
