@@ -151,26 +151,26 @@ function umc_vote_stats() {
     }
 
     // find time for successful votes
-    $sql = "SELECT AVG(DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS average, max( DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS maximum
+    $time_sql = "SELECT AVG(DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS average, max( DATEDIFF(proposals_votes.`date`, proposals.`date`)) AS maximum
         FROM minecraft_srvr.proposals
         LEFT JOIN minecraft_srvr.proposals_votes ON proposals.pr_id = proposals_votes.pr_id
         WHERE STATUS = 'success'";
-    $D = umc_mysql_fetch_all($sql);
-    $row = $D[0];
-    $max = $row['maximum'];
-    $avg = $row['average'];
+    $T = umc_mysql_fetch_all($time_sql);
+    $time_row = $T[0];
+    $max = $time_row['maximum'];
+    $avg = $time_row['average'];
 
     // how many proposals per day
-    $sql = "SELECT count( `pr_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals` ";
-    $D = umc_mysql_fetch_all($sql);
-    $row = $D[0];
-    $prop_freq = $row['counter'];
+    $day_sql = "SELECT count( `pr_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals` ";
+    $D = umc_mysql_fetch_all($day_sql);
+    $day_row = $D[0];
+    $prop_freq = $day_row['counter'];
 
     // how many proposals votes per day
-    $sql = "SELECT count( `vote_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals_votes` ";
-    $D = umc_mysql_fetch_all($sql);
-    $row = $D[0];
-    $vote_freq = $row['counter'];
+    $prop_sql = "SELECT count( `vote_id` ) / DATEDIFF( MAX( `date` ) , MIN( `date` ) ) as counter FROM minecraft_srvr.`proposals_votes` ";
+    $X = umc_mysql_fetch_all($prop_sql);
+    $prop_row = $X[0];
+    $vote_freq = $prop_row['counter'];
 
     $good_votes = 0;
     $bad_votes = 0;
@@ -375,6 +375,7 @@ function umc_vote_web() {
                 umc_mysql_query($sql);
                 // echo $sql;
                 if ($new_vote == 'success') {
+                    XMPP_ERROR_trigger("$proposed got promoted!");
                     $cmd = "pex promote $proposed";
                     umc_exec_command($cmd, 'asConsole', false);
                     umc_exec_command($cmd, 'asConsole', false);
@@ -479,7 +480,6 @@ function umc_vote_web() {
         } else {
             $vote = "<select name=\"PR_$pr_id\"><option value=\"0\" $sel_none>Abstain</option><option value=\"1\"$sel_support>Supported</option><option value=\"-1\"$sel_veto>Vetoed</option></select>";
         }
-        $vote_lvl = umc_get_userlevel($row['username']);
         $out .= "<tr><td><strong><a href=\"$UMC_DOMAIN/users-2/?u={$row['username']}\">{$row['username']}</a></strong></td><td>{$row['date']}</td><td>$prop_lvl</td><td>$vote</td><td>$vote_date</td>$header</tr>\n";
     }
 
