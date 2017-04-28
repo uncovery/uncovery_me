@@ -36,42 +36,176 @@ function umc_potion_text_find($search_value, $return_field) {
 // effect list is here: http://minecraft.gamepedia.com/Status_effect
 
 $UMC_POTIONS = array(
-  'water' => array('long_text' => 'Water', 'short_text' => 'Water'),
-  'thick' => array('long_text' => 'Thick', 'short_text' => 'Thick'),
-  'mundane' => array('long_text' => 'Mundane', 'short_text' => 'Mund'),
-  'awkward' => array('long_text' => 'Awkward', 'short_text' => 'Awk'),
-    'long_night_vision' => array('long_text' => 'Night vision (long)', 'short_text' => 'Night+'),
-  'night_vision' => array('long_text' => 'Night vision', 'short_text' => 'Night'),  
-  'invisibility' => array('long_text' => 'Invisibility', 'short_text' => 'Invis'),
-    'long_invisibility' => array('long_text' => 'Invisibility (long)', 'short_text' => 'Invis+'),
-  'luck' => array('long_text' => 'Luck', 'short_text' => 'Luck'),
-  'leaping' => array('long_text' => 'Leaping', 'short_text' => 'Leap'),
-    'long_leaping' => array('long_text' => 'Leaping (long)', 'short_text' => 'Leap+'),
-    'strong_leaping' => array('long_text' => 'Leaping (strong)', 'short_text' => 'Leap++'),
-  'fire_resistance' => array('long_text' => 'Fire Resistance', 'short_text' => 'ResFire'),
-    'long_fire_resistance' => array('long_text' => 'Fire Resistance (long)', 'short_text' => 'ResFire+'),
-  'swiftness' => array('long_text' => 'Swiftness', 'short_text' => 'Swift'),
-    'long_swiftness' => array('long_text' => 'Swiftness (long)', 'short_text' => 'Swift+'),
-    'strong_swiftness' => array('long_text' => 'Swiftness (strong)', 'short_text' => 'Swift++'),
-  'slowness' => array('long_text' => 'Slowness', 'short_text' => 'Slow'),
-    'long_slowness' => array('long_text' => 'Slowness (long)', 'short_text' => 'Slow+'),
-  'water_breathing' => array('long_text' => 'Water Breathing', 'short_text' => 'Dive'),
-    'long_water_breathing' => array('long_text' => 'Water Breathing (long)', 'short_text' => 'Dive+'),
-  'healing' => array('long_text' => 'Healing', 'short_text' => 'Heal'),
-    'strong_healing' => array('long_text' => 'Healing (strong)', 'short_text' => 'Heal+'),
-  'harming' => array('long_text' => 'Harming', 'short_text' => 'Harm'),
-    'strong_harming' => array('long_text' => 'Harming (strong)', 'short_text' => 'Harm+'),
-  'poison' => array('long_text' => 'Poison', 'short_text' => 'Poi'),
-    'long_poison' => array('long_text' => 'Poision (long)', 'short_text' => 'Poi+'),
-    'strong_poison' => array('long_text' => 'Poision (strong)', 'short_text' => 'Poi++'),
-  'regeneration' => array('long_text' => 'Regeneration', 'short_text' => 'Regen'),
-    'long_regeneration' => array('long_text' => 'Regeneration (long)', 'short_text' => 'Regen+'),
-    'strong_regeneration' => array('long_text' => 'Regeneration (strong)', 'short_text' => 'Regen++'),
-  'strength' => array('long_text' => 'Strength', 'short_text' => 'Str'),
-    'long_strength' => array('long_text' => 'Strength (long)', 'short_text' => 'Str+'),
-    'strong_strength' => array('long_text' => 'Strength (strong)', 'short_text' => 'Str++'),
-  'weakness' => array('long_text' => 'Weakness', 'short_text' => 'Weak'),
-    'long_weakness' => array('long_text' => 'Weakness (long)', 'short_text' => 'Weak'),    
+  'water' => array(
+      'long_text' => 'Water', 
+      'short_text' => 'Water', 
+      'potion_icon' => '/c/c3/Grid_Awkward_Potion.png',),
+  'thick' => array(
+      'long_text' => 'Thick', 
+      'short_text' => 'Thick', 
+      'potion_icon' => '/e/e6/Grid_Thick_Potion.png'),
+  'mundane' => array(
+      'long_text' => 'Mundane', 
+      'short_text' => 'Mund', 
+      'potion_icon' => '/6/6c/Grid_Mundane_Potion.png',
+      'icon_url' => '/0/0b/Grid_Splash_Mundane_Potion.png'),
+  'awkward' => array(
+      'long_text' => 'Awkward', 
+      'short_text' => 'Awk', 
+      'potion_icon' => '/c/c3/Grid_Awkward_Potion.png'),
+  'night_vision' => array(
+      'long_text' => 'Night vision', 
+      'short_text' => 'Night', 
+      'potion_icon' => '/b/ba/Grid_Potion_of_Night_Vision.png',
+      'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'), 
+  'long_night_vision' => array(
+      'long_text' => 'Night vision (long)', 
+      'short_text' => 'Night+', 
+      'potion_icon' => '/b/ba/Grid_Potion_of_Night_Vision.png',
+      'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
+  'invisibility' => array(
+      'long_text' => 'Invisibility',
+      'short_text' => 'Invis', 
+      'potion_icon' => '/d/d8/Grid_Potion_of_Invisibility.png',
+      'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
+  'long_invisibility' => array(
+      'long_text' => 'Invisibility (long)', 
+      'short_text' => 'Invis+',
+      'potion_icon' => '/d/d8/Grid_Potion_of_Invisibility.png',
+      'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
+  'luck' => array(
+      'long_text' => 'Luck',
+      'short_text' => 'Luck'),
+  'leaping' => array(
+      'long_text' => 'Leaping',
+      'short_text' => 'Leap', 
+      'potion_icon' => '/8/8c/Grid_Potion_of_Leaping.png'),
+  'long_leaping' => array(
+      'long_text' => 'Leaping (long)',
+      'short_text' => 'Leap+', 
+      'potion_icon' => '/8/8c/Grid_Potion_of_Leaping.png'),
+  'strong_leaping' => array(
+      'long_text' => 'Leaping (strong)', 
+      'short_text' => 'Leap++', 
+      'potion_icon' => '/8/8c/Grid_Potion_of_Leaping.png'),
+  'fire_resistance' => array(
+      'long_text' => 'Fire Resistance', 
+      'short_text' => 'ResFire', 
+      'potion_icon' => '/4/43/Grid_Potion_of_Fire_Resistance.png',
+      'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
+  'long_fire_resistance' => array(
+      'long_text' => 'Fire Resistance (long)', 
+      'short_text' => 'ResFire+', 
+      'potion_icon' => '/4/43/Grid_Potion_of_Fire_Resistance.png',
+      'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
+  'swiftness' => array(
+      'long_text' => 'Swiftness', 
+      'short_text' => 'Swift', 
+      'potion_icon' => '/1/1c/Grid_Potion_of_Swiftness.png',
+      'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
+  'long_swiftness' => array(
+      'long_text' => 'Swiftness (long)', 
+      'short_text' => 'Swift+', 
+      'potion_icon' => '/1/1c/Grid_Potion_of_Swiftness.png',
+      'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
+  'strong_swiftness' => array(
+      'long_text' => 'Swiftness (strong)', 
+      'short_text' => 'Swift++', 
+      'potion_icon' => '/1/1c/Grid_Potion_of_Swiftness.png',
+      'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
+  'slowness' => array(
+      'long_text' => 'Slowness', 
+      'short_text' => 'Slow', 
+      'potion_icon' => '/c/ca/Grid_Potion_of_Slowness.png',
+      'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
+  'long_slowness' => array(
+      'long_text' => 'Slowness (long)',
+      'short_text' => 'Slow+', 
+      'potion_icon' => '/c/ca/Grid_Potion_of_Slowness.png',
+      'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
+  'water_breathing' => array(
+      'long_text' => 'Water Breathing', 
+      'short_text' => 'Dive', 
+      'potion_icon' => '/c/c2/Grid_Potion_of_Water_Breathing.png'),
+  'long_water_breathing' => array(
+      'long_text' => 'Water Breathing (long)', 
+      'short_text' => 'Dive+', 
+      'potion_icon' => '/c/c2/Grid_Potion_of_Water_Breathing.png'),
+  'healing' => array(
+      'long_text' => 'Healing', 
+      'short_text' => 'Heal', 
+      'potion_icon' => '/a/a3/Grid_Potion_of_Healing.png',
+      'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
+  'strong_healing' => array(
+      'long_text' => 'Healing (strong)', 
+      'short_text' => 'Heal+', 
+      'potion_icon' => '/a/a3/Grid_Potion_of_Healing.png',
+      'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
+  'harming' => array(
+      'long_text' => 'Harming', 
+      'short_text' => 'Harm',
+      'potion_icon' => '/b/b2/Grid_Potion_of_Harming.png',
+      'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
+  'strong_harming' => array(
+      'long_text' => 'Harming (strong)', 
+      'short_text' => 'Harm+', 
+      'potion_icon' => '/b/b2/Grid_Potion_of_Harming.png',
+      'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
+  'poison' => array(
+      'long_text' => 'Poison', 
+      'short_text' => 'Poi', 
+      'potion_icon' => '/a/a1/Grid_Potion_of_Poison.png',
+      'splash_icon' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
+  'long_poison' => array(
+      'long_text' => 'Poision (long)', 
+      'short_text' => 'Poi+', 
+      'potion_icon' => '/a/a1/Grid_Potion_of_Poison.png',
+      'splash_icon' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
+  'strong_poison' => array(
+      'long_text' => 'Poision (strong)', 
+      'short_text' => 'Poi++', 
+      'potion_icon' => '/a/a1/Grid_Potion_of_Poison.png',
+      'splash_icon' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
+  'regeneration' => array(
+      'long_text' => 'Regeneration', 
+      'short_text' => 'Regen', 
+      'potion_icon' => '/0/00/Grid_Potion_of_Regeneration.png',
+      'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
+  'long_regeneration' => array(
+      'long_text' => 'Regeneration (long)', 
+      'short_text' => 'Regen+', 
+      'potion_icon' => '/0/00/Grid_Potion_of_Regeneration.png',
+      'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
+  'strong_regeneration' => array(
+      'long_text' => 'Regeneration (strong)', 
+      'short_text' => 'Regen++',
+      'potion_icon' => '/0/00/Grid_Potion_of_Regeneration.png',
+      'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
+  'strength' => array(
+      'long_text' => 'Strength', 
+      'short_text' => 'Str', 
+      'potion_icon' => '/8/8c/Grid_Potion_of_Strength.png',
+      'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
+  'long_strength' => array(
+      'long_text' => 'Strength (long)',
+      'short_text' => 'Str+',
+      'potion_icon' => '/8/8c/Grid_Potion_of_Strength.png',
+      'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
+  'strong_strength' => array(
+      'long_text' => 'Strength (strong)', 
+      'short_text' => 'Str++', 
+      'potion_icon' => '/8/8c/Grid_Potion_of_Strength.png',
+      'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
+  'weakness' => array(
+      'long_text' => 'Weakness', 
+      'short_text' => 'Weak', 
+      'potion_icon' => '/2/2c/Grid_Potion_of_Weakness.png',
+      'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
+  'long_weakness' => array(
+      'long_text' => 'Weakness (long)', 
+      'short_text' => 'Weak', 
+      'potion_icon' => '/2/2c/Grid_Potion_of_Weakness.png',
+      'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),    
 );
 
 // this was just for testing
