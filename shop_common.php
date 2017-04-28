@@ -217,7 +217,11 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     $full_clean = trim("$nice_name$meta_text$nbt_string$damage_text");
     if ($UMC_ENV == 'wordpress' && file_exists($icon_path . $icon_file)) {
-        $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
+        if (isset($UMC_DATA[$item_name]['icon_coordinates'])) { // get background image of single image
+            $img = umc_item_data_icon_html($item_name, $item_data) ;
+        } else {
+            $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
+        }
         $full = "$img $full_clean";
     } else if ($UMC_ENV == 'websend') {
         $full = "{green}$nice_name{magenta}$meta_text$nbt_string$meta_spacer{red}$damage_spacer$damage_text{white}";
