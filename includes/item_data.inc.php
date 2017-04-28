@@ -208,6 +208,59 @@ function umc_item_data_id2namelist() {
     umc_array2file($D, 'UMC_DATA_ID2NAME', __DIR__ . "/item_id2name.inc.php");
 }
 
+/**
+ * get the full HTML of the icon of an item/block to be displayed in-line
+ * in HTML
+ *
+ * @param type $item_name
+ * @param type $sub_type
+ */
+function umc_item_data_icon_html($item_name, $sub_type = false, $scale = 0.75) {
+    $icon_size = 32;
+    $image_width = 1024;
+
+    $coords = umc_item_data_icon_coordinates($item_name, $sub_type, $icon_size);
+    if (!$coords) {
+        return false;
+    }
+    $x = $coords['x'] * $scale;
+    $y = $coords['y'] * $scale;
+    $background_size_x = $image_width * $scale;
+    $img_size = $icon_size * $scale;
+    // original background size 1,024px × 1,600px
+    $html = "<span style=\"display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); width:{$img_size}px; height:{$img_size}px; background-position:-{$x}px -{$y}px;\"> </span>";
+    return $html;
+}
+
+
+/**
+ * we are storing with every item/block the position in the file
+ * http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
+ * as X/Y coordinates, starting from the top left with 0/0.
+ * This function converts this coordinate into pixels to be included into CSS
+ * background images for display
+ */
+function umc_item_data_icon_coordinates($item_name, $sub_type = false, $icon_width = 32) {
+    global $UMC_DATA;
+
+    if (!$sub_type) {
+        if (isset($UMC_DATA[$item_name]['icon_coordinates'])) {
+            $x = $UMC_DATA[$item_name]['icon_coordinates'][0] * $icon_width;
+            $y = $UMC_DATA[$item_name]['icon_coordinates'][1] * $icon_width;
+        } else {
+            return false;
+        }
+    } else {
+        if (isset($UMC_DATA[$item_name][$sub_type]['icon_coordinates'])) {
+            $x = $UMC_DATA[$item_name][$sub_type]['icon_coordinates'][0] * $icon_width;
+            $y = $UMC_DATA[$item_name][$sub_type]['icon_coordinates'][1] * $icon_width;
+        } else {
+            return false;
+        }
+    }
+    return array('x' => $x, 'y' => $y);
+}
+
 
 $UMC_DATA = array(
     'air' => array(
@@ -234,12 +287,14 @@ $UMC_DATA = array(
     ),
     'grass' => array(
         'id' => 2,
+        'icon_coordinates' => array(21, 31),
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/0/08/Grid_Grass_Block.png',
     ),
     'dirt' => array(
         'id' => 3,
+        'icon_coordinates' => array(20, 30),
         'stack' => 64,
         'avail' => true,
         'group' => 'dirt_types',
@@ -1362,7 +1417,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => false,
         'icon_url' => '/c/c9/Grid_Skeleton_Skull.png',
-    ),   
+    ),
     'anvil' => array(
         'id' => 145,
         'stack' => 64,
@@ -2824,154 +2879,7 @@ $UMC_DATA = array(
         'id' => 373,
         'stack' => 1,
         'avail' => true,
-        'group' => 'potion_types',
         'icon_url' => '/c/c3/Grid_Awkward_Potion.png',
-        'subtypes' => array(
-            0 => array('name' => 'awkward_potion', 'avail' => true, 'icon_url' => '/c/c3/Grid_Awkward_Potion.png'),
-            1 => array('name' => 'pink_potion', 'avail' => true, 'icon_url' => '?'),
-            2 => array('name' => 'uninteresting_potion', 'avail' => true, 'icon_url' => '?'),
-            3 => array('name' => 'uninteresting_potion', 'avail' => true, 'icon_url' => '?'),
-            4 => array('name' => 'bland_potion', 'avail' => true, 'icon_url' => '?'),
-            5 => array('name' => 'bland_potion', 'avail' => true, 'icon_url' => '?'),
-            6 => array('name' => 'clear_potion', 'avail' => true, 'icon_url' => '?'),
-            7 => array('name' => 'clear_potion', 'avail' => true, 'icon_url' => '?'),
-            8 => array('name' => 'milky_potion', 'avail' => true, 'icon_url' => '?'),
-            9 => array('name' => 'milky_potion', 'avail' => true, 'icon_url' => '?'),
-            10 => array('name' => 'diffuse_potion', 'avail' => true, 'icon_url' => '?'),
-            11 => array('name' => 'diffuse_potion', 'avail' => true, 'icon_url' => '?'),
-            12 => array('name' => 'artless_potion', 'avail' => true, 'icon_url' => '?'),
-            13 => array('name' => 'artless_potion', 'avail' => true, 'icon_url' => '?'),
-            14 => array('name' => 'thin_potion', 'avail' => true, 'icon_url' => '?'),
-            15 => array('name' => 'thin_potion', 'avail' => true, 'icon_url' => '?'),
-            16 => array('name' => 'awkward_potion', 'avail' => true, 'icon_url' => '/c/c3/Grid_Awkward_Potion.png'),
-            18 => array('name' => 'flat_potion', 'avail' => true, 'icon_url' => '?'),
-            19 => array('name' => 'flat_potion', 'avail' => true, 'icon_url' => '?'),
-            20 => array('name' => 'bulky_potion', 'avail' => true, 'icon_url' => '?'),
-            21 => array('name' => 'bulky_potion', 'avail' => true, 'icon_url' => '?'),
-            22 => array('name' => 'bungling_potion', 'avail' => true, 'icon_url' => '?'),
-            23 => array('name' => 'bungling_potion', 'avail' => true, 'icon_url' => '?'),
-            24 => array('name' => 'buttered_potion', 'avail' => true, 'icon_url' => '?'),
-            25 => array('name' => 'buttered_potion', 'avail' => true, 'icon_url' => '?'),
-            26 => array('name' => 'smooth_potion', 'avail' => true, 'icon_url' => '?'),
-            27 => array('name' => 'smooth_potion', 'avail' => true, 'icon_url' => '?'),
-            28 => array('name' => 'suave_potion', 'avail' => true, 'icon_url' => '?'),
-            29 => array('name' => 'suave_potion', 'avail' => true, 'icon_url' => '?'),
-            30 => array('name' => 'debonair_potion', 'avail' => true, 'icon_url' => '?'),
-            31 => array('name' => 'debonair_potion', 'avail' => true, 'icon_url' => '?'),
-            32 => array('name' => 'thick_potion', 'avail' => true, 'icon_url' => '/e/e6/Grid_Thick_Potion.png'),
-            33 => array('name' => 'thick_potion', 'avail' => true, 'icon_url' => '/e/e6/Grid_Thick_Potion.png'),
-            34 => array('name' => 'elegant_potion', 'avail' => true, 'icon_url' => '?'),
-            35 => array('name' => 'elegant_potion', 'avail' => true, 'icon_url' => '?'),
-            36 => array('name' => 'fancy_potion', 'avail' => true, 'icon_url' => '?'),
-            37 => array('name' => 'fancy_potion', 'avail' => true, 'icon_url' => '?'),
-            38 => array('name' => 'charming_potion', 'avail' => true, 'icon_url' => '?'),
-            39 => array('name' => 'charming_potion', 'avail' => true, 'icon_url' => '?'),
-            40 => array('name' => 'dashing_potion', 'avail' => true, 'icon_url' => '?'),
-            41 => array('name' => 'dashing_potion', 'avail' => true, 'icon_url' => '?'),
-            42 => array('name' => 'refined_potion', 'avail' => true, 'icon_url' => '?'),
-            43 => array('name' => 'refined_potion', 'avail' => true, 'icon_url' => '?'),
-            44 => array('name' => 'cordial_potion', 'avail' => true, 'icon_url' => '?'),
-            45 => array('name' => 'cordial_potion', 'avail' => true, 'icon_url' => '?'),
-            46 => array('name' => 'sparkling_potion', 'avail' => true, 'icon_url' => '?'),
-            47 => array('name' => 'sparkling_potion', 'avail' => true, 'icon_url' => '?'),
-            48 => array('name' => 'potent_potion', 'avail' => true, 'icon_url' => '?'),
-            49 => array('name' => 'potent_potion', 'avail' => true, 'icon_url' => '?'),
-            50 => array('name' => 'foul_potion', 'avail' => true, 'icon_url' => '?'),
-            51 => array('name' => 'foul_potion', 'avail' => true, 'icon_url' => '?'),
-            52 => array('name' => 'odorless_potion', 'avail' => true, 'icon_url' => '?'),
-            53 => array('name' => 'odorless_potion', 'avail' => true, 'icon_url' => '?'),
-            54 => array('name' => 'rank_potion', 'avail' => true, 'icon_url' => '?'),
-            55 => array('name' => 'rank_potion', 'avail' => true, 'icon_url' => '?'),
-            56 => array('name' => 'harsh_potion', 'avail' => true, 'icon_url' => '?'),
-            57 => array('name' => 'harsh_potion', 'avail' => true, 'icon_url' => '?'),
-            58 => array('name' => 'acrid_potion', 'avail' => true, 'icon_url' => '?'),
-            59 => array('name' => 'acrid_potion', 'avail' => true, 'icon_url' => '?'),
-            62 => array('name' => 'stinky_potion', 'avail' => true, 'icon_url' => '?'),
-            63 => array('name' => 'stinky_potion', 'avail' => true, 'icon_url' => '?'),
-            64 => array('name' => 'mundane_potion_(extended)', 'avail' => true, 'icon_url' => '/6/6c/Grid_Mundane_Potion.png'),
-            65 => array('name' => 'potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/00/Grid_Potion_of_Regeneration.png'),
-            66 => array('name' => 'potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            67 => array('name' => 'potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/4/43/Grid_Potion_of_Fire_Resistance.png'),
-            68 => array('name' => 'potion_of_poison', 'avail' => true, 'icon_url' => '/a/a1/Grid_Potion_of_Poison.png'),
-            70 => array('name' => 'potion_of_night_vision', 'avail' => true, 'icon_url' => '/b/ba/Grid_Potion_of_Night_Vision.png'),
-            72 => array('name' => 'potion_of_weakness', 'avail' => true, 'icon_url' => '/2/2c/Grid_Potion_of_Weakness.png'),
-            73 => array('name' => 'potion_of_weakness', 'avail' => true, 'icon_url' => '/2/2c/Grid_Potion_of_Weakness.png'),
-            78 => array('name' => 'potion_of_weakness', 'avail' => true, 'icon_url' => '/2/2c/Grid_Potion_of_Weakness.png'),
-            8192 => array('name' => 'mundane_potion', 'avail' => true, 'icon_url' => '/6/6c/Grid_Mundane_Potion.png'),
-            8193 => array('name' => 'potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/00/Grid_Potion_of_Regeneration.png'),
-            8194 => array('name' => 'potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            8195 => array('name' => 'potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/4/43/Grid_Potion_of_Fire_Resistance.png'),
-            8196 => array('name' => 'potion_of_poison', 'avail' => true, 'icon_url' => '/a/a1/Grid_Potion_of_Poison.png'),
-            8197 => array('name' => 'potion_of_healing', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            8198 => array('name' => 'potion_of_night_vision', 'avail' => true, 'icon_url' => '/b/ba/Grid_Potion_of_Night_Vision.png'),
-            8200 => array('name' => 'potion_of_weakness', 'avail' => true, 'icon_url' => '/2/2c/Grid_Potion_of_Weakness.png'),
-            8201 => array('name' => 'potion_of_strength', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Strength.png'),
-            8202 => array('name' => 'potion_of_slowness', 'avail' => true, 'icon_url' => '/c/ca/Grid_Potion_of_Slowness.png'),
-            8203 => array('name' => 'potion_of_leaping', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Leaping.png'),
-            8204 => array('name' => 'potion_of_harming', 'avail' => true, 'icon_url' => '/b/b2/Grid_Potion_of_Harming.png'),
-            8205 => array('name' => 'potion_of_water_breathing', 'avail' => true, 'icon_url' => '/c/c2/Grid_Potion_of_Water_Breathing.png'),
-            8206 => array('name' => 'potion_of_invisibility', 'avail' => true, 'icon_url' => '/d/d8/Grid_Potion_of_Invisibility.png'),
-            8225 => array('name' => 'potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/00/Grid_Potion_of_Regeneration.png'),
-            8226 => array('name' => 'potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            8228 => array('name' => 'potion_of_poison_ii', 'avail' => true, 'icon_url' => '/a/a1/Grid_Potion_of_Poison.png'),
-            8229 => array('name' => 'potion_of_healing_ii', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            8233 => array('name' => 'potion_of_strength_ii', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Strength.png'),
-            8234 => array('name' => 'potion_of_night_vision_ii', 'avail' => true, 'icon_url' => '/b/ba/Grid_Potion_of_Night_Vision.png'),
-            8235 => array('name' => 'potion_of_leaping', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Leaping.png'),
-            8236 => array('name' => 'potion_of_harming_ii', 'avail' => true, 'icon_url' => '/b/b2/Grid_Potion_of_Harming.png'),
-            8257 => array('name' => 'potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/00/Grid_Potion_of_Regeneration.png'),
-            8258 => array('name' => 'potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            8259 => array('name' => 'potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/4/43/Grid_Potion_of_Fire_Resistance.png'),
-            8260 => array('name' => 'potion_of_poison', 'avail' => true, 'icon_url' => '/a/a1/Grid_Potion_of_Poison.png'),
-            8261 => array('name' => 'potion_of_healing', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            8262 => array('name' => 'potion_of_night_vision', 'avail' => true, 'icon_url' => '/b/ba/Grid_Potion_of_Night_Vision.png'),
-            8264 => array('name' => 'potion_of_weakness', 'avail' => true, 'icon_url' => '/2/2c/Grid_Potion_of_Weakness.png'),
-            8265 => array('name' => 'potion_of_strength', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Strength.png'),
-            8266 => array('name' => 'potion_of_slowness', 'avail' => true, 'icon_url' => '/c/ca/Grid_Potion_of_Slowness.png'),
-            8269 => array('name' => 'potion_of_water_breathing', 'avail' => true, 'icon_url' => '/c/c2/Grid_Potion_of_Water_Breathing.png'),
-            8270 => array('name' => 'potion_of_invisibility', 'avail' => true, 'icon_url' => '/d/d8/Grid_Potion_of_Invisibility.png'),
-            8289 => array('name' => 'potion_of_regeneration_ii_(extended)', 'avail' => true, 'icon_url' => '/0/00/Grid_Potion_of_Regeneration.png'),
-            8290 => array('name' => 'potion_of_swiftness_ii_(extended)', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            8292 => array('name' => 'potion_of_poison_ii_(extended)', 'avail' => true, 'icon_url' => '/a/a1/Grid_Potion_of_Poison.png'),
-            8297 => array('name' => 'potion_of_strength_ii_(extended)', 'avail' => true, 'icon_url' => '/8/8c/Grid_Potion_of_Strength.png'),
-            16341 => array('name' => 'potion_of_healing', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            16384 => array('name' => 'splash_mundane_potion', 'avail' => true, 'icon_url' => '/0/0b/Grid_Splash_Mundane_Potion.png'),
-            16385 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16386 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            16387 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16388 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16389 => array('name' => 'splash_potion_of_healing', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16392 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16393 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16394 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16396 => array('name' => 'splash_potion_of_harming', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16417 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16418 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16419 => array('name' => 'splash_potion_of_fire_resistance_(reverted)', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16420 => array('name' => 'splash_potion_of_poison_ii', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16421 => array('name' => 'splash_potion_of_healing_ii', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16422 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16424 => array('name' => 'splash_potion_of_weakness_(reverted)', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16425 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16426 => array('name' => 'splash_potion_of_slowness_(reverted)', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16428 => array('name' => 'splash_potion_of_harming_ii', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16430 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16449 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16450 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16451 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16452 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16453 => array('name' => 'splash_potion_of_healing_(reverted)', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16454 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16456 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16457 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16458 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16460 => array('name' => 'splash_potion_of_harming_(reverted)', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16462 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16481 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16482 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16484 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16489 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-        ),
     ),
     'glass_bottle' => array(
         'id' => 374,
@@ -3031,7 +2939,6 @@ $UMC_DATA = array(
         'id' => 383,
         'stack' => 64,
         'avail' => true,
-        'group' => 'spawn_egg_types',
         'icon_url' => '/f/fc/Grid_Spawn_Creeper.png',
         'nbt_types' => array(
             0 => array('nbt' => '{EntityTag:{id:"minecraft:zombie_horse"}}', 'avail' => true, 'icon_url' => '/4/46/Undeadhorse.png'), //not sure if egg exists
@@ -3430,47 +3337,7 @@ $UMC_DATA = array(
         'id' => 438,
         'stack' => 1,
         'avail' => true,
-        'group' => 'splash_potion_types',
         'icon_url' => '/0/02/Splash_Potions.gif',
-        'subtypes' => array(
-            16341 => array('name' => 'potion_of_healing', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            16384 => array('name' => 'splash_mundane_potion', 'avail' => true, 'icon_url' => '/0/0b/Grid_Splash_Mundane_Potion.png'),
-            16385 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16386 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            16387 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16388 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16389 => array('name' => 'splash_potion_of_healing', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16392 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16393 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16394 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16396 => array('name' => 'splash_potion_of_harming', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16417 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16418 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16419 => array('name' => 'splash_potion_of_fire_resistance_(reverted)', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16420 => array('name' => 'splash_potion_of_poison_ii', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16421 => array('name' => 'splash_potion_of_healing_ii', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16422 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16424 => array('name' => 'splash_potion_of_weakness_(reverted)', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16425 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16426 => array('name' => 'splash_potion_of_slowness_(reverted)', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16428 => array('name' => 'splash_potion_of_harming_ii', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16430 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16449 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16450 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16451 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16452 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16453 => array('name' => 'splash_potion_of_healing_(reverted)', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16454 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16456 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16457 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16458 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16460 => array('name' => 'splash_potion_of_harming_(reverted)', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16462 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16481 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16482 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16484 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16489 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-        ),
     ),
     'spectral_arrow' => array(
         'id' => 439,
@@ -3488,47 +3355,7 @@ $UMC_DATA = array(
         'id' => 441,
         'stack' => 1,
         'avail' => true,
-        'group' => 'lingering_potion_types',
         'icon_url' => '/1/19/Lingering_Potions.gif',
-        'subtypes' => array(
-            16341 => array('name' => 'potion_of_healing', 'avail' => true, 'icon_url' => '/a/a3/Grid_Potion_of_Healing.png'),
-            16384 => array('name' => 'splash_mundane_potion', 'avail' => true, 'icon_url' => '/0/0b/Grid_Splash_Mundane_Potion.png'),
-            16385 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16386 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/1/1c/Grid_Potion_of_Swiftness.png'),
-            16387 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16388 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16389 => array('name' => 'splash_potion_of_healing', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16392 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16393 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16394 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16396 => array('name' => 'splash_potion_of_harming', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16417 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16418 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16419 => array('name' => 'splash_potion_of_fire_resistance_(reverted)', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16420 => array('name' => 'splash_potion_of_poison_ii', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16421 => array('name' => 'splash_potion_of_healing_ii', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16422 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16424 => array('name' => 'splash_potion_of_weakness_(reverted)', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16425 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16426 => array('name' => 'splash_potion_of_slowness_(reverted)', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16428 => array('name' => 'splash_potion_of_harming_ii', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16430 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16449 => array('name' => 'splash_potion_of_regeneration', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16450 => array('name' => 'splash_potion_of_swiftness', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16451 => array('name' => 'splash_potion_of_fire_resistance', 'avail' => true, 'icon_url' => '/c/cb/Grid_Splash_Potion_of_Fire_Resistance.png'),
-            16452 => array('name' => 'splash_potion_of_poison', 'avail' => true, 'icon_url' => '/1/11/Grid_Splash_Potion_of_Poison.png'),
-            16453 => array('name' => 'splash_potion_of_healing_(reverted)', 'avail' => true, 'icon_url' => '/3/33/Grid_Splash_Potion_of_Healing.png'),
-            16454 => array('name' => 'splash_potion_of_night_vision', 'avail' => true, 'icon_url' => '/c/c3/Grid_Splash_Potion_of_Night_Vision.png'),
-            16456 => array('name' => 'splash_potion_of_weakness', 'avail' => true, 'icon_url' => '/9/94/Grid_Splash_Potion_of_Weakness.png'),
-            16457 => array('name' => 'splash_potion_of_strength', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16458 => array('name' => 'splash_potion_of_slowness', 'avail' => true, 'icon_url' => '/2/22/Grid_Splash_Potion_of_Slowness.png'),
-            16460 => array('name' => 'splash_potion_of_harming_(reverted)', 'avail' => true, 'icon_url' => '/5/52/Grid_Splash_Potion_of_Harming.png'),
-            16462 => array('name' => 'splash_potion_of_invisibility', 'avail' => true, 'icon_url' => '/8/89/Grid_Splash_Potion_of_Invisibility.png'),
-            16481 => array('name' => 'splash_potion_of_regeneration_ii', 'avail' => true, 'icon_url' => '/0/0f/Grid_Splash_Potion_of_Regeneration.png'),
-            16482 => array('name' => 'splash_potion_of_swiftness_ii', 'avail' => true, 'icon_url' => '/7/7a/Grid_Splash_Potion_of_Swiftness.png'),
-            16484 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-            16489 => array('name' => 'splash_potion_of_strength_ii', 'avail' => true, 'icon_url' => '/3/38/Grid_Splash_Potion_of_Strength.png'),
-        ),
     ),
     'shield' => array(
         'id' => 442,
