@@ -491,7 +491,7 @@ function umc_vote_web() {
 
     // process successful votes, create post to blog
     if (count($upgraded_users) >0) {
-        umc_vote_post_news($upgraded_users, $vote_ranks);
+        umc_vote_post_news($upgraded_users);
     }
     return $out;
 }
@@ -499,7 +499,8 @@ function umc_vote_web() {
 /**
  * Post news to the blog when a user has been promoted.
  */
-function umc_vote_post_news($upgraded_users, $vote_ranks) {
+function umc_vote_post_news($upgraded_users) {
+    global $vote_ranks;
     $text = "Please see the latest upgrades from the voting system:<ul>";
     $userlist_arr = array();
     foreach ($upgraded_users as $upgraded_user => $userlvl) {
