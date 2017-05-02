@@ -2974,6 +2974,7 @@ $UMC_DATA = array(
             30 => array('nbt' => '{EntityTag:{id:"minecraft:polar_bear"}}', 'avail' => true, 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery
             31 => array('nbt' => '{EntityTag:{id:"minecraft:llama"}}', 'avail' => true, 'icon_url' => '/f/fe/PolarBear_Preview.png'), //lottery //TODO: find the right image
             32 => array('nbt' => '{EntityTag:{id:"minecraft:villager"}}', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'), //lottery
+            33 => array('nbt' => '{EntityTag:{id:"minecraft:zombie_villager"}}', 'avail' => true, 'icon_url' => '/0/02/Grid_Spawn_Villager.png'),
         ),
     ),
     'experience_bottle' => array(
