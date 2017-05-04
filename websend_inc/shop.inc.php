@@ -905,7 +905,7 @@ function umc_do_sell_internal($from_deposit=false) {
 	if (!isset($check_inv[$item_slot])) {
 	    umc_error("{red}You need to hold the item you want to sell!");
 	}
-        $inv_item = umc_goods_get_text($check_inv[$item_slot]['id'], $check_inv[$item_slot]['data'], $check_inv[$item_slot]['meta']);
+        $inv_item = umc_goods_get_text($check_inv[$item_slot]['item_name'], $check_inv[$item_slot]['data'], $check_inv[$item_slot]['meta']);
 	if ($inv_item != $request_item) {
             //umc_error_longmsg("Sell failed");
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
