@@ -261,6 +261,65 @@ function umc_item_data_icon_coordinates($item_name, $sub_type = false, $icon_wid
     return array('x' => $x, 'y' => $y);
 }
 
+/**
+ * Getting the data from the google spreadsheets
+ *
+ * @return type
+ */
+function umc_item_data_icon_getdata() {
+    global $UMC_DATA;
+    // google API settings:
+    // https://console.developers.google.com/iam-admin/serviceaccounts/project?project=plucky-sight-167212&organizationId=0
+
+    // used code:
+    // https://github.com/juampynr/google-spreadsheet-reader
+
+    require '/home/includes/google_api/vendor/autoload.php';
+    $service_account_file = '/home/includes/google_api/google_auth.json';
+    $spreadsheet_id = '1b3M2EPGzNFtMp-hW9Sam5ETQg2eTuBEg1S1WArhwJKY';
+    $spreadsheet_range = 'output!A2:C1601';
+
+    putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $service_account_file);
+    $client = new Google_Client();
+    $client->useApplicationDefaultCredentials();
+    $client->addScope(Google_Service_Sheets::SPREADSHEETS_READONLY);
+    $service = new Google_Service_Sheets($client);
+
+    $result = $service->spreadsheets_values->get($spreadsheet_id, $spreadsheet_range);
+
+    $data = $result->getValues();
+
+    $final_data = array();
+    $invalid_data = array();
+    foreach ($data as $line => $D) {
+        $name  = $D[0];
+        $coords = array('x' => $D[1], 'y' => $D[2], 'line' => $line);
+        if ($name == '') {
+            continue;
+        } else if (strstr($name, ":")) {
+            $name_data = explode(":", $name);
+            $item_name = $name_data[0];
+            $name_type = $name_data[1];
+            if (isset($UMC_DATA[$item_name])) {
+                $final_data[$item_name][$name_type] = $coords;
+            } else {
+                $invalid_data[$item_name][$name_type] = $coords;
+            }
+        } else {
+            if (isset($UMC_DATA[$name])) {
+                $final_data[$name] = $coords;
+            } else {
+                $invalid_data[$name] = $coords;
+            }
+        }
+    }
+
+    ksort($final_data);
+    $final_data['invalid'] = $invalid_data;
+
+    umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/includes/item_sprites.php');
+}
+
 
 $UMC_DATA = array(
     'air' => array(
