@@ -585,7 +585,7 @@ function umc_lottery() {
     // based on item type, give reward to the player
     switch ($type) {
         case 'item':
-            umc_lottery_deposit_item($uuid, $detail['type'], $detail['data'],  $detail['ench'], '', 1, 'lottery');
+            umc_deposit_give_item($uuid, $detail['type'], $detail['data'],  $detail['ench'], '', 1, 'lottery');
             $item_txt = $prize['txt'];
             break;
         case 'additional_home':
@@ -613,7 +613,7 @@ function umc_lottery() {
             break;
         case 'random_potion':
             $luck2 = mt_rand(0, 63);
-            umc_lottery_deposit_item($uuid, 373, $luck2, '', '', 1, 'lottery');
+            umc_deposit_give_item($uuid, 373, $luck2, '', '', 1, 'lottery');
             $item_txt = $prize['txt'];
             break;
         case 'random_ench':
@@ -631,7 +631,7 @@ function umc_lottery() {
             $item = umc_goods_get_text($rand_item_id, 0, $item_ench_arr);
             $item_name = $item['item_name'];
             $full = $item['full'];
-            umc_lottery_deposit_item($uuid, $item_name, 0, $item_ench_arr, '', 1, 'lottery');
+            umc_deposit_give_item($uuid, $item_name, 0, $item_ench_arr, '', 1, 'lottery');
             $item_txt = "a " . $full;
             break;
         case 'random_pet': // same as blocks below but only 1 always
@@ -641,7 +641,7 @@ function umc_lottery() {
             $given_block = explode(":", $block[$luck2]);
             $given_block_type = $given_block[0];
             $given_block_data = $given_block[1];
-            umc_lottery_deposit_item($uuid, $given_block_type, $given_block_data, '', '', 1, 'lottery');
+            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', 1, 'lottery');
             $item = umc_goods_get_text($given_block_type, $given_block_data);
             $item_txt = "a " .$item['full'];
             break;
@@ -654,7 +654,7 @@ function umc_lottery() {
             $given_block = explode(":", $block[$luck2]);
             $given_block_type = $given_block[0];
             $given_block_data = $given_block[1];
-            umc_lottery_deposit_item($uuid, $given_block_type, $given_block_data, '', '', $luck3, 'lottery');
+            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', $luck3, 'lottery');
             $item = umc_goods_get_text($given_block_type, $given_block_data);
             $item_txt = "$luck3 " . $item['full'];
             break;
@@ -793,16 +793,4 @@ function umc_lottery_web_stats() {
 
     $out .= umc_web_javachart($ydata, 'date', 'regular');
     return $out;
-}
-
-function umc_lottery_deposit_item($recipient, $item_name, $data, $meta, $amount, $sender) {
-    
-    // sanitise meta field if no data exists
-    if ($meta == null) {
-        $meta = '';
-    }
-    
-    //empty string returns for meta '';
-    umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $sender);
-    
 }
