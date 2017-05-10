@@ -76,7 +76,6 @@ function umc_xp_bottle(){
     umc_ws_cmd("exp set $player $new_xp", 'asConsole');
 
     // give the item into deposit
-    // umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $sender)
     umc_deposit_give_item($uuid, 'experience_bottle', 0, '', $bottle_count, 'shop0000-0000-0000-0000-000000000000');
 
     // create the log
@@ -84,7 +83,6 @@ function umc_xp_bottle(){
 
     // give some player feedback
     umc_echo("{green} You deposited $bottle_count bottles into your deposit box.");
-
 }
 
 // returns the TOTAL points of experience of a player based on level fraction and xp

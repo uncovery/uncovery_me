@@ -24,6 +24,7 @@
 
 /**
  * Removes an item from stock or deposit; does not record the transaction
+ * Does not do anything with the item
  *
  * @param type $table
  * @param type $id
@@ -81,14 +82,27 @@ function umc_db_take_item($table, $id, $amount, $player) {
     }
 }
 
+/**
+ * convert Meta data into nice text
+ * TODO: This is deprecated and nbt data should override this.
+ *
+ * @global type $ENCH_ITEMS
+ * @param type $meta_arr
+ * @param type $size
+ * @return string
+ */
 function umc_get_meta_txt($meta_arr, $size = 'long') {
-    global $ENCH_ITEMS, $UMC_BANNERS;
+    global $ENCH_ITEMS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = '';
     $e = 0;
-    if (!is_array($meta_arr)) {
+    if (strpos($meta_arr, "{") === 0) { // we have NBT, not legacy meta data
+        $out = umc_nbt_display($meta_arr, $size . '_text');
+        return $out;
+    } else if (!is_array($meta_arr)) {
         $meta_arr = unserialize($meta_arr);
     }
+
     // faulty arrays
     if ((!is_array($meta_arr)) && (strlen($meta_arr) > 1)) {
         XMPP_ERROR_trigger("error unserializing metadata array: " . var_export($meta_arr, true));
@@ -104,9 +118,6 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
                 $meta_name = $ENCH_ITEMS[$meta_name]['short'];
             }
             $out .= "$meta_name $lvl";
-        } else if (isset($UMC_BANNERS['colors'][$meta_name])) {
-            $meta_name = 'various patterns & colors, ';
-            $out .= count($lvl) . "-Layered";
         } else { // some enchantments are stored wrong, with lowercase names instead of codes
             // this should not be needed anymore once there are no lowercase enchantments in the deposit
             foreach ($ENCH_ITEMS as $code => $data) {
@@ -136,9 +147,14 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
-
     global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    // check if we have "minecraft:" in the beginning.
+    $check = strpos($item_name_raw, ':');
+    if ($check > 0) {
+        $item_name_raw = substr($item_name_raw, 10);
+    }
 
     // cast part capitalized text to lowercase.
     $item_name = strtolower($item_name_raw);
@@ -184,34 +200,48 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $icon_path = "$UMC_PATH_MC/server/bin/data/";
 
     $meta_text = '';
+    $nbt_string = '';
+    $nbt_raw = '';
     $meta_spacer = '';
     if ($meta != '') {
-        $meta_text = umc_get_meta_txt($meta, 'short');
+        $tmp_var = umc_get_meta_txt($meta, 'short');
         $meta_spacer = ' ';
+        // differentiate between meta and nbt
+        if (strpos($meta, "{") === 0) { // we have nbt
+            $nbt_string = " " . $tmp_var;
+            $nbt_raw = $meta;
+        } else {
+            $meta_text = $tmp_var;
+        }
     }
 
-    $full_clean = trim("$nice_name$meta_text$damage_text");
+    $full_clean = trim("$nice_name$meta_text$nbt_string$damage_text");
     if ($UMC_ENV == 'wordpress' && file_exists($icon_path . $icon_file)) {
-        $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
+        if (isset($UMC_DATA[$item_name]['icon_coordinates'])) { // get background image of single image
+            $img = umc_item_data_icon_html($item_name, $item_data) ;
+        } else {
+            $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
+        }
         $full = "$img $full_clean";
     } else if ($UMC_ENV == 'websend') {
-        $full = "{magenta}$meta_text$meta_spacer{green}$nice_name{red}$damage_spacer$damage_text{white}";
+        $full = "{green}$nice_name{magenta}$meta_text$nbt_string$meta_spacer{red}$damage_spacer$damage_text{white}";
         $img = '';
     } else {
         $full = "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text";
         $img = '';
     }
+
     if (isset($UMC_DATA[$item_name]['group'])) {
         $group = umc_pretty_name($UMC_DATA[$item_name]['group']);
     } else {
         $group = false;
     }
-    
+
     if (isset($UMC_DATA[$item_name]['notrade'])) {
         $notrade = $UMC_DATA[$item_name]['notrade'];
     } else {
         $notrade = false;
-    }    
+    }
 
     $out = array(
         'full' => $full,
@@ -226,7 +256,11 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         'dmg' => $damage_text,
         'group' => $group,
         'notrade' => $notrade,
+        'nbt_raw' => $nbt_raw,
+        'nbt_text' => $nbt_string,
     );
+    XMPP_ERROR_trace('get_text', $out);
+
     return $out;
 }
 

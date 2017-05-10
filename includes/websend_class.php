@@ -30,22 +30,22 @@
 		public function connect()
 		{
                     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-            $this->stream = fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
-            if($this->stream){
-                $this->writeRawByte(21);
-                $this->writeString("websendmagic");
-                $seed = $this->readRawInt();
-                $hashedPassword = hash($this->hashAlgorithm, $seed.$this->password);
-                $this->writeString($hashedPassword);
-                $result = $this->readRawInt();
-                if($result == 1){
-                        return true;
-                }else{
+                    $this->stream = fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
+                    if($this->stream){
+                        $this->writeRawByte(21);
+                        $this->writeString("websendmagic");
+                        $seed = $this->readRawInt();
+                        $hashedPassword = hash($this->hashAlgorithm, $seed.$this->password);
+                        $this->writeString($hashedPassword);
+                        $result = $this->readRawInt();
+                        if($result == 1){
+                                return true;
+                        }else{
+                                return false;
+                        }
+                    }else{
                         return false;
-                }
-            }else{
-                return false;
-            }
+                    }
 		}
 
 		/**

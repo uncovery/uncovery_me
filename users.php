@@ -1104,10 +1104,9 @@ function umc_promote_citizen($username, $userlevel = false) {
     $days = round(abs($today_ts-$firsttime_ts)/60/60/24);
     $user['User since'] = "$firstdate ($days days)";
 
-    if ($firstdate > '2013-11-20') {// not all play time recorded
+    if ($firstdate < '2013-11-20') {// not all play time recorded
         $user['Online time since 2013-11-20'] = $online_time;
     } else {
-
         $user['Online time'] = $online_time;
     }
     if ($d['balance'] == NULL) {

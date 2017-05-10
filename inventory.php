@@ -45,18 +45,21 @@ function umc_check_inventory($item_name, $data, $meta) {
     }
      *
      */
-    if (!is_array($meta)) {
+    if (strpos($meta, "{") === 0) {
+        $comparator = 'nbt';
+    } else if (!is_array($meta)) {
+        $comparator = 'meta';
         $meta = unserialize($meta);
     }
     //umc_error_longmsg($meta);
 
     foreach ($inv as $inv_item) {
         // we have to make sure we do not compare enchanted w. non-enchated items
-        if ($inv_item['meta'] && (count($meta) >= 1)) {
-            if (($inv_item['item_name'] == $item_name) && ($inv_item['data'] == $data) && ($inv_item['meta'] == $meta)) {
+        if ($inv_item[$comparator] && (count($meta) >= 1)) {
+            if (($inv_item['item_name'] == $item_name) && ($inv_item['data'] == $data) && ($inv_item[$comparator] == $meta)) {
                 $amount = $amount + $inv_item['amount'];
             }
-        } else if (!$inv_item['meta'] && !$meta) {
+        } else if (!$inv_item[$comparator] && !$meta) {
             if ($inv_item['item_name'] == $item_name && $inv_item['data'] == $data) {
                 $amount = $amount + $inv_item['amount'];
             }
@@ -80,25 +83,35 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
     global $UMC_USER;
     $inv = $UMC_USER['inv'];
     $player = $UMC_USER["username"];
-    if ($meta == '') {
+
+    if ($meta == '') { // websend sets default meta to false, let's do the same
         $meta = serialize(false);
     }
+
     if (is_array($meta)) {
         $meta = serialise($meta);
     }
+
     $removed = 0;
     foreach ($inv as $slot => $item) {
-        $item['meta'] = serialize($item['meta']);
+        $comparator = 'meta';
+        if (!is_array($meta) && strpos($meta, "{") === 0) {
+            // we have nbt
+            $comparator = 'nbt';
+        } else if (is_array($item['meta'])) { //we have a meta tag (legacy)
+            $item['meta'] = serialize($item['meta']);
+        } else { // we do not have any valid meta
+            $item['meta'] = serialize(false);
+        }
         // echo "$slot:{$item['id']}:{$item['data']}:{$item['meta']} vs $meta";
-        if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item['meta'] == $meta)) {
+        if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
             if ($amount >= $item['amount']) {
                 umc_ws_cmd("removeitem $player $slot", 'asConsole');
-                //umc_echo("removeitem $player $slot");
+                XMPP_ERROR_trace('item removed', "removeitem $player $slot");
                 $amount = $amount - $item['amount'];
                 $removed = $removed + $item['amount'];
             } else {
                 umc_ws_cmd("removeitem $player $slot $amount", 'asConsole');
-                //umc_echo("removeitem $player $slot $aomunt");
                 $amount = $amount - $amount;
                 $removed = $amount;
             }
@@ -108,7 +121,7 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
         }
     }
     if ($amount != $removed && $amount > 0) {
-        XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . "from user $player!");
+        XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . ") from user $player!");
     }
     if ($amount == 0) {
         return true;
@@ -233,20 +246,6 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
     } else {
         $row = $D[0];
         $item = umc_goods_get_text($row['item_name'], $row['damage'], $row['meta']);
-        $meta_cmd = $meta = '';
-        if ($row['meta'] != '') {
-            $meta_arr = unserialize($row['meta']);
-            if (!is_array($meta_arr)) {
-                XMPP_ERROR_trigger("Could not get Meta Data array for $table id $id: " . var_export($row, true));
-            }
-            if ($row['item_name'] == "banner") {
-                $meta_cmd = umc_banner_get_data($meta_arr);
-            } else {
-                foreach ($meta_arr as $type => $lvl) {
-                    $meta_cmd .= " $type:$lvl";
-                }
-            }
-        }
 
         // handle unlimited items
         $unlimited = false;
@@ -269,7 +268,17 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
             umc_error("{red}Amount {white}'$amount'{red} is not numeric;");
         }
         if ($table != 'stock') {
-            umc_echo("{green}[+]{gray} You are withdrawing {yellow} $amount {gray} of {$item['full']}{gray}.");
+            $format_color = 'green';
+            if ($item['nbt_raw']) { // magix items are aqua
+                $format_color = 'aqua';
+            }
+            $data = array(
+                array('text' => '[+]', 'format' => 'green'),
+                array('text' => 'You are withdrawing', 'format' => 'gray'),
+                array('text' => $amount, 'format' => 'yellow'),
+                array('text' => $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+            );
+            umc_text_format($data, false, true);
         }
 
         if ($table == 'stock') {
@@ -298,16 +307,15 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         if(!$to_deposit) {
             umc_check_space($sellamount, $item['item_name'], $item['type']);
             // the in-game command does not understand item_names yet
-            umc_ws_cmd("give $player {$item['item_name']}:{$item['type']} $sellamount$meta_cmd;", 'asConsole');
+            umc_ws_give($player, $item['item_name'], $sellamount, $item['type'], $row['meta']);
             umc_log('inventory', 'give', "$player received {$item['full_clean']} $sellamount");
         } else {
-            umc_deposit_give_item($target, $item['item_name'], $item['type'], $meta, $sellamount, $source);
+            umc_deposit_give_item($target, $item['item_name'], $item['type'], $row['meta'], $sellamount, $source);
             umc_log('inventory', 'give_deposit', "$player recived in deposit {$item['full_clean']} $sellamount");
         }
-        //umc_echo("./give $player {$item['id']}:{$item['type']} $sellamount$meta_cmd");
 
         // check status
-        umc_shop_transaction_record($source, $target, $sellamount, $cost, $item['item_name'], $item['type'], $meta);
+        umc_shop_transaction_record($source, $target, $sellamount, $cost, $item['item_name'], $item['type'], $row['meta']);
 
         if ($unlimited) {
             return "unlimited";
@@ -316,11 +324,20 @@ function umc_checkout_goods($id, $amount, $table = 'stock', $cancel = false, $to
         // fix the stock levels
         $amount_left = umc_db_take_item($table, $id, $sellamount, $source);
         if ($UMC_ENV == 'websend') {
-            if ($amount_left == 0) {
-                umc_echo("{green}[+]{gray} No more {green}{$item['full']}{gray} now in stock.");
-            } else {
-                umc_echo("{green}[+]{yellow} $amount_left{green} {$item['full']}{gray} remaining in stock.");
+            $format_color = 'green';
+            if ($item['nbt_raw']) { // magix items are aqua
+                $format_color = 'aqua';
             }
+            if ($amount_left == 0) {
+                $amount_left = 'No more';
+            }
+            $data = array(
+                array('text' => '[+]', 'format' => 'green'),
+                array('text' => $amount_left, 'format' => 'gray'),
+                array('text' => $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                array('text' => "remaining in stock", 'format' => 'gray'),
+            );
+            umc_text_format($data, false, true);
         }
         return $amount_left;
     }
@@ -352,102 +369,4 @@ function umc_inventory_delete_world($uuid, $world) {
         $status = true;
     }
     return $status;
-}
-
-function umc_inventory_import() {
-    $path_root = '/home/minecraft/server/bukkit/plugins/Multiverse-Inventories';
-    // enderchest content path: /groups/enderchest
-    $paths = array(
-        'groups/invshares',
-        'groups/enderchest',
-        'groups/creative',
-        'groups/xpshares',
-        'worlds/aether',
-        'worlds/city',
-        'worlds/darklands',
-        'worlds/deathlands',
-        'worlds/draftlands',
-        'worlds/empire',
-        'worlds/flatlands',
-        'worlds/hunger',
-        'worlds/kingdom',
-        'worlds/nether',
-        'worlds/skyblock',
-        'worlds/the_end',
-        'players',
-    );
-    foreach ($paths as $path) {
-        $inv = file_get_contents("$path_root/$path/uncovery.json");
-        $inv_array = json_decode($inv, true);
-        XMPP_ERROR_trace("$path Inv:", $inv_array);
-    }
-
-    $active_users = umc_get_active_members('name');
-
-    $sql = "TRUNCATE minecraft_iconomy.multiinv_multiinv;";
-    umc_mysql_execute_query($sql);
-
-    $usernames = array();
-
-    $dirs = array("$path_root/groups/xpshares", "$path_root/groups/invshares");
-    foreach ($dirs as $dir) {
-        $files = array_diff(scandir($dir), array('..', '.'));
-        foreach ($files as $userfile) {
-            $username = strtolower(substr($userfile, 0, -5));
-            $usernames[$username] = $userfile;
-        }
-    }
-
-    $empty_str = 'AIR,0,0,0;';
-    $new_inv = '';
-    // IRON_SWORD,1,0,0;
-    // CLAY,2,0,0;
-    // BOW,1,0,ARROW_DAMAGE-10000#ARROW_FIRE-10000#DURABILITY-10000#ARROW_INFINITE-10000,#NM#NQ2h1Y2sgTm9ycmlzJyBHdW4=#L#R0;
-    // WOOD_SPADE,1,6,0;
-    // DIRT,6,0,0;
-    // SEEDS,1,0,0;
-
-
-    // STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0;STONE,1,0,0:DIAMOND_BOOTS,1,0,0;DIAMOND_LEGGINGS,1,0,0;DIAMOND_CHESTPLATE,1,0,0;DIAMOND_HELMET,1,0,0
-    //foreach ($active_users as $uuid => $username) {
-        $username = 'uncovery';
-        $real_name = $usernames[$username];
-        //$XP = file_get_contents("$path_root/groups/xpshares/$real_name");
-        $INV = file_get_contents("$path_root/groups/invshares/$real_name");
-
-        if (!$XP || !$INV) {
-            XMPP_ERROR_trigger("$username / $uuid file could nto be found!");
-        }
-        $inv_array = json_decode($INV, true);
-        //$xp_array = json_decode($XP, true);
-        $inv_root = $inv_array['SURVIVAL']['inventoryContents'];
-        for ($i=0; $i<=39; $i++) {
-            if (isset($inv_root[$i])) {
-                $item_name = $inv_root[$i]['type'];
-                $damage = '0';
-                if (isset($inv_root[$i]['damage'])) {
-                    $damage = $inv_root[$i]['damage'];
-                }
-                $amount = '1';
-                if (isset($inv_root[$i]['amount'])) {
-                    $amount = $inv_root[$i]['amount'];
-                }
-                $ench_txt = '0';
-                if (isset($inv_root[$i]['meta'])) {
-                    $enchs = $inv_root[$i]['meta']['enchants'];
-                    foreach ($enchs as $ench => $strength) {
-                        $ench_arr[] = $ench . "-" . $strength;
-                    }
-                    $ench_txt = implode("#",$ench_arr);
-                }
-                $new_inv .= "$item_name,$amount,$damage,$ench_txt;";
-            } else {
-                $new_inv .= $empty_str;
-            }
-        }
-
-        XMPP_ERROR_trace("$username Inv:", $inv_array);
-        XMPP_ERROR_trace("$username New Inv:", $new_inv);
-        return;
-    //}
 }

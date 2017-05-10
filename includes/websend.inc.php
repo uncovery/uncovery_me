@@ -140,7 +140,7 @@ function umc_ws_get_vars() {
     // Since the input is authenticated with the code, it should be fine, but better safe than sorry
     $json = json_decode(stripslashes($_POST["jsonData"]), true);
     if (!isset($json['Invoker']['Name'])) {
-        XMPP_ERROR_trigger("No invoker name in " . var_export($json,true));
+        XMPP_ERROR_trigger("No invoker name in " . var_export($json, true));
     }
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
@@ -261,6 +261,7 @@ function umc_ws_yaw_fix($raw_yaw) {
 }
 
 /**
+ * DEPRECATED: use umc_ws_command insted
  * Executes a command without the initiation of Websend
  * always does this as the console since no user initiating it.
  *.
@@ -271,10 +272,9 @@ function umc_ws_yaw_fix($raw_yaw) {
 function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     $ws = umc_ws_connect();
     if (!$ws) {
-        return;
+        return false;
     }
-    // $ws->writeOutputToConsole("starting ws communication;");
-    // $ws->writeOutputToConsole("Executing Command '$cmd' Method '$how' Player '$player';");
+
     switch ($how) {
         case 'asConsole':
             $check = $ws->doCommandAsConsole($cmd);
@@ -297,9 +297,6 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
     }
     if (!$check) {
         XMPP_ERROR_trigger("Could not verify correct connection to websend (umc_exec_command / $cmd / $how / $player)");
-    } else {
-        //echo "nah.";
-        //$check = $ws->writeOutputToConsole("error");
     }
     $ws->disconnect();
     return $check;
@@ -325,6 +322,13 @@ function umc_ws_plugin_comms($plugin, $cmd) {
     XMPP_ERROR_trigger("Done!");
 }
 
+
+/**
+ * Connect to websend from external application (wordpress etc)
+ *
+ * @global type $UMC_PATH_MC
+ * @return boolean|\Websend
+ */
 function umc_ws_connect() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
@@ -338,7 +342,7 @@ function umc_ws_connect() {
         $ws = new Websend("74.208.45.80"); //, 4445
         $ws->password = $password;
         if (!$ws->connect()) { // fail agin? bail.
-            XMPP_ERROR_trigger("Could not connect to websend server (umc_exec_command)");
+            XMPP_ERROR_trigger("Could not connect to websend server (umc_ws_connect)");
             return false;
         }
     }
@@ -347,6 +351,7 @@ function umc_ws_connect() {
 
 
 /**
+ * DEPRECATED: use umc_ws_command insted
  * Send a command back to websend.
  * This function serves as an abstraction layer for websend
  * Terminates the command with a ;
@@ -375,12 +380,6 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     // remove colons, just in case
     $cmd = str_replace(';', '', $cmd_raw);
 
-    // this is debugging info
-    /* if (!$silent) {
-        $color_arr = array('§0','§1','§2','§3','§4','§5','§6','§7','§8','§9','§a','§b','§c','§d','§e','§f',"'");
-        $log_cmd = str_replace($color_arr, '', $cmd);
-        print("/Output/PrintToConsole:ExecCmd '$log_cmd' Method '$how' Player '$player', executed by '$fromplayer';");
-    } */
 
     switch ($how) {
         case 'asConsole':
@@ -411,6 +410,7 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
     return true;
 }
 
+
 /**
  * Return an array of the logged-in player's inventory
  *
@@ -425,6 +425,7 @@ function umc_ws_get_inv($inv_data) {
         $slot = $item['Slot'];
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
+        $inv[$slot]['nbt'] = false;
         foreach ($item as $name => $value) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
@@ -434,7 +435,7 @@ function umc_ws_get_inv($inv_data) {
                 } else if (isset($UMC_DATA[$item_typename])) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
-                    $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['Type']];
+                    $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['TypeName']];
                     $out = "ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
                     XMPP_ERROR_send_msg($out);
                 }
@@ -449,7 +450,7 @@ function umc_ws_get_inv($inv_data) {
                 } else {
                     $inv[$slot][$name] = $value;
                 }
-            } else if ($fix_name == 'meta') {
+            } else if ($fix_name == 'meta' && (!isset($item['nbt']))) {
                 foreach ($value as $meta_type => $meta_value) {
                     // enchantments
                     if ($meta_type == 'Enchantments' || $meta_type == 'EnchantmentStorage') {
@@ -458,15 +459,12 @@ function umc_ws_get_inv($inv_data) {
                             $inv[$slot]['meta'][$e_name] = $ench_data['Level'];
                         }
                     }
-                    if ($meta_type == 'BaseColor') {
-                        $inv[$slot]['meta'] = array($meta_value => $value['Patterns']);
-                    }
                 }
             } else if ($fix_name == 'nbt') {
-                // regex: =(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)
-                $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
-                $nbt = preg_replace($regex, ":", $value);
+                // convert spigot NBT to minecraft NBT
+                $nbt = umc_nbt_cleanup($value);
                 $inv[$slot]['nbt'] = $nbt;
+                $inv[$slot]['meta'] = false;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
@@ -483,10 +481,18 @@ function umc_ws_get_inv($inv_data) {
  */
 function umc_echo($string, $silent = false) {
     $color_regex = color_regex();
-    $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $string);
 
-    // echo $str;
-    umc_ws_cmd($str, 'toPlayer', false, $silent);
+    // remove colons so we don't mess up JSON
+    $json_str = str_replace(";", "", $string);
+
+    $lines = explode("\n", $json_str);
+    foreach ($lines as $line) {
+        $str = preg_replace_callback($color_regex, create_function('$matches', 'return color_map($matches[1]);'), $line);
+        $data = array(
+            array('text' => $str, 'format' => array('normal')),
+        );
+        umc_text_format($data);
+    }
 }
 
 
@@ -557,14 +563,138 @@ function umc_ws_vardump($var) {
  * TELLRAW SECTION *************************************************************
  */
 
+
 /**
- * Base Tellraw execution
+ * This function only serves as an external place where we define the broadcast
+ * format for all messages that go to all users.
+ */
+function umc_ws_text_prefix_broadcast() {
+    $format = array(
+        array('text' => '[', 'format' => array('white')),
+        array('text' => 'Broadcast', 'format' => array('yellow')),
+        array('text' => ']', 'format' => array('white')),
+    );
+    return $format;
+}
+
+/**
+ * We created a custom, simple text formatting system.
+ * This function here converts that system into minecraft-ready text formats and
+ * uses /tellraw to send it formatted to the user
+ *
+ * @param type $data
+ * @param type $target
+ * @param type $auto_space
+ */
+function umc_text_format($data, $target = false, $auto_space = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $format_types = array(
+        // COLOR
+        'black' => 'color',
+        'dark_blue' => 'color',
+        'dark_green' => 'color',
+        'dark_aqua' => 'color',
+        'dark_red' => 'color',
+        'dark_purple' => 'color',
+        'gold' => 'color',
+        'gray' => 'color',
+        'dark_gray' => 'color',
+        'blue' => 'color',
+        'green' => 'color',
+        'aqua' => 'color',
+        'red' => 'color',
+        'light_purple' => 'color',
+        'yellow' => 'color',
+        'white' => 'color',
+        // FORMAT
+        'bold' => 'format',
+        'italic' => 'format',
+        'strikethrough' => 'format',
+        'underlined' => 'format',
+        'obfuscated' => 'format',
+        'normal' => 'format',
+        // CLICK
+        'open_url' => 'click',
+        'suggest_command' => 'click',
+        'run_command' => 'click',
+        'insertion' => 'click',
+        // HOVER
+        'show_text' => 'hover',
+        'show_item' => 'hover',
+        'show_entity' => 'hover',
+        'show_achievement' => 'hover',
+    );
+
+    $tell_data = array();
+    foreach ($data as $D) {
+        if (!isset($D['format'])) {
+            $D['format'] = 'normal';
+        }
+        $formats = $D['format'];
+        $att = '';
+        if (!is_array($formats)) {
+            $formats = array($formats);
+        }
+        foreach ($formats as $format_key => $format_value) {
+            if (isset($format_types[$format_key])) {
+                $format = $format_key;
+                $variable = $format_value;
+            } else if (isset($format_types[$format_value])) {
+                $format = $format_value;
+            } else {
+                XMPP_ERROR_trigger("Invalid tellraw format ($format_key / $format_value");
+                continue;
+            }
+            $type = $format_types[$format];
+            // iterate actions, compound effects
+            switch ($type) {
+                case 'color':
+                    $att .= ",\"color\":\"$format\"";
+                    break;
+                case 'format':
+                    if ($format == 'normal') {
+                        $att .= ",\"bold\":\"false\"";
+                    } else {
+                        $att .= ",\"$format\":\"true\"";
+                    }
+                    break;
+                case 'click':
+                    $att .= ",\"clickEvent\":{\"action\":\"$format\",\"value\":\"$variable\"}";
+                    break;
+                case 'hover':
+                    if ($format == 'show_item') {
+                        $nbt = ''; // we add nbt only if we have one
+                        if ($variable['nbt']) {
+                            $nbt_safe = addslashes($variable['nbt']);
+                            $nbt = ",tag:$nbt_safe";
+                        }
+                        $extras = "{id:minecraft:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
+                    } else {
+                        $extras = $variable;
+                    }
+                    $att .= ",\"hoverEvent\":{\"action\":\"$format\",\"value\":\"$extras\"}";
+                    break;
+                default:
+                    // we check for invalid array keys already above
+                    // the array value is set in the above array so let's assume they are correct
+                    break;
+            }
+        }
+        $tell_data[] = array('txt' => $D['text'], 'att' => $att);
+    }
+    umc_tellraw($target, $tell_data, $auto_space);
+}
+
+/**
+ * Base Tellraw formatting
  *
  * @param type $selector
  * @param type $msg_arr
  * @param type $spacer
  */
-function umc_tellraw($selector, $msg_arr, $spacer) {
+function umc_tellraw($selector, $msg_arr, $spacer = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
     $valid_selectors = array(
         '@p', // nearest
         '@r', // random
@@ -572,142 +702,176 @@ function umc_tellraw($selector, $msg_arr, $spacer) {
         '@e', // all entities, including users
     );
 
-    if (in_array($selector, $valid_selectors)) {
-        $sel = $selector;
-    } else {
-        $sel = "@a[name=$selector]";
-    }
-
     $texts = array();
     foreach ($msg_arr as $msg) {
-        $out = "{\"text\":\"{$msg['txt']}\"";
-        if (isset($msg['att'])) {
-            $out .= $msg['att'];
+        if (is_array($msg)) {
+            $text_safe = str_replace('"', '\"', $msg['txt']);
+            $out = "{\"text\":\"$text_safe\"";
+            if (isset($msg['att'])) {
+                $out .= $msg['att'];
+            }
+            $out .= "}";
+        } else {
+            $text_safe = str_replace('"', '\"', $msg);
+            $out = "{\"text\":\"$text_safe\"}";
         }
-        $out .= "}";
         $texts[] = $out;
     }
 
     // glue the pieces with commas
     $spacer_str = ",";
-    if ($spacer == true) {
+    if ($spacer == true) { // or with spaces
         $spacer_str = ",{\"text\":\" \"},";
     }
     $text_line = implode($spacer_str, $texts);
 
-    $cmd = "tellraw $sel [$text_line]";
-    umc_ws_cmd($cmd, 'asConsole');
+    $target = false;
 
-    // we likely need to check if the environment is websend or not and if not
-    // use umc_exec_command($cmd, 'asConsole'); instead
+    // print to console
+    if (!$selector && isset($UMC_USER['username']) && $UMC_USER['username'] == '@console') {
+        $cmd = "[$text_line]";
+        // todo: filter out tellraw, convert colors to commandline colors
+        $type = 'toConsole';
+
+    // print to all users
+    } else if (in_array($selector, $valid_selectors)) {
+        $cmd = "tellraw $selector [$text_line]";
+        $type = 'asConsole';
+
+    // print to current user
+    } else if (!$selector && isset($UMC_USER['username'])) {
+        $cmd = "tellraw {$UMC_USER['username']} [$text_line]";
+        $type = 'asConsole';
+        // $target  = $UMC_USER['username'];
+        // $type = 'toPlayer';
+
+    // print to specific user
+    } else {
+        $cmd = "tellraw @a[name=$selector] [$text_line]";
+        $type = 'asConsole';
+    }
+
+    XMPP_ERROR_trace('tellraw final', $cmd);
+    $check = umc_ws_command($type, $cmd, $target, false);
+    return $check;
 }
 
 /**
- * Apply a color to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
+ * Give an item to a a user. This is an abstraction layer for /give... commands to make sure
+ * that if something changes in the way we give things to users, we find it easier to change it.
+ * give command explanation: http://minecraft.gamepedia.com/Commands#give
+ * Example: https://ezekielelin.com/give/
  *
- * @param type $msg
- * @param type $color
+ * @param type $user
+ * @param type $item_name
+ * @param type $amount
+ * @param type $damage
+ * @param type $meta
+ */
+function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
+    global $UMC_DATA;
+    $meta_cmd = '';
+    // is the meta an array or NBT Data?
+    if (substr($meta, 0, 2) == 'a:') { // we have an array
+        $meta_arr = unserialize($meta);
+        if (!is_array($meta_arr)) {
+            XMPP_ERROR_trigger("Could not get Meta Data array: " . var_export($meta, true));
+        }
+        foreach ($meta_arr as $type => $lvl) {
+            $meta_cmd .= " $type:$lvl";
+        }
+    } else { // otherwise we use the raw NBT meta
+        $meta_cmd = $meta;
+    }
+
+    $stack_size = $UMC_DATA[$item_name]['stack'];
+
+    while ($amount > $stack_size) {
+        $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
+        $check = umc_ws_command('asConsole', $cmd);
+        $amount = $amount - $stack_size;
+    }
+    $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
+    $check = umc_ws_command('asConsole', $cmd);
+    return $check;
+}
+
+
+/**
+ * Revised, consolidated in-game command execution module
+ * combines both websend and wordpress sourcces
+ *
+ * @global type $UMC_ENV
+ * @param type $type
+ * @param type $cmd
+ * @param type $source
  * @return boolean
  */
-function umc_txt_color($msg, $color) {
-    $valid_colors = array(
-        'black','dark_blue','dark_green','dark_aqua','dark_red','dark_purple',
-        'gold','gray','dark_gray','blue','green','aqua','red','light_purple','yellow','white'
-    );
-    if ($color && in_array($color, $valid_colors)) {
-        $out = ",\"color\":\"$color\"";
+function umc_ws_command($type, $cmd, $player = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
-        }
-    } else {
-        return false;
-    }
-}
+    global $UMC_ENV;
 
-/**
- * apply a format to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $formats
- * @return type
- */
-function umc_txt_format($msg, $formats = array()) {
-    if (!is_array($formats)) {
-        $formats = array($formats);
-    }
-    $valid_formats = array(
-        'bold','italic','strikethrough','underlined','obfuscated','normal',
-    );
-    $out = '';
-    foreach ($formats as $format) {
-        if (in_array($format, $valid_formats)) {
-            if ($format == 'normal') {
-                $out .= ",\"bold\":\"false\"";
-            } else {
-                $out .= ",\"$format\":\"true\"";
-            }
+    // check the environment
+    if ($UMC_ENV == 'websend') {
+        switch ($type) {
+            case 'asConsole':
+                $prefix = "/Command/ExecuteConsoleCommand:";
+                break;
+            case 'asPlayer':
+                $prefix = "/Command/ExecutePlayerCommand:";
+                break;
+            case 'toConsole':
+                $prefix = "/Output/PrintToConsole:";
+                break;
+            case 'asPlayer':
+                $prefix = "/Output/PrintToPlayer-$player:";
+            case 'toPlayer':
+                $prefix = "/Output/PrintToPlayer:";
+                break;
+            case 'broadcast':
+                $prefix = "/Command/Broadcast:";
+                break;
+            default:
+                XMPP_ERROR_trigger("Websend = > game command execution error, unknown type!");
+                return false;
         }
-    }
-    if (is_array($msg)) {
-        return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-    } else {
-        return array('txt' => $msg, 'att' => $out);
-    }
-}
+        print("$prefix$cmd;"); // now execute
 
-/**
- * Apply a click event to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $action
- * @param type $value
- * @return boolean
- */
-function umc_txt_click($msg, $action, $value) {
-    $valid_clicks = array('open_url','suggest_command','run_command','insertion');
-    if (in_array($action, $valid_clicks)) {
-        $out = ",\"clickEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
+    } else { // wordpress
+        $ws = umc_ws_connect();
+        if (!$ws) {
+            XMPP_ERROR_trigger("Wordpress => game connection error! Server offline?");
+            return false;
         }
-    } else {
-        return false;
-    }
-}
-
-/**
- * Apply a hover tooltip to a text for tellraw
- * Can receive the output of other umc_txt_* functions as $msg input to apply
- * several effects on the same text.
- *
- * @param type $msg
- * @param type $action
- * @param type $value
- * @return boolean
- */
-function umc_txt_hover($msg, $action, $value) {
-    // achievements also work for stats with the value being stats.stats_id
-    $valid_tool_types = array('show_text','show_item','show_entity','show_achievement');
-    // we might need to validate items, entity and achievement/stats names
-    if (in_array($action, $valid_tool_types)) {
-        $out = ",\"hoverEvent\":{\"action\":\"$action\",\"value\":\"$value\"}";
-        if (is_array($msg)) {
-            return array('txt' => $msg['txt'], 'att' => $msg['att'] . $out);
-        } else {
-            return array('txt' => $msg, 'att' => $out);
+        switch ($type) {
+            case 'asConsole':
+                $check = $ws->doCommandAsConsole($cmd);
+                break;
+            case 'asPlayer':
+                $check = $ws->doCommandAsPlayer($cmd, $player);
+                break;
+            case 'toConsole':
+                $check = $ws->writeOutputToConsole($cmd);
+                break;
+            case 'toPlayer':
+                $check = $ws->writeOutputToPlayer($cmd, $player);
+                break;
+            case 'broadcast':
+                $check = $ws->broadcast($cmd);
+                break;
+            case 'doScript':
+                $check = $ws->doScript($cmd);
+                break;
+            default:
+                XMPP_ERROR_trigger("Websend = > game command execution error, unknown type!");
+                return false;
         }
-    } else {
-        return false;
+        if (!$check) {
+            XMPP_ERROR_trigger("Wordpress => game command execution error!");
+            return false;
+        }
+        $ws->disconnect();
+        return $check;
     }
 }

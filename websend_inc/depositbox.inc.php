@@ -313,14 +313,26 @@ function umc_show_depotlist($silent = false) {
                     'recipient' => $recipient,
                 );
             } else {
-                umc_echo(sprintf("{green}%7d     {yellow}%s", $row['id'], $row['amount']
-                    ." {$item['full']} $label"));
+                $format_color = 'green';
+                if ($item['nbt_raw']) { // magix items are aqua
+                    $format_color = 'aqua';
+                }
+                $data = array( // down arrow in Unicode: [\u25BC]
+                    array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
+                    array('text' => $row['amount'], 'format' => 'yellow'),
+                    array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                    array('text' => "  [\u25BC]", 'format' => array('blue', 'run_command' => '/withdraw ' . $row['id'], 'show_text' => 'Withdraw all')),
+                );
+                if ($row['amount'] > 1) {
+                    $data[] = array('text' => "  [\u25BC1]", "format" => array('blue', 'run_command' => '/withdraw ' . $row['id'] . " 1", 'show_text' => 'Withdraw one only'));
+                }
+                umc_text_format($data, false, false);
             }
         }
         if (!$web) {
             $allowed = umc_depositbox_realcount($uuid, 'total') - umc_depositbox_realcount($uuid, 'system');
             umc_pretty_bar("darkblue", "-", " {green}$count / $allowed slots used ");
-            umc_echo("{cyan}[*] {green}Withdraw with {yellow}/withdraw <Depot-Id>");
+            umc_echo("{cyan}[*] {green}Withdraw with {yellow}/withdraw <Depot-Id> {green} or click on {blue}[\u25BC]");
             umc_footer();
         } else {
             return $web_arr;
@@ -436,6 +448,7 @@ function umc_do_depositall() {
  * @param type $sender
  */
 function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $sender) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA_ID2NAME, $UMC_DATA;
     if (is_numeric($item_name)) {
         $item_name = $UMC_DATA_ID2NAME[$item_name];
@@ -447,6 +460,8 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
 
     if (is_array($meta) > 0) {
         $meta = serialize($meta);
+    } else if (strpos($meta, "{") === 0) {
+        $meta = $meta;
     } else {
         $meta = '';
     }
@@ -467,7 +482,6 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
         $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
             VALUES ('$data', '$sender_uuid', '$item_name', '$recipient_uuid', '$amount', '$meta');";
     }
-    //umc_echo($sql);
     umc_mysql_execute_query($sql);
 }
 
@@ -491,7 +505,7 @@ function umc_do_deposit_internal($all = false) {
     if (!$all) {
         $item_slot = $UMC_USER['current_item'];
         if (!isset($all_inv[$item_slot])) {
-            umc_error("{red}You need to hold the item you want to deposit! (current slot: $item_slot);");
+            umc_error("{red}You need to hold the item you want to deposit! (current slot: $item_slot)");
         }
         $all_inv = array($item_slot => $all_inv[$item_slot]);
     }
@@ -509,26 +523,32 @@ function umc_do_deposit_internal($all = false) {
 
         // deal with item metadata
         $data = $slot['data'];
-        if ($slot['meta']) {
-            $meta = serialize($slot['meta']);
+        if ($slot['nbt']) {
+            $meta = $slot['nbt'];
+        } else if ($slot['meta']) {
+            if (is_array($slot['meta'])) {
+                $meta = serialize($slot['meta']); // enchanted stuff
+            } else {
+                $meta = $slot['meta']; // we have NBT data
+            }
         } else {
             $meta = false;
         }
 
         // don't assign the same item twice
-        $item = umc_goods_get_text($slot['item_name'], $slot['data'], $slot['meta']);
+        $item = umc_goods_get_text($slot['item_name'], $slot['data'], $meta);
         if (isset($seen[$item['full']])) {
             continue;
         }
-        
+
         if ($item['notrade']) {
             umc_error("Sorry, this item is not enabled for deposit (yet).");
         }
 
         // check for more bugs
-        $inv = umc_check_inventory($slot['item_name'], $slot['data'], $slot['meta']);
+        $inv = umc_check_inventory($slot['item_name'], $slot['data'], $meta);
         if ($inv == 0) {
-            XMPP_ERROR_trigger("Item held could not be found in inventory: {$slot['item_name']}, {$slot['data']}, " . var_export($slot['meta'], true));
+            XMPP_ERROR_trigger("Item held could not be found in inventory: {$slot['item_name']}, {$slot['data']}, " . var_export($meta, true));
             umc_error("There was a system error. The admin has been notified. Deposit aborted.");
         }
 
@@ -743,8 +763,8 @@ function umc_depositbox_consolidate() {
             // existing entry must be made by user
             $sql_fix = "SELECT * FROM minecraft_iconomy.deposit
                 WHERE item_name='{$row['item_name']}'
-		    AND damage='{$row['damage']}
-		    AND meta='{$row['meta']}
+		    AND damage='{$row['damage']}'
+		    AND meta='{$row['meta']}'
 		    AND recipient_uuid='$uuid'
 		    AND sender_uuid !='$uuid';";
             $fix_data = umc_mysql_fetch_all($sql_fix);
@@ -755,7 +775,7 @@ function umc_depositbox_consolidate() {
                 if (umc_depositbox_system_UUID_check($row['sender_uuid'])) {
                     // check empty box count to ensure they have space
                     if(umc_depositbox_realcount($uuid, 'empty') <= 0) {
-                        umc_error("{red}You have no free deposit slots to consolidate into. Free some space and try again.;");
+                        umc_error("{red}You have no free deposit slots to consolidate into. Free some space and try again.");
                     }
                 }
 

@@ -21,32 +21,47 @@
  * This file manages the conversion of in-game color codes to web-readable color codes
  * or removes color information from text to be B&W.
  */
-global $UMC_COLORS;
+global $UMC_COLORS, $UMC_COLORS_DEC;
 
 $UMC_COLORS = array(
-    '0' => array('html' => 'color:#000;',    'names' => array('black')),
-    '1' => array('html' => 'color:#0000aa;', 'names' => array('darkblue')),
-    '2' => array('html' => 'color:#00aa00;', 'names' => array('darkgreen')),
-    '3' => array('html' => 'color:#00aaaa;', 'names' => array('darkcyan')),
-    '4' => array('html' => 'color:#aa0000;', 'names' => array('darkred')),
-    '5' => array('html' => 'color:#aa00aa;', 'names' => array('darkpurple', 'darkmagenta')),
-    '6' => array('html' => 'color:#ffaa00;', 'names' => array('darkyellow', 'orange', 'gold')),
-    '7' => array('html' => 'color:#aaaaaa;', 'names' => array('gray', 'grey')),
-    '8' => array('html' => 'color:#555555;', 'names' => array('darkgray', 'darkgrey')),
-    '9' => array('html' => 'color:#5555ff;', 'names' => array('blue')),
-    'a' => array('html' => 'color:#55ff55;', 'names' => array('green')),
-    'b' => array('html' => 'color:#55ffff;', 'names' => array('cyan')),
-    'c' => array('html' => 'color:#ff5555;', 'names' => array('red')),
-    'd' => array('html' => 'color:#ff55ff;', 'names' => array('purple', 'pink', 'magenta')),
-    'e' => array('html' => 'color:#ffff55;', 'names' => array('yellow')),
-    'f' => array('html' => 'color:#ffffff;', 'names' => array('white')),
-    'k' => array('html' => 'color:#000;',    'names' => array('random')),
+    '0' => array('html' => 'color:#000;',       'names' => array('black')),
+    '1' => array('html' => 'color:#0000aa;',    'names' => array('darkblue')),
+    '2' => array('html' => 'color:#00aa00;',    'names' => array('darkgreen')),
+    '3' => array('html' => 'color:#00aaaa;',    'names' => array('darkcyan')),
+    '4' => array('html' => 'color:#aa0000;',    'names' => array('darkred')),
+    '5' => array('html' => 'color:#aa00aa;',    'names' => array('darkpurple', 'darkmagenta')),
+    '6' => array('html' => 'color:#ffaa00;',    'names' => array('darkyellow', 'orange', 'gold')),
+    '7' => array('html' => 'color:#aaaaaa;',    'names' => array('gray', 'grey')),
+    '8' => array('html' => 'color:#555555;',    'names' => array('darkgray', 'darkgrey')),
+    '9' => array('html' => 'color:#5555ff;',    'names' => array('blue')),
+    'a' => array('html' => 'color:#55ff55;',    'names' => array('green')),
+    'b' => array('html' => 'color:#55ffff;',    'names' => array('cyan')),
+    'c' => array('html' => 'color:#ff5555;',    'names' => array('red')),
+    'd' => array('html' => 'color:#ff55ff;',    'names' => array('purple', 'pink', 'magenta')),
+    'e' => array('html' => 'color:#ffff55;',    'names' => array('yellow')),
+    'f' => array('html' => 'color:#ffffff;',    'names' => array('white')),
+    'k' => array('html' => 'color:#000;',       'names' => array('random')),
     'l' => array('html' => 'font-weight:bold;', 'names' => array('bold')),
     'm' => array('html' => 'text-decoration:line-through;', 'names' => array('strike')),
     'n' => array('html' => 'text-decoration:underline;', 'names' => array('uline')),
     'o' => array('html' => 'font-style:italic;', 'names' => array('italic')),
     'r' => array('html' => 'color:#000;',    'names' => array('reset')),
 );
+
+/**
+ * NBT Codes use decimal colors, not HEX. So to get a color name we need to
+ * convert the dec into hex and then get it out of the above array.
+ *
+ * @global array $UMC_COLORS
+ * @param type $decimal
+ * @return array
+ */
+function unc_color_decimal($decimal) {
+    global $UMC_COLORS;
+    $hex = dechex($decimal);
+    $col_data = $UMC_COLORS[$hex]['names'][0];
+    return $col_data;
+}
 
 function umc_ws_color_remove($input) {
     global $UMC_COLORS;
@@ -95,4 +110,3 @@ function color_map($color = null) {
     }
     return $keys;
 }
-?>

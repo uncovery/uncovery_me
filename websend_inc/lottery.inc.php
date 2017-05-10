@@ -193,20 +193,8 @@ $lottery = array(
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
         'blocks' => array(
-            'spawn_egg:31', //donkey
-            'spawn_egg:32', //mule
-            'spawn_egg:90', //pig
-            'spawn_egg:91', //sheep
-            'spawn_egg:92', //cow
-            'spawn_egg:93', //chicken
-            'spawn_egg:94', //squid
-            'spawn_egg:95', //wolf
-            'spawn_egg:96', //mooshroom
-            'spawn_egg:98', //ocelot
-            'spawn_egg:100', //horse
-            'spawn_egg:102', //polar_bear
-            'spawn_egg:103', //llama
-            'spawn_egg:120', //villager
+            'donkey', 'mule', 'pig', 'sheep', 'cow', 'chicken', 'squid', 'wolf',
+            'mooshroom', 'ocelot', 'horse', 'polar_bear', 'llama', 'villager',
         ),
     ),
     'random_unc' => array(
@@ -216,7 +204,7 @@ $lottery = array(
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_common' => array(
-        'chance' => 200,
+        'chance' => 100,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
@@ -227,6 +215,15 @@ $lottery = array(
             'soul_sand:0', 'mycelium:0',
         ),
     ),
+    'random_sapling' => array(
+        'chance' => 50,
+        'type' => 'random_sapling',
+        'data' => 'common',
+        'txt' => '1-64 of random sapling',
+        'blocks' => array(
+            'sapling:0', 'sapling:1', 'sapling:2', 'sapling:3', 'sapling:4',
+        ),
+    ),
     'random_ore' => array(
         'chance' => 50,
         'type' => 'random_ore',
@@ -234,7 +231,7 @@ $lottery = array(
         'txt' => '1-64 of random rare block',
         'blocks' => array(
             'coal_ore:0', 'iron_ore:0', 'lapis_ore:0', 'mossy_cobblestone:0', 'diamond_ore:0',
-            'redstone_ore:0', 'ice:0', 'snow_block:0', 'clayblock:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
+            'redstone_ore:0', 'ice:0', 'snow_block:0', 'clay:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
             'mycelium:0', 'nether_brick:0', 'emerald_ore:0', 'end_stone:0', 'redstone_block:0',
             'quartz_ore:0', 'quartz_block:0', 'coal_block:0', 'packed_ice:0',
         ),
@@ -260,6 +257,12 @@ $lottery = array(
         'type' => 'random_ench',
         'data' => 'enchanted item',
         'txt' => 'a random single-enchanted item',
+    ),
+    'random_potion' => array(
+        'chance' => 50, // rate of 69 in 1000
+        'type' => 'random_potion',
+        'data' => 'potion',
+        'txt' => 'a random potion',
     ),
     'additional_home' => array(
         'chance' => 1, // rate of 1 in 1000
@@ -527,7 +530,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
+    global $UMC_USER, $lottery, $ENCH_ITEMS;
 
     $user_input = $UMC_USER['args'][2];
 
@@ -551,8 +554,9 @@ function umc_lottery() {
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
-    if (($user == 'uncovery') && (isset($UMC_USER['args'][5]))) {
-        $chance = $UMC_USER['args'][5];
+    if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
+        $chance = $UMC_USER['args'][3];
+        umc_echo("Rolling a $chance!");
     }
 
     // get the roll array based on chance
@@ -576,113 +580,139 @@ function umc_lottery() {
     }
     $type = $prize['type'];
 
-    // instantiate block variables
-    $given_block_data = 0;
-    $given_block_type = 0;
-
     //var_dump($prize);
 
     // based on item type, give reward to the player
-    switch ($type) {
-        case 'item':
-            umc_deposit_give_item($uuid, $detail['type'], $detail['data'],  $detail['ench'], '', 1, 'lottery');
-            $item_txt = $prize['txt'];
-            break;
-        case 'additional_home':
-            $newname = 'lottery' . "_" . umc_random_code_gen(4);
-            umc_home_add($uuid, $newname, true);
-            $item_txt = "an addtional home!!";
-            break;
-        case 'additional_deposit':
-            umc_depositbox_create($uuid);
-            $item_txt = "an addtional deposit box!!";
-            break;
-        case 'vanity_title':
-            $current_title = umc_vanity_get_title();
-            if ($current_title) {
-                return umc_lottery();
-            }
-            $luck2 = mt_rand(7, 14);
-            umc_vanity_set($luck2, "I won the lottery!");
-            $item_txt = "a vanity title fo $luck2 days!!";
-            break;
-        case 'random_unc':
-            $luck2 = mt_rand(1, 500);
-            umc_money(false, $user, $luck2);
-            $item_txt = "$luck2 Uncs";
-            break;
-        case 'random_potion':
-            $luck2 = mt_rand(0, 63);
-            umc_deposit_give_item($uuid, 373, $luck2, '', '', 1, 'lottery');
-            $item_txt = $prize['txt'];
-            break;
-        case 'random_ench':
-            // pick which enchantment
-            $rand_ench = array_rand($ENCH_ITEMS);
+    $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
+    $give_data = 0;
+    $give_type = 0;
+    $give_amount = 1;
+    $give_ench = '';
+    if (in_array($type, $non_deposit)) {
+        $give_type = $type;
+        switch ($type) {
+            case 'additional_home':
+                $newname = 'lottery' . "_" . umc_random_code_gen(4);
+                umc_home_add($uuid, $newname, true);
+                $item_txt = "an addtional home!!";
+                break;
+            case 'additional_deposit':
+                umc_depositbox_create($uuid);
+                $item_txt = "an addtional deposit box!!";
+                break;
+            case 'vanity_title':
+                $current_title = umc_vanity_get_title();
+                if ($current_title) {
+                    return umc_lottery();
+                }
+                $luck2 = mt_rand(7, 14);
+                umc_vanity_set($luck2, "I won the lottery!");
+                $item_txt = "a vanity title fo $luck2 days!!";
+                break;
+            case 'random_unc':
+                $luck2 = mt_rand(1, 500);
+                umc_money(false, $user, $luck2);
+                $item_txt = "$luck2 Uncs";
+                break;
+        }
+    } else {
+        // instantiate block variables
+        switch ($type) {
+            case 'item':
+                $item_txt = $prize['txt'];
+                $give_type = $detail['type'];
+                $give_data = $detail['data'];
+                $give_ench = $detail['ench'];
+                break;
+            case 'random_ench':
+                // pick which enchantment
+                $rand_ench = array_rand($ENCH_ITEMS);
+                $rand_ench_id = $ENCH_ITEMS[$rand_ench]['id'];
 
-            $ench_arr = $ENCH_ITEMS[$rand_ench];
-            //pick which item to enchant
-            $rand_item = array_rand($ench_arr['items']);
-            $rand_item_id = $ench_arr['items'][$rand_item];
-            // pick level of enchantment
-            $lvl_luck = mt_rand(1, $ench_arr['max']);
-            //echo "$item $ench_txt $lvl_luck";
-            $item_ench_arr = array($rand_ench => $lvl_luck);
-            $item = umc_goods_get_text($rand_item_id, 0, $item_ench_arr);
-            $item_name = $item['item_name'];
-            $full = $item['full'];
-            umc_deposit_give_item($uuid, $item_name, 0, $item_ench_arr, '', 1, 'lottery');
-            $item_txt = "a " . $full;
-            break;
-        case 'random_pet': // same as blocks below but only 1 always
-            // umc_echo($type);
-            $block = $prize['blocks'];
-            $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-            $given_block = explode(":", $block[$luck2]);
-            $given_block_type = $given_block[0];
-            $given_block_data = $given_block[1];
-            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', 1, 'lottery');
-            $item = umc_goods_get_text($given_block_type, $given_block_data);
-            $item_txt = "a " .$item['full'];
-            break;
-        case 'random_common':
-        case 'random_ore':
-        case 'random_manuf':
-            $block = $prize['blocks'];
-            $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-            $luck3 = mt_rand(1, 64);
-            $given_block = explode(":", $block[$luck2]);
-            $given_block_type = $given_block[0];
-            $given_block_data = $given_block[1];
-            umc_deposit_give_item($uuid, $given_block_type, $given_block_data, '', '', $luck3, 'lottery');
-            $item = umc_goods_get_text($given_block_type, $given_block_data);
-            $item_txt = "$luck3 " . $item['full'];
-            break;
+                $ench_arr = $ENCH_ITEMS[$rand_ench];
+                //pick which item to enchant
+                $rand_item = array_rand($ench_arr['items']);
+                $rand_item_id = $ench_arr['items'][$rand_item];
+                // pick level of enchantment
+                $lvl_luck = mt_rand(1, $ench_arr['max']);
+                //echo "$item $ench_txt $lvl_luck";
+                // {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
+                $ench_nbt = "{ench:[{lvl:$lvl_luck,id:$rand_ench_id}]}";
+                $item = umc_goods_get_text($rand_item_id, 0, $ench_nbt);
+                $item_name = $item['item_name'];
+                $full = $item['full'];
+                $item_txt = "a " . $full;
+                $give_type = $item_name;
+                $give_ench = $ench_nbt;
+                break;
+            case 'random_pet': // same as blocks below but only 1 always
+                // umc_echo($type);
+                $block = $prize['blocks'];
+                $luck2 = mt_rand(0, count($prize['blocks']) - 1);
+                $given_block = $block[$luck2];
+                $give_ench = "{EntityTag:{id:\"minecraft:$given_block\"}}";
+                $give_data = 0;
+                $give_type = 'spawn_egg';
+                $item = umc_goods_get_text($give_type, $give_data, $give_ench);
+                $item_txt = "a " . $item['full'];
+                break;
+            case 'random_common':
+            case 'random_ore':
+            case 'random_sapling':
+            case 'random_manuf':
+                $block = $prize['blocks'];
+                $luck2 = mt_rand(0, count($prize['blocks']) - 1);
+                $luck3 = mt_rand(1, 64);
+                $given_block = explode(":", $block[$luck2]);
+                $give_type = $given_block[0];
+                $give_data = $given_block[1];
+                $item = umc_goods_get_text($give_type, $give_data);
+                $item_txt = "$luck3 " . $item['full'];
+                $give_amount = $luck3;
+                break;
+            case 'random_potion':
+                $types = array('lingering_potion', 'potion', 'splash_potion');
+                $type_luck = mt_rand(0, count($types) - 1);
+                $give_type = $types[$type_luck];
+                global $UMC_POTIONS;
+                $potion_luck = mt_rand(0, count($UMC_POTIONS) - 1);
+                $potion_keys = array_keys($UMC_POTIONS);
+                $potion_code = $potion_keys[$potion_luck];
+                $give_data = 0;
+                $item_txt = $give_type;
+                $give_ench = "{Potion:\"minecraft:$potion_code\"}";
+                $give_amount = 1;
+        }
+        umc_deposit_give_item($uuid, $give_type, $give_data, $give_ench, $give_amount, 'lottery');
     }
+
+
     if ($user != 'uncovery') {// testing only
         $item_nocolor = umc_ws_color_remove($item_txt);
         umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
-        umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($given_block_type:$given_block_data)");
+        umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($give_type:$give_data)");
         $userlevel = umc_get_userlevel($user);
         if (in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
             umc_mod_message($user, $msg);
         }
+
+        // add vote to the database
+        $service_raw = strtolower($UMC_USER['args'][3]);
+        // fix service
+        $search = array('http://www.', 'https://www.', 'http://', 'https://');
+        $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
+        // sql log
+        $sql_reward = umc_mysql_real_escape_string($type);
+        $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+        $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
+            VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
+        umc_mysql_query($sql, true);
     } else {
-        umc_echo("$user voted, rolled a $luck and got $item_txt!");
+        XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
     }
-    // add vote to the database
-    $service_raw = strtolower($UMC_USER['args'][3]);
-    // fix service
-    $search = array('http://www.', 'https://www.', 'http://', 'https://');
-    $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
-    // sql log
-    $sql_reward = umc_mysql_real_escape_string($type);
-    $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
-    $uuid_sql = umc_mysql_real_escape_string($uuid);
-    $sql = "INSERT INTO minecraft_log.votes_log (`username`, `datetime`, `website`, `ip_address`, `roll_value`, `reward`)
-        VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
-    umc_mysql_query($sql, true);
+
 
     //TODO: Match the site with the lottery_urls
 

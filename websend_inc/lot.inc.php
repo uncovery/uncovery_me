@@ -39,6 +39,14 @@ $WS_INIT['lot'] = array(
             'long' => 'Allow others to build on your lot, en/disable snow accumulation, ice formation;',
             ),
     ),
+    'manage' => array(
+        'help' => array(
+            'short' => 'Display an in-game menu for your lot;',
+            'args' => '<lot>',
+            'long' => 'This will display an in-game menu for your lot for easier management. If you do not give a lot argument, it will use your current lot.',
+        ),
+        'function' => 'umc_lot_manage',
+    ),    
     'add' => array(
         'help' => array(
             'short' => 'Add features to your lot;',
@@ -58,13 +66,13 @@ $WS_INIT['lot'] = array(
     ),
     'give' => array(
         'help' => array(
-            'short' => 'Remove all members and owners from a lot and give it to someone',
+            'short' => 'Give a lot to someone. Removes all other members.',
             'args' => '<lot> give [user]',
-            'long' => '',
+            'long' => 'Give a lot to someone. Removes all other members.',
         ),
         'function' => 'umc_lot_addrem',
         'security' => array(
-            'level'=>'Owner',
+            'level' => 'Owner',
          ),
     ),
     'mod' => array(
@@ -152,7 +160,7 @@ function umc_lot_mod() {
     }
     umc_ws_cmd('region load -w flatlands', 'asConsole');
     umc_log('lot', 'mod', "$player added himself to lot $lot to fix something");
-    XMPP_ERROR_trigger("$player added himself to lot $lot to fix something");
+    XMPP_ERROR_send_msg("$player added himself to lot $lot to fix something");
 }
 
 
@@ -354,14 +362,16 @@ function umc_lot_warp() {
 
     $allowed_worlds = array('empire', 'flatlands');
 
-    if (!in_array($world, $allowed_worlds)) {
+    if ($player != 'uncovery' && !in_array($world, $allowed_worlds)) {
         umc_error('Sorry, you need to be in the Empire or Flatlands to warp!');
-    } else if (isset($args[2])) {
+    }
+
+    if (isset($args[2])) {
         $lot = strtolower(umc_sanitize_input($args[2], 'lot'));
         // the above one fails already if the lot is not a proper lot
         $target_world = umc_get_lot_world($lot);
-        if (!in_array($target_world, $allowed_worlds)) {
-            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+        if ($player != 'uncovery' && !in_array($target_world, $allowed_worlds)) {
+            umc_error("Sorry, $player, you need to enter a lot name from the empire or flatlands. Lot names are for example 'emp_a1'");
         }
         if ($target_world != $world) {
             umc_error("Sorry, you need to be in $target_world to warp to $lot!");
@@ -369,10 +379,9 @@ function umc_lot_warp() {
         // check if lot exists
         $lot_check = umc_check_lot_exists($target_world, $lot);
         if (!$lot_check) {
-            umc_error('Sorry, you need to enter a lot name from the empire or flatlands. Lot names are for example "emp_a1"');
+            umc_error('Sorry, this lot does not exist! Lot names are for example "emp_a1"');
         }
-
-    } else{
+    } else {
         umc_error("Sorry, you need to enter the lot name after /lot warp!");
     }
 
@@ -500,4 +509,61 @@ function umc_lot_reset_flags() {
     umc_check_lot_owner($lot, $uuid);
     umc_lot_flags_set_defaults($lot);
     umc_echo("The flags for lot $lot have been reset!");
+}
+
+function umc_lot_manage() {
+    global $UMC_USER;
+    $player = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
+
+    if (isset($args[2])) {
+        $lot = strtolower($args[2]);
+    } else { // no lot given, get the current user's lot
+        $world = $UMC_USER['world'];
+        $x = round($UMC_USER['coords']['x'],1);
+        $z = round($UMC_USER['coords']['z'],1);    
+        $lot = umc_lot_get_from_coords($x, $z, $world);
+        if (!$lot) {
+            umc_error('There is no lot here!');
+        }
+        $lot_owners = umc_get_lot_members($lot, true);
+        if (!in_array(strtolower($player), $lot_owners)) {
+            $text = 'You are not owner of this lot! Owners are ' . implode(",", $lot_owners);
+            XMPP_ERROR_trigger($text);
+            umc_error($text);
+        }
+    }
+    $lot_members = umc_get_lot_members($lot, false);
+    $online_users = $UMC_USER['online_players'];
+    
+    umc_header("Lot $lot");
+    // show current users for removal
+    $members_str = array();
+    $members_str[] = array('text' => 'Members: ', 'format' => 'blue');
+    if (!$lot_members || count($lot_members) == 0) {
+        $members_str[] = array('text' => "(No members)", 'format' => 'white');
+    } else {
+        foreach ($lot_members as $member) {
+           $members_str[] = array('text' => "$member ", 'format' => 'white');
+           $members_str[] = array('text' => "[x] ", 'format' => array('red', 'run_command' => "/lot rem $lot member $member", 'show_text' => "Remove $member from lot"));
+        }
+    }
+    umc_text_format($members_str, false, false);
+    
+    // show active users for adding
+    $new_members_str = array();
+    $new_members_str[] = array('text' => 'Current Users: ', 'format' => 'blue');
+    if (count($online_users) == 0) {
+        $members_str[] = array('text' => "(No online users)", 'format' => 'white');
+    }    
+    foreach ($online_users as $user) {
+       if (($lot_members && in_array($user, $lot_members)) || $user == strtolower($player)) {
+           continue;
+       }
+       $new_members_str[] = array('text' => "$user ", 'format' => 'white');
+       $new_members_str[] = array('text' => "[+] ", 'format' => array('green', 'run_command' => "/lot add $lot member $user", 'show_text' => "Add $user to lot"));
+    } 
+    umc_text_format($new_members_str, false, false);
+    
+    umc_footer();
 }

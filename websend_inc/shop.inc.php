@@ -16,11 +16,11 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_shop_list',
         'help' => array(
             'args' => '{ro} [user]',
-            'short' => 'List requests/offers from you or others;',
-            'long' => '{yellow}[user]{gray} is optional, assumes yourself if not given.;'
-            . '{cyan} * Examples:;'
-            . '{green}/list req{gray} => Show your own (req)uests.;'
-            . '{green}/list o uncovery{gray} => Show uncovery\'s (o)ffers.;'
+            'short' => 'List requests/offers from you or others',
+            'long' => '{yellow}[user]{gray} is optional, assumes yourself if not given.'
+            . '{cyan} * Examples:'
+            . '{green}/list req{gray} => Show your own (req)uests.'
+            . '{green}/list o uncovery{gray} => Show uncovery\'s (o)ffers.'
         ),
         'top' => true,
     ),
@@ -28,12 +28,12 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_cancel',
         'help' => array(
             'args' => '{ro} <shop-id> [amount]',
-            'short' => 'Cancel an offer for sale;',
-            'long' => '{gray}Use {green}/list{gray} to find the {yellow}<shop-id>{gray} first;'
-            . '{gray}Attempts to cancel entire amount if {yellow}[amount]{gray} not given.;'
-            . '{cyan} * Examples:;'
-            . '{green}/cancel r 1342{gray} => Cancel entire amount of (r)equest id 1342.;'
-            . '{green}/cancel 7232 100{gray} => Cancel 100 of (offer) 7232.;'
+            'short' => 'Cancel an offer for sale',
+            'long' => '{gray}Use {green}/list{gray} to find the {yellow}<shop-id>{gray} first'
+            . '{gray}Attempts to cancel entire amount if {yellow}[amount]{gray} not given.'
+            . '{cyan} * Examples:'
+            . '{green}/cancel r 1342{gray} => Cancel entire amount of (r)equest id 1342.'
+            . '{green}/cancel 7232 100{gray} => Cancel 100 of (offer) 7232.'
         ),
         'top' => true,
         'security' => array(
@@ -44,21 +44,21 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_find',
         'help' => array(
             'args' => '{ro} [item]',
-            'short' => 'Find items in the shop;',
-            'long' => '{gray}Searches requests -or- offers. Accepts only ids or names.;{gray}Use {yellow}/search{gray} if you do not know the proper term.;'
-            . '{green}/find {gray} => {gray}Find by what you are holding in your hand;'
-            . '{green}/find {yellow}{ro} [item-id]{gray} => {gray}Find by item-id {purple}(see minecraft wiki);'
-            . '{green}/find {yellow}{ro} [item-name]{gray} => {gray}Find by name;'
-            . '{green}/find {yellow}{ro} >[price]{gray} => {gray}Find items priced over [price];'
-            . '{green}/find {yellow}{ro} <[price]{gray} => {gray}Find items prices under [price];'
-            . '{green}/find {yellow}{ro} ench{gray} => {gray}Find all enchanted items;'
-            . '{green}/find {yellow}{ro} ench:name{gray} => {gray}Find all items with named enchantment;'
-            . '{green}/find {yellow}{ro} new{gray} => {gray}Find most recent requests/offers;'
-            . '{cyan} * Examples:;'
-            . '{green}/find request new{gray} => {gray}Find most recent requests.;'
-            . '{green}/find off diamond{gray} => {gray}Find listings offering diamond.;'
-            . '{green}/find goldhat ench{gray} => {gray}Find offers for enchanted goldhats.;'
-            . '{green}/find ench:loot{gray} => {gray}Find offers for any items with Looting.;'
+            'short' => 'Find items in the shop',
+            'long' => '{gray}Searches requests -or- offers. Accepts only ids or names.;{gray}Use {yellow}/search{gray} if you do not know the proper term.'
+            . '{green}/find {gray} => {gray}Find by what you are holding in your hand'
+            . '{green}/find {yellow}{ro} [item-id]{gray} => {gray}Find by item-id {purple}(see minecraft wiki)'
+            . '{green}/find {yellow}{ro} [item-name]{gray} => {gray}Find by name'
+            . '{green}/find {yellow}{ro} >[price]{gray} => {gray}Find items priced over [price]'
+            . '{green}/find {yellow}{ro} <[price]{gray} => {gray}Find items prices under [price]'
+            . '{green}/find {yellow}{ro} ench{gray} => {gray}Find all enchanted items'
+            . '{green}/find {yellow}{ro} ench:name{gray} => {gray}Find all items with named enchantment'
+            . '{green}/find {yellow}{ro} new{gray} => {gray}Find most recent requests/offers'
+            . '{cyan} * Examples:'
+            . '{green}/find request new{gray} => {gray}Find most recent requests.'
+            . '{green}/find off diamond{gray} => {gray}Find listings offering diamond.'
+            . '{green}/find goldhat ench{gray} => {gray}Find offers for enchanted goldhats.'
+            . '{green}/find ench:loot{gray} => {gray}Find offers for any items with Looting.'
         ),
         'top' => true,
     ),
@@ -66,12 +66,12 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_offer',
         'help' => array(
             'args' => '[price] [amount]',
-            'short' => 'Offer items in the shop;',
-            'long' => '{green}/offer{gray} => {white}Search your inventory for the item currently; in your hand, and sell all of them at existing price;'
-            . '{green}/offer {yellow}[price]{gray} => {white}As above, but specify a price.;'
-            . '{green}/offer {yellow}[price] [amount]{gray} => {white}Sell only [amount] in the shop.;'
-            . '{green}/offer {yellow}... silent ...{gray} => Putting "silent" anywhere will silence announcements.;'
-            . '{white}Example: {yellow} /offer 25 10 silent;'
+            'short' => 'Offer items in the shop',
+            'long' => '{green}/offer{gray} => {white}Search your inventory for the item currently; in your hand, and sell all of them at existing price'
+            . '{green}/offer {yellow}[price]{gray} => {white}As above, but specify a price.'
+            . '{green}/offer {yellow}[price] [amount]{gray} => {white}Sell only [amount] in the shop.'
+            . '{green}/offer {yellow}... silent ...{gray} => Putting "silent" anywhere will silence announcements.'
+            . '{white}Example: {yellow} /offer 25 10 silent'
         ),
         'top' => true,
         'security' => array(
@@ -82,12 +82,12 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_depotoffer',
         'help' => array(
             'args' => '[deposit-id] [price] [amount]',
-            'short' => 'Offer items in the shop from deposit;',
-            'long' => '{green}/depotoffer {yellow}[deposit-id]{gray} => {white}Get items from your deposit by ID; in and sell all of them at existing price;'
-            . '{green}/depotoffer {yellow}[deposit-id] [price]{gray} => {white}As above, but specify a price.;'
-            . '{green}/depotoffer {yellow}[deposit-id] [price] [amount]{gray} => {white}Sell only [amount] in the shop.;'
-            . '{green}/depotoffer {yellow}... silent ...{gray} => Putting "silent" anywhere will silence announcements.;'
-            . '{white}Example: {yellow} /depotoffer 40441 25 10 silent;'
+            'short' => 'Offer items in the shop from deposit',
+            'long' => '{green}/depotoffer {yellow}[deposit-id]{gray} => {white}Get items from your deposit by ID; in and sell all of them at existing price'
+            . '{green}/depotoffer {yellow}[deposit-id] [price]{gray} => {white}As above, but specify a price.'
+            . '{green}/depotoffer {yellow}[deposit-id] [price] [amount]{gray} => {white}Sell only [amount] in the shop.'
+            . '{green}/depotoffer {yellow}... silent ...{gray} => Putting "silent" anywhere will silence announcements.'
+            . '{white}Example: {yellow} /depotoffer 40441 25 10 silent'
         ),
         'top' => true,
     ),
@@ -95,10 +95,10 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_buy',
         'help' => array(
             'args' => '<shop-id> [amount]',
-            'short' => 'Buy offered items;',
-            'long' => '{gray}Use {green}/find{gray} to find the {yellow}<shop-id>{gray} first {red}(NOT the Item ID);'
-            . '{gray}The {yellow}<shop-id>{gray} is the offer number in the shop listing;'
-            . '{gray}If {yellow}[amount]{gray} is not given, attempts to buy {white}all{gray}.;'
+            'short' => 'Buy offered items',
+            'long' => '{gray}Use {green}/find{gray} to find the {yellow}<shop-id>{gray} first {red}(NOT the Item ID)'
+            . '{gray}The {yellow}<shop-id>{gray} is the offer number in the shop listing'
+            . '{gray}If {yellow}[amount]{gray} is not given, attempts to buy {white}all{gray}.'
         ),
         'top' => true,
         'security' => array(
@@ -109,10 +109,10 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_depotbuy',
         'help' => array(
             'args' => '<shop-id> [amount]',
-            'short' => 'Buy offered items and place them in your deposit;',
-            'long' => '{gray}Use {green}/find{gray} to find the {yellow}<shop-id>{gray} first {red}(NOT the Item ID);'
-            . '{gray}The {yellow}<shop-id>{gray} is the offer number in the shop listing;'
-            . '{gray}If {yellow}[amount]{gray} is not given, attempts to buy {white}all{gray}.;'
+            'short' => 'Buy offered items and place them in your deposit',
+            'long' => '{gray}Use {green}/find{gray} to find the {yellow}<shop-id>{gray} first {red}(NOT the Item ID)'
+            . '{gray}The {yellow}<shop-id>{gray} is the offer number in the shop listing'
+            . '{gray}If {yellow}[amount]{gray} is not given, attempts to buy {white}all{gray}.'
         ),
         'top' => true,
     ),
@@ -120,12 +120,12 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_request',
         'help' => array(
             'args' => '<item> <price> <amount> <item>',
-            'short' => 'Request items in the shop;',
-            'long' => '{gray}You {red}must{gray} specify the item and specify the price, and the amount.;'
-            . '{white}PRICE{gray} comes before {white}AMOUNT{gray}! :);'
-            . '{gray}Your funds will be deducted {white}immediately{gray}, you can {yellow}/cancel{gray} your;'
-            . '{gray}request to retrieve those funds before the request is fulfilled.;'
-            . '{gray}The item can be either numeric (id:type) or text;',
+            'short' => 'Request items in the shop',
+            'long' => '{gray}You {red}must{gray} specify the item and specify the price, and the amount.'
+            . '{white}PRICE{gray} comes before {white}AMOUNT{gray}! :)'
+            . '{gray}Your funds will be deducted {white}immediately{gray}, you can {yellow}/cancel{gray} your'
+            . '{gray}request to retrieve those funds before the request is fulfilled.'
+            . '{gray}The item can be either numeric (id:type) or text',
         ),
         'top' => true,
     ),
@@ -133,11 +133,11 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_sell',
         'help' => array(
             'args' => '<shop-id> [amount]',
-            'short' => 'Sell requested items;',
-            'long' => '{gray}You {red}must{gray} be holding some of the item in your hand.;'
-            . '{gray}If {yellow}[amount]{gray} is not given, attempts to fulfill as much as possible;'
-            . '{gray}from what you have in your current inventory.;'
-            . '{gray}Use {yellow}/find r new{gray}, for example, to find shop-ids of requests.;'
+            'short' => 'Sell requested items',
+            'long' => '{gray}You {red}must{gray} be holding some of the item in your hand.'
+            . '{gray}If {yellow}[amount]{gray} is not given, attempts to fulfill as much as possible'
+            . '{gray}from what you have in your current inventory.'
+            . '{gray}Use {yellow}/find r new{gray}, for example, to find shop-ids of requests.'
         ),
         'top' => true,
         'security' => array(
@@ -148,11 +148,11 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_depotsell',
         'help' => array(
             'args' => '<shop-id> <deposit-id> [amount]',
-            'short' => 'Sell requested items from your deposit;',
-            'long' => '{gray}You {red}must{gray} have the same item in your deposit as the request;'
-            . '{gray}If {yellow}[amount]{gray} is not given, attempts to fulfill as much as possible;'
-            . '{gray}from what you have in the deposit.;'
-            . '{gray}Use {yellow}/find r new{gray}, for example, to find shop-ids of requests.;'
+            'short' => 'Sell requested items from your deposit',
+            'long' => '{gray}You {red}must{gray} have the same item in your deposit as the request'
+            . '{gray}If {yellow}[amount]{gray} is not given, attempts to fulfill as much as possible'
+            . '{gray}from what you have in the deposit.'
+            . '{gray}Use {yellow}/find r new{gray}, for example, to find shop-ids of requests.'
         ),
         'top' => true,
     ),
@@ -160,11 +160,11 @@ $WS_INIT['shop'] = array(
         'function' => 'umc_do_search',
         'help' => array(
             'args' => '<term> [page]',
-            'short' => 'Search for item names matching <term>;',
-            'long' => '{gray}Use the results shown with other commands, such as {yellow}/find;'
-            . '{cyan}* Example:;'
-            . '{yellow}/search ore{gray} => Find item names containing the word "ore";'
-            . '{yellow}/search pot 2{gray} => Returns page 2 of large subset results ie potions;'
+            'short' => 'Search for item names matching <term>',
+            'long' => '{gray}Use the results shown with other commands, such as {yellow}/find'
+            . '{cyan}* Example:'
+            . '{yellow}/search ore{gray} => Find item names containing the word "ore"'
+            . '{yellow}/search pot 2{gray} => Returns page 2 of large subset results ie potions'
         ),
         'top' => true,
     ),
@@ -195,9 +195,9 @@ function umc_shop_list() {
     $num_rows = count($D);
     if ($num_rows == 0) {
         if ($table == 'request') {
-            umc_error("{gold}$player{white} has no current requests!;");
+            umc_error("{gold}$player{white} has no current requests!");
         } else {
-            umc_error("{gold}$player{white} has nothing in the shop!;");
+            umc_error("{gold}$player{white} has nothing in the shop!");
         }
     } else {
         $verb = 'selling';
@@ -208,12 +208,19 @@ function umc_shop_list() {
         umc_echo("Shop-Id  {gold} $player{gray} is $verb");
         foreach ($D as $row) {
             $item = umc_goods_get_text($row["item_name"], $row["damage"], $row['meta']);
-            $item_name = $item['full'];
             if ($row['amount'] == -1) {
                 $row['amount'] = 'inf.';
             }
-            $label = "{darkgray} @ {cyan}" . $row['price'] . ";";
-            umc_echo(sprintf("{green}%7d     {yellow}%s", $row['id'], "{yellow}{$row['amount']} $item_name $label"));
+            $format_color = 'green';
+            if ($item['nbt_raw']) { // magix items are aqua
+                $format_color = 'aqua';
+            }                     
+            $data = array(
+                array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
+                array('text' => $row['amount'], 'format' => 'yellow'),
+                array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+            );
+            umc_text_format($data, false, false);            
         }
         umc_pretty_bar("darkblue", "-", "{blue} $num_rows listing(s) ");
     }
@@ -237,10 +244,10 @@ function umc_do_cancel() {
         if ($id > 0) {
             $id = $args[3];
         } else {
-            umc_error("{red}You entered an invalid Shop Id. Please use {yellow}/list{red} and{yellow} /shophelp cancel;");
+            umc_error("{red}You entered an invalid Shop Id. Please use {yellow}/list{red} and{yellow} /shophelp cancel");
         }
     } else {
-        umc_error("{red}You need to enter a shop ID. Please use {yellow}/list{red} and{yellow} /shophelp cancel;");
+        umc_error("{red}You need to enter a shop ID. Please use {yellow}/list{red} and{yellow} /shophelp cancel");
     }
 
     // Check argument 3, amount (if present)
@@ -262,7 +269,7 @@ function umc_do_cancel() {
         //umc_echo("{red}".mysql_error());
 
         if (count($data) != 1) {
-            umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/list{red} and{yellow} /shophelp cancel;");
+            umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/list{red} and{yellow} /shophelp cancel");
         }
         $row = $data[0];
         //Set maximum amount if necessary
@@ -389,7 +396,7 @@ function umc_do_find() {
     if (!$no_item_ok && is_null($find_item)) {
         $item_slot = $UMC_USER['current_item'];
         if (!isset($UMC_USER['inv'][$item_slot])) {
-            umc_error("{red}Please hold an item, or provide an item id or item name.;");
+            umc_error("{red}Please hold an item, or provide an item id or item name.");
         } else {
             $item_name = $UMC_USER['inv'][$item_slot]['item_name'];
             if ((isset($UMC_USER['inv'][$item_slot]['data'])) && ($UMC_USER['inv'][$item_slot]['data'] != 0)) {
@@ -501,11 +508,13 @@ function umc_do_offer_internal($deposit) {
 	$inv_amount = $row['amount'];
     } else {
 	if (!isset($inv[$item_slot])) {
-	    umc_error("{red}You need to hold the item you want to offer!;");
+	    umc_error("{red}You need to hold the item you want to offer!");
 	}
 	$item_name = $inv[$item_slot]['item_name'];
 	$item_type = $inv[$item_slot]['data'];
-        if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
+        if (strpos($inv[$item_slot]['nbt'], "{") === 0) { //we have nbt
+            $meta = $inv[$item_slot]['nbt'];
+        } else if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
             $meta = serialize($inv[$item_slot]['meta']);
         } else {
             $meta = '';
@@ -557,7 +566,7 @@ function umc_do_offer_internal($deposit) {
         if ($row) {
             $price = $row['price'];
         } else {
-            umc_error("{red}Since you do not have the same item already in the shop you need to specify a price.;");
+            umc_error("{red}Since you do not have the same item already in the shop you need to specify a price.");
         }
     } else {
         $price = umc_sanitize_input($args[2], 'price');
@@ -575,7 +584,7 @@ function umc_do_offer_internal($deposit) {
 
     // sell item at same price, check if exists
     if ($excess_count > 0) {
-        umc_error("{red}Your price is too expensive! There are people offering the exact same item at 1/100th of yours!;");
+        umc_error("{red}Your price is too expensive! There are people offering the exact same item at 1/100th of yours!");
     }
 
     // check if an argument was given for amount.
@@ -596,7 +605,7 @@ function umc_do_offer_internal($deposit) {
         $posted_id = 0;
         if ($row) { // Update existing listing
             $sum = $amount + $row['amount'];
-            umc_echo("{green}[+]{gray}You already had {$row['amount']} {$item['full']} in the shop. Adding $amount to ID {$row['id']};");
+            umc_echo("{green}[+]{gray}You already had {$row['amount']} {$item['full']} in the shop. Adding $amount to ID {$row['id']}");
             $sql = "UPDATE minecraft_iconomy.`stock` SET `amount` = amount + '$amount', price='$price' WHERE `stock`.`id`={$row['id']} LIMIT 1;";
             $rst = umc_mysql_query($sql, true);
             $posted_id = $row['id'];
@@ -640,10 +649,10 @@ function umc_do_offer_internal($deposit) {
         if ($row) {
             $sum = $amount + $row['amount'];
             umc_echo("{white}[?]{gray} This would update your existing offering to "
-                    . "{yellow}$sum  {$item['full']}{darkgray} @ {cyan}{$price}{gray} each.;");
+                    . "{yellow}$sum  {$item['full']}{darkgray} @ {cyan}{$price}{gray} each.");
         } else {
             umc_echo("{white}[?]{gray} This would create a new offering for "
-                    . "{yellow}$amount {$item['full']}{darkgray} @ {cyan}{$price}{gray} each.;");
+                    . "{yellow}$amount {$item['full']}{darkgray} @ {cyan}{$price}{gray} each.");
         }
     }
 }
@@ -693,7 +702,7 @@ function umc_do_buy_internal($to_deposit = false) {
         umc_show_help();
         return;
     } elseif (!is_numeric($args[2])) {
-        umc_error("{red}Invalid shop_id: '{yellow}{$args[2]}{red}'. Did you mean '{yellow}/find {$args[2]}{red}'?;");
+        umc_error("{red}Invalid shop_id: '{yellow}{$args[2]}{red}'. Did you mean '{yellow}/find {$args[2]}{red}'?");
     }
     $id = $args[2];
     if (!isset($args[3])) {
@@ -713,11 +722,11 @@ function umc_do_buy_internal($to_deposit = false) {
 
     if ($row) {
         if (!$amount && ($row['amount'] == -1)) {
-            umc_error("{red}That item has an unlimited supply. Please enter an amount!;");
+            umc_error("{red}That item has an unlimited supply. Please enter an amount!");
         }
 
         if ($row['uuid'] == $uuid && $player != 'uncovery') {
-            umc_error("{red}You cannot buy your own goods. Use {yellow}/cancel <id>{red} instead!;");
+            umc_error("{red}You cannot buy your own goods. Use {yellow}/cancel <id>{red} instead!");
         }
         if (!$amount || ($amount > $row['amount'] && $row['amount'] != -1)) { // buy as much as possible
             $amount = $row['amount'];
@@ -748,11 +757,11 @@ function umc_do_buy_internal($to_deposit = false) {
             umc_log('shop', 'buy', "$player bought from $seller/{$row['uuid']} $amount {$item['full_clean']} for $sum, money was tranferred");
             // give goods to player1
             $leftover = umc_checkout_goods($id, $amount, 'stock', false, $to_deposit);
-            $msg = "$player bought $amount {$item['name']} for {$row['price']} Uncs/pcs (= $sum Uncs)! $leftover left in stock!;";
+            $msg = "$player bought $amount {$item['name']} for {$row['price']} Uncs/pcs (= $sum Uncs)! $leftover left in stock!";
             umc_mod_message($seller, $msg);
         }
     } else {
-        umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp buy;");
+        umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp buy");
     }
 }
 
@@ -764,7 +773,7 @@ function umc_do_search() {
 
     // check for nonsense queries returning large sets
     if (!isset($args[2]) || strlen($args[2]) < 3) {
-        umc_error("{red}You need at least 3 letters to search for!;");
+        umc_error("{red}You need at least 3 letters to search for!");
     }
 
     $term_raw = $args[2];
@@ -848,8 +857,8 @@ function umc_do_sell_internal($from_deposit=false) {
     $uuid = $UMC_USER['uuid'];
 
     if (!isset($args[2]) || (!is_numeric($args[2]))) {
-        umc_error("{red}You need a valid shop_id to sell to a requester. Use {yellow}/find request ...;");
-        umc_error("{red}Maybe you meant {yellow}/offer{red}, for posting an offer for sale in the shop.;");
+        umc_error("{red}You need a valid shop_id to sell to a requester. Use {yellow}/find request ...");
+        umc_error("{red}Maybe you meant {yellow}/offer{red}, for posting an offer for sale in the shop.");
     }
 
     $do_check = false;
@@ -863,13 +872,13 @@ function umc_do_sell_internal($from_deposit=false) {
     $sql_request = "SELECT * FROM minecraft_iconomy.request WHERE id='$id' LIMIT 1;";
     $request_data = umc_mysql_fetch_all($sql_request);
     if (count($request_data) == 0) {
-        umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp sell;");
+        umc_error("{red}The shop-id {white}$id{red} could not be found. Please use {yellow}/find{red} and{yellow} /shophelp sell");
     }
     $request = $request_data[0];
     $request_item = umc_goods_get_text($request['item_name'], $request['damage'], $request['meta']);
 
     if ($request['uuid'] == $uuid && $player != 'uncovery') {
-        umc_error("{red}You cannot fulfill your own requests. Use {yellow}/cancel r <id>{red} instead!;");
+        umc_error("{red}You cannot fulfill your own requests. Use {yellow}/cancel r <id>{red} instead!");
     }
     // do we sell items from deposit?
     if ($from_deposit) {
@@ -889,14 +898,14 @@ function umc_do_sell_internal($from_deposit=false) {
 	}
         if ($depot_item['notrade']) {
             umc_error("Sorry, this item is not able to be traded (yet).");
-        }          
+        }
     } else {
 	$item_slot = $UMC_USER['current_item'];
 	$check_inv = $UMC_USER['inv'];
 	if (!isset($check_inv[$item_slot])) {
-	    umc_error("{red}You need to hold the item you want to sell!;");
+	    umc_error("{red}You need to hold the item you want to sell!");
 	}
-        $inv_item = umc_goods_get_text($check_inv[$item_slot]['id'], $check_inv[$item_slot]['data'], $check_inv[$item_slot]['meta']);
+        $inv_item = umc_goods_get_text($check_inv[$item_slot]['item_name'], $check_inv[$item_slot]['data'], $check_inv[$item_slot]['meta']);
 	if ($inv_item != $request_item) {
             //umc_error_longmsg("Sell failed");
 	    //umc_echo("{green}$type:$data {gray} => {red}".$check_inv[$item_slot]['id'].":".$check_inv[$item_slot]['data']);
@@ -904,7 +913,7 @@ function umc_do_sell_internal($from_deposit=false) {
 	}
         if ($inv_item['notrade']) {
             umc_error("Sorry, this item is not able to be traded (yet).");
-        }         
+        }
     }
 
     if (!isset($args[3])) {
@@ -986,7 +995,7 @@ function umc_do_sell_internal($from_deposit=false) {
     umc_shop_transaction_record($uuid, $request['uuid'], $amount, $sum, $request_item['item_name'], $request_item['type'], $request_item['meta']);
 
     // message recipient
-    $msg = "$player sold you $amount {$request_item['full']} per your request, check your /depotlist!;";
+    $msg = "$player sold you $amount {$request_item['full']} per your request, check your /depotlist!";
     umc_mod_message($recipient, $msg);
 
     // record logfile
@@ -1010,7 +1019,6 @@ function umc_do_request() {
     if (!$item_check) {
         umc_error("{red}Unknown item ({yellow}$args[2]{red}). Try using {yellow}/search{red} to find names.");
     } else {
-        XMPP_ERROR_trace("item_check", $item_check);
         $item = umc_goods_get_text($item_check['item_name'], $item_check['type']);
     }
     $item_name = $item['item_name'];
@@ -1020,7 +1028,7 @@ function umc_do_request() {
 
     if ($item['notrade']) {
         umc_error("Sorry, this item is not able to be traded (yet).");
-    }    
+    }
 
     $do_check = false;
     $pos = array_search('check', $args);
@@ -1049,7 +1057,7 @@ function umc_do_request() {
         if ($row) {
             $price = $row['price'];
         } else {
-            umc_error("{red}Since you do not have the same item already in the shop you need to specify a price.;");
+            umc_error("{red}Since you do not have the same item already in the shop you need to specify a price.");
         }
     } else {
         $price = umc_sanitize_input($args[3], 'price');
@@ -1059,7 +1067,7 @@ function umc_do_request() {
     $amount = umc_sanitize_input($args[4], 'amount');
     if ($amount == NULL) {
         // buying 0 amount available is not possible
-        umc_error("{red}You need to specify an amount, too!;");
+        umc_error("{red}You need to specify an amount, too!");
     }
 
     $cost = $price * $amount;
