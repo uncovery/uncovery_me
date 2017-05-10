@@ -1130,8 +1130,25 @@ function umc_do_request() {
         umc_echo("{green}[$]{white} Your account has been credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
     }
     umc_money($player, false, $cost);
-    umc_mod_broadcast("{gold}$player{gray} is {red}requesting to buy {yellow}$sum$meta_txt{green} "
-        . "{$item['full']}{darkgray} @ {cyan}{$price}{gray} each{darkgray}, shop-id {gray}{$posted_id}");
+        
+    $format_color = 'green';
+    if ($item['nbt_raw']) { // magix items are aqua
+        $format_color = 'aqua';
+    }
+    $data = array(
+        array('text' => $player, ' format' => 'gold'),
+        array('text' => " is ", ' format' => 'gray'),
+        array('text' => "requesting to buy ", ' format' => 'red'),
+        array('text' => $sum . " ", ' format' => 'yellow'),
+        array('text' => $item['full'] . " ", ' format' => $format_color),
+        array('text' => " @ ", ' format' => 'darkgrey'),
+        array('text' => $price, ' format' => 'cyan'),
+        array('text' => " each", ' format' => 'gray'),
+        array('text' => ", shop-id ", ' format' => 'darkgray'),
+        array('text' => $posted_id, ' format' => 'gray')
+    );
+    umc_text_format($data, false, false);
+        
 }
 
 /**
