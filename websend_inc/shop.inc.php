@@ -214,13 +214,13 @@ function umc_shop_list() {
             $format_color = 'green';
             if ($item['nbt_raw']) { // magix items are aqua
                 $format_color = 'aqua';
-            }                     
+            }
             $data = array(
                 array('text' => sprintf("%7d     ", $row['id']), 'format' => 'green'),
                 array('text' => $row['amount'], 'format' => 'yellow'),
                 array('text' => " " . $item['name'], 'format' => array($format_color, 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
             );
-            umc_text_format($data, false, false);            
+            umc_text_format($data, false, false);
         }
         umc_pretty_bar("darkblue", "-", "{blue} $num_rows listing(s) ");
     }
@@ -634,6 +634,7 @@ function umc_do_offer_internal($deposit) {
             // calculate total listing value for hovertext
             $listing_value = $sum * $price;
             // compose raw JSON message with @a selector (all online players)
+            // TODO: this should be changed to use umc_text_format()
             $cmd = 'tellraw @a ['
                 . '{"text":"[!] ' . $player . ' offers ","color":"gold"},'
                 . '{"text":"' . $sum . ' ' . $item['full_nocolor'] .  ' @ ' . $price . '/pc! ",'
@@ -1130,25 +1131,24 @@ function umc_do_request() {
         umc_echo("{green}[$]{white} Your account has been credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
     }
     umc_money($player, false, $cost);
-        
+
     $format_color = 'green';
     if ($item['nbt_raw']) { // magix items are aqua
         $format_color = 'aqua';
     }
     $data = array(
-        array('text' => $player, ' format' => 'gold'),
-        array('text' => " is ", ' format' => 'gray'),
-        array('text' => "requesting to buy ", ' format' => 'red'),
-        array('text' => $sum . " ", ' format' => 'yellow'),
-        array('text' => $item['full'] . " ", ' format' => $format_color),
-        array('text' => " @ ", ' format' => 'darkgrey'),
-        array('text' => $price, ' format' => 'cyan'),
-        array('text' => " each", ' format' => 'gray'),
-        array('text' => ", shop-id ", ' format' => 'darkgray'),
-        array('text' => $posted_id, ' format' => 'gray')
+        array('text' => $player . " ", 'format' => 'gold'),
+        array('text' => "requesting ", 'format' => 'red'),
+        array('text' => $sum . " ", 'format' => 'yellow'),
+        array('text' => $item['full_clean'] . " ", 'format' => $format_color),
+        array('text' => " @ ", 'format' => 'dark_gray'),
+        array('text' => $price, 'format' => 'aqua'),
+        array('text' => " each", 'format' => 'gray'),
+        array('text' => ", shop-id ", 'format' => 'dark_gray'),
+        array('text' => $posted_id, 'format' => 'gray')
     );
     umc_text_format($data, false, false);
-        
+
 }
 
 /**
