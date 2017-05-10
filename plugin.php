@@ -22,45 +22,50 @@
  */
 
 /**
+ * TODO: This list should be created automatically for a cache.
+ * The reading of the whole directory each time takes too much time.
  * handles the inclusion of all available plugins in the folder
  */
 function umc_plg_include() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $folder = '/home/minecraft/server/bin/websend_inc';
-    
+
     // An array of all plugins to be registered and included
     $plugins = array (
-      'contests',
-      'depositbox',
-      'hardcore',
-      'home',
-      'hunger',
-      'info',
-      'karma',
-      'lot',
-      'lottery',
-      'mail',
-      'mod',
-      'money',
-      'nocheatplus',
-      'others',
-      'potions',
-      'shop',
-      'skyblock',
-      'story',
-      'teamspeak',
-      'trivia',
-      'userlevel',
-      'vanity',
-      'vote',
-      'web',
-      'xp',
-      );
+        'contests',
+        'depositbox',
+        'hardcore',
+        'home',
+        'hunger',
+        'info',
+        'karma',
+        'lot',
+        'lottery',
+        'mail',
+        'mod',
+        'money',
+        'nocheatplus',
+        'others',
+        'potions',
+        'shop',
+        'skyblock',
+        'story',
+        'teamspeak',
+        'trivia',
+        'userlevel',
+        'vanity',
+        'vote',
+        'web',
+        'xp',
+        );
 
-      //Require each plugin.
-      foreach($plugins as $plugin) {
-        require_once($folder . "/" . $plugin . ".inc.php");
-      }
+    //Require each plugin.
+    foreach($plugins as $plugin) {
+          $filename = $folder . "/" . $plugin . ".inc.php";
+          if (file_exists($filename)) {
+              require_once($filename);
+          }
+    }
 }
 
 /**
