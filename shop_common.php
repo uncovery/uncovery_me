@@ -147,7 +147,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
-    global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DOMAIN, $UMC_DATA_ID2NAME;
+    global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if we have "minecraft:" in the beginning.
