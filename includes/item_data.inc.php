@@ -238,7 +238,7 @@ function umc_item_data_icon_getdata() {
     require '/home/includes/google_api/vendor/autoload.php';
     $service_account_file = '/home/includes/google_api/google_auth.json';
     $spreadsheet_id = '1b3M2EPGzNFtMp-hW9Sam5ETQg2eTuBEg1S1WArhwJKY';
-    $spreadsheet_range = 'output!A2:C1601';
+    $spreadsheet_range = 'Entry!B2:AG51';
 
     putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $service_account_file);
     $client = new Google_Client();
@@ -249,7 +249,7 @@ function umc_item_data_icon_getdata() {
     $result = $service->spreadsheets_values->get($spreadsheet_id, $spreadsheet_range);
 
     $data = $result->getValues();
-
+    
     $final_data = array();
     $invalid_data = array();
     
@@ -261,33 +261,37 @@ function umc_item_data_icon_getdata() {
     $img_size = $icon_size * $scale;    
     
     // item sprite css header
-    $css = ".item_sprite {display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); background-repeat: no-repeat; width:{$img_size}px; height:{$img_size}px;}\n";
-    foreach ($data as $line => $D) {
-        $name_type = 0;
-        $coords = array('x' => $D[1], 'y' => $D[2], 'line' => $line);
+    $css = ".item_sprite {display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); "
+        . "background-repeat: no-repeat; width:{$img_size}px; height:{$img_size}px;}\n"
+        . ".item_golden_apple_1 {background-position:-24px -624px;}"; // the enchanted golden apple is the same as the normal one but not twice in the table
+    foreach ($data as $row => $L) {
+        foreach ($L as $line => $name) {
+            $name_type = 0;
+            $coords = array('x' => $line, 'y' => $row);
         
-        if ($D[0] == '' || strstr($D[0], " ") || strstr($D[0], ".")) {
-            continue;
-        } else if (strstr($D[0], ":")) {
-            $name_data = explode(":", $D[0]);
-            $item_name = $name_data[0];
-            $name_type = $name_data[1];
-            if (isset($UMC_DATA[$item_name])) {
-                $final_data[$item_name][$name_type] = $coords;
+            if ($name == '' || strstr($name, " ") || strstr($name, ".")) {
+                continue;
+            } else if (strstr($name, ":")) {
+                $name_data = explode(":", $name);
+                $item_name = $name_data[0];
+                $name_type = $name_data[1];
+                if (isset($UMC_DATA[$item_name])) {
+                    $final_data[$item_name][$name_type] = $coords;
+                } else {
+                    $invalid_data[$item_name][$name_type] = $coords;
+                }
             } else {
-                $invalid_data[$item_name][$name_type] = $coords;
+                $item_name = $name;
+                if (isset($UMC_DATA[$item_name])) {
+                    $final_data[$item_name] = $coords;
+                } else {
+                    $invalid_data[$item_name] = $coords;
+                }
             }
-        } else {
-            $item_name = $D[0];
-            if (isset($UMC_DATA[$item_name])) {
-                $final_data[$item_name] = $coords;
-            } else {
-                $invalid_data[$item_name] = $coords;
-            }
+            $x = $line * $scale * $icon_size;
+            $y = $row * $scale * $icon_size;
+            $css .=  ".item_{$item_name}_{$name_type} {background-position:-{$x}px -{$y}px;}\n";            
         }
-        $x = $D[1] * $scale * $icon_size;
-        $y = $D[2] * $scale * $icon_size;
-        $css .=  ".item_{$item_name}_{$name_type} {background-position:-{$x}px -{$y}px;}\n";
     }
 
     ksort($final_data);
@@ -297,10 +301,16 @@ function umc_item_data_icon_getdata() {
 
     //TODO: Download latest version of this file:
     // http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
+    //wiki page here: http://minecraft.gamepedia.com/File:InvSprite.png
+    
+    $source_file = 'http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png';
+    $target_directory = '/home/minecraft/server/bin/data/images';
+    $R = unc_serial_curl($source_file);
+    file_put_contents($target_directory . "/InvSprite.png", $R[0]['content']);
     
     // write CSS to file
     $css_file = '/home/minecraft/server/bin/data/item_sprites.css';
-    file_put_contents($css_file, $css);
+    file_put_contents($css_file, $css);    
 }
 
 
@@ -329,14 +339,12 @@ $UMC_DATA = array(
     ),
     'grass' => array(
         'id' => 2,
-        'icon_coordinates' => array(21, 31),
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/0/08/Grid_Grass_Block.png',
     ),
     'dirt' => array(
         'id' => 3,
-        'icon_coordinates' => array(20, 30),
         'stack' => 64,
         'avail' => true,
         'group' => 'dirt_types',
@@ -486,18 +494,18 @@ $UMC_DATA = array(
             1 => array('name' => 'spruce_leaves', 'avail' => true, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
             2 => array('name' => 'birch_leaves', 'avail' => true, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
             3 => array('name' => 'jungle_leaves', 'avail' => true, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
-            4 => array('name' => 'oak_leaves_no_decay', 'avail' => true, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
-            5 => array('name' => 'spruce_leaves_no_decay', 'avail' => true, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
-            6 => array('name' => 'birch_leaves_no_decay', 'avail' => true, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
-            7 => array('name' => 'jungle_leaves_no_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
-            8 => array('name' => 'oak_leaves_check_decay', 'avail' => true, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
-            9 => array('name' => 'spruce_leaves_check_decay', 'avail' => true, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
-            10 => array('name' => 'birch_leaves_check_decay', 'avail' => true, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
-            11 => array('name' => 'jungle_leaves_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
-            12 => array('name' => 'oak_leaves_no_decay_and_check_decay', 'avail' => true, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
-            13 => array('name' => 'spruce_leaves_no_decay_and_check_decay', 'avail' => true, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
-            14 => array('name' => 'birch_leaves_no_decay_and_check_decay', 'avail' => true, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
-            15 => array('name' => 'jungle_leaves_no_decay_and_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
+            4 => array('name' => 'oak_leaves_no_decay', 'avail' => false, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
+            5 => array('name' => 'spruce_leaves_no_decay', 'avail' => false, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
+            6 => array('name' => 'birch_leaves_no_decay', 'avail' => false, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
+            7 => array('name' => 'jungle_leaves_no_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
+            8 => array('name' => 'oak_leaves_check_decay', 'avail' => false, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
+            9 => array('name' => 'spruce_leaves_check_decay', 'avail' => false, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
+            10 => array('name' => 'birch_leaves_check_decay', 'avail' => false, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
+            11 => array('name' => 'jungle_leaves_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
+            12 => array('name' => 'oak_leaves_no_decay_and_check_decay', 'avail' => false, 'icon_url' => '/e/e5/Grid_Oak_Leaves.png'),
+            13 => array('name' => 'spruce_leaves_no_decay_and_check_decay', 'avail' => false, 'icon_url' => '/e/ed/Grid_Spruce_Leaves.png'),
+            14 => array('name' => 'birch_leaves_no_decay_and_check_decay', 'avail' => false, 'icon_url' => '/3/39/Grid_Birch_Leaves.png'),
+            15 => array('name' => 'jungle_leaves_no_decay_and_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Jungle_Leaves.png'),
         ),
     ),
     'sponge' => array(
@@ -595,8 +603,8 @@ $UMC_DATA = array(
         'group' => 'grass_types',
         'icon_url' => '/6/67/Grid_Shrub.png',
         'subtypes' => array(
-            0 => array('name' => 'tall_grass', 'avail' => true, 'icon_url' => '/6/67/Grid_Shrub.png'),
-            1 => array('name' => 'grass', 'avail' => true, 'icon_url' => '/6/6f/Grid_Grass.png'),
+            0 => array('name' => 'shrub', 'avail' => true, 'icon_url' => '/6/67/Grid_Shrub.png'),
+            1 => array('name' => 'tallgrass', 'avail' => true, 'icon_url' => '/6/6f/Grid_Grass.png'),
             2 => array('name' => 'fern', 'avail' => true, 'icon_url' => '/4/43/Grid_Fern.png'),
         ),
     ),
@@ -737,14 +745,14 @@ $UMC_DATA = array(
             5 => array('name' => 'stone_brick_slab', 'avail' => true, 'icon_url' => '/4/46/Grid_Stone_Bricks_Slab.png'),
             6 => array('name' => 'nether_brick_slab', 'avail' => true, 'icon_url' => '/d/dd/Grid_Nether_Brick_Slab.png'),
             7 => array('name' => 'quartz_slab', 'avail' => true, 'icon_url' => '/0/09/Grid_Quartz_Slab.png'),
-            8 => array('name' => 'upside-down_stone_slab', 'avail' => true, 'icon_url' => '/2/29/Grid_Stone_Slab.png'),
-            9 => array('name' => 'upside-down_sandstone_slab', 'avail' => true, 'icon_url' => '/2/2a/Grid_Sandstone_Slab.png'),
-            10 => array('name' => 'upside-down_(stone)_wooden_slab', 'avail' => true, 'icon_url' => '/5/5c/Grid_Oak_Wood_Slab.png'),
-            11 => array('name' => 'upside-down_cobblestone_slab', 'avail' => true, 'icon_url' => '/f/f7/Grid_Cobblestone_Slab.png'),
-            12 => array('name' => 'upside-down_bricks_slab', 'avail' => true, 'icon_url' => '/b/b3/Grid_Bricks_Slab.png'),
-            13 => array('name' => 'upside-down_stone_brick_slab', 'avail' => true, 'icon_url' => '/4/46/Grid_Stone_Bricks_Slab.png'),
-            14 => array('name' => 'upside-down_nether_brick_slab', 'avail' => true, 'icon_url' => '/d/dd/Grid_Nether_Brick_Slab.png'),
-            15 => array('name' => 'upside-down_quartz_slab', 'avail' => true, 'icon_url' => '/0/09/Grid_Quartz_Slab.png'),
+            8 => array('name' => 'upside-down_stone_slab', 'avail' => false, 'icon_url' => '/2/29/Grid_Stone_Slab.png'),
+            9 => array('name' => 'upside-down_sandstone_slab', 'avail' => false, 'icon_url' => '/2/2a/Grid_Sandstone_Slab.png'),
+            10 => array('name' => 'upside-down_(stone)_wooden_slab', 'avail' => false, 'icon_url' => '/5/5c/Grid_Oak_Wood_Slab.png'),
+            11 => array('name' => 'upside-down_cobblestone_slab', 'avail' => false, 'icon_url' => '/f/f7/Grid_Cobblestone_Slab.png'),
+            12 => array('name' => 'upside-down_bricks_slab', 'avail' => false, 'icon_url' => '/b/b3/Grid_Bricks_Slab.png'),
+            13 => array('name' => 'upside-down_stone_brick_slab', 'avail' => false, 'icon_url' => '/4/46/Grid_Stone_Bricks_Slab.png'),
+            14 => array('name' => 'upside-down_nether_brick_slab', 'avail' => false, 'icon_url' => '/d/dd/Grid_Nether_Brick_Slab.png'),
+            15 => array('name' => 'upside-down_quartz_slab', 'avail' => false, 'icon_url' => '/0/09/Grid_Quartz_Slab.png'),
         ),
     ),
     'brick_block' => array(
@@ -792,7 +800,7 @@ $UMC_DATA = array(
     'mob_spawner' => array(
         'id' => 52,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/3/3b/Grid_Monster_Spawner.png',
     ),
     'oak_stairs' => array(
@@ -978,7 +986,7 @@ $UMC_DATA = array(
     'reeds' => array(
         'id' => 83,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/7/79/Grid_Sugar_Canes.png',
     ),
     'jukebox' => array(
@@ -1087,7 +1095,7 @@ $UMC_DATA = array(
     'monster_egg' => array(
         'id' => 97,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'group' => 'monster_egg_types',
         'icon_url' => '/a/a6/Grid_Stone.png',
         'subtypes' => array(
@@ -1334,12 +1342,12 @@ $UMC_DATA = array(
             3 => array('name' => 'jungle_wood_slab', 'avail' => true, 'icon_url' => '/3/3f/Grid_Jungle_Wood_Slab.png'),
             4 => array('name' => 'acacia_wood_slab', 'avail' => true, 'icon_url' => '/b/b3/Grid_Acacia_Wood_Slab.png'),
             5 => array('name' => 'dark_oak_wood_slab', 'avail' => true, 'icon_url' => '/8/86/Grid_Dark_Oak_Wood_Slab.png'),
-            8 => array('name' => 'upside-down_oak_wood_slab', 'avail' => true, 'icon_url' => '/5/5c/Grid_Oak_Wood_Slab.png'),
-            9 => array('name' => 'upside-down_spruce_wood_slab', 'avail' => true, 'icon_url' => '/6/60/Grid_Spruce_Wood_Slab.png'),
-            10 => array('name' => 'upside-down_birch_wood_slab', 'avail' => true, 'icon_url' => '/b/bc/Grid_Birch_Wood_Slab.png'),
-            11 => array('name' => 'upside-down_jungle_wood_slab', 'avail' => true, 'icon_url' => '/3/3f/Grid_Jungle_Wood_Slab.png'),
-            12 => array('name' => 'upside-down_acacia_wood_slab', 'avail' => true, 'icon_url' => '/b/b3/Grid_Acacia_Wood_Slab.png'),
-            13 => array('name' => 'upside-down_dark_oak_wood_slab', 'avail' => true, 'icon_url' => '/8/86/Grid_Dark_Oak_Wood_Slab.png'),
+            8 => array('name' => 'upside-down_oak_wood_slab', 'avail' => false, 'icon_url' => '/5/5c/Grid_Oak_Wood_Slab.png'),
+            9 => array('name' => 'upside-down_spruce_wood_slab', 'avail' => false, 'icon_url' => '/6/60/Grid_Spruce_Wood_Slab.png'),
+            10 => array('name' => 'upside-down_birch_wood_slab', 'avail' => false, 'icon_url' => '/b/bc/Grid_Birch_Wood_Slab.png'),
+            11 => array('name' => 'upside-down_jungle_wood_slab', 'avail' => false, 'icon_url' => '/3/3f/Grid_Jungle_Wood_Slab.png'),
+            12 => array('name' => 'upside-down_acacia_wood_slab', 'avail' => false, 'icon_url' => '/b/b3/Grid_Acacia_Wood_Slab.png'),
+            13 => array('name' => 'upside-down_dark_oak_wood_slab', 'avail' => false, 'icon_url' => '/8/86/Grid_Dark_Oak_Wood_Slab.png'),
         ),
     ),
     'cocoa' => array(
@@ -1429,7 +1437,7 @@ $UMC_DATA = array(
             1 => array('name' => 'mossy_cobblestone_wall', 'avail' => true, 'icon_url' => '/6/63/Grid_Mossy_Cobblestone_Wall.png'),
         ),
     ),
-    'flower_pot' => array(
+    'flower_pot_block' => array( // actually just flower_pot but overlaps with item
         'id' => 140,
         'stack' => 64,
         'avail' => false,
@@ -1536,8 +1544,8 @@ $UMC_DATA = array(
             0 => array('name' => 'quartz_block', 'avail' => true, 'icon_url' => '/0/04/Grid_Block_of_Quartz.png'),
             1 => array('name' => 'chiseled_quartz_block', 'avail' => true, 'icon_url' => '/8/8d/Grid_Chiseled_Quartz_Block.png'),
             2 => array('name' => 'pillar_quartz_block', 'avail' => true, 'icon_url' => '/5/59/Grid_Pillar_Quartz_Block.png'),
-            3 => array('name' => 'pillar_quartz_block', 'avail' => true, 'icon_url' => '/5/59/Grid_Pillar_Quartz_Block.png'),
-            4 => array('name' => 'pillar_quartz_block', 'avail' => true, 'icon_url' => '/5/59/Grid_Pillar_Quartz_Block.png'),
+            3 => array('name' => 'pillar_quartz_block', 'avail' => false, 'icon_url' => '/5/59/Grid_Pillar_Quartz_Block.png'),
+            4 => array('name' => 'pillar_quartz_block', 'avail' => false, 'icon_url' => '/5/59/Grid_Pillar_Quartz_Block.png'),
         ),
     ),
     'quartz_stairs' => array(
@@ -1617,12 +1625,12 @@ $UMC_DATA = array(
         'subtypes' => array(
             0 => array('name' => 'acacia_leaves', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png',),
             1 => array('name' => 'dark_oak_leaves', 'avail' => true, 'icon_url' => '/5/57/Grid_Dark_Oak_Leaves.png'),
-            4 => array('name' => 'acacia_leaves_no_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
-            5 => array('name' => 'dark_oak_leaves_no_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
-            8 => array('name' => 'acacia_leaves_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
-            9 => array('name' => 'dark_oak_leaves_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
-            12 => array('name' => 'acacia_leaves_check_decay_and_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
-            13 => array('name' => 'dark_oak_leaves_check_decay_and_check_decay', 'avail' => true, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            4 => array('name' => 'acacia_leaves_no_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            5 => array('name' => 'dark_oak_leaves_no_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            8 => array('name' => 'acacia_leaves_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            9 => array('name' => 'dark_oak_leaves_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            12 => array('name' => 'acacia_leaves_check_decay_and_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
+            13 => array('name' => 'dark_oak_leaves_check_decay_and_check_decay', 'avail' => false, 'icon_url' => '/7/76/Grid_Acacia_Leaves.png'),
         ),
     ),
     'log2' => array(
@@ -1634,12 +1642,12 @@ $UMC_DATA = array(
         'subtypes' => array(
             0 => array('name' => 'acacia_wood', 'avail' => true, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png',),
             1 => array('name' => 'dark_oak_wood', 'avail' => true, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
-            4 => array('name' => 'acacia_wood_east_west', 'avail' => true, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
-            5 => array('name' => 'dark_oak_wood_east_west', 'avail' => true, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
-            8 => array('name' => 'acacia_wood_north_south', 'avail' => true, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
-            9 => array('name' => 'dark_oak_wood_north_south', 'avail' => true, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
-            12 => array('name' => 'acacia_wood_only_bark', 'avail' => true, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
-            13 => array('name' => 'dark_oak_wood_only_bark', 'avail' => true, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
+            4 => array('name' => 'acacia_wood_east_west', 'avail' => false, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
+            5 => array('name' => 'dark_oak_wood_east_west', 'avail' => false, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
+            8 => array('name' => 'acacia_wood_north_south', 'avail' => false, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
+            9 => array('name' => 'dark_oak_wood_north_south', 'avail' => false, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
+            12 => array('name' => 'acacia_wood_only_bark', 'avail' => false, 'icon_url' => '/d/d6/Grid_Acacia_Wood.png'),
+            13 => array('name' => 'dark_oak_wood_only_bark', 'avail' => false, 'icon_url' => '/e/ec/Grid_Dark_Oak_Wood.png'),
         ),
     ),
     'acacia_stairs' => array(
@@ -1758,13 +1766,13 @@ $UMC_DATA = array(
     'standing_banner' => array(
         'id' => 176,
         'stack' => 16,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/2/24/Grid_White_Banner.png',
     ),
     'wall_banner' => array(
         'id' => 177,
         'stack' => 16,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/2/24/Grid_White_Banner.png',
     ),
     'daylight_detector_inverted' => array(
@@ -1794,7 +1802,7 @@ $UMC_DATA = array(
     'double_stone_slab2' => array(
         'id' => 181,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/7/72/Grid_Red_Sandstone_Slab.png',
     ),
     'stone_slab2' => array(
@@ -1956,13 +1964,13 @@ $UMC_DATA = array(
     'end_gateway' => array(
         'id' => 209,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/6/6e/End_Gateway_(block).png',
     ),
     'frosted_ice' => array(
         'id' => 212,
         'stack' => 64,
-        'avail' => true,
+        'avail' => false,
         'icon_url' => '/7/77/Ice.png',
     ),
     'magma' => array(
@@ -2674,7 +2682,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/2/2c/Grid_Clay.png',
     ),
-    'sugarcane' => array(
+    'reeds' => array(
         'id' => 338,
         'stack' => 64,
         'avail' => true,
@@ -2839,7 +2847,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/1/13/Grid_Shears.png',
     ),
-    'melonslice' => array(
+    'melon' => array(
         'id' => 360,
         'stack' => 64,
         'avail' => true,
@@ -3055,7 +3063,7 @@ $UMC_DATA = array(
         'avail' => true,
         'icon_url' => '/c/c5/Grid_Item_Frame.png',
     ),
-    'flower_pot_item' => array(
+    'flower_pot' => array(
         'id' => 390,
         'stack' => 64,
         'avail' => true,
@@ -3141,26 +3149,7 @@ $UMC_DATA = array(
         'id' => 402,
         'stack' => 64,
         'avail' => true,
-        'group' => 'firework_types',
         'icon_url' => '/6/68/Grid_White_Firework_Star.png',
-        'subtypes' => array(
-            0 => array('name' => 'white_firework_star', 'avail' => true, 'icon_url' => '/6/68/Grid_White_Firework_Star.png'),
-            1 => array('name' => 'orange_firework_star', 'avail' => true, 'icon_url' => '/e/e7/Grid_Orange_Firework_Star.png'),
-            2 => array('name' => 'magenta_firework_star', 'avail' => true, 'icon_url' => '/9/9e/Grid_Magenta_Firework_Star.png'),
-            3 => array('name' => 'light_blue_firework_star', 'avail' => true, 'icon_url' => '/9/9f/Grid_Light_Blue_Firework_Star.png'),
-            4 => array('name' => 'yellow_firework_star', 'avail' => true, 'icon_url' => '/b/b9/Grid_Yellow_Firework_Star.png'),
-            5 => array('name' => 'lime_firework_star', 'avail' => true, 'icon_url' => '/2/20/Grid_Lime_Firework_Star.png'),
-            6 => array('name' => 'pink_firework_star', 'avail' => true, 'icon_url' => '/2/20/Grid_Pink_Firework_Star.png'),
-            7 => array('name' => 'gray_firework_star', 'avail' => true, 'icon_url' => '/c/c4/Grid_Gray_Firework_Star.png'),
-            8 => array('name' => 'light_Gray_Firework', 'avail' => true, 'icon_url' => '/8/80/Grid_Light_Gray_Firework_Star.png'),
-            9 => array('name' => 'cyan_firework_star', 'avail' => true, 'icon_url' => '/a/a5/Grid_Cyan_Firework_Star.png'),
-            10 => array('name' => 'purple_firework_star', 'avail' => true, 'icon_url' => '/7/72/Grid_Purple_Firework_Star.png'),
-            11 => array('name' => 'blue_firework_star', 'avail' => true, 'icon_url' => '/d/d3/Grid_Blue_Firework_Star.png'),
-            12 => array('name' => 'brown_firework_star', 'avail' => true, 'icon_url' => '/e/e6/Grid_Brown_Firework_Star.png'),
-            13 => array('name' => 'green_firework_star', 'avail' => true, 'icon_url' => '/f/ff/Grid_Green_Firework_Star.png'),
-            14 => array('name' => 'red_firework_star', 'avail' => true, 'icon_url' => '/b/b7/Grid_Red_Firework_Star.png'),
-            15 => array('name' => 'black_firework_star', 'avail' => true, 'icon_url' => '/6/67/Grid_Black_Firework_Star.png'),
-        ),
     ),
     'enchanted_book' => array(
         'id' => 403,
@@ -3173,10 +3162,6 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'icon_url' => '/e/ea/Grid_Redstone_Comparator.png',
-        'subtypes' => array(
-            0 => array('name' => 'redstone_comparator_(ative)', 'avail' => true, 'icon_url' => '/e/ea/Grid_Redstone_Comparator.png'),
-            1 => array('name' => 'redstone_comparator_(inactive)', 'avail' => true, 'icon_url' => '/e/ea/Grid_Redstone_Comparator.png'),
-        ),
     ),
     'netherbrick' => array(
         'id' => 405,
@@ -3602,7 +3587,6 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'leaves_2' => 'leaves2',
     'log_2' => 'log2',
     'long_grass' => 'tallgrass',
-    'melon' => 'melonslice',
     'monster_egg' => 'spawn_egg',
     'monster_eggs' => 'monster_egg',
     'mushroom_soup' => 'mushroom_stew',
