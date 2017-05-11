@@ -164,6 +164,7 @@ function umc_wp_template_picker($template) {
 function umc_wp_add_css_and_js() {
     wp_enqueue_style( 'dataTables', 'https://uncovery.me/admin/dataTables.css' );
     wp_enqueue_style( 'uncovery', 'https://uncovery.me/admin/global.css' );
+    wp_enqueue_style( 'item_sprites', 'https://uncovery.me/admin/item_sprites.css' );
     // execute floored's CSS only on his page
     $postid = get_the_ID();
     if ($postid == 15523) {
