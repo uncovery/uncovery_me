@@ -216,11 +216,12 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     }
 
     $full_clean = trim("$nice_name$meta_text$nbt_string$damage_text");
-    if ($UMC_ENV == 'wordpress' && file_exists($icon_path . $icon_file)) {
-        if (isset($UMC_DATA[$item_name]['icon_coordinates'])) { // get background image of single image
+    if ($UMC_ENV == 'wordpress') {
+        global $ITEM_SPRITES;
+        if (isset($ITEM_SPRITES[$item_name])) { // get background image of single image
             $img = umc_item_data_icon_html($item_name, $item_data) ;
         } else {
-            $img = "<img width=\"24\" src=\"$UMC_DOMAIN/websend/$icon_file\" alt=\"$nice_name\">";
+            $img = umc_item_data_icon_html('invalid', 'unknown') . "?";
         }
         $full = "$img $full_clean";
     } else if ($UMC_ENV == 'websend') {
