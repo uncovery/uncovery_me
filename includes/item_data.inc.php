@@ -263,7 +263,7 @@ function umc_item_data_icon_getdata() {
     // item sprite css header
     $css = ".item_sprite {display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); "
         . "background-repeat: no-repeat; width:{$img_size}px; height:{$img_size}px;}\n"
-        . ".item_golden_apple_1 {background-position:-24px -624px;}"; // the enchanted golden apple is the same as the normal one but not twice in the table
+        . ".item_golden_apple_1 {background-position:-24px -624px;}\n"; // the enchanted golden apple is the same as the normal one but not twice in the table
     foreach ($data as $row => $L) {
         foreach ($L as $line => $name) {
             $name_type = 0;
