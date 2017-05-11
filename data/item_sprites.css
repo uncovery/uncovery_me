@@ -1,5 +1,6 @@
 .item_sprite {display: inline-block; background-size: 768px; background-image: url(/admin/img/InvSprite.png); background-repeat: no-repeat; width:24px; height:24px;}
-.item_golden_apple_1 {background-position:-24px -624px;}.item_unknown_0 {background-position:-0px -0px;}
+.item_golden_apple_1 {background-position:-24px -624px;}
+.item_unknown_0 {background-position:-0px -0px;}
 .item_chainmail_boots_0 {background-position:-24px -0px;}
 .item_chainmail_chestplate_0 {background-position:-48px -0px;}
 .item_chainmail_helmet_0 {background-position:-72px -0px;}
