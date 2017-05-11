@@ -121,6 +121,9 @@ function umc_shopmgr_items() {
     // get all data
     if (!isset($s_get['item']) || !isset($UMC_DATA[$s_get['item']])) {
         foreach ($UMC_DATA as $name => $data) {
+            if (!$data['avail']) {
+                continue;
+            }
             // $item = umc_goods_get_text($name);
             $variants = '';
             $title = $name;
@@ -132,21 +135,19 @@ function umc_shopmgr_items() {
                 $title = $data['group'];
                 $sub_count = count($data['subtypes']);
                 $sub_text = "$sub_count sub-types";
-                $sub_id = '?';
+                $sub_id = '0';
             }
             // get stock
             $stock_amount = umc_shop_count_amounts('stock', $name);
             $request_amount = umc_shop_count_amounts('request', $name);
 
-            if ($data['avail']) {
-                $items[$name] = array(
-                    'item_name' => "$name|$sub_id|",
-                    'sub_types'=> $sub_text,
-                    'stack_size' => $data['stack'],
-                    'stock' => $stock_amount,
-                    'requests' => $request_amount
-                );
-            }
+            $items[$name] = array(
+                'item_name' => "$name|$sub_id|",
+                'sub_types'=> $sub_text,
+                'stack_size' => $data['stack'],
+                'stock' => $stock_amount,
+                'requests' => $request_amount
+            );
         }
         return umc_web_table("goods", "0, 'asc'", $items, '', array(), $non_numeric_cols);
     // get only one item's sub-items
@@ -164,7 +165,7 @@ function umc_shopmgr_items() {
                 . umc_shopmgr_item_stats($item_name, $item_type);
             return $out;
         } else {
-        // we are looking for a specific item, so let's get it as a header
+            // we are looking for a specific item, so let's get it as a header
             if (!isset($s_get['type']) || ($s_get['type']==0 && !isset($UMC_DATA[$s_get['item']]['subtypes'][$s_get['type']]))) {
                 $item_type = 0;
             } else {
