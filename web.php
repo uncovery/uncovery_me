@@ -385,19 +385,30 @@ function umc_web_table_create_line($row, $numeric_columns, $formats, $hide_cols)
 
 // Column formatting
 function umc_web_table_format_column($name, $value) {
-    global $ENCH_ITEMS, $UMC_DOMAIN, $UMC_DATA, $UMC_DATA_ID2NAME;
+    global $UMC_DOMAIN, $UMC_DATA, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $people_types = array('username', 'buyer', 'seller', 'sender', 'recipient');
     $uuid_types = array('vendor', 'requestor');
     if ($name == 'item_name') {
+        $type = 0;
+        $type_str = '';
         $id_parts = explode("|",$value);
-        $item_arr = umc_goods_get_text($id_parts[0], $id_parts[1], $id_parts[2]);
+        if (isset($id_parts[1])) {
+            $type = $id_parts[1];
+            $type_str = "&amp;type=$type";
+        }
+        $meta = '';
+        $meta_str = '';
+        if (isset($id_parts[2])) {
+            $meta = $id_parts[2];
+            $meta_str = "&amp;meta=$meta";
+        }
+        $item_arr = umc_goods_get_text($id_parts[0], $type, $meta);
         if (!$item_arr) {
             XMPP_ERROR_send_msg("Could not identify $name $value for web table");
         }
-        $type = "&amp;type={$id_parts[1]}";
-        $out = "<a href=\"?page=goods&amp;item={$id_parts[0]}$type\">" . $item_arr['full'] . "</a>\n";
+        $out = "<a href=\"?page=goods&amp;item={$id_parts[0]}$type_str$meta_str\">" . $item_arr['full'] . "</a>\n";
         return $out;
     } else if ($name == 'item') {
         $id_parts = explode("|",$value);
@@ -415,7 +426,8 @@ function umc_web_table_format_column($name, $value) {
             $item_dmg = 0;
         }
 
-        if (isset($UMC_DATA[$item_name]['subtypes']) && $UMC_DATA[$item_name]['subtypes'][$item_dmg]['icon_url'] == '?') {
+        if (
+            isset($UMC_DATA[$item_name]['subtypes']) && $UMC_DATA[$item_name]['subtypes'][$item_dmg]['icon_url'] == '?') {
             $icon_dmg = 0;
         } else {
             $icon_dmg = $item_dmg;
