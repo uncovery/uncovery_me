@@ -215,51 +215,12 @@ function umc_item_data_id2namelist() {
  * @param type $item_name
  * @param type $sub_type
  */
-function umc_item_data_icon_html($item_name, $sub_type = false, $scale = 0.75) {
-    $icon_size = 32;
-    $image_width = 1024;
-
-    $coords = umc_item_data_icon_coordinates($item_name, $sub_type, $icon_size);
-    if (!$coords) {
-        return false;
-    }
-    $x = $coords['x'] * $scale;
-    $y = $coords['y'] * $scale;
-    $background_size_x = $image_width * $scale;
-    $img_size = $icon_size * $scale;
-    // original background size 1,024px × 1,600px
-    $html = "<span style=\"display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); width:{$img_size}px; height:{$img_size}px; background-position:-{$x}px -{$y}px;\"> </span>";
+function umc_item_data_icon_html($item_name, $sub_type = false) {
+    $html = "<span class=\"item_sprite item_{$item_name}_{$sub_type}\"> </span>";
     return $html;
 }
 
 
-/**
- * we are storing with every item/block the position in the file
- * http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
- * as X/Y coordinates, starting from the top left with 0/0.
- * This function converts this coordinate into pixels to be included into CSS
- * background images for display
- */
-function umc_item_data_icon_coordinates($item_name, $sub_type = false, $icon_width = 32) {
-    global $UMC_DATA;
-
-    if (!$sub_type) {
-        if (isset($UMC_DATA[$item_name]['icon_coordinates'])) {
-            $x = $UMC_DATA[$item_name]['icon_coordinates'][0] * $icon_width;
-            $y = $UMC_DATA[$item_name]['icon_coordinates'][1] * $icon_width;
-        } else {
-            return false;
-        }
-    } else {
-        if (isset($UMC_DATA[$item_name][$sub_type]['icon_coordinates'])) {
-            $x = $UMC_DATA[$item_name][$sub_type]['icon_coordinates'][0] * $icon_width;
-            $y = $UMC_DATA[$item_name][$sub_type]['icon_coordinates'][1] * $icon_width;
-        } else {
-            return false;
-        }
-    }
-    return array('x' => $x, 'y' => $y);
-}
 
 /**
  * Getting the data from the google spreadsheets
@@ -291,13 +252,24 @@ function umc_item_data_icon_getdata() {
 
     $final_data = array();
     $invalid_data = array();
+    
+    $icon_size = 32;
+    $image_width = 1024;
+    $scale = 0.75;
+
+    $background_size_x = $image_width * $scale;
+    $img_size = $icon_size * $scale;    
+    
+    // item sprite css header
+    $css = ".item_sprite {display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); background-repeat: no-repeat; width:{$img_size}px; height:{$img_size}px;}\n";
     foreach ($data as $line => $D) {
-        $name  = $D[0];
+        $name_type = 0;
         $coords = array('x' => $D[1], 'y' => $D[2], 'line' => $line);
-        if ($name == '') {
+        
+        if ($D[0] == '' || strstr($D[0], " ") || strstr($D[0], ".")) {
             continue;
-        } else if (strstr($name, ":")) {
-            $name_data = explode(":", $name);
+        } else if (strstr($D[0], ":")) {
+            $name_data = explode(":", $D[0]);
             $item_name = $name_data[0];
             $name_type = $name_data[1];
             if (isset($UMC_DATA[$item_name])) {
@@ -306,18 +278,29 @@ function umc_item_data_icon_getdata() {
                 $invalid_data[$item_name][$name_type] = $coords;
             }
         } else {
-            if (isset($UMC_DATA[$name])) {
-                $final_data[$name] = $coords;
+            $item_name = $D[0];
+            if (isset($UMC_DATA[$item_name])) {
+                $final_data[$item_name] = $coords;
             } else {
-                $invalid_data[$name] = $coords;
+                $invalid_data[$item_name] = $coords;
             }
         }
+        $x = $D[1] * $scale * $icon_size;
+        $y = $D[2] * $scale * $icon_size;
+        $css .=  ".item_{$item_name}_{$name_type} {background-position:-{$x}px -{$y}px;}\n";
     }
 
     ksort($final_data);
     $final_data['invalid'] = $invalid_data;
 
-    umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/includes/item_sprites.php');
+    umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/includes/item_sprites.inc.php');
+
+    //TODO: Download latest version of this file:
+    // http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
+    
+    // write CSS to file
+    $css_file = '/home/minecraft/server/bin/data/item_sprites.css';
+    file_put_contents($css_file, $css);
 }
 
 
