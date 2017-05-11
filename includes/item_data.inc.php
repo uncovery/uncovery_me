@@ -325,7 +325,6 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'group' => 'stone_types',
-        
         'subtypes' => array(
             0 => array('name' => 'stone', 'avail' => true),
             1 => array('name' => 'granite', 'avail' => true),
@@ -445,26 +444,11 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'group' => 'log_types',
-        
         'subtypes' => array(
             0 => array('name' => 'oak_wood', 'avail' => true),
             1 => array('name' => 'spruce_wood', 'avail' => true),
             2 => array('name' => 'birch_wood', 'avail' => true),
             3 => array('name' => 'jungle_wood', 'avail' => true),
-            /*4 => array('name' => 'Oak wood facing East/West', 'avail' => false),
-            5 => array('name' => 'Spruce wood facing East/West', 'avail' => false),
-            6 => array('name' => 'Birch wood facing East/West', 'avail' => false),
-            7 => array('name' => 'Jungle wood facing East/West', 'avail' => false),
-            8 => array('name' => 'Oak wood facing North/South', 'avail' => false),
-            9 => array('name' => 'Spruce wood facing North/South', 'avail' => false),
-            10 => array('name' => 'Birch wood facing North/South', 'avail' => false),
-            11 => array('name' => 'Jungle wood facing North/South', 'avail' => false),
-            12 => array('name' => 'Oak wood with only bark', 'avail' => false, 'icon_url),
-            13 => array('name' => 'Spruce wood with only bark', 'avail' => false, 'icon_url),
-            14 => array('name' => 'Birch wood with only bark', 'avail' => false, 'icon_url),
-            15 => array('name' => 'Jungle wood with only bark', 'avail' => false, 'icon_url),
-             *
-             */
         ),
     ),
     'leaves' => array(
@@ -496,7 +480,6 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => false,
         'group' => 'sponge_types',
-        
         'subtypes' => array(
             0 => array('name' => 'sponge', 'avail' => false),
             1 => array('name' => 'wet_sponge', 'avail' => false),
@@ -531,7 +514,6 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
         'group' => 'sandstone_types',
-        
         'subtypes' => array(
             0 => array('name' => 'sandstone', 'avail' => true),
             1 => array('name' => 'chiseled_sandstone', 'avail' => true),
@@ -566,12 +548,6 @@ $UMC_DATA = array(
         'id' => 29,
         'stack' => 64,
         'avail' => true,
-        
-    /*    'subtypes' => array(
-            0 => array('name' => 'sticky_piston', 'avail' => true),
-            7 => array('name' => 'sticky_piston', 'avail' => true),
-        ),
-     */
     ),
     'web' => array(
         'id' => 30,
@@ -599,12 +575,6 @@ $UMC_DATA = array(
         'id' => 33,
         'stack' => 64,
         'avail' => true,
-        /*
-        'subtypes' => array(
-            0 => array('name' => 'piston', 'avail' => true),
-            7 => array('name' => 'piston', 'avail' => true),
-        ),
-         */
     ),
     'piston_head' => array(
         'id' => 34,
