@@ -181,7 +181,6 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $damage_text = '';
     $damage_spacer = '';
     $mc_name = $item_name;
-    $icon_ext = strtolower(pathinfo($item_arr['icon_url'], PATHINFO_EXTENSION));
 
     if (isset($item_arr['damage'])) {
         $damage = umc_goods_damage_calc($item_data, $item_arr['damage']);
@@ -191,13 +190,9 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         }
     } else if (isset($item_arr['subtypes'][$item_data])) { // we might have a subtype
         $mc_name = $item_arr['subtypes'][$item_data]['name'];
-        $icon_ext = strtolower(pathinfo($item_arr['subtypes'][$item_data]['icon_url'], PATHINFO_EXTENSION));
     }
 
     $nice_name = umc_pretty_name($mc_name);
-
-    $icon_file = "icons/$mc_name.$icon_ext";
-    $icon_path = "$UMC_PATH_MC/server/bin/data/";
 
     $meta_text = '';
     $nbt_string = '';
