@@ -708,7 +708,7 @@ $UMC_DATA = array(
         'subtypes' => array(
             0 => array('name' => 'stone_slab', 'avail' => true),
             1 => array('name' => 'sandstone_slab', 'avail' => true),
-            2 => array('name' => '(stone)_wooden_slab', 'avail' => true),
+            2 => array('name' => '(stone)_wooden_slab', 'avail' => false),
             3 => array('name' => 'cobblestone_slab', 'avail' => true),
             4 => array('name' => 'bricks_slab', 'avail' => true),
             5 => array('name' => 'stone_brick_slab', 'avail' => true),
