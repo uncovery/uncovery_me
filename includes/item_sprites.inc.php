@@ -809,8 +809,22 @@ $ITEM_SPRITES = array(
         'y' => 25,
     ),
     'fish' => array(
-        'x' => 9,
-        'y' => 26,
+        '2' => array(
+            'x' => 24,
+            'y' => 25,
+        ),
+        '3' => array(
+            'x' => 4,
+            'y' => 26,
+        ),
+        '0' => array(
+            'x' => 9,
+            'y' => 26,
+        ),
+        '1' => array(
+            'x' => 13,
+            'y' => 26,
+        ),
     ),
     'fishing_rod' => array(
         'x' => 22,
@@ -1421,11 +1435,17 @@ $ITEM_SPRITES = array(
         'y' => 35,
     ),
     'quartz_block' => array(
-        'x' => 2,
-        'y' => 27,
+        '0' => array(
+            'x' => 2,
+            'y' => 27,
+        ),
         '1' => array(
             'x' => 7,
             'y' => 27,
+        ),
+        '2' => array(
+            'x' => 9,
+            'y' => 28,
         ),
     ),
     'quartz_ore' => array(
@@ -1961,8 +1981,34 @@ $ITEM_SPRITES = array(
         'y' => 29,
     ),
     'stone' => array(
-        'x' => 7,
-        'y' => 31,
+        '6' => array(
+            'x' => 10,
+            'y' => 28,
+        ),
+        '4' => array(
+            'x' => 11,
+            'y' => 28,
+        ),
+        '2' => array(
+            'x' => 12,
+            'y' => 28,
+        ),
+        '5' => array(
+            'x' => 9,
+            'y' => 30,
+        ),
+        '3' => array(
+            'x' => 17,
+            'y' => 30,
+        ),
+        '1' => array(
+            'x' => 19,
+            'y' => 30,
+        ),
+        '0' => array(
+            'x' => 7,
+            'y' => 31,
+        ),
     ),
     'stone_axe' => array(
         'x' => 6,
@@ -1993,12 +2039,38 @@ $ITEM_SPRITES = array(
         'y' => 38,
     ),
     'stone_slab' => array(
-        'x' => 5,
-        'y' => 29,
-    ),
-    'stone_slab2' => array(
-        'x' => 19,
-        'y' => 28,
+        '4' => array(
+            'x' => 6,
+            'y' => 27,
+        ),
+        '3' => array(
+            'x' => 11,
+            'y' => 27,
+        ),
+        '6' => array(
+            'x' => 5,
+            'y' => 28,
+        ),
+        '7' => array(
+            'x' => 17,
+            'y' => 28,
+        ),
+        '2' => array(
+            'x' => 19,
+            'y' => 28,
+        ),
+        '1' => array(
+            'x' => 21,
+            'y' => 28,
+        ),
+        '5' => array(
+            'x' => 4,
+            'y' => 29,
+        ),
+        '0' => array(
+            'x' => 5,
+            'y' => 29,
+        ),
     ),
     'stone_stairs' => array(
         'x' => 12,
@@ -2009,15 +2081,15 @@ $ITEM_SPRITES = array(
         'y' => 40,
     ),
     'stonebrick' => array(
-        '5' => array(
+        '3' => array(
             'x' => 11,
             'y' => 30,
         ),
-        '4' => array(
+        '2' => array(
             'x' => 15,
             'y' => 30,
         ),
-        '3' => array(
+        '1' => array(
             'x' => 26,
             'y' => 30,
         ),
@@ -2273,54 +2345,6 @@ $ITEM_SPRITES = array(
             'x' => 7,
             'y' => 25,
         ),
-        'clownfish' => array(
-            'x' => 24,
-            'y' => 25,
-        ),
-        'pufferfish' => array(
-            'x' => 4,
-            'y' => 26,
-        ),
-        'salmon' => array(
-            'x' => 13,
-            'y' => 26,
-        ),
-        'brick_slab' => array(
-            'x' => 6,
-            'y' => 27,
-        ),
-        'cobblestone_slab' => array(
-            'x' => 11,
-            'y' => 27,
-        ),
-        'pillar_quartz_block' => array(
-            'x' => 9,
-            'y' => 28,
-        ),
-        'polished_andesite' => array(
-            'x' => 10,
-            'y' => 28,
-        ),
-        'polished_diorite' => array(
-            'x' => 11,
-            'y' => 28,
-        ),
-        'polished_granite' => array(
-            'x' => 12,
-            'y' => 28,
-        ),
-        'quartz_slab' => array(
-            'x' => 17,
-            'y' => 28,
-        ),
-        'sandstone_slab' => array(
-            'x' => 21,
-            'y' => 28,
-        ),
-        'stone_brick_slab' => array(
-            'x' => 4,
-            'y' => 29,
-        ),
         'lit_redstone_torch' => array(
             'x' => 24,
             'y' => 29,
@@ -2341,25 +2365,9 @@ $ITEM_SPRITES = array(
             'x' => 8,
             'y' => 30,
         ),
-        'andesite' => array(
-            'x' => 9,
-            'y' => 30,
-        ),
-        'diorite' => array(
-            'x' => 17,
-            'y' => 30,
-        ),
-        'granite' => array(
-            'x' => 19,
-            'y' => 30,
-        ),
         'monster_spawner' => array(
             'x' => 24,
             'y' => 30,
-        ),
-        'red_sand' => array(
-            'x' => 1,
-            'y' => 31,
         ),
         'potions' => array(
             'x' => 25,
