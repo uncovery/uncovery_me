@@ -26,66 +26,6 @@ global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_icons'] = 'umc_get_icons';
 
 /**
- * 1) take all item_names from pasted wiki-code
- * 2) take all item_names from the data table UMC_DATA
- * 3) take all item names from the data table $UMC_DATA_ID2NAME
- * 4) check if they match
- * 5) check if any of the tables have unknown data
- *
- */
-function umc_item_name_integrity_check() {
-    global $UMC_DATA, $UMC_DATA_ID2NAME, $UMC_DATA_SPIGOT2ITEM;
-    $out = '';
-    $text = '';
-    $tables = array('request', 'deposit', 'stock');
-
-    if (isset($_POST['wiki_text'])) {
-        $results = false;
-        $text = strip_tags($_POST['wiki_text']);
-        $pattern = '/minecraft:(.*)\r/';
-        preg_match_all($pattern, $text, $results);
-        // process results
-        $sub_results = $results[1];
-        foreach ($sub_results as $wiki_string) {
-            if (!isset($UMC_DATA[$wiki_string])) {
-                $out .= "$wiki_string ! UMC_DATA ERROR<br>";
-            } else {
-                // now check for umc_items
-                $id = $UMC_DATA[$wiki_string]['id'];
-                if ($UMC_DATA_ID2NAME[$id] != $wiki_string) {
-                    $wrong_name = $UMC_DATA_ID2NAME[$id];
-                    $out .= "$wiki_string ! UMC_ITEMS ERROR (ID: $id, $wrong_name)<br>";
-                }
-            }
-        }
-        foreach ($UMC_DATA_SPIGOT2ITEM as $wrong_data => $right_data) {
-            if (!isset($UMC_DATA[$right_data])) {
-                $out .= "$right_data should not be in table ($wrong_data)!";
-            }
-        }
-
-
-        $out .= "<pre>";
-        foreach ($tables as $table) {
-            $sql = "SELECT item_name FROM minecraft_iconomy.$table group by item_name;";
-            $rst = umc_mysql_query($sql);
-            while ($D = umc_mysql_fetch_array($rst)) {
-                $table_item = $D['item_name'];
-                if (!in_array($table_item, $sub_results)) {
-                    $out .= "UPDATE minecraft_iconomy.$table SET item_name='$table_item' WHERE item_name='$table_item';<br>";
-                }
-            }
-        }
-        $out .= "</pre>";
-    }
-    $out .= '<form style="text-align:center" method="post"><input type="submit">'
-        . '<p><textarea name="wiki_text" rows="20" style="width=100%;">'. $text .'</textarea></p>'
-        . '<input type="submit"></form>';
-    return $out;
-}
-
-
-/**
  * Updates all tables where item_ids are used to use the new item names
  * @global array $UMC_DATA
  */
@@ -113,7 +53,6 @@ function umc_populate_name_field() {
 /**
  * This downloads all icons from Minecraft Wiki and stores it on the website
  *
- * @global array $UMC_DATA_ID2NAME
  */
 function umc_get_icons() {
     global $UMC_DATA, $UMC_PATH_MC;
@@ -249,17 +188,17 @@ function umc_item_data_icon_getdata() {
     $result = $service->spreadsheets_values->get($spreadsheet_id, $spreadsheet_range);
 
     $data = $result->getValues();
-    
+
     $final_data = array();
     $invalid_data = array();
-    
+
     $icon_size = 32;
     $image_width = 1024;
     $scale = 0.75;
 
     $background_size_x = $image_width * $scale;
-    $img_size = $icon_size * $scale;    
-    
+    $img_size = $icon_size * $scale;
+
     // item sprite css header
     $css = ".item_sprite {display: inline-block; background-size: {$background_size_x}px; background-image: url(/admin/img/InvSprite.png); "
         . "background-repeat: no-repeat; width:{$img_size}px; height:{$img_size}px;}\n"
@@ -268,49 +207,47 @@ function umc_item_data_icon_getdata() {
         foreach ($L as $line => $name) {
             $name_type = 0;
             $coords = array('x' => $line, 'y' => $row);
-        
+
             if ($name == '' || strstr($name, " ") || strstr($name, ".")) {
                 continue;
             } else if (strstr($name, ":")) {
                 $name_data = explode(":", $name);
                 $item_name = $name_data[0];
                 $name_type = $name_data[1];
-                if (isset($UMC_DATA[$item_name])) {
-                    $final_data[$item_name][$name_type] = $coords;
-                } else {
-                    $invalid_data[$item_name][$name_type] = $coords;
+                if (!isset($UMC_DATA[$item_name])) {
+                    continue;
                 }
+                $final_data[$item_name][$name_type] = $coords;
             } else {
-                $item_name = $name;
-                if (isset($UMC_DATA[$item_name])) {
-                    $final_data[$item_name] = $coords;
-                } else {
-                    $invalid_data[$item_name] = $coords;
+                if (!isset($UMC_DATA[$name])) {
+                    continue;
                 }
+                $item_name = $name;
+                $final_data[$item_name]['coords'] = $coords;
             }
             $x = $line * $scale * $icon_size;
             $y = $row * $scale * $icon_size;
-            $css .=  ".item_{$item_name}_{$name_type} {background-position:-{$x}px -{$y}px;}\n";            
+            $css .=  ".item_{$item_name}_{$name_type} {background-position:-{$x}px -{$y}px;}\n";
         }
     }
 
     ksort($final_data);
-    $final_data['invalid'] = $invalid_data;
+    //$final_data['invalid'] = $invalid_data;
 
     umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/includes/item_sprites.inc.php');
 
     //TODO: Download latest version of this file:
     // http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
     //wiki page here: http://minecraft.gamepedia.com/File:InvSprite.png
-    
+
     $source_file = 'http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png';
     $target_directory = '/home/minecraft/server/bin/data/images';
     $R = unc_serial_curl($source_file);
     file_put_contents($target_directory . "/InvSprite.png", $R[0]['content']);
-    
+
     // write CSS to file
     $css_file = '/home/minecraft/server/bin/data/item_sprites.css';
-    file_put_contents($css_file, $css);    
+    file_put_contents($css_file, $css);
 }
 
 
@@ -489,25 +426,25 @@ $UMC_DATA = array(
         'id' => 20,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'lapis_ore' => array(
         'id' => 21,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'lapis_block' => array(
         'id' => 22,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'dispenser' => array(
         'id' => 23,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'sandstone' => array(
         'id' => 24,
@@ -524,25 +461,25 @@ $UMC_DATA = array(
         'id' => 25,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'bed' => array(
         'id' => 26,
         'stack' => 1,
         'avail' => true,
-        
+
     ),
     'golden_rail' => array(
         'id' => 27,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'detector_rail' => array(
         'id' => 28,
         'stack' => 64,
         'avail' => true,
-        
+
     ),
     'sticky_piston' => array(
         'id' => 29,
@@ -552,14 +489,14 @@ $UMC_DATA = array(
     'web' => array(
         'id' => 30,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'tallgrass' => array(
         'id' => 31,
         'stack' => 64,
         'avail' => true,
         'group' => 'grass_types',
-        
+
         'subtypes' => array(
             0 => array('name' => 'shrub', 'avail' => true),
             1 => array('name' => 'tallgrass', 'avail' => true),
@@ -579,7 +516,7 @@ $UMC_DATA = array(
     'piston_head' => array(
         'id' => 34,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'wool' => array(
         'id' => 35,
@@ -608,7 +545,7 @@ $UMC_DATA = array(
     'piston_extension' => array(
         'id' => 36,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'yellow_flower' => array(
         'id' => 37,
@@ -727,12 +664,12 @@ $UMC_DATA = array(
     'fire' => array(
         'id' => 51,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'mob_spawner' => array(
         'id' => 52,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'oak_stairs' => array(
         'id' => 53,
@@ -747,7 +684,7 @@ $UMC_DATA = array(
     'redstone_wire' => array(
         'id' => 55,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'diamond_ore' => array(
         'id' => 56,
@@ -767,12 +704,12 @@ $UMC_DATA = array(
     'wheat_block' => array(
         'id' => 59,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'farmland' => array(
         'id' => 60,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'furnace' => array(
         'id' => 61,
@@ -782,17 +719,17 @@ $UMC_DATA = array(
     'lit_furnace' => array(
         'id' => 62,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'standing_sign' => array(
         'id' => 63,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'oak_door' => array(
         'id' => 64,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'ladder' => array(
         'id' => 65,
@@ -812,7 +749,7 @@ $UMC_DATA = array(
     'wall_sign' => array(
         'id' => 68,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'lever' => array(
         'id' => 69,
@@ -827,7 +764,7 @@ $UMC_DATA = array(
     'iron_door_block' => array(
         'id' => 71,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'wooden_pressure_plate' => array(
         'id' => 72,
@@ -842,12 +779,12 @@ $UMC_DATA = array(
     'lit_redstone_ore' => array(
         'id' => 74,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'unlit_redstone_torch' => array(
         'id' => 75,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'redstone_torch' => array(
         'id' => 76,
@@ -862,7 +799,7 @@ $UMC_DATA = array(
     'snow_layer' => array(
         'id' => 78,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'ice' => array(
         'id' => 79,
@@ -887,7 +824,7 @@ $UMC_DATA = array(
     'reeds' => array(
         'id' => 83,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'jukebox' => array(
         'id' => 84,
@@ -942,7 +879,7 @@ $UMC_DATA = array(
     'powered_repeater' => array(
         'id' => 94,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'stained_glass' => array(
         'id' => 95,
@@ -1065,12 +1002,12 @@ $UMC_DATA = array(
     'pumpkin_stem' => array(
         'id' => 104,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'melon_stem' => array(
         'id' => 105,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'vine' => array(
         'id' => 106,
@@ -1127,7 +1064,7 @@ $UMC_DATA = array(
     'nether_wart_block' => array(
         'id' => 115,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'enchanting_table' => array(
         'id' => 116,
@@ -1137,17 +1074,17 @@ $UMC_DATA = array(
     'brewing_stand' => array( // unobtainable item, but shows up in block logs
         'id' => 117,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'cauldron_block' => array(
         'id' => 118,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'end_portal' => array(
         'id' => 119,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'end_portal_frame' => array(
         'id' => 120,
@@ -1172,12 +1109,12 @@ $UMC_DATA = array(
     'lit_redstone_lamp' => array(
         'id' => 124,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'double_wooden_slab' => array(
         'id' => 125,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
         'subtypes' => array(
             0 => array('name' => 'double_oak_wood_slab', 'avail' => false),
             1 => array('name' => 'double_spruce_wood_slab', 'avail' => false),
@@ -1210,7 +1147,7 @@ $UMC_DATA = array(
     'cocoa' => array(
         'id' => 127,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'sandstone_stairs' => array(
         'id' => 128,
@@ -1235,7 +1172,7 @@ $UMC_DATA = array(
     'tripwire' => array(
         'id' => 132,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
         'subtypes' => array(
             0 => array('name' => 'tripwire', 'avail' => false),
             2 => array('name' => 'tripwire', 'avail' => false),
@@ -1264,7 +1201,7 @@ $UMC_DATA = array(
     'command_block' => array(
         'id' => 137,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'beacon' => array(
         'id' => 138,
@@ -1284,17 +1221,17 @@ $UMC_DATA = array(
     'flower_pot_block' => array( // actually just flower_pot but overlaps with item
         'id' => 140,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'carrots' => array(
         'id' => 141,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'potatoes' => array(
         'id' => 142,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'wooden_button' => array(
         'id' => 143,
@@ -1305,7 +1242,7 @@ $UMC_DATA = array(
         // but since this one is not available anyhow, we ignore that
         'id' => 144,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'anvil' => array(
         'id' => 145,
@@ -1336,12 +1273,12 @@ $UMC_DATA = array(
     'unpowered_comparator' => array(
         'id' => 149,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'powered_comparator' => array(
         'id' => 150,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'daylight_detector' => array(
         'id' => 151,
@@ -1395,7 +1332,7 @@ $UMC_DATA = array(
         'id' => 159,
         'stack' => 64,
         'avail' => true,
-        'group' => 'clay_types',
+        'group' => 'clay_blocks',
         'subtypes' => array(
             0 => array('name' => 'white_clay', 'avail' => true),
             1 => array('name' => 'orange_clay', 'avail' => true),
@@ -1419,7 +1356,7 @@ $UMC_DATA = array(
         'id' => 160,
         'stack' => 64,
         'avail' => true,
-        'group' => 'glass_types',
+        'group' => 'glass_panes',
         'subtypes' => array(
             0 => array('name' => 'white_glass_pane', 'avail' => true),
             1 => array('name' => 'orange_glass_pane', 'avail' => true),
@@ -1447,12 +1384,6 @@ $UMC_DATA = array(
         'subtypes' => array(
             0 => array('name' => 'acacia_leaves', 'avail' => true),
             1 => array('name' => 'dark_oak_leaves', 'avail' => true),
-            4 => array('name' => 'acacia_leaves_no_decay', 'avail' => false),
-            5 => array('name' => 'dark_oak_leaves_no_decay', 'avail' => false),
-            8 => array('name' => 'acacia_leaves_check_decay', 'avail' => false),
-            9 => array('name' => 'dark_oak_leaves_check_decay', 'avail' => false),
-            12 => array('name' => 'acacia_leaves_check_decay_and_check_decay', 'avail' => false),
-            13 => array('name' => 'dark_oak_leaves_check_decay_and_check_decay', 'avail' => false),
         ),
     ),
     'log2' => array(
@@ -1463,12 +1394,6 @@ $UMC_DATA = array(
         'subtypes' => array(
             0 => array('name' => 'acacia_wood', 'avail' => true),
             1 => array('name' => 'dark_oak_wood', 'avail' => true),
-            4 => array('name' => 'acacia_wood_east_west', 'avail' => false),
-            5 => array('name' => 'dark_oak_wood_east_west', 'avail' => false),
-            8 => array('name' => 'acacia_wood_north_south', 'avail' => false),
-            9 => array('name' => 'dark_oak_wood_north_south', 'avail' => false),
-            12 => array('name' => 'acacia_wood_only_bark', 'avail' => false),
-            13 => array('name' => 'dark_oak_wood_only_bark', 'avail' => false),
         ),
     ),
     'acacia_stairs' => array(
@@ -1521,7 +1446,7 @@ $UMC_DATA = array(
         'id' => 171,
         'stack' => 64,
         'avail' => true,
-        'group' => 'carpet_types',
+        'group' => 'carpets',
         'subtypes' => array(
             0 => array('name' => 'white_carpet', 'avail' => true),
             1 => array('name' => 'orange_carpet', 'avail' => true),
@@ -1574,12 +1499,12 @@ $UMC_DATA = array(
     'standing_banner' => array(
         'id' => 176,
         'stack' => 16,
-        'avail' => false, 
+        'avail' => false,
     ),
     'wall_banner' => array(
         'id' => 177,
         'stack' => 16,
-        'avail' => false, 
+        'avail' => false,
     ),
     'daylight_detector_inverted' => array(
         'id' => 178,
@@ -1605,7 +1530,7 @@ $UMC_DATA = array(
     'double_stone_slab2' => array(
         'id' => 181,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'stone_slab2' => array(
         'id' => 182,
@@ -1665,32 +1590,32 @@ $UMC_DATA = array(
     'spruce_door_block' => array(
         'id' => 193,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'birch_door_block' => array(
         'id' => 194,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'jungle_door_block' => array(
         'id' => 195,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'acacia_door_block' => array(
         'id' => 196,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'dark_oak_door_block' => array(
         'id' => 197,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'end_rod' => array(
         'id' => 198,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'chorus_plant' => array(
         'id' => 199,
@@ -1720,7 +1645,7 @@ $UMC_DATA = array(
     'purpur_double_slab' => array(
         'id' => 204,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'purpur_slab' => array(
         'id' => 205,
@@ -1740,12 +1665,12 @@ $UMC_DATA = array(
     'end_gateway' => array(
         'id' => 209,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'frosted_ice' => array(
         'id' => 212,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'magma' => array(
         'id' => 213,
@@ -1770,7 +1695,7 @@ $UMC_DATA = array(
     'structure_void' => array(
         'id' => 217,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'observer' => array(
         'id' => 218,
@@ -1876,7 +1801,7 @@ $UMC_DATA = array(
     'structure_block' => array(
         'id' => 255,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
 
 
@@ -2788,42 +2713,42 @@ $UMC_DATA = array(
     'prismarine_shard' => array(
         'id' => 409,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'prismarine_crystals' => array(
         'id' => 410,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'rabbit' => array(
         'id' => 411,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'cooked_rabbit' => array(
         'id' => 412,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'rabbit_stew' => array(
         'id' => 413,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'rabbit_foot' => array(
         'id' => 414,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'rabbit_hide' => array(
         'id' => 415,
         'stack' => 64,
-        'avail' => false, 
+        'avail' => false,
     ),
     'armor_stand' => array(
         'id' => 416,
         'stack' => 16,
-        'avail' => false, 
+        'avail' => false,
     ),
     'iron_horse_armor' => array(
         'id' => 417,
@@ -2853,7 +2778,7 @@ $UMC_DATA = array(
     'command_block_minecart' => array(
         'id' => 422,
         'stack' => 1,
-        'avail' => false, 
+        'avail' => false,
     ),
     'mutton' => array(
         'id' => 423,
