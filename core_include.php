@@ -49,8 +49,7 @@ require_once('/home/includes/unc_serial_curl/unc_serial_curl.php');
 
 // include everything else
 // require_once($UMC_PATH_MC . '/server/bin/classes/users.class.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
+
 require_once($UMC_PATH_MC . '/server/bin/users.php');
 require_once($UMC_PATH_MC . '/server/bin/map.php');
 require_once($UMC_PATH_MC . '/server/bin/web.php');
@@ -58,27 +57,33 @@ require_once($UMC_PATH_MC . '/server/bin/contests.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_common.php');
 require_once($UMC_PATH_MC . '/server/bin/donation.php');
 require_once($UMC_PATH_MC . '/server/bin/lot_manager.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/websend.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/wordpress.inc.php');
+
+require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
 require_once($UMC_PATH_MC . '/server/bin/plugin.php');
 require_once($UMC_PATH_MC . '/server/bin/inventory.php');
 require_once($UMC_PATH_MC . '/server/bin/settler_test.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/colors.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/patterns.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/item_sprites.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/enchantments.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/nbt.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/potions.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/item_search.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/item_id2name.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
+
+require_once($UMC_PATH_MC . '/server/bin/assets/colors.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/enchantments.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_data.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_id2name.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_search.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_sprites.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/patterns.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/potions.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/spawn_egg.inc.php');
+
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/includes/github.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/faq.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/github.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/nbt.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/usericons.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/websend.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/wordpress.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/uuid.inc.php');
 
 // include all websend plugins
 umc_plg_include();
