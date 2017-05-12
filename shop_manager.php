@@ -139,7 +139,7 @@ function umc_shopmgr_items() {
             $stock_amount = umc_shop_count_amounts('stock', $item_name);
             $request_amount = umc_shop_count_amounts('request', $item_name);
 
-            $items[$name] = array(
+            $items[$item_name] = array(
                 'item_name' => $item_name,
                 'sub_types'=> $sub_text,
                 'stock' => $stock_amount,
@@ -165,14 +165,14 @@ function umc_shopmgr_items() {
                 . umc_shopmgr_item_stats($item_name, $item_type);
             return $out;
         } else {  // we might have various items, list them
-            
+
             if (!isset($s_get['type']) || ($s_get['type']==0 && !isset($UMC_DATA[$s_get['item']]['subtypes'][$s_get['type']]))) {
                 $item_type = false;
             } else {
                 $item_type = $s_get['type'];
             }
-            
-            
+
+
             $stock_amount = umc_shop_count_amounts('stock', $item_name, $item_type);
             $request_amount = umc_shop_count_amounts('request', $item_name, $item_type);
             $items[0] = array('item_name' => "$item_name|$item_type|", 'stock' => $stock_amount, 'requests' => $request_amount);
