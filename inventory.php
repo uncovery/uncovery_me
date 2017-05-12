@@ -138,6 +138,7 @@ function umc_check_space($amount, $item_name, $type) {
     $inv = $UMC_USER['inv'];
 
     if (is_numeric($item_name)) {
+        XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
         $item_name = $UMC_DATA_ID2NAME[$item_name];
     }
 

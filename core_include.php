@@ -27,6 +27,7 @@
  */
 global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
 global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_PATTERNS, $UMC_COLORS_DEC;
+global $ITEM_SPRITES;
 
 $UMC_PATH_MC = "/home/minecraft";
 
@@ -67,6 +68,7 @@ require_once($UMC_PATH_MC . '/server/bin/includes/patterns.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/log.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/timer.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/item_data.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/includes/item_sprites.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/enchantments.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/nbt.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/potions.inc.php');

@@ -99,7 +99,7 @@ $WS_INIT['mod'] = array(  // the name of the plugin
         ),
         'function' => 'umc_mod_error_message',
         'security' => array(
-           //'level' => 'Owner'
+           'level' => 'Elder'
         ),
     ),
     'whatsit' => array (
@@ -135,8 +135,18 @@ $WS_INIT['mod'] = array(  // the name of the plugin
             'level'=>'Owner',
          ),
     ),
+    'broadcast' => array(
+        'help' => array (
+            'short' => '',
+            'long' => "",
+            'args' => '',
+        ),
+        'function' => 'umc_mod_broadcast',
+        'security' => array(
+            'level'=>'Owner',
+        ),
+    ),
 );
-$WS_INIT['mod']['broadcast'] = 'broadcast';
 
 function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -144,21 +154,52 @@ function umc_mod_error_message() {
     // umc_exec_command($cmd, 'asConsole');
     $username = $UMC_USER['username'];
 
-    $thanks = umc_txt_color('Thanks for the test', 'red');
-    $thanks2 = umc_txt_format($thanks, array('bold'));
+    $data = array(
+        array('text'=>'Thanks for the test', 'format' => array('red', 'bold')),
+        array('text'=>'Uncovery', 'format' => array('green', 'underlined', 'normal', 'open_url'=>'http://uncovery.me')),
+        array('text'=>'received the message!', 'format' => array('red')),
+    );
+    umc_text_format($data, false, true);
 
-    $uncovery = umc_txt_color('Uncovery', 'green');
-    $uncovery2 = umc_txt_format($uncovery, array('underlined', 'normal'));
-    $uncovery3 = umc_txt_click($uncovery2, 'open_url', 'http://uncovery.me');
+    XMPP_ERROR_trigger('test');
 
-    $msg = umc_txt_color('received the message!', 'red');
-    $msg2 = umc_txt_format($msg, array('normal'));
-    $msg3 = umc_txt_hover($msg2, 'show_item', '{id:minecraft:stone,Damage:0,Count:1}');
-
-    umc_tellraw($username, array($thanks2, $uncovery3, $msg3), true);
-
-    XMPP_ERROR_trigger("User $username ran a mod test");
+    /*
+    if (isset($UMC_USER['inv'][0]['nbt']) && $UMC_USER['inv'][0]['nbt']) {
+        $inv = addslashes($UMC_USER['inv'][0]['nbt']);
+        $item_name = $UMC_USER['inv'][0]['item_name'];
+        $hover = '{id:minecraft:'.$item_name.',Damage:0,Count:1,tag:'.$inv.'}';
+        $msg4 = umc_txt_hover($item_name, 'show_item', $hover);
+        // $long_text = umc_nbt_display($inv, 'in_game');
+        umc_tellraw($username, array($msg4), true);
+    } else {
+        umc_tellraw($username, array("No NBT Data found!"), true);
+    }
+    */
 }
+
+function umc_mod_test_items() {
+    $broken_stuff = array(
+        'brewing_stand_item' => 'brewingstand',
+        'diode' => 'unpowered_repeater',
+        'melon' => 'melonslice',
+        'silver_shulker_box' => 'light_grey_shulker_box',
+        'skull_item' => 'skeletonskull',
+        'slime_block' => 'slime_block',
+        'snow' => 'snow_ball',
+    );
+
+    $i = 0;
+    foreach ($stuff as $core => $ess) {
+        umc_check_space(1, $ess, 0);
+        umc_echo("giving $core / $ess");
+        umc_ws_give('uncovery', $ess, 1);
+        $i++;
+        if ($i >= 20) {
+            return;
+        }
+    }
+}
+
 
 /**
  * Sends a message to all users in-game
@@ -169,7 +210,7 @@ function umc_mod_error_message() {
  */
 function umc_mod_broadcast($msg) {
     global $WS_INIT;
-    $chat_command = $WS_INIT['mod']['broadcast'];
+    $chat_command = 'broadcast';
     // we can send several messages as an array.
     if (!is_array($msg)) {
         $msg = array($msg);

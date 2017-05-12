@@ -147,7 +147,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
-    global $UMC_DATA, $UMC_ENV, $UMC_PATH_MC, $UMC_DATA_ID2NAME;
+    global $UMC_DATA, $UMC_ENV, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if we have "minecraft:" in the beginning.
@@ -161,6 +161,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
+        XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
         $item_name = $UMC_DATA_ID2NAME[$item_name];
         // conversion failed, item does not exist
         if (!$item_name) {
@@ -182,6 +183,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $damage_spacer = '';
     $mc_name = $item_name;
 
+    $damage = false;
     if (isset($item_arr['damage'])) {
         $damage = umc_goods_damage_calc($item_data, $item_arr['damage']);
         if ($damage) {
@@ -214,6 +216,9 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     if ($UMC_ENV == 'wordpress') {
         global $ITEM_SPRITES;
         if (isset($ITEM_SPRITES[$item_name])) { // get background image of single image
+            if ($damage) {
+                $item_data = 'damaged';
+            }
             $img = umc_item_data_icon_html($item_name, $item_data) ;
         } else {
             $img = umc_item_data_icon_html('invalid', 'unknown') . "?";
@@ -305,6 +310,7 @@ function umc_shop_transaction_record($from, $to, $amount, $value, $item, $type =
 
     // make sure we have item names
     if (is_numeric($item)) {
+        XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
         $item_name = $UMC_DATA_ID2NAME[$item];
     } else {
         $item_name = $item;

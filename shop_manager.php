@@ -120,33 +120,31 @@ function umc_shopmgr_items() {
     $items = array();
     // get all data
     if (!isset($s_get['item']) || !isset($UMC_DATA[$s_get['item']])) {
-        foreach ($UMC_DATA as $name => $data) {
-            if (!$data['avail']) {
+        foreach ($UMC_DATA as $item_name => $data) {
+            if (!$data['avail']) { // we skip non-availabe items
                 continue;
             }
             // $item = umc_goods_get_text($name);
             $variants = '';
-            $title = $name;
-            $sub_id = '|0';
+            $title = $item_name;
             $sub_text = '';
             $sub_count = 0;
             if (isset($data['group'])) {
-                $variants = "(" . count($data['subtypes']) . " types)";
+                $variants = "(" . count($data['subtypes']) . " types)"; //TODO: This counts non-available subtypes as well!
                 $title = $data['group'];
                 $sub_count = count($data['subtypes']);
                 $sub_text = "$sub_count sub-types";
-                $sub_id = '';
             }
             // get stock
-            $stock_amount = umc_shop_count_amounts('stock', $name);
-            $request_amount = umc_shop_count_amounts('request', $name);
+            $stock_amount = umc_shop_count_amounts('stock', $item_name);
+            $request_amount = umc_shop_count_amounts('request', $item_name);
 
             $items[$name] = array(
-                'item_name' => "$name$sub_id",
+                'item_name' => $item_name,
                 'sub_types'=> $sub_text,
-                'stack_size' => $data['stack'],
                 'stock' => $stock_amount,
-                'requests' => $request_amount
+                'requests' => $request_amount,
+                'stack_size' => $data['stack'],
             );
         }
         return umc_web_table("goods", "0, 'asc'", $items, '', array(), $non_numeric_cols);
@@ -154,6 +152,8 @@ function umc_shopmgr_items() {
     } else if (isset($s_get['item']) && isset($UMC_DATA[$s_get['item']])) {
         // get only one subitem
         $item_name = $s_get['item'];
+        // XMPP_ERROR_send_msg("{$s_get['item']} {$s_get['type']}");
+        // we have a specific item
         if (isset($s_get['type']) && (($s_get['type'] == '0') || (isset($UMC_DATA[$item_name]['subtypes'][$s_get['type']])))) {
             $item_type = $s_get['type'];
             $item = umc_goods_get_text($s_get['item'], $item_type);
@@ -164,14 +164,15 @@ function umc_shopmgr_items() {
                 . "<h2>Price history for " . $item['full'] . "</h2>"
                 . umc_shopmgr_item_stats($item_name, $item_type);
             return $out;
-        } else {
-            // we are looking for a specific item, so let's get it as a header
+        } else {  // we might have various items, list them
+            
             if (!isset($s_get['type']) || ($s_get['type']==0 && !isset($UMC_DATA[$s_get['item']]['subtypes'][$s_get['type']]))) {
-                $item_type = 0;
+                $item_type = false;
             } else {
                 $item_type = $s_get['type'];
             }
-
+            
+            
             $stock_amount = umc_shop_count_amounts('stock', $item_name, $item_type);
             $request_amount = umc_shop_count_amounts('request', $item_name, $item_type);
             $items[0] = array('item_name' => "$item_name|$item_type|", 'stock' => $stock_amount, 'requests' => $request_amount);

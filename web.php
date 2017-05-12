@@ -413,6 +413,7 @@ function umc_web_table_format_column($name, $value) {
     } else if ($name == 'item') {
         $id_parts = explode("|",$value);
         if (is_numeric($id_parts[0]))  {
+            XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
             $item_name = $UMC_DATA_ID2NAME[$id_parts[0]];
         } else {
             $item_name  = $id_parts[0];
@@ -426,8 +427,7 @@ function umc_web_table_format_column($name, $value) {
             $item_dmg = 0;
         }
 
-        if (
-            isset($UMC_DATA[$item_name]['subtypes']) && $UMC_DATA[$item_name]['subtypes'][$item_dmg]['icon_url'] == '?') {
+        if (isset($UMC_DATA[$item_name]['subtypes'])) {
             $icon_dmg = 0;
         } else {
             $icon_dmg = $item_dmg;

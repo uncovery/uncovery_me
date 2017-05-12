@@ -280,6 +280,7 @@ function umc_story_show() {
         $search = array('[player]', "\n");
         $replace = array($username, ';');
 
+        // todo this needs to be cleaned up
         foreach ($UMC_COLORS as $colorcode => $data) {
             foreach ($data['names'] as $color_name) {
                 $search[] = "[". $color_name . "]";

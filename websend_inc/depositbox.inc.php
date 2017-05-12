@@ -454,6 +454,7 @@ function umc_deposit_give_item($recipient, $item_name, $data, $meta, $amount, $s
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_DATA_ID2NAME, $UMC_DATA;
     if (is_numeric($item_name)) {
+        XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
         $item_name = $UMC_DATA_ID2NAME[$item_name];
     }
 
