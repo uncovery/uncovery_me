@@ -85,9 +85,10 @@ $lottery = array(
         'data' => 264,
         'txt' => 'a shiny, tiny, diamond',
         'detail' => array(
-            'type' => 264,
+            'item_name' => 'diamond',
             'data' => 0,
             'ench' => '',
+            
         ),
     ),
     'diamondblock' => array(
@@ -96,7 +97,7 @@ $lottery = array(
         'data' => 57,
         'txt' => 'an ugly, heavy diamond block',
         'detail' => array(
-            'type' => 57,
+            'item_name' => 'diamond_block',
             'data' => 0,
             'ench' => '',
         ),
@@ -107,7 +108,7 @@ $lottery = array(
         'data' => 322,
         'txt' => 'a shiny golden apple (Yum!)',
         'detail' => array(
-            'type' => 322,
+            'item_name' => 'golden_apple',
             'data' => 0,
             'ench' => '',
         ),
@@ -118,7 +119,7 @@ $lottery = array(
         'data' => 354,
         'txt' => 'an entire cake (Happy Cakeday!)',
         'detail' => array(
-            'type' => 354,
+            'item_name' => 'cake',
             'data' => 0,
             'ench' => '',
         ),
@@ -129,7 +130,7 @@ $lottery = array(
         'data' => 263,
         'txt' => 'a NOT shiny piece of coal',
         'detail' => array(
-            'type' => 263,
+            'item_name' => 'coal',
             'data' => 0,
             'ench' => '',
         ),
@@ -140,7 +141,7 @@ $lottery = array(
         'data' => '270 1 DIG_SPEED:5 SILK_TOUCH:1 LOOT_BONUS_BLOCKS:3',
         'txt' => 'a super-enchanted wooden pickaxe',
         'detail' => array(
-            'type' => 270,
+            'item_name' => 'wooden_pickaxe',
             'data' => 0,
             'ench' => array(
                 'DIG_SPEED' => 5,
@@ -155,7 +156,7 @@ $lottery = array(
         'data' => '268 1 DAMAGE_ALL:5 KNOCKBACK:2 FIRE_ASPECT:2 LOOT_BONUS_MOBS:3',
         'txt' => 'a super-enchanted wooden sword',
         'detail' => array(
-            'type' => 268,
+            'item_name' => 'wooden_sword',
             'data' => 0,
             'ench' => array(
                 'DAMAGE_ALL' => 5,
@@ -171,7 +172,7 @@ $lottery = array(
         'data' => 3,
         'txt' => 'a big block of extra-fine dirt',
         'detail' => array(
-            'type' => 3,
+            'item_name' => 'dirt',
             'data' => 0,
             'ench' => '',
         ),
@@ -182,7 +183,7 @@ $lottery = array(
         'data' => 357,
         'txt' => 'a hot cookie (OUCH!)',
         'detail' => array(
-            'type' => 357,
+            'item_name' => 'cookie',
             'data' => 0,
             'ench' => '',
         ),
@@ -620,7 +621,7 @@ function umc_lottery() {
         switch ($type) {
             case 'item':
                 $item_txt = $prize['txt'];
-                $give_type = $detail['type'];
+                $give_type = $detail['item_name'];
                 $give_data = $detail['data'];
                 $give_ench = $detail['ench'];
                 break;
