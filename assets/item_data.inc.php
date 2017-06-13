@@ -1798,6 +1798,96 @@ $UMC_DATA = array(
         'avail' => true,
         'notrade' => true,
     ),
+    'white_glazed_terracotta' => array(
+        'id' => 235,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'orange_glazed_terracotta' => array(
+        'id' => 236,
+        'stack' => 64,
+        'avail' => true,
+    ),   
+    'magenta_glazed_terracotta' => array(
+        'id' => 237,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'light_blue_glazed_terracotta' => array(
+        'id' => 238,
+        'stack' => 64,
+        'avail' => true,
+    ),       
+    'yellow_glazed_terracotta' => array(
+        'id' => 239,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'lime_glazed_terracotta' => array(
+        'id' => 240,
+        'stack' => 64,
+        'avail' => true,
+    ),   
+    'pink_glazed_terracotta' => array(
+        'id' => 241,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'gray_glazed_terracotta' => array(
+        'id' => 242,
+        'stack' => 64,
+        'avail' => true,
+    ),       
+    'light_gray_glazed_terracotta' => array(
+        'id' => 243,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'cyan_glazed_terracotta' => array(
+        'id' => 244,
+        'stack' => 64,
+        'avail' => true,
+    ),   
+    'purple_glazed_terracotta' => array(
+        'id' => 245,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'blue_glazed_terracotta' => array(
+        'id' => 246,
+        'stack' => 64,
+        'avail' => true,
+    ),       
+    'brown_glazed_terracotta' => array(
+        'id' => 247,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'green_glazed_terracotta' => array(
+        'id' => 248,
+        'stack' => 64,
+        'avail' => true,
+    ),   
+    'red_glazed_terracotta' => array(
+        'id' => 249,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'black_glazed_terracotta' => array(
+        'id' => 250,
+        'stack' => 64,
+        'avail' => true,
+    ),   
+    'concrete' => array(
+        'id' => 251,
+        'stack' => 64,
+        'avail' => true,
+    ),
+    'concrete_powder' => array(
+        'id' => 252,
+        'stack' => 64,
+        'avail' => true,
+    ),
     'structure_block' => array(
         'id' => 255,
         'stack' => 64,
@@ -3025,6 +3115,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'eye_of_ender' => 'ender_eye',
     'fireball' => 'fire_charge',
     'firework' => 'fireworks',
+    'flower_pot_item' => 'flower_pot',
     'gold_axe' => 'golden_axe',
     'gold_barding' => 'golden_horse_armor',
     'gold_boots' => 'golden_boots',
