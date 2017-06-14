@@ -1807,7 +1807,7 @@ $UMC_DATA = array(
         'id' => 236,
         'stack' => 64,
         'avail' => true,
-    ),   
+    ),
     'magenta_glazed_terracotta' => array(
         'id' => 237,
         'stack' => 64,
@@ -1817,7 +1817,7 @@ $UMC_DATA = array(
         'id' => 238,
         'stack' => 64,
         'avail' => true,
-    ),       
+    ),
     'yellow_glazed_terracotta' => array(
         'id' => 239,
         'stack' => 64,
@@ -1827,7 +1827,7 @@ $UMC_DATA = array(
         'id' => 240,
         'stack' => 64,
         'avail' => true,
-    ),   
+    ),
     'pink_glazed_terracotta' => array(
         'id' => 241,
         'stack' => 64,
@@ -1837,7 +1837,7 @@ $UMC_DATA = array(
         'id' => 242,
         'stack' => 64,
         'avail' => true,
-    ),       
+    ),
     'light_gray_glazed_terracotta' => array(
         'id' => 243,
         'stack' => 64,
@@ -1847,7 +1847,7 @@ $UMC_DATA = array(
         'id' => 244,
         'stack' => 64,
         'avail' => true,
-    ),   
+    ),
     'purple_glazed_terracotta' => array(
         'id' => 245,
         'stack' => 64,
@@ -1857,7 +1857,7 @@ $UMC_DATA = array(
         'id' => 246,
         'stack' => 64,
         'avail' => true,
-    ),       
+    ),
     'brown_glazed_terracotta' => array(
         'id' => 247,
         'stack' => 64,
@@ -1867,7 +1867,7 @@ $UMC_DATA = array(
         'id' => 248,
         'stack' => 64,
         'avail' => true,
-    ),   
+    ),
     'red_glazed_terracotta' => array(
         'id' => 249,
         'stack' => 64,
@@ -1877,7 +1877,7 @@ $UMC_DATA = array(
         'id' => 250,
         'stack' => 64,
         'avail' => true,
-    ),   
+    ),
     'concrete' => array(
         'id' => 251,
         'stack' => 64,
@@ -3177,6 +3177,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'redstone_torch_on' => 'redstone_torch',
     'seeds' => 'wheat_seeds',
     'silver_shulker_box' => 'light_grey_shulker_box',
+    'silver_glazed_terracotta' => 'light_grey_glazed_terracotta',
     'skull_item' => 'skull',
     'slime_block' => 'slime_block',
     'smooth_brick' => 'stonebrick',
