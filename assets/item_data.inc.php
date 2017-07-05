@@ -3000,7 +3000,7 @@ $UMC_DATA = array(
         'stack' => 1,
         'avail' => true,
     ),
-    'totem' => array(
+    'totem_of_undying' => array(
         'id' => 449,
         'stack' => 1,
         'avail' => true,
@@ -3193,6 +3193,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'sugar_cane' => 'reeds',
     'sulphur' => 'gunpowder',
     'thin_glass' => 'glass_pane',
+    'totem' => 'totem_of_undying',
     'trap_door' => 'trapdoor',
     'watch' => 'clock',
     'water_lily' => 'waterlily',
