@@ -315,9 +315,11 @@ function umc_nbt_display_short_text($nbt_array) {
                 // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
                 $text .= "Flight Duration: " . $data['Flight'] . '\n';
                 $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
-                $e_data = $data['Explosions'][0];
-                $explosion_type = $e_data['Type'];
-                $text .= "Explosion " . $explosions[$explosion_type];
+                if (isset($data['Explosions'])) {
+                    $e_data = $data['Explosions'][0];
+                    $explosion_type = $e_data['Type'];
+                    $text .= "Explosion " . $explosions[$explosion_type];
+                }
                 if (isset($e_data['Flicker']) && $e_data['Flicker'] == 1) {
                     $text .= ', Flicker';
                 }
