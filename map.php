@@ -503,11 +503,18 @@ function umc_assemble_maps() {
         $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
         $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
         $destination = $UMC_SETTING['path']['server'] .  "/maps";
+        
+        // delete PNGs so that we make sure all are created fresh
+        $del_cmd = "find $destination -name '*.png' -type f -delete";
+        exec($del_cmd);
+       
         echo "$world: \n";
-        // create chunk maps   /// -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
-        $command = "java -jar $mapper_folder/TMCMR.jar $folder -create-big-image -region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']} -o $destination/$world/png";
+        // -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
+        $coordinates = "-region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']}";
+        $custom_color = "-color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
+        $command = "java -jar $mapper_folder/TMCMR.jar $folder $custom_color -create-big-image $coordinates -o $destination/$world/png";
         exec($command);
-        echo "$world chunk maps rendered\n";
+        echo "\n$world chunk maps rendered\n";
         XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered");
 
         // compress map to new map
