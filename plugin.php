@@ -377,7 +377,7 @@ function umc_plugin_web_help($one_plugin = false) {
  */
 function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $WS_INIT;
+    global $WS_INIT, $UMC_USER;
     // define list of available events for security, it's questionable if we need this list.
     $available_events = array(
         // server events
@@ -411,8 +411,9 @@ function umc_plugin_eventhandler($event, $parameters = false) {
     }
     $return_vars = array();
     foreach ($WS_INIT as $data) {
-        // check if there is a setting for the current event
-        if (($data['events'] != false) && (isset($data['events'][$event]))) {
+        // check if there is a setting for the current event and if the plugin is enabled
+        if (($data['events'] != false) && (isset($data['events'][$event])) && ($data['disabled'] == false)) {
+            if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_trace($event, $data);}
             // execute function
             $function = $data['events'][$event];
             if (!is_string($function) || !function_exists($function)) {
