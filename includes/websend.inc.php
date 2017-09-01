@@ -93,9 +93,7 @@ function umc_ws_eventhandler($event) {
 
     $player = $UMC_USER['username'];
 
-    // run plugin events
-    umc_plugin_eventhandler($event);
-
+    if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_send_msg("done with events");}
     // non-plugin events
     switch ($event) {
         case 'PlayerQuitEvent':
@@ -117,6 +115,9 @@ function umc_ws_eventhandler($event) {
             // all the events not covered above
             // XMPP_ERROR_send_msg("Event $event not assigned to action (umc_ws_eventhandler)");
     }
+    
+    // run plugin events
+    umc_plugin_eventhandler($event);
 }
 
 /**
@@ -333,13 +334,13 @@ function umc_ws_connect() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
     require_once "$UMC_PATH_MC/server/bin/includes/websend_class.php";
-    $ws = new Websend("74.208.45.80"); //, 4445
+    $ws = new Websend("74.208.161.223"); //, 4445
     $password = file_get_contents("/home/includes/certificates/websend_code.txt");
     $ws->password = $password;
     if (!$ws->connect()) {
         // try again
         XMPP_ERROR_trace("websend Auth failed (attempt 1, trying again)", "none");
-        $ws = new Websend("74.208.45.80"); //, 4445
+        $ws = new Websend("74.208.161.223"); //, 4445
         $ws->password = $password;
         if (!$ws->connect()) { // fail agin? bail.
             XMPP_ERROR_trigger("Could not connect to websend server (umc_ws_connect)");
