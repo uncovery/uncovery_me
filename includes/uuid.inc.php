@@ -48,7 +48,11 @@ function umc_uuid_record_usertimes($type) {
             $login = umc_datetime($D['lastlogin']);
             $logout = umc_datetime($D['lastlogout']);
             $seconds = umc_timer_raw_diff($login, $logout);
-
+            if ($seconds > 86400) {
+                // small sanity check, people cannot be longer online than 24 hours
+                XMPP_ERROR_send_msg("$username ($type) last login: {$D['lastlogin']}, Last logout: {$D['lastlogout']}, diff is $seconds");
+                return;
+            }
             $online_sql = "UPDATE minecraft_srvr.UUID SET onlinetime=onlinetime+$seconds WHERE UUID='$uuid';";
             umc_mysql_query($online_sql);
         } else {
