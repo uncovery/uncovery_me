@@ -69,7 +69,7 @@ function umc_display_guestinfo(){
         $title = 'Welcome, stranger!';
         $content = "Please feel free to look around! In order to start building with us, please <a href=\"$UMC_DOMAIN/wp-login.php\">whitelist yourself</a>. "
             . "To know more about how to join us, please <a href=\"$UMC_DOMAIN/server-access/whitelist/\">continue here</a>.<br>"
-            . "If you are a member already, don\'t be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
+            . "If you are a member already, don't be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
             . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" allowfullscreen></iframe><br><br>';
     } else if ($userlevel == 'Guest') {
