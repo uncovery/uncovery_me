@@ -37,6 +37,8 @@ $UMC_SETTING = array(
         'wordpress' => $UMC_PATH_MC . "/public_html",
         'bukkit' => $UMC_PATH_MC . "/server/bukkit",
         'url' =>  $UMC_DOMAIN,
+        'worlds_mint' => $UMC_PATH_MC . '/server/worlds_mint',
+        'worlds_save' => $UMC_PATH_MC . '/server/worlds_save',
     ),
     'url' => "$UMC_DOMAIN/admin/index.php",
     'whitelist_file' => $UMC_PATH_MC . '/server/data/whitelist.json',
