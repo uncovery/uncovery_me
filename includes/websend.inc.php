@@ -93,7 +93,7 @@ function umc_ws_eventhandler($event) {
 
     $player = $UMC_USER['username'];
 
-    if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_send_msg("done with events");}
+    // if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_send_msg("done with events");}
     // non-plugin events
     switch ($event) {
         case 'PlayerQuitEvent':
