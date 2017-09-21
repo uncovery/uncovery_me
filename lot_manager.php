@@ -1383,8 +1383,8 @@ function umc_lot_reset_process() {
 
     $longterm = $UMC_SETTING['longterm'];
 
-    $source_path = "$UMC_PATH_MC/server/worlds/mint";
-    $dest_path = "$UMC_PATH_MC/server/bukkit";
+    $source_path = $UMC_SETTING['path']['worlds_mint'];
+    $dest_path = $UMC_SETTING['path']['worlds_save'];
 
     // get all occupied lots and their owners
     // TODO: We should get first all expired users and reset their shop inventory, then do their lots.
@@ -1770,6 +1770,9 @@ function umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, $ec
     } else {
         exec($exec_cmd, $output);
     }
+    if ($echo) {
+        echo "\n\nATTENTION: No changes done, please execute commands above!";
+    }
     umc_log('lot_manager', 'move chunks', "Moved lot from $source_lot to $dest_lot with command $exec_cmd");
     return true;
 }
@@ -1814,12 +1817,19 @@ function umc_temp() {
 
 function umc_restore_from_backup() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_PATH_MC;
+    global $UMC_SETTING;
 
-    $lots = array('emp_s30'=>'psiber','emp_t30'=>'psiber','flat_a18'=>'psiber','flat_b18'=>'psiber',);
+    $lots = array(
+        'king_h19'=>'camerissan', 
+        'king_h19_a'=>'camerissan', 
+        'king_h19_c'=>'camerissan', 
+        'king_h20'=>'camerissan', 
+        'king_h20c'=>'camerissan', 
+        'king_g20'=>'camerissan'
+    );
 
-    $source_folder = "/data/backup/home/monthly/09/minecraft/server/worlds/save/"; // trailing /
-    $dest_folder = "$UMC_PATH_MC/server/bukkit/";
+    $source_folder = "/home/minecraft/server/worlds_restore/"; // trailing /
+    $dest_folder = $UMC_SETTING['path']['worlds_save'];
 
     foreach ($lots as $lot => $owner) {
         echo "processing lot $lot\n";
@@ -1828,8 +1838,9 @@ function umc_restore_from_backup() {
         if (!$world) {
             die("World of lot $lot could not be found!");
         }
-        //echo "Restoring with $lot, $source_folder . $world, $lot, $dest_folder . $world";
-        umc_move_chunks($lot, $source_folder . $world, $lot, $dest_folder . $world, true);
+        // echo "Restoring with $lot, $source_folder$world, $lot, $dest_folder$world";
+        umc_move_chunks($lot, $source_folder . $world, $lot, $dest_folder . "/" . $world, true);
+        
     }
 }
 
@@ -1843,11 +1854,11 @@ function umc_manual_reset_lot() {
 
 function umc_flat_lot(){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_PATH_MC;
+    global $UMC_SETTING;
     $source_lot = 'emp_g3';
     $source_world = "/tmp/minecraft/server/worlds/save/empire"; // "/home/minecraft/server/worlds/mint/empire";
     $dest_lot = 'emp_g3';
-    $dest_world = "$UMC_PATH_MC/server/bukkit/empire";
+    $dest_world = $UMC_SETTING['path']['worlds_save'] . "/empire";
     umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, true);
     echo "execute the command above now!";
 }
