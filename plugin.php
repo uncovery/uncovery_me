@@ -413,7 +413,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
     foreach ($WS_INIT as $data) {
         // check if there is a setting for the current event and if the plugin is enabled
         if (($data['events'] != false) && (isset($data['events'][$event])) && ($data['disabled'] == false)) {
-            if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_trace($event, $data);}
+            // if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_trace($event, $data);}
             // execute function
             $function = $data['events'][$event];
             if (!is_string($function) || !function_exists($function)) {
