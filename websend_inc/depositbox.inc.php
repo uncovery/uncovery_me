@@ -559,6 +559,9 @@ function umc_do_deposit_internal($all = false) {
         // decide who the reciever is
         if (isset($args[2]) && $args[2]) {
             $recipient = umc_sanitize_input($args[2], 'player');
+            if ($recipient == 'uncovery') {
+                umc_error("Thanks for your generosity, but Uncovery does not need that!");
+            }
             $recipient_uuid = umc_user2uuid($recipient);
         } else {
             $recipient = $player;
