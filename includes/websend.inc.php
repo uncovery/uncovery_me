@@ -793,6 +793,7 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $amount = $amount - $stack_size;
     }
     $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
+    umc_log('inventory', 'give', $cmd);
     $check = umc_ws_command('asConsole', $cmd);
     return $check;
 }
