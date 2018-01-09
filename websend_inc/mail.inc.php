@@ -832,7 +832,7 @@ function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $sub
     if ($action ==  'Send') {
         $status = 'sent';
     }
-    if (isset($msg_id)) {
+    if ($msg_id) {
         $sql = "UPDATE minecraft_srvr.user_mail
             SET `sender_uuid`=$sender, `recipient_uuid`=$recipient, `title`=$subject, `message`=$message, `status`='$status', `date_time`=NOW()
             WHERE msg_id=$msg_id;";
