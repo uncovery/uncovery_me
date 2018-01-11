@@ -539,7 +539,6 @@ function umc_vote_post_news($upgraded_users) {
  * @param type $proposed
  */
 function umc_vote_elder_notify($proposed) {
-    return;
     global $UMC_DOMAIN;
     $sql = "SELECT user_email, UUID, username FROM minecraft_srvr.`UUID`
         LEFT JOIN minecraft.wp_usermeta ON UUID.UUID=meta_value
