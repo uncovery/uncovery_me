@@ -269,10 +269,12 @@ function umc_vote_web() {
 
 
     $proposed = filter_input(INPUT_POST, 'proposal', FILTER_SANITIZE_STRING);
+    
+    // process a new proposal
     if (isset($proposed) && strlen($proposed) > 1) {
         $proposed = umc_check_user($proposed);
 
-        if (!$proposed) {
+        if (!$proposed) { // check if we have a valid username
             $out .= "Sorry $username, but you need to input an existing user to propose!";
         } else {
             $proposed_data = umc_uuid_getboth($proposed, 'username');
@@ -290,7 +292,16 @@ function umc_vote_web() {
             } else {
                 $row['mysql_ts'] = 0;
             }
-            if ((time() - $row['mysql_ts']) < 5270400) {
+            
+            // let's check if there are elder proposals already
+            $elder_check_sql = "SELECT count(pr_id) as counter FROM `proposals`
+                LEFT JOIN permissions_inheritance ON permissions_inheritance.child=proposals.uuid 
+                WHERE proposals.status LIKE \"voting\" AND parent LIKE \"Master%\"";
+            $C = umc_mysql_fetch_all($elder_check_sql);
+            $elder_count = $C[0]['counter'];            
+            if ($prop_lvl_id == 5 && $elder_count > 0) { // this is a master proposed for Elder
+                $out .= "<strong>Sorry $username, but there can be only one user proposed for Elder at a time! Please wait until the current Elder vote is over and then re-submit your proposal.</strong>";
+            } else if ((time() - $row['mysql_ts']) < 5270400) {
                 $out .= "<strong>Sorry $username, but $proposed_username was last proposed for promotion less than 2 months ago!</strong>";
             } else if ($user_lvl_id < 6 && ($user_lvl_id < ($prop_lvl_id + 1))) {
                 $out .= "<strong>Sorry $username, but you need to be at a higher level to propose $proposed_username for a higher rank!</strong>";
@@ -315,8 +326,6 @@ function umc_vote_web() {
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
                     umc_vote_elder_notify($proposed);
                 }
-
-
             }
         }
     }
