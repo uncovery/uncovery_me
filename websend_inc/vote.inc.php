@@ -294,8 +294,8 @@ function umc_vote_web() {
             }
             
             // let's check if there are elder proposals already
-            $elder_check_sql = "SELECT count(pr_id) as counter FROM `proposals`
-                LEFT JOIN permissions_inheritance ON permissions_inheritance.child=proposals.uuid 
+            $elder_check_sql = "SELECT count(pr_id) as counter FROM minecraft_srvr.proposals
+                LEFT JOIN minecraft_srvr.permissions_inheritance ON permissions_inheritance.child=proposals.uuid 
                 WHERE proposals.status LIKE \"voting\" AND parent LIKE \"Master%\"";
             $C = umc_mysql_fetch_all($elder_check_sql);
             $elder_count = $C[0]['counter'];            
@@ -539,6 +539,7 @@ function umc_vote_post_news($upgraded_users) {
  * @param type $proposed
  */
 function umc_vote_elder_notify($proposed) {
+    return;
     global $UMC_DOMAIN;
     $sql = "SELECT user_email, UUID, username FROM minecraft_srvr.`UUID`
         LEFT JOIN minecraft.wp_usermeta ON UUID.UUID=meta_value
