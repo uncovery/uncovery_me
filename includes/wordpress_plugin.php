@@ -282,7 +282,7 @@ function umc_wp_register_addFields(){
     // die('umc_wp_register_addFields');
 
     $out = '<p>IMPORTANT: Hotmail/Microsoft is rejecting emails from us.
-    If you do not get a password by email within one hour, please use the /info setpass command in-game instead.
+    If you do not get a password by email within one hour, please use the /info setpass command in-game instead.<br>
         <label for="email_confirm">Confirm E-mail<br />
         <input type="text" name="email_confirm" id="email_confirm" class="input" value="" size="25" /></label>
     </p>';
@@ -467,16 +467,22 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 return $errors;
             } else { // check if there is a user with this UUID already
                 $uuid_quoted = umc_mysql_real_escape_string($UMC_USER['uuid']);
-                $sql = "SELECT display_name FROM minecraft.wp_usermeta
+                $sql = "SELECT display_name, user_email FROM minecraft.wp_usermeta
                     LEFT JOIN minecraft.wp_users ON ID=user_id
                     WHERE meta_key = 'minecraft_uuid' AND meta_value LIKE $uuid_quoted;";
                 $XD = umc_mysql_fetch_all($sql);
                 $count = count($XD);
                 if ($count !== 0) {
+                    $old_username = $XD[0]['display_name'];
+                    // $old_usermail = $XD[0]['user_email'];
+                    XMPP_ERROR_send_msg($XD);
+                    XMPP_ERROR_send_msg($UMC_USER);
                     XMPP_ERROR_trigger("User $user_login tried to register 2nd account!");
                     $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account!
+                            The username used then was '$old_username'.
                             If you changed your username, there is no need for a second website account.
-                            It also means you should be already able to login on the minecraft server.
+                            It also means you should be already able to login on the minecraft server with the current account.
+                            You will need to use the old username to login to this website. If you have forgotten the password, you can request it through the '<a href=\"https://uncovery.me/wp-login.php?action=lostpassword\">forgot password</a>' function.
                             Please simply continue using your existing account, your username will be displayed correctly, the user login remains the same.
                             If you have any trouble please contact an admin!";
                     $errors->add('demo_error',__($error_msg));
