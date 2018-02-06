@@ -806,7 +806,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
     ),
-    'snow_block' => array(
+    'snow' => array( // snow block
         'id' => 80,
         'stack' => 64,
         'avail' => true,
@@ -2336,7 +2336,7 @@ $UMC_DATA = array(
         'stack' => 64,
         'avail' => true,
     ),
-    'snow_ball' => array(
+    'snowball' => array(
         'id' => 332,
         'stack' => 16,
         'avail' => true,
@@ -3182,7 +3182,8 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'slime_block' => 'slime',
     'smooth_brick' => 'stonebrick',
     'smooth_stairs' => 'stone_brick_stairs',
-    'snow' => 'snow_ball',
+    'snow_ball' => 'snowball',
+    'snow_block' => 'snow',
     'spruce_door_item' => 'spruce_door',
     'spruce_wood_stairs' => 'spruce_stairs',
     'stained_clay' => 'stained_hardened_clay',
