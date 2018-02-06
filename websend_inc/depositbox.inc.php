@@ -416,6 +416,7 @@ function umc_do_withdraw() {
                 $all_items[$id] = array('item_name' => $item_name, 'amount' => $this_amount);
             }
             umc_check_space_multiple($all_items);
+            umc_log('deposit', 'withdraw', "$player is withdrawing $amount of $item_name");
             foreach ($all_items as $id => $data) {
                 umc_checkout_goods($id, $data['amount'], 'deposit');
             }
