@@ -88,7 +88,7 @@ $lottery = array(
             'item_name' => 'diamond',
             'data' => 0,
             'ench' => '',
-            
+
         ),
     ),
     'diamondblock' => array(
@@ -232,7 +232,7 @@ $lottery = array(
         'txt' => '1-64 of random rare block',
         'blocks' => array(
             'coal_ore:0', 'iron_ore:0', 'lapis_ore:0', 'mossy_cobblestone:0', 'diamond_ore:0',
-            'redstone_ore:0', 'ice:0', 'snow_block:0', 'clay:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
+            'redstone_ore:0', 'ice:0', 'snow:0', 'clay:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
             'mycelium:0', 'nether_brick:0', 'emerald_ore:0', 'end_stone:0', 'redstone_block:0',
             'quartz_ore:0', 'quartz_block:0', 'coal_block:0', 'packed_ice:0',
         ),
