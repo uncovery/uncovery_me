@@ -115,7 +115,7 @@ function umc_ws_eventhandler($event) {
             // all the events not covered above
             // XMPP_ERROR_send_msg("Event $event not assigned to action (umc_ws_eventhandler)");
     }
-    
+
     // run plugin events
     umc_plugin_eventhandler($event);
 }
@@ -193,7 +193,7 @@ function umc_ws_get_vars() {
 
         }
         $UMC_USER['inv'] = array();
-        if (isset($json['Invoker']['Inventory'])) {
+        if (isset($json['Invoker']['Inventory'])) {         
             $UMC_USER['inv'] = umc_ws_get_inv($json['Invoker']['Inventory']);
             $UMC_USER['current_item'] = $json['Invoker']['CurrentItemIndex'];
         }
@@ -419,14 +419,14 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
  * @return type
  */
 function umc_ws_get_inv($inv_data) {
-    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA, $UMC_DATA_ID2NAME;
+    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA, $UMC_DATA_ID2NAME, $UMC_USER;
     // XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $inv = array();
     foreach($inv_data as $item) {
         $slot = $item['Slot'];
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
-        $inv[$slot]['nbt'] = false;
+        $inv[$slot]['nbt'] = false;      
         foreach ($item as $name => $value) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
@@ -443,14 +443,7 @@ function umc_ws_get_inv($inv_data) {
             } else if ($fix_name == "type") {
                 $inv[$slot]['id'] = $item['Type'];
             } else if ($fix_name == 'durability') {
-                $name = 'data';
-                if ($value == -1) { // case 1) saplings of dark oak harvested from minecart maniah have a -1 data
-                    // umc_clear_inv($data['item_name'], $data['data'], $data['amount']);
-                    umc_echo("{red}You had a bugged item in your inventory, it had to be removed!");
-                    XMPP_ERROR_trigger("Invalid item with -1 damage found!");
-                } else {
-                    $inv[$slot][$name] = $value;
-                }
+                $inv[$slot]['data'] = $value;
             } else if ($fix_name == 'meta' && (!isset($item['nbt']))) {
                 foreach ($value as $meta_type => $meta_value) {
                     // enchantments
@@ -786,6 +779,10 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     }
 
     $stack_size = $UMC_DATA[$item_name]['stack'];
+    
+    if ($damage < 0) {
+        $damage = 0;
+    }
 
     while ($amount > $stack_size) {
         $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
