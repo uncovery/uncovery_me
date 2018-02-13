@@ -479,12 +479,19 @@ function umc_assemble_maps() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
     // create lots
+    // 
     $worlds = $UMC_SETTING['world_data'];
-    // $worlds = array('empire'    => array('lot_size' => 128, 'lot_number' => 32));
-    // $worlds = array('kingdom'   => array('lot_size' => 272, 'lot_number' => 24));
-    // $worlds = array('draftlands' => array('lot_size' => 272, 'lot_number' => 16));
-    // $worlds = array('skyblock'  => array('lot_size' => 128, 'lot_number' => 20));
-    // $worlds = array('aether2' => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet'));
+    
+    // $worlds = array(
+    //    'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
+    //    'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11'),
+    //    'aether'    => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet',   'spawn' => 'aet_h8'),
+    //    'kingdom'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b'),
+    //    'draftlands'=> array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'draft', 'spawn' => 'draft_m12_b'),
+    //    'skyblock'  => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'block', 'spawn' => 'block_k11'),
+    //    'city'      => array('prefix' => 'city', 'spawn' => 'city_spawn')
+    // );
+          
     $maxmin = array(
         'empire' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
         'flatlands' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
@@ -496,32 +503,34 @@ function umc_assemble_maps() {
         'city' => array('min_1' => -2, 'min_2' => -4, 'max_1' => 3, 'max_2' => 1),
         'darklands' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 5, 'max_2' => 5),
     );
-
+    
+    $destination = $UMC_SETTING['path']['server'] .  "/maps";
+    $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
+    
+    // iterate the worlds first and delete old files
+    foreach ($worlds as $world => $dim) {
+        $del_cmd = "find $destination -name '*.png' -type f -delete";
+        exec($del_cmd);
+        XMPP_ERROR_trace(__FUNCTION__, "Deleted old files with command $del_cmd");
+    }
+    
     foreach ($worlds as $world => $dim) {
         // make chunk files
         // clean up data files
         $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
-        $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
-        $destination = $UMC_SETTING['path']['server'] .  "/maps";
-        
-        // delete PNGs so that we make sure all are created fresh
-        $del_cmd = "find $destination -name '*.png' -type f -delete";
-        exec($del_cmd);
-       
+     
         echo "$world: \n";
         // -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
         $coordinates = "-region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']}";
         $custom_color = "-color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
         $command = "java -jar $mapper_folder/TMCMR.jar $folder $custom_color -create-big-image $coordinates -o $destination/$world/png";
         exec($command);
-        echo "\n$world chunk maps rendered\n";
-        XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered");
+        XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered command $command");
 
         // compress map to new map
         $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
         exec($command1);
-        echo "$world map compressed\n";
-        XMPP_ERROR_trace(__FUNCTION__, "$world map compressed");
+        XMPP_ERROR_trace(__FUNCTION__, "$world map compressed command $command1");
 
         $file_1 = "$destination/{$world}_large.jpg";
         $file_2 = "$destination/{$world}.jpg";
@@ -529,13 +538,10 @@ function umc_assemble_maps() {
         $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
         $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
         exec($command2);
-        XMPP_ERROR_trace(__FUNCTION__, "$world cropped map to border size {$size}x{$size}+{$border}+{$border}");
-        echo "$world cropped map to border size {$size}x{$size}+{$border}+{$border}\n";
+        XMPP_ERROR_trace(__FUNCTION__, "$world cropped map to border size with command $command2");
         // umc_assemble_tmc_map($world);
-        //echo ", Single file map assembled";
         // create lot maps
         umc_disassemble_map($world);
-        echo "$world Lot maps cut, done!\n";
         XMPP_ERROR_trace(__FUNCTION__, "$world Lot maps cut, done!");
 
         // umc_heatmap($world);
@@ -607,7 +613,7 @@ function umc_disassemble_map($world = 'empire') {
             $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/{$lot}_full.png\"";
             // $command . "\n";
             exec($command);
-            XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot");
+            XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot with command $command");
         }
         XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
     } else {
@@ -619,7 +625,7 @@ function umc_disassemble_map($world = 'empire') {
         $command = "convert \"$source/$world.jpg\" +repage -crop $lot_size". "x". "$lot_size +repage \"$source/lots/$world/$world.png\" ";
         // echo $command . "\n";
         exec($command);
-        XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
+        XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces with command $command");
 
         // rename the files
         $lot_array = array();
@@ -661,11 +667,10 @@ function umc_disassemble_map($world = 'empire') {
             // echo "renaming {$world}-$index.png -> $lot.png\n";
             if (file_exists("$source/lots/$world/{$world}-$index.png")) {
                 rename("$source/lots/$world/{$world}-$index.png", "$source/lots/$world/$lot.png");
-
+                XMPP_ERROR_trace(__FUNCTION__, "renamed files for lot $lot from {$world}-$index.png to $lot.png");
             } else {
-                echo "File $source/lots/$world/{$world}-$index.png not found \n";
+                XMPP_ERROR_trigger("File $source/lots/$world/{$world}-$index.png not found \n");
             }
-            XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot");
         }
         XMPP_ERROR_trace(__FUNCTION__, "Done renaming the $world pieces to lot names");
     }
