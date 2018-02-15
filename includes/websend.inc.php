@@ -663,6 +663,8 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                             $nbt = ",tag:$nbt_safe";
                         }
                         $extras = "{id:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
+                        // I added minecraft: before the item name but had to remove it since it broke the mouseover
+                        // I am not sure why it was added.
                     } else {
                         $extras = $variable;
                     }
