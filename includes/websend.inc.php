@@ -747,7 +747,6 @@ function umc_tellraw($selector, $msg_arr, $spacer = false, $debug = false) {
         $type = 'asConsole';
     }
 
-    XMPP_ERROR_trigger("tellraw");
     XMPP_ERROR_trace('tellraw final', $cmd);
     $check = umc_ws_command($type, $cmd, $target, false);
     return $check;
