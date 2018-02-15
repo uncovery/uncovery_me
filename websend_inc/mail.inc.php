@@ -204,6 +204,7 @@ function umc_mail_text() {
  */
 function umc_mail_send() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
     $id = umc_mail_draft_existing();
     if (!$id) {
         umc_error("You need to create a new message using {green}/mail new <recipient> <title>{white} first!");
@@ -211,7 +212,8 @@ function umc_mail_send() {
     $sql = "UPDATE minecraft_srvr.user_mail SET status = 'sent', date_time=NOW() WHERE msg_id=$id LIMIT 1";
     umc_mysql_query($sql, true);
     umc_echo("Mail ID $id was sent successfully!");
-    umc_mail_check();
+    $uuid = $UMC_USER['uuid'];
+    umc_mail_check($uuid);
     umc_mail_send_alert($id);
 }
 
@@ -619,7 +621,7 @@ function umc_mail_web() {
     if ($action == 'Reply') {
         $subject = htmlentities(filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING));
         // type comparison to avoid false (ie not found) evaluating to 0;
-        if (strpos($subject, 'Re:') !== 0) { 
+        if (strpos($subject, 'Re:') !== 0) {
             $subject = "Re: ". $subject;
         }
         $recipient = filter_input(INPUT_POST, 'sender', FILTER_SANITIZE_STRING);
