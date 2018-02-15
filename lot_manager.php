@@ -244,7 +244,7 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $image = umc_lot_get_tile($lot);
         $action = $lot_data['action'];
 
-        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" class=\"lotform\" method=\"POST\">\n"
+        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" style=\"overflow:auto;\" class=\"lotform\" method=\"POST\">\n"
             . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
             . "<div>$image<p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
             . "<p><strong>Action:</strong> $action</p></div>\n"
@@ -1820,11 +1820,11 @@ function umc_restore_from_backup() {
     global $UMC_SETTING;
 
     $lots = array(
-        'king_h19'=>'camerissan', 
-        'king_h19_a'=>'camerissan', 
-        'king_h19_c'=>'camerissan', 
-        'king_h20'=>'camerissan', 
-        'king_h20c'=>'camerissan', 
+        'king_h19'=>'camerissan',
+        'king_h19_a'=>'camerissan',
+        'king_h19_c'=>'camerissan',
+        'king_h20'=>'camerissan',
+        'king_h20c'=>'camerissan',
         'king_g20'=>'camerissan'
     );
 
@@ -1840,7 +1840,7 @@ function umc_restore_from_backup() {
         }
         // echo "Restoring with $lot, $source_folder$world, $lot, $dest_folder$world";
         umc_move_chunks($lot, $source_folder . $world, $lot, $dest_folder . "/" . $world, true);
-        
+
     }
 }
 
