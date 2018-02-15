@@ -193,7 +193,7 @@ function umc_ws_get_vars() {
 
         }
         $UMC_USER['inv'] = array();
-        if (isset($json['Invoker']['Inventory'])) {         
+        if (isset($json['Invoker']['Inventory'])) {
             $UMC_USER['inv'] = umc_ws_get_inv($json['Invoker']['Inventory']);
             $UMC_USER['current_item'] = $json['Invoker']['CurrentItemIndex'];
         }
@@ -426,7 +426,7 @@ function umc_ws_get_inv($inv_data) {
         $slot = $item['Slot'];
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
-        $inv[$slot]['nbt'] = false;      
+        $inv[$slot]['nbt'] = false;
         foreach ($item as $name => $value) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
@@ -662,7 +662,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                             $nbt_safe = addslashes($variable['nbt']);
                             $nbt = ",tag:$nbt_safe";
                         }
-                        $extras = "{id:minecraft:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
+                        $extras = "{id:{$variable['item_name']},Damage:{$variable['damage']},Count:1$nbt}";
                     } else {
                         $extras = $variable;
                     }
@@ -686,7 +686,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
  * @param type $msg_arr
  * @param type $spacer
  */
-function umc_tellraw($selector, $msg_arr, $spacer = false) {
+function umc_tellraw($selector, $msg_arr, $spacer = false, $debug = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $valid_selectors = array(
@@ -745,6 +745,7 @@ function umc_tellraw($selector, $msg_arr, $spacer = false) {
         $type = 'asConsole';
     }
 
+    XMPP_ERROR_trigger("tellraw");
     XMPP_ERROR_trace('tellraw final', $cmd);
     $check = umc_ws_command($type, $cmd, $target, false);
     return $check;
@@ -779,7 +780,7 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     }
 
     $stack_size = $UMC_DATA[$item_name]['stack'];
-    
+
     if ($damage < 0) {
         $damage = 0;
     }
