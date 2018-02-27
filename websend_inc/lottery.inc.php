@@ -317,8 +317,8 @@ function umc_lottery_vote() {
     }
         $data = array(
             array('text' => "(Click on the yellow text to open in browser)", 'format' => array('white')),
-        );        
-        umc_text_format($data, false, false);    
+        );
+        umc_text_format($data, false, false);
     umc_footer();
 }
 
@@ -332,7 +332,7 @@ function umc_lottery_vote_web() {
     global $UMC_USER, $lottery_urls;
     $out = '';
     $voted = array();
-    
+
     // don't show servers the user voted already for
     if ($UMC_USER) {
         $uuid_sql = umc_mysql_real_escape_string($UMC_USER['uuid']);
@@ -341,10 +341,10 @@ function umc_lottery_vote_web() {
         if (count($W) == count($lottery_urls)) {
            $out .= "You voted on all lists in the last 24 hours already! Thanks!";
            return $out;
-        } 
+        }
         foreach ($W as $row) {
             $voted[] = $row['website'];
-        }        
+        }
     }
 
     $out .= "Voting servers:<br>
@@ -354,25 +354,21 @@ function umc_lottery_vote_web() {
             $out .= "<li><a href=\"{$L['url']}\" target=\"_blank\">{$L['id']}</a></li>";
         }
     }
-    $out .= "</ul>
-        Claim your rewards in-game with /withdraw @lottery!";
-    
-    return $out;
-}
 
-
-/**
- * displays a list of all lottery links for the website
- */
-function umc_lottery_votelist_web() {
-    global $lottery_urls;
-    $out = "<br><ul>\n";
-    foreach ($lottery_urls as $id => $L) {
-        $out .= "<li><a href='{$L['url']}'>$id</a></li>\n";
+    if (count($voted) > 0) {
+        $out .= "</ul>";
+        $out .= "You voted already on these in the last 24 hours:
+            <ul>\n";
+        foreach ($lottery_urls as $L) {
+            if (in_array($L['id'], $voted)) {
+                $out .= "<li><a href=\"{$L['url']}\" target=\"_blank\">{$L['id']}</a></li>";
+            }
+        }
     }
+
     $out .= "</ul>";
-    $out .= "<p><strong>Use /withdraw @lottery to get your stuff, use /vote in-game to display this list for easier voting!</strong></p>";
-    echo $out;
+
+    return $out;
 }
 
 
