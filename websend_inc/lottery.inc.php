@@ -310,7 +310,7 @@ function umc_lottery_vote() {
             $data = array(
                 array('text' => " - ", 'format' => array('white')),
                 array('text' => $L['id'], 'format' => array('open_url' => $L['url'], 'yellow')),
-                array('text' => ", \${$L['val']} reward" , 'format' => array('white')),
+                array('text' => ", \${$L['val']} UNC reward" , 'format' => array('white')),
             );
             umc_text_format($data, false, false);
         }
