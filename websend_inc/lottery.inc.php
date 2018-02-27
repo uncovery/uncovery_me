@@ -73,9 +73,9 @@ $lottery_urls = array(
     'minecraftservers.org' => array('url' => 'http://minecraftservers.org/vote/160828', 'id' => 'minecraftservers.org', 'val' => 50),
     // 'mineservers.net' => array('url' => 'http://www.mineservers.net/servers/834-uncovery-minecraft/vote', 'id' => 'mineservers.net', 'val' => 100),
     'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com', 'val' => 50),
-    'minestatus.net' => array('url' => 'https://www.minestatus.net/152-uncovery-minecraft/vote', 'id' => 'minestatus', 'val' => 50),
+    'minecraftservers.biz' => array('url' => 'https://minecraftservers.biz/servers/824/', 'id' => 'minecraftservers.biz', 'val' => 50),
     'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org', 'val' => 50),
-    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers', 'val' => 50),
+    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers.net', 'val' => 50),
 );
 
 $lottery = array(
@@ -307,11 +307,59 @@ function umc_lottery_vote() {
     umc_header("Voting servers:");
     foreach ($lottery_urls as $L) {
         if (!in_array($L['id'], $voted)) {
-            umc_echo($L['url']);
+            $data = array(
+                array('text' => " - ", 'format' => array('white')),
+                array('text' => $L['id'], 'format' => array('open_url' => $L['url'], 'yellow')),
+                array('text' => ", \${$L['val']} reward" , 'format' => array('white')),
+            );
+            umc_text_format($data, false, false);
         }
     }
+        $data = array(
+            array('text' => "(Click on the yellow text to open in browser)", 'format' => array('white')),
+        );        
+        umc_text_format($data, false, false);    
     umc_footer();
 }
+
+/**
+ * Prints a list of all voting servers on the web for easier voting
+ * @global array $lottery_urls
+ */
+function umc_lottery_vote_web() {
+    // get the votes of the current user in the last 24 hours
+
+    global $UMC_USER, $lottery_urls;
+    $out = '';
+    $voted = array();
+    
+    // don't show servers the user voted already for
+    if ($UMC_USER) {
+        $uuid_sql = umc_mysql_real_escape_string($UMC_USER['uuid']);
+        $sql = "SELECT website FROM minecraft_log.votes_log WHERE username=$uuid_sql AND datetime > DATE_SUB(NOW(), INTERVAL 24 HOUR)";
+        $W = umc_mysql_fetch_all($sql);
+        if (count($W) == count($lottery_urls)) {
+           $out .= "You voted on all lists in the last 24 hours already! Thanks!";
+           return $out;
+        } 
+        foreach ($W as $row) {
+            $voted[] = $row['website'];
+        }        
+    }
+
+    $out .= "Voting servers:<br>
+        <ul>\n";
+    foreach ($lottery_urls as $L) {
+        if (!in_array($L['id'], $voted)) {
+            $out .= "<li><a href=\"{$L['url']}\" target=\"_blank\">{$L['id']}</a></li>";
+        }
+    }
+    $out .= "</ul>
+        Claim your rewards in-game with /withdraw @lottery!";
+    
+    return $out;
+}
+
 
 /**
  * displays a list of all lottery links for the website
