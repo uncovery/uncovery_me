@@ -75,7 +75,7 @@ $lottery_urls = array(
     'minecraft-mp.com' => array('url' => 'http://minecraft-mp.com/server/49/vote/', 'id' => 'minecraft-mp.com', 'val' => 50),
     'minecraftservers.biz' => array('url' => 'https://minecraftservers.biz/servers/824/', 'id' => 'minecraftservers.biz', 'val' => 50),
     'minecraft-servers-list.org' => array('url' => 'http://www.minecraft-servers-list.org/index.php?a=in&u=uncovery', 'id' => 'minecraft-servers-list.org', 'val' => 50),
-    'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers.net', 'val' => 50),
+    // 'minecraftservers.net' => array('url' => 'http://minecraftservers.net/server.php?id=5881', 'id' => 'minecraftservers.net', 'val' => 50),
 );
 
 $lottery = array(
@@ -575,7 +575,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS;
+    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
 
     $user_input = $UMC_USER['args'][2];
 
@@ -746,7 +746,8 @@ function umc_lottery() {
         $service_raw = strtolower($UMC_USER['args'][3]);
         // fix service
         $search = array('http://www.', 'https://www.', 'http://', 'https://');
-        $service = umc_mysql_real_escape_string(str_replace($search, '', $service_raw));
+        $service_fixed = str_replace($search, '', $service_raw);
+        $service = umc_mysql_real_escape_string($service_fixed);
         // sql log
         $sql_reward = umc_mysql_real_escape_string($type);
         $ip = umc_mysql_real_escape_string($UMC_USER['args'][4]);
@@ -758,17 +759,17 @@ function umc_lottery() {
         XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
     }
 
-
-    //TODO: Match the site with the lottery_urls
-
-    //TODO: determine the money given per lottery url
+    // find the right reward
+    foreach ($lottery_urls as $L) {
+        if ($service_fixed == $L['id']) {
+            $reward = $L['val'];
+            umc_money(false, $user, $reward);
+            // and exit
+            return;
+        }
+    }
 
     //TODO: make the return uncremental if several days in a row voting was done
-
-    // always give 100 uncs irrespective of roll.
-    umc_money(false, $user, 100);
-
-
 }
 
 // returns an array with the item and roll value
