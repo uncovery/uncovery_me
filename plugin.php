@@ -21,6 +21,23 @@
  * This file manages the plugins in websend_inc, their help functions and events
  */
 
+function umc_plg_enum() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $folder = '/home/minecraft/server/bin/websend_inc';
+    $target = '/home/minecraft/server/bin/assets/plugins.inc.php';
+
+    $plugins = array();
+
+    $it = new FilesystemIterator($folder);
+    foreach ($it as $fileinfo) {
+        $filename = $fileinfo->getFilename();
+        if (substr($filename, -8)== '.inc.php') {
+            $plugins[] = $folder . "/" . $filename;
+        }
+    }
+    umc_array2file($plugins, 'PLUGIN_LIST', $target);
+}
+
 /**
  * TODO: This list should be created automatically for a cache.
  * The reading of the whole directory each time takes too much time.
@@ -28,43 +45,11 @@
  */
 function umc_plg_include() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $folder = '/home/minecraft/server/bin/websend_inc';
-
-    // An array of all plugins to be registered and included
-    $plugins = array (
-        'contests',
-        'depositbox',
-        'hardcore',
-        'home',
-        'hunger',
-        'info',
-        'karma',
-        'lot',
-        'lottery',
-        'mail',
-        'mod',
-        'money',
-        'nocheatplus',
-        'others',
-        'potions',
-        'shop',
-        'skyblock',
-        'story',
-        'teamspeak',
-        'trivia',
-        'userlevel',
-        'vanity',
-        'vote',
-        'web',
-        'xp',
-        );
-
-    //Require each plugin.
-    foreach($plugins as $plugin) {
-          $filename = $folder . "/" . $plugin . ".inc.php";
-          if (file_exists($filename)) {
-              require_once($filename);
-          }
+    $plugin_listfile = '/home/minecraft/server/bin/assets/plugins.inc.php';
+    global $PLUGIN_LIST;
+    require_once($plugin_listfile);
+    foreach ($PLUGIN_LIST as $plugin) {
+        require_once($plugin);
     }
 }
 
@@ -377,7 +362,7 @@ function umc_plugin_web_help($one_plugin = false) {
  */
 function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $WS_INIT, $UMC_USER;
+    global $WS_INIT;
     // define list of available events for security, it's questionable if we need this list.
     $available_events = array(
         // server events
