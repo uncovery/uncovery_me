@@ -18,3 +18,5 @@ umc_github_wordpress_update();
 umc_item_data_id2namelist();
 
 umc_item_data_icon_getdata();
+
+umc_plg_enum();
