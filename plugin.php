@@ -238,7 +238,10 @@ function umc_show_help($args = false) {
         }
     } else { // Show general help.
         foreach ($WS_INIT as $plugin => $cmd_data) {
-
+            // don't include plugins that are disabled in help.
+            if (isset($cmd_data['disabled']) && ($cmd_data['disabled'] === true)) {
+                continue;
+            }
             // This command is restricted to a user level or higher
             if (isset($cmd_data['default']['security']['level']) && $player != 'uncovery') {
                 if(!umc_rank_check($userlevel, $cmd_data['default']['security']['level'])) {
