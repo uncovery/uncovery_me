@@ -249,8 +249,10 @@ function umc_nbt_display_long_text($nbt_array) {
             case 'potion':
                 $text .= umc_potion_text_find($data, 'long_text');
                 break;
+            case 'skullowner':
+                $text .= 'Someone\'s Skull\n';
             default:
-                XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
+                XMPP_ERROR_trigger("Unknown NBT Type '$feature' (umc_nbt_display_long_text)");
         }
     }
     return $text;
@@ -340,8 +342,22 @@ function umc_nbt_display_short_text($nbt_array) {
             case 'potion': 
                 $text .= umc_potion_text_find($data, 'short_text');
                 break;
+            case 'skullowner': // TODO: Need to properly implement this.
+                /**
+                 {SkullOwner:
+                    {Id:"f4c2cad7-0ace-4ce6-8678-69d0b653a98b",
+                 *  Properties:{textures:
+                 *      [
+                 *          {Signature:"xoHy554SnbjVV2H99fcmQMoFYT8ONVgOxPrTdH5KOi14epy+p2YzXwhxDCa7JVsQgZhUaSedphQnFEOup+hSj1riSZs8cGm2kM2dg+/PrDSUmV1mDQtMi+bqsJG9LTdMP6aCmlne2mWIXmADns31t1m2yQrUAKNayW3SZMSgQjOD9czes0Pfym7fPsC+nw/oP7T1Lwyxm5+3/W2VFjm3sfdntFSYxTChO8wkQ964o+VshldmW9AAbwd96y2v5T0i+iV+Rlq8/YhQcKryxVzBOOfkEKx3NsR6fOYu/8i5AGlbY33897WFUtR4TzHOX+VdzouGreKIRhavdcDMSS1HzFtFuG017GctuDUjSoYug6/kzS3mN47AEaH1o/AFnj1mIepMcMpPISDVZPgbKfebo8Y5rw6mLSg3DX3kSFTdF05IuJ1ba4jI0q3HByG0yC2D9SMKx8TMBzSZxw112yEQOUr4i1QjDVBT9ILiGQ073FBNAM4NG2Yqow5CFBJr1ldVO87jBZPqAWhUr3vpHkYyadJ6fGdBkaT6xZKgSPadNOg8oyuNFK9lcHK+fvtfmtFB4R7ZUtWo7b/V9Ty3c1aHSDIeNtpkftojCfrY3EKMkwILLORg4Bn9avVxMfrAeMVDE14GBqH+zZuq2hjJqD+GVwKMmbv1Q94ChgeNxsQ4k/I=",
+                 *           Value:"eyJ0aW1lc3RhbXAiOjE0OTk3MTI1ODkyMjQsInByb2ZpbGVJZCI6ImY0YzJjYWQ3MGFjZTRjZTY4Njc4NjlkMGI2NTNhOThiIiwicHJvZmlsZU5hbWUiOiJHdWFyZGlhbiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU2YjM3NzgzODYxZTZhNDRkNTM3ZTMyZDg2NTUzNzMxYWU0MzM3OTExNWRiMzRjMjY2ZTUyZmEzY2FiIn19fQ=="
+                 *          }
+                 *      ]
+                 * },
+                 * Name:"Guardian"},display:{Name:"&rGuardian Head"}}"
+                 */
+                $text .= 'Someone\'s Skull\n';            
             default:
-                XMPP_ERROR_trigger("Unknown NBT Type '$feature'");
+                XMPP_ERROR_trigger("Unknown NBT Type '$feature' (umc_nbt_display_short_text)");
         }
     }
     return $text;
