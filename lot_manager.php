@@ -226,13 +226,19 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $lot_change_form = umc_get_lot_change_form($lot, $form);
         $image = umc_lot_get_tile($lot);
 
-        $out .= "<a name=\"$lot\"></a><form style=\"overflow:auto;\" action=\"#$lot\" class=\"lotform$class\" method=\"POST\">\n"
-            . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div>$image<p><strong>Lot:</strong> $lot$button</p>\n"
-            . "<p><strong>Members:</strong> $members_form</p>\n"
-            . "<p><strong>Flags:</strong> $flags_form</p>\n"
-            . "<p>$lot_change_form</p></div>\n"
-            . "</form>\n";
+        $out .= "<a name=\"$lot\"></a><form style=\"overflow:auto;\" action=\"#$lot\" class=\"lotform$class\" method=\"POST\">
+            <input type=\"hidden\" name=\"lot\" value=\"$lot\">
+            <div>
+                $image
+                <div class=\"lot_features\">
+                    <p><strong>Lot:</strong> $lot</p>
+                    <p><strong>Members:</strong> $members_form</p>
+                    <p><strong>Flags:</strong> $flags_form</p>
+                    <p>$lot_change_form</p>
+                </div>
+                $button
+            </div>
+            </form>\n";
     }
 
     // get dibs
@@ -246,11 +252,17 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
         $image = umc_lot_get_tile($lot);
         $action = $lot_data['action'];
 
-        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" style=\"overflow:auto;\" class=\"lotform\" method=\"POST\">\n"
-            . "<input type=\"hidden\" name=\"lot\" value=\"$lot\">\n"
-            . "<div>$image<p><strong>Dibs on Lot:</strong> $lot$button</p>\n"
-            . "<p><strong>Action:</strong> $action</p></div>\n"
-            . "</form>\n";
+        $out .= "<a name=\"$lot\"></a><form action=\"#$lot\" style=\"overflow:auto;\" class=\"lotform\" method=\"POST\">
+            <input type=\"hidden\" name=\"lot\" value=\"$lot\">
+            <div>
+                $image
+                <div class=\"lot_features\">
+                    <p><strong>Dibs on Lot:</strong>$lot</p>
+                    <p><strong>Action:</strong> $action</p>
+                </div>
+                $button
+            </div>
+            </form>\n";
     }
     return $out;
 }
@@ -459,9 +471,7 @@ function umc_get_lot_change_form($lot, $form = false) {
     if (count($options) < 1) {
         return $out . "No actions available";
     } else {
-        if (count($options) < 2) {
-            $out .= "No actions available";
-        } else if ($form) {
+        if ($form) {
             $out .= "<select name=\"lot_action\">";
             foreach ($options as $option => $text) {
                 $sel_str = '';
@@ -562,8 +572,9 @@ function umc_get_lot_options($lot, $form = false){
         $lot_options = array();
     }
     if ($world == 'kingdom') {
-        // allow gift & refund
-        $lot_options['refund'] = 'abandon & refund for 50%';
+        // allow refund only
+        $lot_options['refund'] = 'abandon & reset (refunds 50%)';
+        /*
         if ($form) {
             $members = umc_get_active_members();
             foreach ($members as $uuid => $member) {
@@ -572,9 +583,10 @@ function umc_get_lot_options($lot, $form = false){
         } else {
             $lot_options['gift'] = "Gift to someone (as-is)";
         }
+        */
     } else if ($world == 'draftlands') {
         // allow gift & refund etc
-        $lot_options['refund'] = 'abandon & refund for 50%';
+        $lot_options['refund'] = 'abandon & reset (refunds 50%)';
         $lot_options['reset'] = 'reset to flatlands';
         $lot_options['mint_king'] = 'reset to mint kingdom';
         $lot_options['curr_king'] = 'reset to current kingdom';
@@ -592,6 +604,7 @@ function umc_get_lot_options($lot, $form = false){
         $lot_options['reset'] = "Reset to version " . $row['mint_version'];
         $lot_options['abandon'] = 'Abandon now!';
     }
+
     return $lot_options;
 }
 
@@ -990,6 +1003,7 @@ function umc_lot_costs_simulation($world) {
     
     $simulation_row = array(1,2,3,4,5,6,7,8,9,10,15,20,50,100);
    
+    $out = '';
     
     $progressive = false;
     foreach ($costs as $pattern => $price) {
