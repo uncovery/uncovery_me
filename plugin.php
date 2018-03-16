@@ -100,6 +100,7 @@ function umc_wsplg_dispatch($module) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $admins = $UMC_SETTING['admins'];
     $player  = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
 
     $command = umc_wsplg_find_command($module);
     if (!$command) {
@@ -127,7 +128,7 @@ function umc_wsplg_dispatch($module) {
 
             // restricts command to a minimum user level or higher
             if (isset($command['security']['level'])) {
-                if (!umc_rank_check(umc_get_userlevel($player),$command['security']['level'])) {
+                if (!umc_rank_check(umc_get_uuid_level($uuid),$command['security']['level'])) {
                     umc_error('{red}That command is restricted to user level {yellow}'.$command['security']['level'].'{red} or higher.');
                 }
             }
@@ -162,7 +163,8 @@ function umc_show_help($args = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $WS_INIT;
     $player = $UMC_USER['username'];
-    $userlevel = umc_get_userlevel($player);
+    $uuid = $UMC_USER['uuid'];
+    $userlevel = umc_get_uuid_level($uuid);
 
     if ($args) { // if show_help is called from another program, we simulate a /help command being issued.
         $args = array_merge(array('call'), $UMC_USER['args']);
