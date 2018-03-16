@@ -756,7 +756,7 @@ function umc_user_directory() {
             }
             $O['Comments'] .= "</ul>\n";
         }
-
+        /** //TODO: This has to be updated to show the forum posts of the new forum
         //forum posts
         $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
 		wpp.post_parent AS parent, wpp.post_type AS type, parent.post_title AS parent_title
@@ -783,7 +783,9 @@ function umc_user_directory() {
                 $O['Forum'] .= "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>\n";
             }
             $O['Forum'] .= "</ul>\n";
-        }
+
+
+        } */
         echo umc_jquery_tabs($O);
     } else {
         // $bans = umc_get_banned_users();
@@ -824,7 +826,7 @@ function umc_user_directory() {
             $vote_stats = umc_lottery_stats($row['uuid']);
             $settler_levels = array('Settler', 'SettlerDonator');
             if (in_array($row['userlevel'], $settler_levels) && $row['onlinetime'] >= 60) {
-                umc_promote_citizen(strtolower($row['username']), $row['userlevel']);
+                umc_promote_citizen($row['uuid'], $row['userlevel']);
             }
             if (($row['registered_since'] - $days_offline) > 1) {
                 if ($alt_days < $row['registered_since']) {
@@ -1028,12 +1030,11 @@ function umc_get_online_hours($user) {
  * @param type $userlevel
  * @return type
  */
-function umc_promote_citizen($username, $userlevel = false) {
+function umc_promote_citizen($uuid, $userlevel = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (!$userlevel) {
-        $userlevel = umc_get_userlevel($username);
+        $userlevel = umc_get_uuid_level($uuid);
     }
-    $lower_username = strtolower($username);
     $settlers = array('Settler', 'SettlerDonator');
     if (in_array($userlevel, $settlers)) {
         /*
@@ -1045,19 +1046,18 @@ function umc_promote_citizen($username, $userlevel = false) {
         if ($age_days >= 90) {
         *
         */
-        $online_hours = umc_get_online_hours($lower_username);
+        $online_hours = umc_get_online_hours($uuid);
         if ($online_hours >= 60) {
             //user should be Citizen
-            $uuid = umc_user2uuid($lower_username);
             if ($userlevel == 'Settler') {
                 // pex user <user> group set <group>
                 umc_exec_command("pex user $uuid group set Citizen");
-                umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to Citizen (online hours: $online_hours)");
+                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to Citizen (online hours: $online_hours)");
             } else if ($userlevel == 'SettlerDonator') {
                 umc_exec_command("pex user $uuid group set CitizenDonator");
-                umc_log("users", "promotion", "User $username ($uuid) was promoted from $userlevel to CitizenDonator (online: $online_hours)");
+                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to CitizenDonator (online: $online_hours)");
             } else {
-                XMPP_ERROR_trigger("$username / $uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
+                XMPP_ERROR_trigger("$uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
             }
         }
     }
