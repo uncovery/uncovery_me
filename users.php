@@ -1026,7 +1026,7 @@ function umc_get_online_hours($user) {
 /**
  * promotes a user to Citizen if applicable
  *
- * @param type $username
+ * @param type $uuid
  * @param type $userlevel
  * @return type
  */
