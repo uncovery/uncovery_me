@@ -58,7 +58,7 @@ function umc_lot_manager_main() {
     if (!isset($UMC_USER['lots'])) {
         $UMC_USER['lots'] = array();
         foreach ($worlds as $world) {
-            $UMC_USER['lots'][$world] = umc_get_lot_number($username, $world);
+            $UMC_USER['lots'][$world] = umc_get_lot_number($uuid, $world);
         }
 
     }
@@ -123,7 +123,7 @@ function umc_lot_manager_main() {
     $current_lots = $UMC_USER['lots'][$world];
 
     // get user lots per world
-
+    
     $out .= "<div class=\"formbox\">";
     $out .= umc_lot_manager_get_lots($world, $edit_lot);
 
@@ -134,11 +134,13 @@ function umc_lot_manager_main() {
 
 
     // in the dibs tab, we do not show a "new lot form".
+    $out .= umc_lot_costs_simulation($world);
     $form = umc_get_new_lot_form($world);
     if ($current_lots['avail_lots'] == 0) {
         $out .= "<div class=\"newlotform\">You do not have enough available lots to get one in $uworld!</div>";
     } else if (!$form) {
         $out .= "<div class=\"newlotform\">There are no available lots for you in $uworld! "
+                . "Further, we are changing the way kingdom lots are being bought, until then, no new lots are up for sale."
                 . "You need to be Citizen for Ather lots. Also, you need to have 10'000 Uncs in your account for Kingdom lots, 50k for Draftland lots.</div>";
         return $out;
     } else {
@@ -614,13 +616,15 @@ function umc_get_draftlands_kingdom_equivalent($draftlands_lot) {
 function umc_get_new_lot_form($world, $dibs = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
-
+    
+    $out = '';
+    
     if (!$dibs) {
         $avail_lots = umc_get_available_lots($world);
         if ($world == 'empire') {
             $avail_lots = array_merge($avail_lots, umc_get_available_lots('flatlands'));
         }
-        $out = "<select name=\"new_lot\">";
+        $out .= "<select name=\"new_lot\">";
         $multiplier = 1;
         $actions = "";
     } else {
@@ -628,7 +632,7 @@ function umc_get_new_lot_form($world, $dibs = false) {
         if ($world == 'empire') {
             $avail_lots = array_merge($avail_lots, umc_lot_manager_get_occupied_lots('flatlands'));
         }
-        $out = "<select name=\"new_dib\">";
+        $out .= "<select name=\"new_dib\">";
         $actions = "<select name=\"dib_action\"><option value=\"none\">[none]</option><option value=\"reset\">Reset</option></select>\n";
         $multiplier = 2;
     }
@@ -865,12 +869,14 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // get username
-    $username = umc_uuid_getone($user, 'username');
+    $U = umc_uuid_getboth($user);
+    $uuid = $U['uuid'];
+    $username = $U['username'];    
 
     // validate input and check if lot is free
     // find world & sanitize
     $world = umc_get_lot_world($new_lot);
-    $userlevel = umc_get_userlevel($username);
+    $userlevel = umc_get_uuid_level($uuid);
     if (!$world) {
         XMPP_ERROR_send_msg("Guest $username tried to get lot $new_lot, but world could not be found! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "The lot you chose is invalid!", 'cost' => false);
@@ -887,12 +893,12 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
         return $result;
     }
 
-    $userlots = umc_get_lot_number($username, $world);
+    $userlots = umc_get_lot_number($uuid, $world);
 
     // check costs
 
     if ($cost) { // see if the user has enough money
-        $balance = umc_money_check($username);
+        $balance = umc_money_check($uuid);
         if ($balance < $cost) {
             XMPP_ERROR_send_msg("User $username did not have enough money to get $new_lot (umc_assign_new_lot)");
             $result = array('result' => false, 'text' => "You do not have enough money to get this lot!", 'cost' => $cost);
@@ -903,7 +909,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     //check if user has approriate kingdom lot
    if ($world == 'draftlands') {
         $draft_lots = array();
-        $king_lots = umc_get_lot_number($username, 'kingdom');
+        $king_lots = umc_get_lot_number($uuid, 'kingdom');
         $king_lots_list = $king_lots['lot_list'];
         foreach ($king_lots_list as $king_lot) {
             $draft_lots[] = str_replace('king', 'draft', $king_lot);
@@ -949,18 +955,67 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
  */
 function umc_get_lot_costs($lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING;
+    global $UMC_SETTING, $UMC_USER;
     // check costs
     $costs = $UMC_SETTING['lot_costs'];
 
     $cost = false;
+    $count_main = false;
     foreach ($costs as $pattern => $price) {
         $check = preg_match("/$pattern/", $lot);
         if ($check) {
-            $cost = $price;
+            if (is_array($price)) { // calculated pricing instead of fixed
+                $world = umc_get_lot_world($lot);
+                // get the number of main lots in this world, but only once
+                if (!$count_main) {
+                    $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);
+                    $count_main = $count['used_lots'];  
+                }
+                $cost = pow($count_main, $price['power']) * $price['base'];
+            } else {
+                $cost = $price;
+            }
         }
     }
     return $cost;
+}
+
+function umc_lot_costs_simulation($world) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_SETTING, $UMC_USER;
+    $costs = $UMC_SETTING['lot_costs'];
+    
+    // we take the spawn lot as a sample lot of that world to get sample costs
+    $lot = $UMC_SETTING['world_data'][$world]['prefix'] . "_a1";
+    
+    $simulation_row = array(1,2,3,4,5,6,7,8,9,10,15,20,50,100);
+   
+    
+    $progressive = false;
+    foreach ($costs as $pattern => $price) {
+        $check = preg_match("/$pattern/", $lot);
+        if ($check) {
+            if (is_array($price)) { // calculated pricing instead of fixed
+                $progressive = true;
+                $out = "<h2>Here is a simulation of the cost progression for the $world world</h2>";
+                $out .= "<ul>";
+                foreach ($simulation_row as $count) {
+                    $cost = pow($count, $price['power']) * $price['base'];
+                    $cost_nice = number_format($cost, 0, ',', '\'');
+                    $out .= "<li>$count lot(s): $cost_nice UNCs</li>";
+                }
+                $out .= "</ul>";
+                $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);           
+                $cost = pow($count['used_lots'], $price['power']) * $price['base'];
+                $cost_nice = number_format($cost, 0, ',', '\'');                
+                $out .= "You currently have {$count['used_lots']} lots in $world. Your next lot will cost $cost_nice";
+            } else {
+                $out = "This type of lot has a fixed price: $price";
+            }
+        }
+    }
+
+    return $out;
 }
 
 function umc_lot_get_tile($lot, $world = false) {
@@ -1352,7 +1407,7 @@ function umc_check_lot_owner($lot, $uuid = false) {
  */
 function umc_lot_reset_process() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING, $UMC_PATH_MC;
+    global $UMC_SETTING;
 
     umc_log('lot_manager', 'reset', "Lot reset process started");
     // first of all, clean up user dibs
@@ -1870,12 +1925,14 @@ function umc_flat_lot(){
  * @global type $UMC_USER
  * @param type $user
  * @param type $world
+ * @param boolean $main_lots_only 
  * @return type
  */
-function umc_get_lot_number($user, $world = 'empire') {
+function umc_get_lot_number($uuid, $world = 'empire', $main_lots_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
-    $userlevel = umc_get_userlevel($user);
+    
+    $userlevel = umc_get_uuid_level($uuid);
     $lot_limit = $UMC_SETTING['lot_limits'][$userlevel];
     if ($world == 'empire' || $world == 'flatlands') {
         $worlds = array('flatlands', 'empire');
@@ -1884,18 +1941,21 @@ function umc_get_lot_number($user, $world = 'empire') {
         $worlds = array($world);
         $max_lots = $lot_limit[$world];
     }
-    $username = strtolower($user);
+
     $lotcount = 0;
     $lot_list = array();
 
     // check how many lots the user has in that world
     foreach ($worlds as $world) {
-        $sql = "SELECT region_id FROM minecraft_worldguard.world
-            LEFT JOIN minecraft_worldguard.`region_players` ON world.id=region_players.world_id
-            LEFT JOIN minecraft_worldguard.user ON user.id=region_players.user_id
-            LEFT JOIN minecraft_srvr.UUID ON UUID.UUID = user.uuid
-            WHERE UUID.username=\"$username\" AND world.name = \"$world\" AND Owner=1;";
-
+        $sql = "SELECT region_id FROM minecraft_worldguard.region_players
+            LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id 
+            LEFT JOIN minecraft_worldguard.world ON region_players.world_id = world.id 
+            WHERE user.uuid = '$uuid' AND owner=1 AND world.name='$world'";
+        
+        if ($main_lots_only) {
+            $sql .= " AND region_id REGEXP '^[a-z]+_[a-z0-9]*$'";
+        }
+        
         $D = umc_mysql_fetch_all($sql);
         //echo $sql;
         foreach ($D as $row) {
@@ -1915,7 +1975,7 @@ function umc_get_lot_number($user, $world = 'empire') {
         'avail_lots' => $leftover,
         'used_lots' => $lotcount,
         'lot_list' => $lot_list,
-        'dib_list' => umc_lot_manager_dib_get_number($user, $world),
+        'dib_list' => umc_lot_manager_dib_get_number($uuid, $world),
     );
     // echo "You have $leftover lots left in the world $world.";
     return $user_lots;
