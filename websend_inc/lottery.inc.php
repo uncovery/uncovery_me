@@ -736,7 +736,7 @@ function umc_lottery() {
         $item_nocolor = umc_ws_color_remove($item_txt);
         umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
         umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($give_type:$give_data)");
-        $userlevel = umc_get_userlevel($user);
+        $userlevel = umc_get_uuid_level($uuid);
         if (in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
             umc_mod_message($user, $msg);
