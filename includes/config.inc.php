@@ -91,7 +91,7 @@ $UMC_SETTING = array(
         'Owner'                 => array('empire' => 91, 'aether' => 92, 'kingdom' => 193, 'skyblock' => 94, 'draftlands' =>  195),
     ),
     'lot_costs' => array(
-        '^king_[a-zA-Z]+\d*$' => 10000, // main kingdom lot
+        '^king_[a-zA-Z]+\d*$' => array('base' => 10000, 'power' => 2),// main kingdom lot
         '^king_[a-zA-Z]+\d*_b$' => 40, // kingdom corner lot B
         '^king_[a-zA-Z]+\d*_a$' => 650, // vertical street lot A
         '^king_[a-zA-Z]+\d*_c$' => 650, // horizontal street lot
