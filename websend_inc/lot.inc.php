@@ -108,6 +108,7 @@ $WS_INIT['lot'] = array(
 function umc_lot_mod() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
 
     /// /lotmember lot world add target
@@ -126,7 +127,7 @@ function umc_lot_mod() {
     if (!$user_id) {
         umc_error("Your user id cannot be found!");
     }
-    $player_group = umc_get_userlevel($player);
+    $player_group = umc_get_uuid_level($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -167,6 +168,7 @@ function umc_lot_mod() {
 function umc_lot_addrem() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
 
     /// /lotmember lot world add target
@@ -204,7 +206,7 @@ function umc_lot_addrem() {
     if (!$user_id) {
         umc_error("Your user id ($player) cannot be found!");
     }
-    $player_group = umc_get_userlevel($player);
+    $player_group = umc_get_uuid_level($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -295,6 +297,7 @@ function umc_lot_addrem() {
 
         for ($i=4; $i<count($args); $i++) {
             $target = strtolower($args[$i]);
+            $target_uuid = umc_uuid_getone($target, 'uuid');
 
             // check if target player exists
             $target_id = umc_get_worldguard_id('user', strtolower($target));
@@ -302,7 +305,7 @@ function umc_lot_addrem() {
                 umc_error("The user $target does not exist in the database. Please check spelling of username");
             }
             if ($player != 'uncovery') {
-                $targ_group = umc_get_userlevel($target);
+                $targ_group = umc_get_uuid_level($target_uuid);
                 if ($targ_group == 'Guest') {
                     umc_error("You cannnot add Guests to your lot!;");
                 } else if (!in_array($target, $active_users)) {
