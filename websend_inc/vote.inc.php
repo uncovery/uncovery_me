@@ -81,7 +81,7 @@ function umc_vote_get_votable($username = false, $web = false) {
         XMPP_ERROR_trigger("websend player undidentified");
     }
 
-    $user_lvl = strtolower(umc_get_userlevel($username));
+    $user_lvl = strtolower(umc_get_uuid_level($uuid));
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return;
@@ -359,7 +359,7 @@ function umc_vote_web() {
     $upgraded_users = array();
 
     foreach ($D as $row) {
-        $prop_lvl =  strtolower(umc_get_userlevel($row['username']));
+        $prop_lvl =  strtolower(umc_get_uuid_level($row['uuid']));
         $prop_status = $row['status'];
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
         $proposed = $row['uuid'];
