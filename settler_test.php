@@ -420,7 +420,7 @@ function umc_settler_new() {
                     XMPP_ERROR_trigger("The settler promotion email could not be sent!");
                 }
                 // check userlevel to make sure
-                $new_level = umc_get_userlevel($player);
+                $new_level = umc_get_uuid_level($uuid);
                 if ($new_level != 'Settler') {
                     XMPP_ERROR_trigger("$userlevel $player did NOT got promoted with command " . $cmd . " he's still $new_level");
                 }
