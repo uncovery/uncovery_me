@@ -583,7 +583,7 @@ function umc_lottery() {
     // check if there is a valid, active user on the server before applying the vote.
     $user = umc_users_is_active($user_input);
     if (!$user) {
-        umc_log("lottery", "voting", "user $user does not exist");
+        umc_log("lottery", "voting", "user $user does not exist or is not active");
         return false;
     }
 
