@@ -400,6 +400,7 @@ function umc_lottery_reminder() {
         // politely remind users they need to vote dammit!
         $title =  'title ' . $player . ' title {"text":"Please vote!","color":"green"}';
 
+        // TODO there should be a separate event to handle this
         // add some variety to login welcome messages!
         $messages = array(
             'Welcome back ' . $player .'!',
@@ -579,8 +580,8 @@ function umc_lottery() {
 
     $user_input = $UMC_USER['args'][2];
 
-    // check if there is a valid user on the server before applying the vote.
-    $user = umc_check_user($user_input);
+    // check if there is a valid, active user on the server before applying the vote.
+    $user = umc_users_is_active($user_input);
     if (!$user) {
         umc_log("lottery", "voting", "user $user does not exist");
         return false;
