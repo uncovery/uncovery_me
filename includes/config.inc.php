@@ -121,6 +121,7 @@ $UMC_SETTING = array(
         'Master', 'MasterDonator',
         'Elder', 'ElderDonator',
     ),
+    // these are the legacy groups with donators. to be phased out
     'ranks' => array('Guest',
         'Settler','SettlerDonator',
         'Citizen','CitizenDonator',
@@ -128,6 +129,17 @@ $UMC_SETTING = array(
         'Designer','DesignerDonator',
         'Master','MasterDonator',
         'Elder','ElderDonator',
+        'Owner'
+    ),
+    // "Normal" userlevels (without special ranks such as donator
+    'usergroups' => array(
+        'Guest',
+        'Settler',
+        'Citizen',
+        'Architect',
+        'Designer',
+        'Master',
+        'Elder',
         'Owner'
     ),
 );
