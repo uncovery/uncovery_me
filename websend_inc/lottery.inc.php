@@ -581,14 +581,21 @@ function umc_lottery() {
     $user_input = $UMC_USER['args'][2];
 
     // check if there is a valid, active user on the server before applying the vote.
-    $user = umc_users_is_active($user_input);
+    $user = umc_check_user($user_input);
     if (!$user) {
-        umc_log("lottery", "voting", "user $user does not exist or is not active");
+        umc_log("lottery", "voting", "user $user does not exist");
         return false;
     }
 
     // get the voting players uuid
     $uuid = umc_user2uuid($user);
+
+    $active_check = umc_users_is_active($uuid);
+    if (!$active_check) {
+        umc_log("lottery", "voting", "user $user / $uuid is not an active user!");
+        return false;
+    }
+
 
     // give reinforcing feedback - set subtitle (not displayed)
     $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
