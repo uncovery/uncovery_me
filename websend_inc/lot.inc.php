@@ -75,6 +75,17 @@ $WS_INIT['lot'] = array(
             'level' => 'Owner',
          ),
     ),
+    'transfer' => array(
+        'help' => array(
+            'short' => 'Give a lot to someone. Removes old owners only.',
+            'args' => '<lot> give [user]',
+            'long' => 'Give a lot to someone. Removes old owners only.',
+        ),
+        'function' => 'umc_lot_addrem',
+        'security' => array(
+            'level' => 'Owner',
+         ),
+    ),    
     'mod' => array(
         'help' => array(
             'short' => 'Add/Remove yourself from a flatlands lot for emergency fixes',
@@ -267,7 +278,7 @@ function umc_lot_addrem() {
         umc_echo("done!");
         umc_log('lot', 'addrem', "$player changed $action property of $lot");
     } else {
-        if ($action == 'owner' || $action == 'give') {
+        if ($action == 'owner' || $action == 'give' || $action == 'transfer') {
             if ($player != 'uncovery' && $player != '@Console') {
                 umc_error("Nice try, $player. Think I am stupid? Want to get banned?");
             }
@@ -343,6 +354,16 @@ function umc_lot_addrem() {
                 umc_echo("Gave $lot to $target in the $world! All other user removed!");
                 // logfile entry
                 umc_log('lot', 'addrem', "$player gave lot to $target");
+            } else if ($addrem == 'transfer') {
+                // remove all members and owners
+                $owners = umc_get_lot_members($lot, $owner = false);
+                foreach ($owners as $uuid => $username) {
+                    umc_lot_rem_player($uuid, $lot, 1);     
+                }
+                umc_lot_add_player($target, $lot, 1);
+                umc_echo("Gave $lot to $target in the $world! Old Owners removed!");
+                // logfile entry
+                umc_log('lot', 'addrem', "$player gave lot to $target");             
             } else {
                 umc_show_help($args);
             }
@@ -410,6 +431,10 @@ function umc_lot_warp() {
     umc_footer();
 }
 
+/**
+ * wipe a user from all lots
+ * @param type $uuid
+ */
 function umc_lot_wipe_user($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // delete all dibs the user has
