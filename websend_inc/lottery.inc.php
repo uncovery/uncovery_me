@@ -351,7 +351,7 @@ function umc_lottery_vote_web() {
         <ul>\n";
     foreach ($lottery_urls as $L) {
         if (!in_array($L['id'], $voted)) {
-            $out .= "<li><a href=\"{$L['url']}\" target=\"_blank\">{$L['id']}</a></li>";
+            $out .= "<li><a href=\"{$L['url']}\" target=\"_blank\">{$L['id']}</a> ({$L['val']} Uncs)</li>";
         }
     }
 
@@ -593,6 +593,7 @@ function umc_lottery() {
     $active_check = umc_users_is_active($uuid);
     if (!$active_check) {
         umc_log("lottery", "voting", "user $user / $uuid is not an active user!");
+        XMPP_ERROR_send_msg("user $user / $uuid is not an active user!");
         return false;
     }
 
