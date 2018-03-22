@@ -123,7 +123,7 @@ function umc_lot_manager_main() {
     $current_lots = $UMC_USER['lots'][$world];
 
     // get user lots per world
-    
+
     $out .= "<div class=\"formbox\">";
     $out .= umc_lot_manager_get_lots($world, $edit_lot);
 
@@ -573,7 +573,7 @@ function umc_get_lot_options($lot, $form = false){
     }
     if ($world == 'kingdom') {
         // allow refund only
-        $lot_options['refund'] = 'abandon & reset (refunds 50%)';
+        // $lot_options['refund'] = 'abandon & reset (refunds 50%)';
         /*
         if ($form) {
             $members = umc_get_active_members();
@@ -629,9 +629,9 @@ function umc_get_draftlands_kingdom_equivalent($draftlands_lot) {
 function umc_get_new_lot_form($world, $dibs = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
-    
+
     $out = '';
-    
+
     if (!$dibs) {
         $avail_lots = umc_get_available_lots($world);
         if ($world == 'empire') {
@@ -884,7 +884,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // get username
     $U = umc_uuid_getboth($user);
     $uuid = $U['uuid'];
-    $username = $U['username'];    
+    $username = $U['username'];
 
     // validate input and check if lot is free
     // find world & sanitize
@@ -982,7 +982,7 @@ function umc_get_lot_costs($lot) {
                 // get the number of main lots in this world, but only once
                 if (!$count_main) {
                     $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);
-                    $count_main = $count['used_lots'];  
+                    $count_main = $count['used_lots'];
                 }
                 $cost = pow($count_main, $price['power']) * $price['base'];
             } else {
@@ -997,14 +997,14 @@ function umc_lot_costs_simulation($world) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_USER;
     $costs = $UMC_SETTING['lot_costs'];
-    
+
     // we take the spawn lot as a sample lot of that world to get sample costs
     $lot = $UMC_SETTING['world_data'][$world]['prefix'] . "_a1";
-    
+
     $simulation_row = array(1,2,3,4,5,6,7,8,9,10,15,20,50,100);
-   
+
     $out = '';
-    
+
     $progressive = false;
     foreach ($costs as $pattern => $price) {
         $check = preg_match("/$pattern/", $lot);
@@ -1019,9 +1019,9 @@ function umc_lot_costs_simulation($world) {
                     $out .= "<li>$count lot(s): $cost_nice UNCs</li>";
                 }
                 $out .= "</ul>";
-                $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);           
+                $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);
                 $cost = pow($count['used_lots'], $price['power']) * $price['base'];
-                $cost_nice = number_format($cost, 0, ',', '\'');                
+                $cost_nice = number_format($cost, 0, ',', '\'');
                 $out .= "You currently have {$count['used_lots']} lots in $world. Your next lot will cost $cost_nice";
             } else {
                 $out = "This type of lot has a fixed price: $price";
@@ -1185,8 +1185,8 @@ function umc_lot_rem_player($player, $lot, $owner) {
     $sql = "DELETE FROM minecraft_worldguard.region_players
         WHERE region_id='$lot' AND world_id='$world_id' AND user_id=$user_id AND owner=$owner;";
     $count = umc_mysql_execute_query($sql);
-    umc_log('lot_manager', 'remove player', "$player was removed from lot $lot; Owner: $owner");
     if ($count > 0) {
+        umc_log('lot_manager', 'remove player', "$player was removed from lot $lot; Owner: $owner");
         return true;
     } else {
         XMPP_ERROR_trigger("Could not remove $player from $lot in $world (id $world_id), entry not found (umc_lot_rem_player)");
@@ -1939,13 +1939,13 @@ function umc_flat_lot(){
  * @global type $UMC_USER
  * @param type $user
  * @param type $world
- * @param boolean $main_lots_only 
+ * @param boolean $main_lots_only
  * @return type
  */
 function umc_get_lot_number($uuid, $world = 'empire', $main_lots_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
-    
+
     $userlevel = umc_get_uuid_level($uuid);
     $lot_limit = $UMC_SETTING['lot_limits'][$userlevel];
     if ($world == 'empire' || $world == 'flatlands') {
@@ -1962,14 +1962,14 @@ function umc_get_lot_number($uuid, $world = 'empire', $main_lots_only = false) {
     // check how many lots the user has in that world
     foreach ($worlds as $world) {
         $sql = "SELECT region_id FROM minecraft_worldguard.region_players
-            LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id 
-            LEFT JOIN minecraft_worldguard.world ON region_players.world_id = world.id 
+            LEFT JOIN minecraft_worldguard.user ON region_players.user_id=user.id
+            LEFT JOIN minecraft_worldguard.world ON region_players.world_id = world.id
             WHERE user.uuid = '$uuid' AND owner=1 AND world.name='$world'";
-        
+
         if ($main_lots_only) {
             $sql .= " AND region_id REGEXP '^[a-z]+_[a-z0-9]*$'";
         }
-        
+
         $D = umc_mysql_fetch_all($sql);
         //echo $sql;
         foreach ($D as $row) {
