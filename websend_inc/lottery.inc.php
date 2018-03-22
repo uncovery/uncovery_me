@@ -582,7 +582,10 @@ function umc_lottery_show_chances() {
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
-
+    
+    XMPP_ERROR_trace($UMC_USER);
+    XMPP_ERROR_trigger("Voting!");
+    
     $user_input = $UMC_USER['args'][2];
 
     // check if there is a valid, active user on the server before applying the vote.
@@ -602,6 +605,12 @@ function umc_lottery() {
         return false;
     }
 
+    // check if user is online so we don't message someone who isn't there
+    $user_is_online = false;
+    if (isset($UMC_USER['online_players'][$uuid])) {
+        $user_is_online = true;
+    }
+    
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
@@ -743,7 +752,7 @@ function umc_lottery() {
         umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
         umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($give_type:$give_data)");
         $userlevel = umc_get_uuid_level($uuid);
-        if (in_array($userlevel, array('Settler', 'Guest'))) {
+        if ($user_is_online && in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use {green}/withdraw @lottery{white} to get it!";
             umc_mod_message($user, $msg);
         }
@@ -764,23 +773,27 @@ function umc_lottery() {
     } else {
         XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
     }
+    
+    if ($user_is_online) {
+        // give reinforcing feedback - set subtitle (not displayed)
+        $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
+        umc_ws_cmd($subtitle, 'asConsole');
+    }
 
     // find the right reward uncs amount
     foreach ($lottery_urls as $L) {
         if ($service_fixed == $L['id']) {
             $reward = $L['val'];
             umc_money(false, $user, $reward);
+            // display the feedback - displays subtitle AND title
+            if ($user_is_online) {
+                $title = 'title ' . $user . ' title {"text":"+'. $reward. ' Uncs","color":"gold"}';
+                umc_ws_cmd($title, 'asConsole'); 
+            }
             // and exit
             return;
         }
     }
-    // give reinforcing feedback - set subtitle (not displayed)
-    $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
-    umc_ws_cmd($subtitle, 'asConsole');
-
-    // display the feedback - displays subtitle AND title
-    $title = 'title ' . $user . ' title {"text":"+'. $reward. ' Uncs","color":"gold"}';
-    umc_ws_cmd($title, 'asConsole');
 }
 
 // returns an array with the item and roll value
