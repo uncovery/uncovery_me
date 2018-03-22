@@ -434,6 +434,12 @@ function umc_lottery_reminder() {
     }
 }
 
+/**
+ * calculate the number of votes vs. the number of logins of a user over the last 30 days.
+ * 
+ * @param type $uuid
+ * @return string|int
+ */
 function umc_lottery_stats($uuid) {
     // check how often the user logged in during the last 30 days
     $username = umc_uuid_getone($uuid, 'username');
@@ -541,7 +547,6 @@ function umc_lottery_retrieve_entries($hours = 24){
 
     // send back the array of entries within time period
     return($D);
-
 }
 
 /**
@@ -597,14 +602,6 @@ function umc_lottery() {
         return false;
     }
 
-
-    // give reinforcing feedback - set subtitle (not displayed)
-    $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
-    umc_ws_cmd($subtitle, 'asConsole');
-
-    // display the feedback - displays subtitle AND title
-    $title = 'title ' . $user . ' title {"text":"+100 Uncs","color":"gold"}';
-    umc_ws_cmd($title, 'asConsole');
 
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
@@ -768,7 +765,7 @@ function umc_lottery() {
         XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
     }
 
-    // find the right reward
+    // find the right reward uncs amount
     foreach ($lottery_urls as $L) {
         if ($service_fixed == $L['id']) {
             $reward = $L['val'];
@@ -777,8 +774,13 @@ function umc_lottery() {
             return;
         }
     }
+    // give reinforcing feedback - set subtitle (not displayed)
+    $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
+    umc_ws_cmd($subtitle, 'asConsole');
 
-    //TODO: make the return uncremental if several days in a row voting was done
+    // display the feedback - displays subtitle AND title
+    $title = 'title ' . $user . ' title {"text":"+'. $reward. ' Uncs","color":"gold"}';
+    umc_ws_cmd($title, 'asConsole');
 }
 
 // returns an array with the item and roll value
