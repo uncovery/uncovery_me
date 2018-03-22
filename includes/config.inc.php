@@ -59,7 +59,6 @@ $UMC_SETTING = array(
         'empire_new' => array('max_coord' => 2048, 'chunkborder' => 512),
         'flatlands' => array('max_coord' => 1280, 'chunkborder' => 256),
         'skyblock' => array('max_coord' => 1280, 'chunkborder' => 256),
-        'darklands' => array('max_coord' => 1280, 'chunkborder' => 256),
         'city' => array('max_coord' => 1100, 'chunkborder' => 512, 'top_offset' => 450, 'left_offset' => -600),
         'kingdom' => array('max_coord' => 3264, 'chunkborder' => 320),
         'draftlands' => array('max_coord' => 3264, 'chunkborder' => 320),
