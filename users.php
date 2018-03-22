@@ -111,7 +111,7 @@ function umc_get_uuid_level($uuid) {
     }
     //SELECT * FROM `permissions_inheritance` WHERE `child` LIKE 'a1b763b9-bd7d-4914-8b4b-8c20bddb5882' ORDER BY `child` DESC
 
-    $valid_levels_str = implode("','", $UMC_SETTING['usergroups']);
+    $valid_levels_str = implode("','", $UMC_SETTING['ranks']);
 
     $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
         LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
@@ -293,7 +293,7 @@ function umc_get_active_members($output = 'name') {
         GROUP BY uuid ORDER BY name";
     $data = umc_mysql_fetch_all($sql);
     foreach ($data as $row) {
-        $active_members[$row['user.uuid']] = $row[$output];
+        $active_members[$row['uuid']] = $row[$output];
     }
     return $active_members;
 }
@@ -792,9 +792,13 @@ function umc_user_directory() {
 
 
         } */
-        $O = umc_plugin_eventhandler('user_directory', array($O, $uuid));
-        
-        
+        $ret = umc_plugin_eventhandler('user_directory', array($uuid));
+        foreach ($ret as $plugin_content) {
+            foreach ($plugin_content as $section => $text) {
+                $O[$section] .= $text;
+            }
+        }
+
         echo umc_jquery_tabs($O);
     } else {
         // $bans = umc_get_banned_users();
