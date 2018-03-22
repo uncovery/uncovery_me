@@ -78,7 +78,7 @@ $WS_INIT['lot'] = array(
     'transfer' => array(
         'help' => array(
             'short' => 'Give a lot to someone. Removes old owners only.',
-            'args' => '<lot> give [user]',
+            'args' => '<lot> transfer [user]',
             'long' => 'Give a lot to someone. Removes old owners only.',
         ),
         'function' => 'umc_lot_addrem',
@@ -355,11 +355,15 @@ function umc_lot_addrem() {
                 // logfile entry
                 umc_log('lot', 'addrem', "$player gave lot to $target");
             } else if ($addrem == 'transfer') {
-                // remove all members and owners
-                $owners = umc_get_lot_members($lot, $owner = false);
+                // remove the target in case he's a member
+                umc_lot_rem_player($target, $lot, 0);
+                // get all current owners
+                $owners = umc_get_lot_members($lot, true);
+                // remove all current owners
                 foreach ($owners as $uuid => $username) {
                     umc_lot_rem_player($uuid, $lot, 1);     
                 }
+                // add the new owner
                 umc_lot_add_player($target, $lot, 1);
                 umc_echo("Gave $lot to $target in the $world! Old Owners removed!");
                 // logfile entry
