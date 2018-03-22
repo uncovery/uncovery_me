@@ -583,9 +583,6 @@ function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
     
-    XMPP_ERROR_trace($UMC_USER);
-    XMPP_ERROR_trigger("Voting!");
-    
     $user_input = $UMC_USER['args'][2];
 
     // check if there is a valid, active user on the server before applying the vote.
@@ -611,7 +608,6 @@ function umc_lottery() {
         $user_is_online = true;
     }
     
-
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
     if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
@@ -622,25 +618,16 @@ function umc_lottery() {
     // get the roll array based on chance
     $roll = umc_lottery_roll_dice($chance);
 
-    // umc_echo(umc_ws_vardump($roll));
-
     // define the rewards and item more legibly
     $item = $roll['item'];
     $luck = $roll['luck'];
     $prize = $lottery[$item];
-
-    //echo "type = {$prize['type']}<br>;";
-
-    //echo "complete chance: $chance<br>;";
-    //var_dump($prize);
 
     // get the metadata if required for the item
     if (isset($prize['detail'])) {
         $detail = $prize['detail'];
     }
     $type = $prize['type'];
-
-    //var_dump($prize);
 
     // based on item type, give reward to the player
     $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
