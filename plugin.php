@@ -369,6 +369,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WS_INIT;
     // define list of available events for security, it's questionable if we need this list.
+    // at least it should be created automatically
     $available_events = array(
         // server events
         'server_pre_reboot',
@@ -379,6 +380,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         'user_banned',
         'user_registered',
         'user_inactive',
+        'user_directory',
         // websend events, do not have parameters usually since
         // websend sends stuff via $UMC_USER
         'PlayerPreLoginEvent',
