@@ -87,7 +87,7 @@ function umc_users_is_active($uuid) {
  * @return string
  */
 function umc_get_uuid_level($uuid) {
-    global $UMC_USER;
+    global $UMC_USER, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if the userlevel is already set
@@ -111,9 +111,11 @@ function umc_get_uuid_level($uuid) {
     }
     //SELECT * FROM `permissions_inheritance` WHERE `child` LIKE 'a1b763b9-bd7d-4914-8b4b-8c20bddb5882' ORDER BY `child` DESC
 
+    $valid_levels_str = implode("','", $UMC_SETTING['usergroups']);
+
     $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
         LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
-        WHERE `name` IN ('$uuid_str') AND permissions.permission='name'";
+        WHERE permissions.permission='name' AND `name` IN ('$uuid_str') AND parent IN ('$valid_levels_str') ";
     $D = umc_mysql_fetch_all($sql);
     $uuid_levels = array();
     // user not found, so he's guest
@@ -127,6 +129,10 @@ function umc_get_uuid_level($uuid) {
     foreach ($D as $row) {
         $uuid = $row['uuid'];
         $level = $row['userlevel'];
+        // for now, ignore the Donor level
+        if (!in_array($level, $UMC_SETTING['ranks'])) {
+            continue;
+        }
         if ($level == 'NULL') {
             $level = 'Guest';
         }
@@ -279,15 +285,15 @@ function umc_users_active_lastlogin_and_level() {
 function umc_get_active_members($output = 'name') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $active_members = array();
-    $sql = "SELECT user.uuid as user_uuid, lower(username) as name, count(region_players.region_id) as counter
+    $sql = "SELECT user.uuid as uuid, lower(username) as name, count(region_players.region_id) as counter
         FROM minecraft_worldguard.region_players
         LEFT JOIN minecraft_worldguard.user ON user_id=id
         LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
         WHERE owner=1 AND user.uuid IS NOT NULL AND username IS NOT NULL
-        GROUP BY user_uuid ORDER BY name";
+        GROUP BY uuid ORDER BY name";
     $data = umc_mysql_fetch_all($sql);
     foreach ($data as $row) {
-        $active_members[$row['user_uuid']] = $row[$output];
+        $active_members[$row['user.uuid']] = $row[$output];
     }
     return $active_members;
 }
@@ -786,6 +792,9 @@ function umc_user_directory() {
 
 
         } */
+        $O = umc_plugin_eventhandler('user_directory', array($O, $uuid));
+        
+        
         echo umc_jquery_tabs($O);
     } else {
         // $bans = umc_get_banned_users();
