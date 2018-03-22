@@ -87,7 +87,7 @@ function umc_display_guestinfo(){
         }
         $votables =  umc_vote_get_votable($username, true);
 	// Teamspeak information
-        $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/teamspeak/\">Teamspeak</a>!</li>";
+        $content .= "<li><strong>Join us</strong> on <a href=\"$UMC_DOMAIN/communication/discord/\">Discord</a>!</li>";
 	// Elder/Owner information
         if (strstr($userlevel, 'Elder') || $userlevel == 'Owner') { // elders only content
             $ban_arr = umc_get_recent_bans(3);
@@ -634,8 +634,6 @@ function umc_web_usercheck() {
         }
     }
     $out .= umc_web_table('Double accounts', 0, $out_data, "<h2>Double accounts</h2>");
-
-
     return $out;
 }
 
