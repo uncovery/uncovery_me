@@ -680,10 +680,10 @@ function umc_get_new_lot_form($world, $dibs = false) {
     $fixed_lots = array();
     foreach ($avail_lots as $lot => $distance) {
         // we match the king_a1_b with "world" = king, "alpha" = a, "number" = 1, "extras" = _b
-        $regex = '/(?P<world>^[a-z]*_[a-z]*)(?P<number>[0-9]*)(?P<extras>.*)/';
+        $regex = '/(?P<world>^[a-z]*_)(?P<alpha>[a-z]*)(?P<number>[0-9]*)(?P<extras>.*)/';
         $matches = false;
         preg_match($regex, $lot, $matches);
-        $new_lot_name = $matches['world'] . str_pad($matches['number'], 3, 0, STR_PAD_LEFT) . $matches['extras'];
+        $new_lot_name = $matches['world'] . str_pad($matches['alpha'], 3, 0, STR_PAD_LEFT) . str_pad($matches['number'], 3, 0, STR_PAD_LEFT) . $matches['extras'];
         $fixed_lots[$new_lot_name] = $lot;
         
     }
