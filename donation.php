@@ -336,6 +336,12 @@ function umc_process_donation() {
 
     // code from https://github.com/paypal/ipn-code-samples/tree/master/php
     
+    // Currently, the IPN result AND the URL after payment point to the same, this, page
+    // they are being called in 2 different processes however. The payment confirmation process might be running in the background  
+    // and will process successfully. However, the user will get back to this page without 
+    // any POST data to further process the payment. So we show this message and the user will have to wait for an email 
+    // to confirm that the payment was successfully processed in the other URL call.
+    
     if (!count($_POST)) {
         // throw new Exception("Missing POST Data");
         $text .= "Thank you very much for donating! It is highly appreciated and will surely help to keep this server running longer.
@@ -367,12 +373,6 @@ function umc_process_donation() {
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     XMPP_ERROR_trigger("Donation Process form was accessed!");
-
-    // only continue for logged-in users
-    //if (!$UMC_USER) {
-    //    XMPP_ERROR_trace('invalid User', $UMC_USER);
-    //    return;
-    //}
 
     $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     
