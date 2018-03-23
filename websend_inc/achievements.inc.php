@@ -173,7 +173,8 @@ function umc_achievements_icon($a) {
     global $UMC_ACHIEVEMENTS;
     $level = $a['level'];
     $level_number = floor($level);
-    $level_fraction = $level - $level_number;
+    $level_fraction = ($level - $level_number) * 100;
+    $level_fraction_display = round($level_fraction, 1);
     $achievement = $a['achievement'];
     $ach_data = $UMC_ACHIEVEMENTS[$achievement]['levels'][$level_number];
     $title = "<p class=\"ach_title\">&nbsp;</p>";
@@ -186,7 +187,7 @@ function umc_achievements_icon($a) {
             <p class=\"ach_text\">Level</p>
             <p class=\"ach_number\">$level_number</p>
             <p class=\"ach_desc\">$achievement_text</p>
-            <span class=\"ach_progress\" style=\"width:{$level_fraction}%;\">&nbsp;</span>
+            <p class=\"ach_progress_wrap\"><p class=\"ach_progress\" style=\"width:{$level_fraction}%;\">{$level_fraction_display}%</p></p>
             $title
          </div>";
     return $out;
