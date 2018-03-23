@@ -421,3 +421,9 @@ a .widget .bbp-author-name {
 .ach_desc {
   font-size:large
 }
+
+.ach_progress {
+    background-color: yellow;
+    font-size: x-small;
+    padding-left: 5px;
+}
