@@ -689,7 +689,7 @@ function umc_get_new_lot_form($world, $dibs = false) {
     }
     ksort($fixed_lots);
 
-    foreach ($fixed_lots as $lot_padded => $lot) {
+    foreach ($fixed_lots as $lot) {
         // drop already diped losts
         if ($dibs && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
             continue;
