@@ -80,7 +80,7 @@ $UMC_ACHIEVEMENTS = array(
      */  
 );
         
-$WS_INIT['karma'] = array(
+$WS_INIT['achievements'] = array(
     'default' => array(
         'help' => array(
             'title' => 'User Achievements',
@@ -150,11 +150,11 @@ function umc_achievements_update($user = false) {
  * display the achievement for one specific user
  * UUID is given by the event 'user_directory' or directly $parameters[0] = $uuid
  * 
- * @param type $parmeter
+ * @param type $parameters
  */
-function umc_achievements_display_web($parmeters) {
+function umc_achievements_display_web($parameters) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $uuid = $parmeters[0];
+    $uuid = $parameters[0];
     
     $out = "<p><strong>Achievements:</strong><br>";
     
@@ -172,14 +172,23 @@ function umc_achievements_icon($a) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_ACHIEVEMENTS;
     $level = $a['level'];
+    $level_number = floor($level);
+    $level_fraction = $level - $level_number;
     $achievement = $a['achievement'];
-    $ach_data = $UMC_ACHIEVEMENTS[$achievement]['levels'][$level];
+    $ach_data = $UMC_ACHIEVEMENTS[$achievement]['levels'][$level_number];
     $title = "<p class=\"ach_title\">&nbsp;</p>";
     if ($ach_data['title']){
         $title = "<p class=\"ach_title\">&quot;{$ach_data['title']}&quot;</p>";
     }
     $achievement_text = ucwords($achievement);
-    $out = "<div class=\"ach\"><p class=\"ach_text\">Level</p><p class=\"ach_number\">$level</p><p class=\"ach_desc\">$achievement_text</p>$title</div>";
+    $out = "
+        <div class=\"ach\">
+            <p class=\"ach_text\">Level</p>
+            <p class=\"ach_number\">$level_number</p>
+            <p class=\"ach_desc\">$achievement_text</p>
+            <span class=\"ach_progress\" style=\"width:{$level_fraction}%;\">&nbsp;</span>
+            $title
+         </div>";
     return $out;
 }
 
@@ -201,7 +210,13 @@ function umc_achievements_levelcheck($value, $achievement) {
     foreach ($levels as $level => $l_data) {
         $l_value = $l_data['value'];
         if ($value < $l_value) {
-            return $current_level;
+            // calculate the fraction of the gap to the next level for progress indicator
+            $last_level_value = $levels[$current_level]['value'];
+            $this_level_value = $l_value;
+            $level_gap = $this_level_value - $last_level_value;
+            $gap_closed_by = $value / $level_gap;
+            $return_level = $current_level + $gap_closed_by;
+            return $return_level;
         } else {
             $current_level = $level;
         }
@@ -213,7 +228,7 @@ function umc_achievements_levelcheck($value, $achievement) {
 
 
 /**
- * Lists all achievments
+ * Lists all achievements
  * 
  * @param type $mode
  */
