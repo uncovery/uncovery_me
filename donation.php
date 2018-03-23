@@ -28,10 +28,12 @@ global $UMC_DONATION;
 $UMC_DONATION['sandbox'] = false;
 $UMC_DONATION['cert_path'] = "/home/includes/certificates/cacert.pem";
 
+// sandbox instructions: https://developer.paypal.com/docs/classic/paypal-payments-standard/ht_test-pps-buttons/
+
 if ($UMC_DONATION['sandbox']) {
     $UMC_DONATION['paypal_url'] = "https://www.sandbox.paypal.com/cgi-bin/webscr";
-    $UMC_DONATION['business_email'] = 'paypal_hkd-facilitator@uncovery.net';
-    $UMC_DONATION['button_id'] = 'CB6ZLXTFB3XG2';
+    $UMC_DONATION['business_email'] = 'paypal_merchant2@aimba.com';
+    $UMC_DONATION['button_id'] = '2E77BHVBDK9AA';
 } else {
     $UMC_DONATION['paypal_url'] = "https://www.paypal.com/cgi-bin/webscr";
     $UMC_DONATION['business_email'] = 'minecraft@uncovery.me';
@@ -52,6 +54,7 @@ function umc_donationform() {
 }
 
 function umc_donation_chart() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_USER, $UMC_DONATION;
 
     if (!$UMC_USER) {
@@ -62,15 +65,23 @@ function umc_donation_chart() {
         $uuid = $UMC_USER['uuid'];
         $username = $UMC_USER['username'];
     }
-
+    
+    $out = '';
+    
+    if ($UMC_DONATION['sandbox'] == true && $username != 'uncovery') {
+        return "This page is under construction, please check back soon!";
+    } else if ($UMC_DONATION['sandbox'] == true) {
+        $out .= "<h1> SANDBOX ACTIVE</h1>";
+    }
+    
     $chart_data = umc_donation_java_chart();
     $outstanding = $chart_data['outstanding'];
     $chart = $chart_data['chart'];
     $donation_avg = umc_donation_calc_average();
     $table = umc_donation_top_table($outstanding);
-    $active_users = umc_get_active_members();
-
-    $out = "<div style=\"float:right; width:440px; margin-left: 30px;\">\n$chart\n$table</div>\n"
+    $active_users = umc_get_active_members();    
+    
+    $out .= "<div style=\"float:right; width:440px; margin-left: 30px;\">\n$chart\n$table</div>\n"
         . "<div style=\"width:auto; overflow:hidden; \">Uncovery Minecraft is run privately, without advertising or mandatory fees. We also want to stay away from \"pay-to-win\"
         and therefore also want to only provide non-essential benefits to donators. Those benefits can be seen on the bottom of
         the \"<a href=\"https://uncovery.me/user-levels/\">Userlevels &amp; Commands</a>\" page. If you ask me what I am doing with the donation money,
@@ -102,7 +113,7 @@ function umc_donation_chart() {
         <input type="hidden" name="on2" value="for Recipient(s)">Recipient: ' . umc_web_dropdown($active_users, 'os2', $uuid)
         . '<input type="hidden" name="currency_code" value="USD"><br>
             <strong>Important:</strong> If you want the amount split between several users, please do not make several donations.<br>
-            Make the donation for yourself and then send me a message with the details.<br>
+            Make the complete donation for yourself and then send me a message with the details.<br>
         <input type="image" src="https://www.paypalobjects.com/en_GB/HK/i/btn/btn_paynowCC_LG.gif" name="submit" alt="PayPal — The safer, easier way to pay online.">
         <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
         </p>
@@ -110,180 +121,6 @@ function umc_donation_chart() {
     return $out;
 }
 
-/**
- * Parse the donation result and automatically record it in the database
- * Uses Paypal IDN https://developer.paypal.com/docs/classic/products/instant-payment-notification/
- *
- * @global type $UMC_SETTING
- * @return type
- */
-function umc_process_donation() {
-    global $UMC_USER, $UMC_DONATION;
-
-    // only continue for logged-in users
-    if (!$UMC_USER) {
-        return;
-    }
-
-    $username = $UMC_USER['username'];
-    $uuid = $UMC_USER['uuid'];
-    XMPP_ERROR_trigger("Donation Process form was accessed!");
-
-    // Read POST data
-    // reading posted data directly from $_POST causes serialization
-    // issues with array data in POST. Reading raw POST data from input stream instead.
-    $raw_post_data = file_get_contents('php://input');
-    $raw_post_array = explode('&', $raw_post_data);
-    $myPost = array();
-    foreach ($raw_post_array as $keyval) {
-        $keyval = explode ('=', $keyval);
-        if (count($keyval) == 2) {
-            $myPost[$keyval[0]] = urldecode($keyval[1]);
-        }
-    }
-    // read the post from PayPal system and add 'cmd'
-    $req = 'cmd=_notify-validate';
-    if (function_exists('get_magic_quotes_gpc')) {
-        $get_magic_quotes_exists = true;
-    }
-    foreach ($myPost as $key => $value) {
-        if ($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
-            $value = urlencode(stripslashes($value));
-        } else {
-            $value = urlencode($value);
-        }
-        $req .= "&$key=$value";
-    }
-    // Post IPN data back to PayPal to validate the IPN data is genuine
-    // Without this step anyone can fake IPN data
-
-    $ch = curl_init($UMC_DONATION['paypal_url']);
-    if ($ch == FALSE) {
-        return FALSE;
-    }
-    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-    curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-    // curl_setopt($ch, CURLOPT_HEADER, 1);
-    // curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-    // CONFIG: Optional proxy configuration
-    //curl_setopt($ch, CURLOPT_PROXY, $proxy);
-    //curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
-    // Set TCP timeout to 30 seconds
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
-
-    // CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
-    // of the certificate as shown below. Ensure the file is readable by the webserver.
-    // This is mandatory for some environments.
-    curl_setopt($ch, CURLOPT_CAINFO, $UMC_DONATION['cert_path']);
-
-    $res_raw = curl_exec($ch);
-    if (curl_errno($ch) != 0) {
-        XMPP_ERROR_trace("Can't connect to PayPal to validate IPN message: ", curl_error($ch));
-        curl_close($ch);
-        exit;
-    } else {
-        // Log the entire HTTP response if debug is switched on.
-        XMPP_ERROR_trace("HTTP request of validation request:", curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: REQuest: $req \n\n RESponse: $res_raw");
-        curl_close($ch);
-    }
-
-    // Inspect IPN validation result and act accordingly
-    // Split response headers and payload, a better way for strcmp
-    $tokens = explode("\r\n\r\n", trim($res_raw));
-    $res = trim(end($tokens));
-    if (strcmp ($res, "VERIFIED") == 0) {
-        // ok, it's verfiied, get the POST variables and then continue.
-        $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-        XMPP_ERROR_trace("Verified IPN result: $res ". PHP_EOL);
-    } else if (strcmp ($res, "INVALID") == 0) {
-        // verficiation failed, request assistance
-        XMPP_ERROR_trigger("Invalid IPN result: $res");
-        echo "We could not automatically process your payment. We will do that manually, but we promise to get back to you ASAP. "
-            . "You donation length won't be affected by this. Once the donation is activated, you willr receive an email!";
-        return;
-    }
-
-    // process payment
-    $firstname = $s_post['first_name'];
-    $lastname = $s_post['last_name'];
-    $itemname = $s_post['item_name'];
-    $amount = $s_post['payment_gross'];
-    echo ("<p><h3>Thank you for your purchase!</h3></p>");
-
-    echo ("<b>Payment Details</b><br>\n");
-    echo ("<li>Name: $firstname $lastname</li>\n");
-    echo ("<li>Item: $itemname</li>\n");
-    echo ("<li>Amount: $amount</li>\n");
-    echo "Your transaction has been completed, and a receipt for your purchase has been emailed to you.<br> "
-        . "You may log into your account at <a href='https://www.paypal.com'>www.paypal.com</a> "
-        . "to view details of this transaction.<br>";
-
-    // list of verifiable entries:
-    // OK check whether the payment_status is Completed
-    // TODO check that txn_id has not been previously processed
-    // OK check that receiver_email is your PayPal email
-    // TODO check that payment_amount/payment_currency are correct
-    // assign posted variables to local variables
-
-    $verify_entries = array(
-        'payment_status' => 'Completed',
-        'business' => $UMC_DONATION['business_email'],
-        'option_selection2' => false, // ÜUID b85cd837-2d00-47c5-999d-ef90ae36d868
-        'payer_email' => false, // player email, URL encoded SamBecker0523%40gmail.com
-        'payment_gross' => false, // '25.00'
-        'payment_fee' => false, //'1.40'
-        'txn_id' => false, // 4TT776949B495984P
-        // 'btn_id' => '52930807',
-        'option_selection3' => false,
-    );
-
-    $is_ok = true;
-    $sql_vals = array();
-    foreach ($verify_entries as $entry => $value) {
-        if ($value && $s_post[$entry] != $value) {
-            $is_ok = false;
-            XMPP_ERROR_trace("WRONG ENTRY: $entry", "Should be '$value', is '{$s_post[$entry]}'");
-        } else { // if the array value = false, just store the value in SQL
-            $sql_vals[$entry] = umc_mysql_real_escape_string($s_post[$entry]);
-        }
-    }
-    // add the entry to the database
-    if ($is_ok) {
-        $date = umc_mysql_real_escape_string(date('Y-m-d'));
-        $final_value = umc_mysql_real_escape_string($s_post['payment_gross'] - $s_post['payment_fee']);
-        $sql = "INSERT INTO minecraft_srvr.donations (`amount`, `uuid`, `email`, `date`, `txn_id`)
-            VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
-        umc_mysql_query($sql, true);
-        XMPP_ERROR_trigger("Donation SQL executed!");
-        $subject = "[Uncovery Minecraft] Donation activated!";
-        $headers = "From: minecraft@uncovery.me" . "\r\n" .
-            "Reply-To: minecraft@uncovery.me" . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
-        $recipient_text = '';
-        if ($uuid != $s_post['option_selection3']) {
-            $rec_username = umc_uuid_getone($s_post['option_selection3'], 'username');
-            $recipient_text = "The donation to be in benefit of $rec_username, as you asked.";
-        }
-        $mailtext = "Dear $username, \r\n\r\nWe have just received and activated your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
-            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
-            . "Your userlevel will be updated as soon as you login to the server next time. You can also check it on the frontpage of the website.\r\n"
-            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
-    } else {
-        XMPP_ERROR_trigger("Not all values correct for donation!");
-        $mailtext = "Dear $username, \r\n\r\nWe have just received your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
-            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
-            . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
-            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
-        mail("minecraft@uncovery.me", "Donation failed!", $mailtext, $headers, "-fminecraft@uncovery.me");
-    }
-    mail($s_post['payer_email'], $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
-}
 
 /**
  * Make a chart of all donations in the past
@@ -482,6 +319,142 @@ function umc_donation_monthly_target() {
             . "</div>\n";
     return $out;
 }
+
+
+/**
+ * Parse the donation result and automatically record it in the database
+ * Uses Paypal IDN https://developer.paypal.com/docs/classic/products/instant-payment-notification/
+ *
+ * @global type $UMC_SETTING
+ * @return type
+ */
+
+
+function umc_process_donation() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER, $UMC_DONATION;
+
+    // code from https://github.com/paypal/ipn-code-samples/tree/master/php
+    
+    if (!count($_POST)) {
+        // throw new Exception("Missing POST Data");
+        $text .= "Thank you very much for donating! It is highly appreciated and will surely help to keep this server running longer.
+            I am always working on giving extra privileges to donators, so keep watching out!
+            We are currently processing your donation. You will get an email regarding the status";
+        return $text;
+    }
+    
+    require('/home/includes/paypal/PaypalIPN.php');
+   
+    $ipn = new PaypalIPN();
+    XMPP_ERROR_trace('IPN DATA', $ipn);
+    // Use the sandbox endpoint during testing.
+
+    if ($UMC_DONATION['sandbox'] == true) {
+         XMPP_ERROR_trace('Sandbox setting');
+         $ipn->useSandbox();
+    }
+   
+    XMPP_ERROR_trace('Verifying IPN...');
+    $verified = $ipn->verifyIPN();
+
+    if (!$verified) {
+        XMPP_ERROR_trigger("Paypal Payment Not Verified!");
+        return "We could not automatically process your payment. We will do that manually, but we promise to get back to you ASAP. "
+            . "You donation length won't be affected by this. Once the donation is activated, you willr receive an email!";     
+    }
+   
+    $username = $UMC_USER['username'];
+    $uuid = $UMC_USER['uuid'];
+    XMPP_ERROR_trigger("Donation Process form was accessed!");
+
+    // only continue for logged-in users
+    //if (!$UMC_USER) {
+    //    XMPP_ERROR_trace('invalid User', $UMC_USER);
+    //    return;
+    //}
+
+    $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+    
+    // process payment
+    $firstname = $s_post['first_name'];
+    $lastname = $s_post['last_name'];
+    $itemname = $s_post['item_name'];
+    $amount = $s_post['payment_gross'];
+    $text = "<p><h3>Thank you for your purchase!</h3></p>
+        <b>Payment Details</b><br>
+        <li>Name: $firstname $lastname</li>
+        <li>Item: $itemname</li>
+        <li>Amount: $amount</li>
+        Your transaction has been completed, and a receipt for your purchase has been emailed to you.<br>
+        You may log into your account at <a href='https://www.paypal.com'>www.paypal.com</a>
+        to view details of this transaction.<br>";
+
+    // list of verifiable entries:
+    // OK check whether the payment_status is Completed
+    // TODO check that txn_id has not been previously processed
+    // OK check that receiver_email is your PayPal email
+    // TODO check that payment_amount/payment_currency are correct
+    // assign posted variables to local variables
+
+    $verify_entries = array(
+        'payment_status' => 'Completed',
+        'business' => $UMC_DONATION['business_email'],
+        'option_selection2' => false, // ÜUID b85cd837-2d00-47c5-999d-ef90ae36d868
+        'payer_email' => false, // player email, URL encoded SamBecker0523%40gmail.com
+        'payment_gross' => false, // '25.00'
+        'payment_fee' => false, //'1.40'
+        'txn_id' => false, // 4TT776949B495984P
+        // 'btn_id' => '52930807',
+        'option_selection3' => false,
+    );
+
+    $is_ok = true;
+    $sql_vals = array();
+    foreach ($verify_entries as $entry => $value) {
+        if ($value && $s_post[$entry] != $value) {
+            $is_ok = false;
+            XMPP_ERROR_trace("WRONG ENTRY: $entry", "Should be '$value', is '{$s_post[$entry]}'");
+        } else { // if the array value = false, just store the value in SQL
+            $sql_vals[$entry] = umc_mysql_real_escape_string($s_post[$entry]);
+        }
+    }
+    // add the entry to the database
+    $headers = "From: minecraft@uncovery.me" . "\r\n" .
+        "Reply-To: minecraft@uncovery.me" . "\r\n" .
+        'X-Mailer: PHP/' . phpversion(); 
+    $final_value = umc_mysql_real_escape_string($s_post['payment_gross'] - $s_post['payment_fee']);   
+    $recipient_text = '';
+    if ($uuid != $s_post['option_selection3']) {
+        $rec_username = umc_uuid_getone($s_post['option_selection3'], 'username');
+        $recipient_text = "The donation to be in benefit of $rec_username, as you asked.";
+    }    
+    if ($is_ok) {
+        $date = umc_mysql_real_escape_string(date('Y-m-d'));
+        $sql = "INSERT INTO minecraft_srvr.donations (`amount`, `uuid`, `email`, `date`, `txn_id`)
+            VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
+        umc_mysql_query($sql, true);
+        XMPP_ERROR_trigger("Donation SQL executed!");
+        $subject = "[Uncovery Minecraft] Donation activated!";
+        $mailtext = "Dear $username, \r\n\r\nWe have just received and activated your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
+            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
+            . "Your userlevel will be updated as soon as you login to the server next time. You can also check it on the frontpage of the website.\r\n"
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
+        $text .= "Thank you very much for donating! It is highly appreciated and will surely help to keep this server running longer. "
+        . "I am always working on giving extra privileges to donators, so keep watching out!";
+    } else {
+        $subject = "[Uncovery Minecraft] Donation pending!";
+        $text .= "There was an issue processing your payment automatically. Please wait until we have manually processed and it you will get an email from us.";
+        XMPP_ERROR_trigger("Not all values correct for donation!");
+        $mailtext = "Dear $username, \r\n\r\nWe have just received your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
+            . "After substracting PayPal fees, the donation value is $final_value USD. $recipient_text\r\n"
+            . "Your userlevel will be updated as soon as we processed your donation. You can also check it on the frontpage of the website.\r\n"
+            . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
+    }
+    mail($s_post['payer_email'], $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
+    return $text;
+}
+
 
 /**
  *
