@@ -398,29 +398,29 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         'ws_user_init_xp',
     );
     if (!in_array($event, $available_events)) {
-        XMPP_ERROR_trigger("received incoming event $event which is not available");
-        // return false;
+        XMPP_ERROR_trigger("received incoming event $event which is not registered");
     }
     $return_vars = array();
-    foreach ($WS_INIT as $data) {
+    foreach ($WS_INIT as $plugin => $data) {
         // check if there is a setting for the current event and if the plugin is enabled
         if (($data['events'] != false) && (isset($data['events'][$event])) && ($data['disabled'] == false)) {
             // if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_trace($event, $data);}
             // execute function
             $function = $data['events'][$event];
             if (!is_string($function) || !function_exists($function)) {
-                XMPP_ERROR_trigger("plugin eventhandler failed event $event because $function is not a valid function");
+                XMPP_ERROR_trigger("plugin $plugin eventhandler failed event $event because $function is not a valid function");
                 return false;
             }
             // execute the function, optionally with parameters
             if ($parameters) {
-                //$params_txt = implode(", ", $parameters);
-                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event with function $function and parameters $parameters");
+                XMPP_ERROR_trace("Executing Plugin $plugin function $function with parameters:", $parameters);
                 $return_vars[] = $function($parameters);
             } else {
-                //umc_log('plugin_handler', 'event_manager', "Plugin eventhandler executed event $event");
+                XMPP_ERROR_trace("Executing Plugin $plugin function $function without parameters");
                 $return_vars[] = $function();
             }
+        } else {
+            // nothing done since plugin either does not have the current event or is disabled.
         }
     }
     return $return_vars;
