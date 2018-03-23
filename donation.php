@@ -204,7 +204,8 @@ function umc_process_donation() {
     } else if (strcmp ($res, "INVALID") == 0) {
         // verficiation failed, request assistance
         XMPP_ERROR_trigger("Invalid IPN result: $res");
-        echo "There was an issue verifying your payment. Please contact an admin at minecraft@uncovery.me to resolve this issue";
+        echo "We could not automatically process your payment. We will do that manually, but we promise to get back to you ASAP. "
+            . "You donation length won't be affected by this. Once the donation is activated, you willr receive an email!";
         return;
     }
 
@@ -290,19 +291,21 @@ function umc_process_donation() {
  * @return type
  */
 function umc_donation_java_chart() {
-    $sql_chart = 'SELECT SUM(amount) as monthly, DATE_FORMAT(`date`, "%Y-%m") as \'month\'
-        FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, "%Y-%m")';
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $monthly_cost = 135;
+    $sql_chart = "SELECT SUM(amount) as monthly, SUM(amount) - $monthly_cost as monthly_bline, DATE_FORMAT(`date`, '%Y-%m') as 'month'
+        FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, '%Y-%m') ORDER BY `date`";
     $D = umc_mysql_fetch_all($sql_chart);
 
     // first, we take all the data we have into an array
     $ydata = array();
     foreach ($D as $row) {
-        $ydata[$row['month']] = $row['monthly'];
+        $ydata[$row['month']] = $row['monthly_bline'];
     }
     // now we have a donation amount for each existing month, we need to add the
     // months without a donation
 
-    $start_date = '2010-11-01';
+    $start_date = '2011-01-01';
     // we need to start with this date here instead of the date from the first
     // donation. Also, we need to iterate every month in case there was no
     // donation for one month
@@ -310,18 +313,22 @@ function umc_donation_java_chart() {
     $sum = 0;
     $first_date = new DateTime($start_date);
     $today_date = new DateTime();
+   
+    // since there are months without data, we need to iterate all months since the start
     while ($first_date < $today_date) {
-        $first_date->add(new DateInterval('P1M'));
+        //we format properly to get the month
         $check_date = $first_date->format('Y-m');
         if (isset($ydata[$check_date])) {
-            $this_month = $ydata[$check_date] - 135;
+            $this_month = $ydata[$check_date];
         } else {
             $this_month = -135; // no donation, so only minus
         }
         $sum += $this_month;
         $final_data[$check_date]['value'] = $sum;
+        // add one month, go to next
+        $first_date->add(new DateInterval('P1M'));
+        XMPP_ERROR_trace($check_date, $sum);
     }
-
     ksort($ydata);
 
     $outstanding = $sum * -1;
