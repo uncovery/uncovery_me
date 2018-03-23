@@ -572,7 +572,7 @@ function umc_get_lot_options($lot, $form = false){
         $lot_options = array();
     }
     if ($world == 'kingdom') {
-        // allow refund only
+        $lot_options['abandon'] = 'Abandon now (no refund, lot will be reset)!';
         // $lot_options['refund'] = 'abandon & reset (refunds 50%)';
         /*
         if ($form) {
@@ -676,7 +676,20 @@ function umc_get_new_lot_form($world, $dibs = false) {
     }
 
     $count = 0;
+    
+    $fixed_lots = array();
     foreach ($avail_lots as $lot => $distance) {
+        // we match the king_a1_b with "world" = king, "alpha" = a, "number" = 1, "extras" = _b
+        $regex = '/(?P<world>^[a-z]*_[a-z]*)(?P<number>[0-9]*)(?P<extras>.*)/';
+        $matches = false;
+        preg_match($regex, $lot, $matches);
+        $new_lot_name = $matches['world'] . str_pad($matches['number'], 3, 0, STR_PAD_LEFT) . $matches['extras'];
+        $fixed_lots[$new_lot_name] = $lot;
+        
+    }
+    ksort($fixed_lots);
+
+    foreach ($fixed_lots as $lot_padded => $lot) {
         // drop already diped losts
         if ($dibs && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
             continue;
