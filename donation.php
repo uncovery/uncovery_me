@@ -351,8 +351,8 @@ function umc_process_donation() {
     // Use the sandbox endpoint during testing.
 
     if ($UMC_DONATION['sandbox'] == true) {
-         XMPP_ERROR_trace('Sandbox setting');
-         $ipn->useSandbox();
+        XMPP_ERROR_trace('Sandbox is being used!');
+        $ipn->useSandbox();
     }
    
     XMPP_ERROR_trace('Verifying IPN...');
