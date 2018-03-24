@@ -42,26 +42,59 @@ $UMC_ACHIEVEMENTS = array(
             8 => array('value' => 1000000, 'title' => 'Mogul', 'reward' => false),
         ),
         'value_measure' => 'Uncs in account',
-        'check' => "SELECT balance as value FROM `minecraft_iconomy`.`mineconomy_accounts` WHERE uuid='%s';",
-        'check_type' => 'sql',
+        'check_one' => "SELECT balance as value FROM `minecraft_iconomy`.`mineconomy_accounts` WHERE uuid='%s';",
+        'check_all' => "SELECT balance as value, uuid FROM `minecraft_iconomy`.`mineconomy_accounts`;",
+        'check_method' => 'sql',
     ),
     'voting' => array(
         'description' => 'Vote for the server many times',
         'levels' => array(
             0 => array('value' => 0, 'title' => false, 'reward' => false),
-            1 => array('value' => 10, 'title' => false, 'reward' => false),
-            2 => array('value' => 100, 'title' => false, 'reward' => false),
-            3 => array('value' => 200, 'title' => false, 'reward' => false),
-            4 => array('value' => 500, 'title' => false, 'reward' => false),
-            5 => array('value' => 1000, 'title' => false, 'reward' => false),
-            6 => array('value' => 2000, 'title' => false, 'reward' => false),
-            7 => array('value' => 5000, 'title' => false, 'reward' => false),
-            8 => array('value' => 10000, 'title' => false, 'reward' => false),
+            1 => array('value' => 10, 'title' => "Communist", 'reward' => false),
+            2 => array('value' => 100, 'title' => "Oppressed", 'reward' => false),
+            3 => array('value' => 200, 'title' => "Influencer", 'reward' => false),
+            4 => array('value' => 500, 'title' => "Democrat", 'reward' => false),
+            5 => array('value' => 1000, 'title' => "Revolutionary", 'reward' => false),
+            6 => array('value' => 2000, 'title' => "President", 'reward' => false),
+            7 => array('value' => 5000, 'title' => "Voting Machine", 'reward' => false),
+            8 => array('value' => 10000, 'title' => "Voting Machine Hacker", 'reward' => false),
         ),
         'value_measure' => 'Lifetime Votes',
-        'check' => "SELECT count(vote_id) as value FROM minecraft_log.votes_log WHERE username='%s'",
-        'check_type' => 'sql',
+        'check_one' => "SELECT count(vote_id) as value FROM minecraft_log.votes_log WHERE username='%s'",
+        'check_all' => "SELECT count(vote_id) as value, username as uuid FROM minecraft_log.votes_log",
+        'check_method' => 'sql',
     ),
+    'blog comments' => array(
+        'description' => 'Write many blog comments!',
+        'levels' => array(
+            0 => array('value' => 1, 'title' => false, 'reward' => false),
+            1 => array('value' => 5, 'title' => "Silent", 'reward' => false),
+            2 => array('value' => 10, 'title' => "Small Talk", 'reward' => false),
+            3 => array('value' => 20, 'title' => "Chatty", 'reward' => false),
+            4 => array('value' => 50, 'title' => "Talkative", 'reward' => false),
+            5 => array('value' => 100, 'title' => "Conversationalist", 'reward' => false),
+            6 => array('value' => 150, 'title' => "Author", 'reward' => false),
+            7 => array('value' => 200, 'title' => "Novelist", 'reward' => false),
+            8 => array('value' => 500, 'title' => "Book Writer", 'reward' => false),
+            9 => array('value' => 1000, 'title' => "Chat Bot", 'reward' => false),
+        ),
+        'value_measure' => 'Comments',
+        'check_one' => "SELECT count(comment_ID) as value, wp_comments.comment_author, meta_value
+            FROM minecraft.wp_comments
+            LEFT JOIN minecraft.wp_usermeta ON wp_usermeta.user_id=wp_comments.user_id
+            WHERE meta_key='minecraft_uuid' AND meta_value='%s'
+            GROUP BY comment_author",
+        'check_all' => "SELECT count(comment_ID) as value, meta_value as uuid
+            FROM minecraft.wp_comments
+            LEFT JOIN minecraft.wp_usermeta ON wp_usermeta.user_id=wp_comments.user_id
+            WHERE meta_key='minecraft_uuid'
+            GROUP BY comment_author",
+        'check_method' => 'sql',
+    ),
+
+
+
+                //
     /*
     'sale' => array(
         'description' => 'Make sales in the shop to this turnover',
@@ -75,11 +108,11 @@ $UMC_ACHIEVEMENTS = array(
             7 => array('value' => 5000, 'title' => false, 'reward' => false,),
             8 => array('value' => 10000, 'title' => false, 'reward' => false,),
         ),
-    ),  
-     * 
-     */  
+    ),
+     *
+     */
 );
-        
+
 $WS_INIT['achievements'] = array(
     'default' => array(
         'help' => array(
@@ -105,64 +138,133 @@ $WS_INIT['achievements'] = array(
 /**
  * Iterate all achievements and check what level (active) users have
  * and writes it to a database
- * 
+ *
  * @global array $UMC_ACHIEVEMENTS
  * @param type $user
  * @return type
  */
-function umc_achievements_update($user = false) {
+function umc_achievements_update($uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_trigger( "test");
     global $UMC_ACHIEVEMENTS;
-    
-    if (!$user) {
+
+    if (!$uuid) {
         $users = umc_get_active_members('uuid');
+        $check_type = 'check_all';
     } else {
-        $users = array($user);
+        $check_type = 'check_one';
     }
 
-    foreach ($users as $uuid) {
-        foreach ($UMC_ACHIEVEMENTS as $A => $a) {
-            $check = $a['check'];
-            $check_type = $a['check_type'];
-            switch ($check_type) {
-                case 'sql':
-                    $check_sql = sprintf($check, $uuid);
-                    $D = umc_mysql_fetch_all($check_sql);
-                    $value = $D[0]['value'];
-                    break;
-                case 'function':
-                    $value = $check($uuid);
-                    break;
-            }
-            
-            $level = umc_achievements_levelcheck($value, $A);
-            if ($level > 0) {
-                $sql = "INSERT INTO minecraft_srvr.achievements (uuid,achievement,level)
-                    VALUES ('$uuid','$A',$level)
-                    ON DUPLICATE KEY UPDATE level=$level;";
-                umc_mysql_execute_query($sql);
-            }
+    foreach ($UMC_ACHIEVEMENTS as $A => $a) {
+        switch ($a['check_method']) { // SQL or function
+            case 'sql':
+                $check_query = $a[$check_type];
+                if ($check_type == 'check_all') {
+                    // if we check all users, first query all user records and then match them with the active members list
+                    $L = umc_mysql_fetch_all($check_query);
+                    $all_levels = array();
+                    foreach ($L as $l) {
+                        $level_uuid = $l['uuid'];
+                        $all_levels[$level_uuid] = $l['value'];
+                    }
+
+                    // now that we have an array of all level records, match with users in active lit
+                    foreach ($users as $uuid) {
+                        if (isset($all_levels[$uuid])) {
+                            // find out the achievement level
+                            $value = $all_levels[$uuid];
+                            $level = umc_achievements_level_check($value, $A);
+                            // insert it into the DB
+                            umc_achievements_level_record($A, $uuid, $level);
+                        }
+                    }
+                } else {
+                    // if we need only one user, insert the UUID into the query
+                    $check_sql = sprintf($check_query, $uuid);
+                    // execute the adjusted query
+                    $L = umc_mysql_fetch_all($check_sql);
+                    if (count($L) == 1) {
+                        $level = umc_achievements_level_check($L[0]['value'], $A);
+                        // insert it into the DB
+                        umc_achievements_level_record($A, $uuid, $level);
+                    }
+                }
+                break;
+
+            case 'function':
+                // nothing happens yet since we dont have achievements that need functions yet
+                break;
         }
     }
 }
 
+
+/**
+ * Iterate an achievement to find out what the current userlevel is
+ *
+ * @global array $UMC_ACHIEVEMENTS
+ * @param type $value
+ * @param type $achievement
+ * @return int
+ */
+function umc_achievements_level_check($value, $achievement) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_ACHIEVEMENTS;
+    $levels = $UMC_ACHIEVEMENTS[$achievement]['levels'];
+
+    $current_level = 0;
+    foreach ($levels as $level => $l_data) {
+        XMPP_ERROR_trace("Current level is ", $current_level);
+        XMPP_ERROR_trace("checking for level ", $level);
+        $l_value = $l_data['value'];
+        XMPP_ERROR_trace("level value is ", $l_value);
+        if (!isset($levels[$level + 1])) { // we have the top level
+            XMPP_ERROR_trace("Reached top level!");
+            return $level;
+        } else if ($value == $l_value) { // we have exactly the current level
+            XMPP_ERROR_trace("found exact level match!");
+            return $level;
+        } else if ($value < $l_value) { // we went one level too high
+            XMPP_ERROR_trace("Went too high!");
+
+            // calculate the fraction of the gap to the next level for progress indicator
+            $last_level_value = $levels[$current_level]['value'];
+            XMPP_ERROR_trace("Last level value:", $last_level_value);
+
+            $my_gap_to_next_level = $l_value - $value;
+            XMPP_ERROR_trace("Missing points:", $my_gap_to_next_level);
+            $gap_between_levels = $l_value - $last_level_value;
+            $gap_closed_by = $gap_between_levels / $my_gap_to_next_level;
+            XMPP_ERROR_trace("percentage reach to current level", $gap_closed_by);
+            $return_level = $current_level + $gap_closed_by;
+            XMPP_ERROR_trace("Final level number", $return_level);
+            return $return_level;
+        }
+        $current_level = $level;
+        XMPP_ERROR_trace("looping, lest level was ", $current_level);
+    }
+    // return last level if nothing found
+    return $level;
+}
+
+
 /**
  * display the achievement for one specific user
  * UUID is given by the event 'user_directory' or directly $parameters[0] = $uuid
- * 
+ *
  * @param type $parameters
  */
 function umc_achievements_display_web($parameters) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid = $parameters[0];
-    
+
     $out = "<p><strong>Achievements:</strong><br>";
-    
+
     $sql = "SELECT achievement, level FROM minecraft_srvr.achievements WHERE uuid='$uuid' AND level>0 ORDER BY achievement;";
     $A = umc_mysql_fetch_all($sql);
     foreach ($A as $a) {
         $out .= umc_achievements_icon($a);
-    }      
+    }
     $out .= "</p>\n";
     $O['User'] = $out;
     return $O;
@@ -181,61 +283,38 @@ function umc_achievements_icon($a) {
     if ($ach_data['title']){
         $title = "<p class=\"ach_title\">&quot;{$ach_data['title']}&quot;</p>";
     }
+
+    $percentage = '';
+    if (isset($UMC_ACHIEVEMENTS[$achievement]['levels'][$level_number + 1])) {
+        $percentage = "<p class=\"ach_progress_wrap\"><p class=\"ach_progress\" style=\"width:{$level_fraction}%;\">{$level_fraction_display}%</p></p>";
+    } else {
+        $percentage = "<p class=\"ach_progress_wrap\"><p class=\"ach_progress_final\">Final level!!</p></p>";
+    }
+
+    // todo: don't show % if max level is reached.
     $achievement_text = ucwords($achievement);
     $out = "
         <div class=\"ach\">
-            <p class=\"ach_text\">Level</p>
-            <p class=\"ach_number\">$level_number</p>
+            <div class=\"ach_badge\">
+                <p class=\"ach_text\">Level</p>
+                <p class=\"ach_number\">$level_number</p>
+                $percentage
+                <p class=\"ach_title\">$title</p>
+            </div>
             <p class=\"ach_desc\">$achievement_text</p>
-            <p class=\"ach_progress_wrap\"><p class=\"ach_progress\" style=\"width:{$level_fraction}%;\">{$level_fraction_display}%</p></p>
-            $title
-         </div>";
+         </div>
+         ";
     return $out;
 }
 
-
-/**
- * Iterate an achievement to find out what the current userlevel is
- * 
- * @global array $UMC_ACHIEVEMENTS
- * @param type $value
- * @param type $achievement
- * @return int
- */
-function umc_achievements_levelcheck($value, $achievement) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_ACHIEVEMENTS;
-    $levels = $UMC_ACHIEVEMENTS[$achievement]['levels'];
-    
-    $current_level = 0;
-    foreach ($levels as $level => $l_data) {
-        $l_value = $l_data['value'];
-        if ($value < $l_value) {
-            // calculate the fraction of the gap to the next level for progress indicator
-            $last_level_value = $levels[$current_level]['value'];
-            $this_level_value = $l_value;
-            $level_gap = $this_level_value - $last_level_value;
-            $gap_closed_by = $value / $level_gap;
-            $return_level = $current_level + $gap_closed_by;
-            return $return_level;
-        } else {
-            $current_level = $level;
-        }
-    }
-    
-    // return last level if nothing found
-    return $level;
-}
-
-
 /**
  * Lists all achievements
- * 
+ *
  * @param type $mode
  */
 function umc_achievements_list_all($mode = 'web') {
     global $UMC_ACHIEVEMENTS;
-    
+
     $out = '';
     foreach ($UMC_ACHIEVEMENTS as $A => $a) {
         $out .= "
@@ -247,7 +326,7 @@ function umc_achievements_list_all($mode = 'web') {
         foreach ($a['levels'] as $lvl => $l) {
             if ($lvl == 0) {
                 continue;
-            }            
+            }
             $title = $l['title'];
             if (!$title) {
                 $title = 'n/a';
@@ -261,4 +340,13 @@ function umc_achievements_list_all($mode = 'web') {
         $out .= "</table>\n</div>";
     }
     return $out;
+
+}
+
+// just a short function to record the level into the DB
+function umc_achievements_level_record($ach_name, $uuid, $level) {
+    $sql = "INSERT INTO minecraft_srvr.achievements (uuid,achievement,level)
+        VALUES ('$uuid','$ach_name',$level)
+        ON DUPLICATE KEY UPDATE level=$level;";
+    umc_mysql_execute_query($sql);
 }
