@@ -46,22 +46,22 @@ $UMC_ACHIEVEMENTS = array(
         'check_all' => "SELECT balance as value, uuid FROM `minecraft_iconomy`.`mineconomy_accounts`;",
         'check_method' => 'sql',
     ),
-    'voting' => array(
-        'description' => 'Vote for the server many times',
+    'vote lottery' => array(
+        'description' => 'Vote for the server',
         'levels' => array(
             0 => array('value' => 0, 'title' => false, 'reward' => false),
-            1 => array('value' => 10, 'title' => "Communist", 'reward' => false),
-            2 => array('value' => 100, 'title' => "Oppressed", 'reward' => false),
-            3 => array('value' => 200, 'title' => "Influencer", 'reward' => false),
-            4 => array('value' => 500, 'title' => "Democrat", 'reward' => false),
-            5 => array('value' => 1000, 'title' => "Revolutionary", 'reward' => false),
-            6 => array('value' => 2000, 'title' => "President", 'reward' => false),
-            7 => array('value' => 5000, 'title' => "Voting Machine", 'reward' => false),
-            8 => array('value' => 10000, 'title' => "Voting Machine Hacker", 'reward' => false),
+            1 => array('value' => 10, 'title' => "Playing it safe", 'reward' => false),
+            2 => array('value' => 100, 'title' => "Risk averse", 'reward' => false),
+            3 => array('value' => 200, 'title' => "Trying your luck", 'reward' => false),
+            4 => array('value' => 500, 'title' => "Risk taker", 'reward' => false),
+            5 => array('value' => 1000, 'title' => "Gambler", 'reward' => false),
+            6 => array('value' => 2000, 'title' => "Addict", 'reward' => false),
+            7 => array('value' => 5000, 'title' => "High Roller", 'reward' => false),
+            8 => array('value' => 10000, 'title' => "Casino VIP", 'reward' => false),
         ),
         'value_measure' => 'Lifetime Votes',
         'check_one' => "SELECT count(vote_id) as value FROM minecraft_log.votes_log WHERE username='%s'",
-        'check_all' => "SELECT count(vote_id) as value, username as uuid FROM minecraft_log.votes_log",
+        'check_all' => "SELECT count(vote_id) as value, username as uuid FROM minecraft_log.votes_log GROUP BY username",
         'check_method' => 'sql',
     ),
     'blog comments' => array(
@@ -89,6 +89,24 @@ $UMC_ACHIEVEMENTS = array(
             LEFT JOIN minecraft.wp_usermeta ON wp_usermeta.user_id=wp_comments.user_id
             WHERE meta_key='minecraft_uuid'
             GROUP BY comment_author",
+        'check_method' => 'sql',
+    ),
+    'user voting' => array(
+        'description' => 'Vote for the User promotions',
+        'levels' => array(
+            0 => array('value' => 0, 'title' => false, 'reward' => false),
+            1 => array('value' => 1, 'title' => "Communist", 'reward' => false),
+            2 => array('value' => 10, 'title' => "Oppressed", 'reward' => false),
+            3 => array('value' => 50, 'title' => "Influencer", 'reward' => false),
+            4 => array('value' => 100, 'title' => "Democrat", 'reward' => false),
+            5 => array('value' => 200, 'title' => "Revolutionary", 'reward' => false),
+            6 => array('value' => 250, 'title' => "President", 'reward' => false),
+            7 => array('value' => 500, 'title' => "Voting Machine", 'reward' => false),
+            8 => array('value' => 1000, 'title' => "Voting Machine Hacker", 'reward' => false),
+        ),
+        'value_measure' => 'Lifetime Votes',
+        'check_one' => "SELECT count(vote_id) as value FROM minecraft_srsr.proposals_votes group by voter_uuid DESC WHERE voter_uuid='%s'",
+        'check_all' => "SELECT count(vote_id) as value, voter_uuid as uuid FROM minecraft_srvr.proposals_votes GROUP BY voter_uuid DESC",
         'check_method' => 'sql',
     ),
 
@@ -145,7 +163,6 @@ $WS_INIT['achievements'] = array(
  */
 function umc_achievements_update($uuid = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    XMPP_ERROR_trigger( "test");
     global $UMC_ACHIEVEMENTS;
 
     if (!$uuid) {
@@ -218,8 +235,8 @@ function umc_achievements_level_check($value, $achievement) {
         XMPP_ERROR_trace("checking for level ", $level);
         $l_value = $l_data['value'];
         XMPP_ERROR_trace("level value is ", $l_value);
-        if (!isset($levels[$level + 1])) { // we have the top level
-            XMPP_ERROR_trace("Reached top level!");
+        if (!isset($levels[$level + 1]) && ($value > $l_value)) { // we have the top level
+            XMPP_ERROR_trace("Reached top level!", "My value: $value, Max value: $l_value");
             return $level;
         } else if ($value == $l_value) { // we have exactly the current level
             XMPP_ERROR_trace("found exact level match!");
@@ -234,7 +251,8 @@ function umc_achievements_level_check($value, $achievement) {
             $my_gap_to_next_level = $l_value - $value;
             XMPP_ERROR_trace("Missing points:", $my_gap_to_next_level);
             $gap_between_levels = $l_value - $last_level_value;
-            $gap_closed_by = $gap_between_levels / $my_gap_to_next_level;
+            XMPP_ERROR_trace("Gap between levels", $gap_between_levels);
+            $gap_closed_by = $my_gap_to_next_level / $gap_between_levels;
             XMPP_ERROR_trace("percentage reach to current level", $gap_closed_by);
             $return_level = $current_level + $gap_closed_by;
             XMPP_ERROR_trace("Final level number", $return_level);
@@ -246,6 +264,7 @@ function umc_achievements_level_check($value, $achievement) {
     // return last level if nothing found
     return $level;
 }
+
 
 
 /**
