@@ -436,7 +436,7 @@ function umc_lottery_reminder() {
 
 /**
  * calculate the number of votes vs. the number of logins of a user over the last 30 days.
- * 
+ *
  * @param type $uuid
  * @return string|int
  */
@@ -582,8 +582,8 @@ function umc_lottery_show_chances() {
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
-    
-    $user_input = $UMC_USER['args'][2];
+
+    $user_input = trim($UMC_USER['args'][2]);
 
     // check if there is a valid, active user on the server before applying the vote.
     $user = umc_check_user($user_input);
@@ -607,7 +607,7 @@ function umc_lottery() {
     if (isset($UMC_USER['online_players'][$uuid])) {
         $user_is_online = true;
     }
-    
+
     // allow uncovery to test chance rolls for debugging purposes
     $chance = false;
     if (($user == 'uncovery') && (isset($UMC_USER['args'][3]))) {
@@ -760,7 +760,7 @@ function umc_lottery() {
     } else {
         XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
     }
-    
+
     if ($user_is_online) {
         // give reinforcing feedback - set subtitle (not displayed)
         $subtitle =  'title ' . $user . ' subtitle {"text":"Thanks for your vote!","color":"gold"}';
@@ -775,7 +775,7 @@ function umc_lottery() {
             // display the feedback - displays subtitle AND title
             if ($user_is_online) {
                 $title = 'title ' . $user . ' title {"text":"+'. $reward. ' Uncs","color":"gold"}';
-                umc_ws_cmd($title, 'asConsole'); 
+                umc_ws_cmd($title, 'asConsole');
             }
             // and exit
             return;
