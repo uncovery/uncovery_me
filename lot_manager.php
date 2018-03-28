@@ -676,7 +676,7 @@ function umc_get_new_lot_form($world, $dibs = false) {
     }
 
     $count = 0;
-    
+
     $fixed_lots = array();
     foreach ($avail_lots as $lot => $distance) {
         // we match the king_a1_b with "world" = king, "alpha" = a, "number" = 1, "extras" = _b
@@ -685,7 +685,7 @@ function umc_get_new_lot_form($world, $dibs = false) {
         preg_match($regex, $lot, $matches);
         $new_lot_name = $matches['world'] . str_pad($matches['alpha'], 3, 0, STR_PAD_LEFT) . str_pad($matches['number'], 3, 0, STR_PAD_LEFT) . $matches['extras'];
         $fixed_lots[$new_lot_name] = $lot;
-        
+
     }
     ksort($fixed_lots);
 
@@ -1123,6 +1123,8 @@ function umc_lot_add_player($player, $lot, $owner = 1, $cost = false) {
     }
     // reload regions file
     umc_exec_command("regions load -w $world", 'asConsole');
+    // update user lot count
+    umc_uuid_record_lotcount($player);
     if ($cost) {
         umc_money($player, false, $cost);
     }
