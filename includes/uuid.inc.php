@@ -469,6 +469,7 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
         }
 
         $url = 'https://api.mojang.com/users/profiles/minecraft/' . $query_string;
+        XMPP_ERROR_trace("Username fetch URL: ", $url);
 
         $R = unc_serial_curl($url, 0, 50, '/home/includes/unc_serial_curl/google.crt');
         $json_result = $R[0]['content'];
@@ -476,7 +477,7 @@ function umc_uuid_get_from_mojang($username, $timer = false) {
         XMPP_ERROR_trace("Json result: ", $json_result);
 
         if (!$json_result) {
-            XMPP_ERROR_trigger("Could not verify username, is the Mojang API down?");
+            XMPP_ERROR_trigger("Could not verify username ('$username') with Mojang");
             return false;
         }
         $json_data = json_decode($json_result, true);
