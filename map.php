@@ -479,46 +479,46 @@ if ($find_lot) {
 function umc_lag_data($world, $format) {
     global $UMC_SETTING;
     $out = '';
-    
+
     // get the max number of events
     $max_sql = "SELECT count(event_id) AS counter FROM minecraft_log.lag_events GROUP BY chunk_id ORDER BY counter DESC LIMIT 1";
     $X = umc_mysql_fetch_all($max_sql);
     $max_events = $X[0]['counter'];
-    
+
     // we get the overall minimum TPS for the server
     $min_sql = "SELECT MIN(tps) as min_tps, MAX(tps) as max_tps FROM minecraft_log.lag_events";
     $M = umc_mysql_fetch_all($min_sql);
     $min_tps = $M[0]['min_tps'];
-    $max_tps = $M[0]['max_tps'];    
-    
+    $max_tps = $M[0]['max_tps'];
+
     if (!isset($UMC_SETTING['world_img_dim'][$world])) {
         $coordsql = "SELECT MIN(x_coord) AS min_x, MAX(x_coord) AS max_x, MIN(z_coord) AS min_z, MAX(z_coord) AS max_z
             FROM minecraft_log.lag_chunks
             WHERE world='$world';";
         $C = umc_mysql_fetch_all($coordsql);
         // convert chunk to blocks
-        $min_x_block = $C[0]['min_x'] *16;
-        $min_z_block = $C[0]['min_z'] *16;
-        $max_x_block = $C[0]['max_x'] *16;
-        $max_z_block = $C[0]['max_z'] *16;
-        
+        $min_x_block = $C[0]['min_x'] * 16;
+        $min_z_block = $C[0]['min_z'] * 16;
+        $max_x_block = $C[0]['max_x'] * 16;
+        $max_z_block = $C[0]['max_z'] * 16;
+
         // find the one largest dimension
         $max = max(array(abs($min_x_block), abs($max_x_block), abs($min_z_block), abs($max_z_block)));
         // darklands data: -2669 	5284   -569 	6802
-        
+
         $left_map_middle = ($C[0]['min_x'] + $C[0]['max_x']) / 2;
         $top_map_middle = ($C[0]['min_z'] + $C[0]['max_z']) / 2;
-        
+
         $left_offset = $C[0]['min_x'] + $left_map_middle;
         $top_offset = $C[0]['min_z'] + $top_map_middle;
-        
+
         // format example 'city' => array('max_coord' => 1100, 'chunkborder' => 512, 'top_offset' => 450, 'left_offset' => -600),
         $map = array('max_coord'=> $max, 'top_offset' => $top_offset, 'left_offset' => $left_offset);
         XMPP_ERROR_trace("Map data", $map);
     } else {
         $map = $UMC_SETTING['world_img_dim'][$world];
     }
-   
+
     $sql = "SELECT count(event_id) as counter, lag_events.chunk_id, world, x_coord, z_coord, AVG(tps) as tps_avg, min(tps) as min_tps
         FROM minecraft_log.lag_events
         LEFT JOIN minecraft_log.lag_chunks ON lag_chunks.chunk_id=lag_events.chunk_id
@@ -527,15 +527,16 @@ function umc_lag_data($world, $format) {
         ORDER BY min_tps";
     $L = umc_mysql_fetch_all($sql);
 
-    
-    
+    $valid_chunks = false;
+
     foreach ($L as $l) {
+        $valid_chunks = true;
         // convert chunks coordinates to block coordinates
         $block_x = $l['x_coord'] * 16;
         $block_z = $l['z_coord'] * 16;
         // get average TPS for that chunk
         $tps_avg = $l['tps_avg'];
-        
+
         $tps_gap = 20 - $tps_avg;
         // this takes into account how often that one chunk is in the data
         // I make a divisor dependend on the frequency of that chunk
@@ -548,7 +549,7 @@ function umc_lag_data($world, $format) {
         if ($format == 'map') {
             // convert block coordinates to image coordinates
             $x1 = conv_x($block_x, $map);
-            $z1 = conv_z($block_z, $map);            
+            $z1 = conv_z($block_z, $map);
         }
 
         // get lot information
@@ -562,9 +563,9 @@ function umc_lag_data($world, $format) {
 
         $displayed_tps = (20 - $weighted_tps_gap);
         $tps_nice = round($displayed_tps, 2);
-        
+
         if ($min_tps == $max_tps) { // we have only one dataset, avoid division by zero
-            $opacity = 1; 
+            $opacity = 1;
         } else {
             // formula for transposing one scale into another
             // NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
@@ -572,7 +573,7 @@ function umc_lag_data($world, $format) {
             $opacity = round(1 - ((($displayed_tps - $min_tps) * (1 - 0.1))/ ($max_tps - $min_tps)) + 0.1, 3);
         }
         $fill_css = '';
-        
+
         if ($max_events == $l['counter']) {
             $color = '0, 0, 255,'; // blue
         } else {
@@ -580,9 +581,9 @@ function umc_lag_data($world, $format) {
                 $color = '255, 0, 0,'; // red
             } else {
                 $color = '255, 255, 0,'; // yellow
-            }     
+            }
         }
-        
+
         if ($tps_nice < 19) {
             if ($format == 'map') {
                 $out .= "
@@ -590,7 +591,13 @@ function umc_lag_data($world, $format) {
                     <span class=\"innertext\" style=\"opactiy:1;\">$block_x / $block_z: $lot ($owner_string) TPS: $tps_nice</span>
                 </div>";
             }
+        } else {
+            $valid_chunks = false;
         }
+    }
+
+    if (!$valid_chunks) {
+        $out = false;
     }
     return $out;
 }
@@ -611,7 +618,7 @@ function umc_lagmap() {
         .size16_16 {width:16px; height:16px; white-space:nowrap;}
         </style>
     ";
-    
+
     $worlds = array('city', 'empire', 'aether', 'flatlands', 'kingdom', 'draftlands', 'skyblock', 'nether', 'darklands');
 
     $s_post  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -631,14 +638,18 @@ function umc_lagmap() {
         $world = 'empire';
     }
 
+
     $menu = "<div id=\"menu_2d_map\">\n";
     $menu .= umc_map_menu($worlds, $world, false, false) . "</div>";
-    $html = '<div id="outer_box">' . "\n"
-        . '    <img src="/map/'. $world . '.jpg" id="image_box" alt="map">' . "\n";
-    
-    $html .= umc_lag_data($world, 'map');
-    
 
+    $map_data = umc_lag_data($world, 'map');
+    if (!$map_data) {
+        $html = "<div><h1 style=\"color:white; padding:50px;\">No chunks with average tps below 19 found in $world!</h1>";
+    } else {
+        $html = '<div id="outer_box">' . "\n"
+            . '    <img src="/map/'. $world . '.jpg" id="image_box" alt="map">' . "\n";
+        $html .= $map_data;
+    }
 
     $header = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
