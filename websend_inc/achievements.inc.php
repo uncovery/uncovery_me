@@ -354,7 +354,7 @@ function umc_achievements_list_all($mode = 'web') {
     $out = '';
     foreach ($UMC_ACHIEVEMENTS as $A => $a) {
         $out .= "
-        <h2>" . ucwords($A) . ":</h2><div>{$a['description']}<br>
+        <h2 id=\"$A\">" . ucwords($A) . ":</h2><div>{$a['description']}<br>
         <table>
             <tr>
                 <th>Levels</th><th>Measure</th><th>Title</th><th>Reward</th>
