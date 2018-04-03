@@ -109,7 +109,7 @@ $UMC_ACHIEVEMENTS = array(
         'check_all' => "SELECT count(vote_id) as value, voter_uuid as uuid FROM minecraft_srvr.proposals_votes GROUP BY voter_uuid",
         'check_method' => 'sql',
     ),
-    'mails_sent' => array(
+    'mails sent' => array(
         'description' => 'Send emails',
         'levels' => array(
             0 => array('value' => 0, 'title' => false, 'reward' => false),
