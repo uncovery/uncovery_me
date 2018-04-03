@@ -382,6 +382,12 @@ function umc_lottery_reminder() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
+    
+    // do not tell Guests to vote
+    $userlevel = $UMC_USER['userlevel'];
+    if ($userlevel == "Guest") {
+        return;
+    }
 
     $checkdate = date("Y-m-d H:i:s", strtotime("-24 hours"));
 
