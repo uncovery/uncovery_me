@@ -105,10 +105,27 @@ $UMC_ACHIEVEMENTS = array(
             8 => array('value' => 1000, 'title' => "Voting Machine Hacker", 'reward' => false),
         ),
         'value_measure' => 'Lifetime Votes',
-        'check_one' => "SELECT count(vote_id) as value FROM minecraft_srsr.proposals_votes group by voter_uuid DESC WHERE voter_uuid='%s'",
-        'check_all' => "SELECT count(vote_id) as value, voter_uuid as uuid FROM minecraft_srvr.proposals_votes GROUP BY voter_uuid DESC",
+        'check_one' => "SELECT count(vote_id) as value FROM minecraft_srsr.proposals_votes group by voter_uuid WHERE voter_uuid='%s'",
+        'check_all' => "SELECT count(vote_id) as value, voter_uuid as uuid FROM minecraft_srvr.proposals_votes GROUP BY voter_uuid",
         'check_method' => 'sql',
     ),
+    'mails_sent' => array(
+        'description' => 'Send emails',
+        'levels' => array(
+            0 => array('value' => 0, 'title' => false, 'reward' => false),
+            1 => array('value' => 1, 'title' => "Silent Bob", 'reward' => false),
+            2 => array('value' => 10, 'title' => "Hermit", 'reward' => false),
+            3 => array('value' => 50, 'title' => "Pen Pal", 'reward' => false),
+            4 => array('value' => 100, 'title' => "Author", 'reward' => false),
+            5 => array('value' => 200, 'title' => "Calligrapher", 'reward' => false),
+            6 => array('value' => 250, 'title' => "Spammer", 'reward' => false),
+            7 => array('value' => 500, 'title' => "Chat Bot", 'reward' => false),
+        ),
+        'value_measure' => 'Mails',
+        'check_one' => "SELECT count(msg_id) as value FROM minecraft_srvr.user_mail group by sender_uuid WHERE sender_uuid='%s'",
+        'check_all' => "SELECT count(msg_id) as value, sender_uuid as uuid FROM minecraft_srvr.user_mail GROUP BY sender_uuid",
+        'check_method' => 'sql',
+    ),    
 
 
 
