@@ -9,6 +9,9 @@ umc_plugin_eventhandler('server_pre_reboot');
 // reset all user lots
 umc_lot_reset_process();
 
+// reset user lot count in UUID table
+umc_uuid_record_lotcount();
+
 umc_hardcore_resetworld();
 
 umc_usericon_get();
