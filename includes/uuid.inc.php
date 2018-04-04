@@ -107,6 +107,11 @@ function umc_uuid_firstlogin_update($uuid) {
  */
 function umc_uuid_record_lotcount($user = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    
+    // delete all lot counts so that we can re-write the new ones
+    $sql = "UPDATE minecraft_srvr.UUID SET lot_count=0";
+    umc_mysql_execute_query($sql);    
+    
     if ($user) {
         $uuid = umc_uuid_getone($user, 'uuid');
         $lots = umc_user_countlots($uuid);
