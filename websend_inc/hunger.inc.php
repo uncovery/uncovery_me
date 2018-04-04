@@ -18,7 +18,7 @@
  */
 
 /*
- * This plugin manages the Hunger games. It's one of the most complex systems on the 
+ * This plugin manages the Hunger games. It's one of the most complex systems on the
  * server. Please work with caution.
  */
 global $WS_INIT, $HUNGER;
@@ -139,11 +139,17 @@ function umc_hunger_find_current_game() {
         if (count($data) > 0) {
             $HUNGER['current_game'] = $data[0];
             umc_hunger_find_players();
+            XMPP_ERROR_trace("Hunger game & players added!");
+        } else {
+            XMPP_ERROR_trace("No Hunger game available!");
         }
-    } else {
+    } else if (!isset($HUNGER['current_game']['players'])) {
         umc_hunger_find_players();
+        XMPP_ERROR_trace("Hunger players added!");
+    } else {
+        XMPP_ERROR_trace("Hunger game exists, players already added!");
     }
-    XMPP_ERROR_trace('HUNGER', $HUNGER);
+    XMPP_ERROR_trace('HUNGER @ end of umc_hunger_find_current_game', $HUNGER);
 }
 
 /**
@@ -170,8 +176,8 @@ function umc_hunger_find_players($game_id = false) {
     }
 
     $sql = "SELECT status, uuid FROM minecraft_iconomy.hunger_players WHERE game_id=$game_id;";
-    $rst = umc_mysql_query($sql);
-    if ($current_game) {
+    $D = umc_mysql_fetch_all($sql);
+    if ($current_game) { // we have a current game
         // first, get all players from current game global variable if exists
         $players = array();
         if (isset($HUNGER['current_game']['players'])) {
@@ -189,19 +195,17 @@ function umc_hunger_find_players($game_id = false) {
         // now get players who are in database in case there are none in the variable yet
         $dead = array();
         $alive = array();
-        while ($row = umc_mysql_fetch_array($rst)) {
+        foreach ($D as $row) {
             if (!isset($players[$row['uuid']])) {
                 $username = umc_user2uuid($row['uuid']);
             } else {
-                $username = $players[$row['uuid']];
+                $username = $players[$d['uuid']];
             }
             if ($row['status'] == 'playing' || $row['status'] == 'preparing') {
                 $alive[$row['uuid']] = strtolower($username);
             } else {
                 $dead[$row['uuid']] = strtolower($username);
             }
-
-
         }
         if (count($dead) > 0) {
             $HUNGER['current_game']['players']['dead'] = $dead;
@@ -210,7 +214,7 @@ function umc_hunger_find_players($game_id = false) {
             $HUNGER['current_game']['players']['alive'] = $alive;
         }
     } else { // get an old game
-        while ($row = umc_mysql_fetch_array($rst)) {
+        foreach ($D as $row) {
             $username = umc_user2uuid($row['uuid']);
             $HUNGER['old_game'][$game_id]['player'][$row['uuid']] = $username;
         }
@@ -239,15 +243,15 @@ function umc_hunger_announce() {
         XMPP_ERROR_trigger("Hunger Announce failed due to existing game");
         $admin_uuid = $HUNGER['current_game']['admin'];
         $admin_username = umc_user2uuid($admin_uuid);
-        umc_echo("[Hunger] {red}There is another game running, started by user {gold}$admin_username{white}");
+        umc_echo("[Hunger] There is another game running, started by user $admin_username");
         if ($admin_username == $player) {
-            umc_error("[Hunger] {red}That's you. You may stop the game with: {green}/hunger stop");
+            umc_error("[Hunger] That's you. You may stop the game with: /hunger stop");
         }
         // check if the player is still online
         if (!in_array($admin_username, $UMC_USER['online_players'])) {
-            umc_error("[Hunger] {gold}$admin_username{red} is not online, so you may stop the game by typing {green}/hunger stop");
+            umc_error("[Hunger] $admin_username is not online, so you may stop the game by typing /hunger stop");
         } else {
-            umc_error("[Hunger] {gold}$admin_username{red} is still online. You may ask him/her to stop the game.");
+            umc_error("[Hunger] $admin_username is still online. You may ask him/her to stop the game.");
         }
     // we can start a new game
     } else {
@@ -255,11 +259,11 @@ function umc_hunger_announce() {
         umc_ws_cmd("pex reload", 'asConsole');
         XMPP_ERROR_send_msg("$player announced new Hunger game");
         if ($HUNGER['announce']) {
-            umc_mod_broadcast("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!", $HUNGER['channel']);
-            umc_mod_broadcast("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] A Hunger Game is being organized by $player!", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] Use '/hunger join' to join the game!", $HUNGER['channel']);
         } else {
-            umc_echo("[Hunger] A {cyan}Hunger Game{purple} is being organized by {gold}$player{purple}!");
-            umc_echo("[Hunger] Use '{yellow}/hunger join{purple}' to join the game!");
+            umc_echo("[Hunger] A Hunger Game is being organized by $player!");
+            umc_echo("[Hunger] Use '/hunger join' to join the game!");
         }
         // get center
         $center = umc_hunger_find_random_location();
@@ -288,6 +292,7 @@ function umc_hunger_announce() {
 function umc_hunger_start() {
     global $HUNGER, $UMC_USER;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_trigger("Starting hunger game");
     $uuid = $UMC_USER['uuid'];
     // Check if a game can be started, find the game_id if so
     umc_hunger_find_current_game();
@@ -307,7 +312,6 @@ function umc_hunger_start() {
     $player_list = $HUNGER['current_game']['players']['alive'];
 
     // check if everyone is there
-
     $hunger_world_users = umc_users_by_world('hunger');
 
     $finalplayers = array();
@@ -322,9 +326,9 @@ function umc_hunger_start() {
     }
     // Can't start unless there are at least 2 players
     if (count($finalplayers) < 2) {
-        umc_echo("[Hunger] {red}You need at least 2 players to join to start the game.");
+        umc_echo("[Hunger] You need at least 2 players to join to start the game.");
         XMPP_ERROR_trigger("Hunger did not start, not enough players");
-        return;
+        //return;
     }
 
     // Starting the game...
@@ -334,9 +338,9 @@ function umc_hunger_start() {
 
     foreach ($droppedplayers as $uuid => $player) {
         if ($HUNGER['announce']) {
-            umc_mod_broadcast("[Hunger] The user {gold}$player{purple} did not make it into the hunger world before the game start and will be removed", $HUNGER['channel']);
+            umc_mod_broadcast("[Hunger] The user $player did not make it into the hunger world before the game start and will be removed", $HUNGER['channel']);
         } else {
-            umc_echo("[Hunger] The user {gold}$player{purple} did not make it into the hunger world before the game start and will be removed");
+            umc_echo("[Hunger] The user $player did not make it into the hunger world before the game start and will be removed");
         }
         $sql = "UPDATE hunger_players set status='noshow' WHERE status='preparing' and game_id=$id AND uuid='$uuid';";
         umc_mysql_query($sql, true);
@@ -357,11 +361,11 @@ function umc_hunger_start() {
 
     $world_size = $HUNGER['current_game']['size'];
     if ($HUNGER['announce']) {
-        umc_mod_broadcast("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size", $HUNGER['channel']);
-        umc_mod_broadcast("Participants: {gold}" . implode(", ", $finalplayers), $HUNGER['channel']);
+        umc_mod_broadcast("[Hunger] The hunger game has begun! World Size: $world_size", $HUNGER['channel']);
+        umc_mod_broadcast("Participants: " . implode(", ", $finalplayers), $HUNGER['channel']);
     } else {
-        umc_echo("[Hunger] {green}The hunger game has begun!{cyan} World Size: $world_size");
-        umc_echo("Participants: {gold}" . implode(", ", $finalplayers));
+        umc_echo("[Hunger] The hunger game has begun! World Size: $world_size");
+        umc_echo("Participants: " . implode(", ", $finalplayers));
     }
     XMPP_ERROR_send_msg("hunger game started with size $world_size and players: ". implode(", ", $finalplayers));
 }
@@ -377,7 +381,7 @@ function umc_hunger_stop() {
     umc_hunger_find_current_game();
     $admin_username = umc_user2uuid($HUNGER['current_game']['admin']);
     if ($HUNGER['current_game']) {
-        umc_echo("[Hunger] {green}Current game found, started by user {gold}$admin_username");
+        umc_echo("[Hunger] Current game found, started by user $admin_username");
         /*if ($game['status'] == 'started') {
             umc_echo("{red}The game is in progress and can't be stopped unless there is a winner...");
             umc_hunger_check_winner($game['id']);
@@ -386,17 +390,17 @@ function umc_hunger_stop() {
         // check if the player is the admin for the current game or if the admin is offline
         if ($uuid == $HUNGER['current_game']['admin'] || (!in_array($admin_username, $UMC_USER['online_players']))) {
             if ($HUNGER['announce']) {
-                umc_mod_broadcast("[Hunger] The current hunger game has been {red}cancelled{purple} by {gold}$player{purple}.", $HUNGER['channel']);
+                umc_mod_broadcast("[Hunger] The current hunger game has been cancelled by $player.", $HUNGER['channel']);
             } else {
-                umc_echo("[Hunger] The current hunger game has been {red}cancelled{purple} by {gold}$player{purple}.");
+                umc_echo("[Hunger] The current hunger game has been cancelled by $player.");
             }
             $sql = "UPDATE minecraft_iconomy.hunger_games SET end=NOW(), status='aborted' WHERE id={$HUNGER['current_game']['id']};";
             umc_mysql_query($sql, true);
         } else {
-            umc_error("[Hunger] {gold}$admin_username{red} is still online. Ask him/her to stop the game.");
+            umc_error("[Hunger] $admin_username is still online. Ask him/her to stop the game.");
         }
     } else {
-        umc_echo("[Hunger] {red}There is no hunger game to stop right now.");
+        umc_echo("[Hunger] There is no hunger game to stop right now.");
     }
     // remove all players
     umc_hunger_kill_all_in_world();
@@ -751,9 +755,9 @@ function umc_hunger_addplayer() {
 
     umc_ws_cmd("tell $admin The user $player just joined the hunger game!", 'asConsole');
     if ($HUNGER['announce']) {
-        umc_mod_broadcast("[Hunger] The user {gold}$player{purple} just {green}joined{purple} the hunger game!", $HUNGER['channel']);
+        umc_mod_broadcast("[Hunger] The user $player just joined the hunger game!", $HUNGER['channel']);
     } else {
-        umc_echo("[Hunger] The user {gold}$player{purple} just {green}joined{purple} the hunger game!");
+        umc_echo("[Hunger] The user $player just joined the hunger game!");
     }
     // Warp the user
 
@@ -762,7 +766,7 @@ function umc_hunger_addplayer() {
 
     $sql = "INSERT INTO minecraft_iconomy.`hunger_players` (`uuid`, `game_id`, `status`) VALUES ('$player_uuid', $game_id, 'preparing');";
     umc_mysql_query($sql, true);
-    umc_echo("[Hunger] {green}You ({gold}$player{green}) were added to Hunger Game {white}#$game_id.");
+    umc_echo("[Hunger] You ($player) were added to Hunger Game #$game_id.");
     XMPP_ERROR_send_msg("Added user $player to the hunger game");
 }
 
@@ -890,12 +894,13 @@ function umc_hunger_adjust_world_size() {
     XMPP_ERROR_trace('HUNGER', $HUNGER);
 
     umc_hunger_find_current_game();
-
+    
     $duration = $HUNGER['current_game']['duration'];
+    
     $player_count = count($HUNGER['current_game']['players']['alive']);
     $size = round(sqrt($player_count * 10000) / 2);
 
-    $d = split(":",$duration);
+    $d = explode(":",$duration);
     $minutes = $d[1] + ($d[0] * 60);
 
     if ($minutes > 10) {
@@ -903,14 +908,12 @@ function umc_hunger_adjust_world_size() {
     } else {
         $newsize = $size;
     }
-
     $final_size = max($newsize, 50);
-
     $HUNGER['current_game']['size'] = $final_size;
     $x = $HUNGER['current_game']['x'];
     $z = $HUNGER['current_game']['z'];
 
-    $command = "wb hunger set $final_size $final_size $x $z";
+    $command = "wb hunger set $final_size $final_size $x $z";   
     umc_ws_cmd($command, 'asConsole');
 }
 
@@ -923,7 +926,7 @@ function umc_hunger_adjust_world_size() {
 function umc_hunger_find_random_location() {
     // 30 Mio is the MC hard limit
     $min_val = 1000;
-    $max_val = 30000000 - 2000;  //we take the max and some margin
+    $max_val = 300000 - 2000;  //we take the max and some margin
 
     // find a center
     $center_x = rand($min_val, $max_val);
