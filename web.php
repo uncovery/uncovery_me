@@ -583,7 +583,6 @@ function umc_web_usercheck() {
     $tables = array(
         'Same IP' => 'last_ip',
         'Same Browser' => 'browser_id',
-        'Same TeamSpeak' => 'ts_uuid',
     );
     $out = '';
     foreach ($tables as $table_name => $crit_field) {
@@ -593,7 +592,7 @@ function umc_web_usercheck() {
         $L = umc_mysql_fetch_all($sql);
         $out_arr = array();
         foreach ($L as $l) {
-            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, INET_NTOA(last_ip) as ip, "
+            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, lastlogin, INET_NTOA(last_ip) as ip, "
                 . "CONCAT(browser_id, '<br>', ts_uuid) AS 'Browser & TS ID' "
                 . "FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'"
                 . "ORDER BY onlinetime DESC";
