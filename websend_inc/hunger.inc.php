@@ -860,16 +860,16 @@ function umc_hunger_check_winner() {
             } else {
                 umc_echo("The Hunger Game has been aborted, no active players online.");
             }
-        } else {
+        } else { // properly finished game
             $sql_winner = "UPDATE minecraft_iconomy.`hunger_games`
                 SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
             umc_mysql_query($sql_winner, true);
             $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
             umc_mysql_query($sql, true);
             if ($HUNGER['announce']) {
-                umc_mod_broadcast("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;", $HUNGER['channel']);
+                umc_mod_broadcast("The Hunger Game has ended! $winner wins!;", $HUNGER['channel']);
             } else {
-                umc_echo("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;");
+                umc_echo("The Hunger Game has ended! $winner wins!;");
             }
         }
         umc_hunger_remove_perms('all');
