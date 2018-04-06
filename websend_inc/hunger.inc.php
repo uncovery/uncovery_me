@@ -199,7 +199,7 @@ function umc_hunger_find_players($game_id = false) {
             if (!isset($players[$row['uuid']])) {
                 $username = umc_user2uuid($row['uuid']);
             } else {
-                $username = $players[$d['uuid']];
+                $username = $players[$row['uuid']];
             }
             if ($row['status'] == 'playing' || $row['status'] == 'preparing') {
                 $alive[$row['uuid']] = strtolower($username);
@@ -847,6 +847,7 @@ function umc_hunger_check_winner() {
         $winner_uuid = key($player_list);
         XMPP_ERROR_send_msg("Found winner! $winner_uuid");
         $winner = current($player_list);
+        // last player is dead, so we have an aborted game.
         if (!in_array($winner, $HUNGER['current_game']['players']['alive'])) {
             $sql_game = "UPDATE minecraft_iconomy.`hunger_games`
                 SET status='aborted', end=NOW() WHERE id = $id;";
@@ -855,20 +856,21 @@ function umc_hunger_check_winner() {
                 SET status='left' WHERE uuid='$winner_uuid' and game_id = $id;";
             umc_mysql_query($sql_player, true);
             if ($HUNGER['announce']) {
-                umc_mod_broadcast("The Hunger Game has been {red}aborted{purple}, no active players online.", $HUNGER['channel']);
+                umc_mod_broadcast("The Hunger Game has been aborted, no active players online.", $HUNGER['channel']);
             } else {
-                umc_echo("The Hunger Game has been {red}aborted{purple}, no active players online.");
+                umc_echo("The Hunger Game has been aborted, no active players online.");
             }
-        }
-        $sql_winner = "UPDATE minecraft_iconomy.`hunger_games`
-            SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
-        umc_mysql_query($sql_winner, true);
-        $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
-        umc_mysql_query($sql, true);
-        if ($HUNGER['announce']) {
-            umc_mod_broadcast("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;", $HUNGER['channel']);
         } else {
-            umc_echo("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;");
+            $sql_winner = "UPDATE minecraft_iconomy.`hunger_games`
+                SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
+            umc_mysql_query($sql_winner, true);
+            $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
+            umc_mysql_query($sql, true);
+            if ($HUNGER['announce']) {
+                umc_mod_broadcast("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;", $HUNGER['channel']);
+            } else {
+                umc_echo("{yellow}The Hunger Game has ended! {gold}$winner{yellow} wins!;");
+            }
         }
         umc_hunger_remove_perms('all');
         umc_hunger_kill_all_in_world();
@@ -894,9 +896,9 @@ function umc_hunger_adjust_world_size() {
     XMPP_ERROR_trace('HUNGER', $HUNGER);
 
     umc_hunger_find_current_game();
-    
+
     $duration = $HUNGER['current_game']['duration'];
-    
+
     $player_count = count($HUNGER['current_game']['players']['alive']);
     $size = round(sqrt($player_count * 10000) / 2);
 
@@ -913,7 +915,7 @@ function umc_hunger_adjust_world_size() {
     $x = $HUNGER['current_game']['x'];
     $z = $HUNGER['current_game']['z'];
 
-    $command = "wb hunger set $final_size $final_size $x $z";   
+    $command = "wb hunger set $final_size $final_size $x $z";
     umc_ws_cmd($command, 'asConsole');
 }
 
