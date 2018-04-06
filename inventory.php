@@ -93,6 +93,7 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
     }
 
     $removed = 0;
+    $clearslots = array();
     foreach ($inv as $slot => $item) {
         $comparator = 'meta';
         if (!is_array($meta) && strpos($meta, "{") === 0) {
@@ -106,11 +107,12 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
         // echo "$slot:{$item['id']}:{$item['data']}:{$item['meta']} vs $meta";
         if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
             if ($amount >= $item['amount']) {
-                umc_ws_cmd("removeitem $player $slot", 'asConsole');
-                XMPP_ERROR_trace('item removed', "removeitem $player $slot");
+                // we only prepare the list of to be cleared slots to remove them later with "removeitems"
+                $clearslots[] = $slot;
                 $amount = $amount - $item['amount'];
                 $removed = $removed + $item['amount'];
             } else {
+                // single items are cleared right now with "removeitem"
                 umc_ws_cmd("removeitem $player $slot $amount", 'asConsole');
                 $amount = $amount - $amount;
                 $removed = $amount;
@@ -120,6 +122,10 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
             }
         }
     }
+    if (count($clearslots) > 0) {
+        umc_ws_cmd("removeitems $player " . implode(" ", $clearslots), 'asConsole');
+    }
+    
     if ($amount != $removed && $amount > 0) {
         XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . ") from user $player!");
     }
