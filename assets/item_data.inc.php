@@ -160,7 +160,6 @@ function umc_item_data_icon_html($item_name, $sub_type = false) {
 }
 
 
-
 /**
  * Getting the data from the google spreadsheets
  *
@@ -248,6 +247,75 @@ function umc_item_data_icon_getdata() {
     // write CSS to file
     $css_file = '/home/minecraft/server/bin/data/item_sprites.css';
     file_put_contents($css_file, $css);
+}
+
+/**
+ * get the invSprote data from the Wiki
+ */
+function umc_item_data_wiki() {
+
+    // STEP 1: get the whole website data
+    $url = 'https://minecraft.gamepedia.com/Module:InvSprite';
+    $certs = '/home/includes/unc_serial_curl/google.crt';
+    $url_data = unc_serial_curl($url,0,50, $certs);
+
+    // STEP 2: get only the LUA part
+    $matches = false;
+    $regex = '/.*(return {[\S\s]*)<\/pre>/';
+    preg_match($regex, $url_data[0]['content'], $matches);
+
+    $searches = array(
+        0 => '/&quot;/',
+        1 => '/url = require.*,/',
+        2 => '/&amp/',
+    );
+    $replacement = array(
+        0 => '"',
+        1 => '',
+        2 => '&',
+    );
+
+    $fixed = preg_replace($searches, $replacement, $matches[1]);
+
+    // STEP 3: parse the LUA
+    $file = new Lua();
+    $output = $file->eval($fixed);
+
+    // STEP 4: Get the parts of the array
+
+    $ids = $output['ids'];
+    $raw_sections = $output['sections'];
+
+    $sections = array();
+    foreach ($raw_sections as $S) {
+        $s_id = $S['id'];
+        $sections[$s_id] = $S['name'];
+    }
+
+    // STEP 5 filter out bad sections
+
+    $invalid_sections = array(
+        'April Fools',
+        'Outdated',
+        "Bedrock Edition & Education Edition"
+    );
+
+    // STEP 6 rename the item names properly
+
+    foreach ($ids as $item_text => $I) {
+        $section_id = $I['section'];
+        $section_name = $sections[$section_id];
+        if (!in_array($section_name, $invalid_sections)) {
+            $item_name = strtolower(str_replace(" ", "_", $item_text));
+            $item_safe = umc_mysql_real_escape_string($item_name);
+            $sql = "UPDATE minecraft_srvr.items SET sprite_location = {$I['pos']} WHERE item_name LIKE $item_safe;";
+            umc_mysql_execute_query($sql);
+        }
+    }
+
+
+
+    return;
 }
 
 
