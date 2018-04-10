@@ -36,12 +36,13 @@ global $XMPP_ERROR;
 require_once('/home/includes/xmpp_error/xmpp_error.php');
 $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
 $XMPP_ERROR['config']['enabled'] = true;
+$XMPP_ERROR['config']['track_globals'][] = 'UMC_USERS';
 
 // include database abstraction
 global $UNC_DB;
 $UNC_DB = array('database' => 'minecraft', 'username' => 'minecraft', 'server' => 'localhost', 'password' => '9sd6ncC9vEcTD55Z');
 // legacy since we did not merge completely
-mysql_connect($UNC_DB['server'], $UNC_DB['username'], $UNC_DB['password']);
+// umc_mysql_connect($UNC_DB['server'], $UNC_DB['username'], $UNC_DB['password']);
 require_once('/home/includes/uncovery_mysql/uncovery_mysql.inc.php');
 
 // include serial_curl
