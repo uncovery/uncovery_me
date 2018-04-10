@@ -227,16 +227,16 @@ function umc_home_buy() {
     $cost = $cost = umc_home_calc_costs($count + 1);
     $userlevel = $UMC_USER['userlevel'];
     $max_homes = $UMC_SETTING['homes']['max_homes'][$userlevel];
-    
+
     // sanitise input and check if home name valid
     if (isset($args[2])) {
-        
+
         $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', trim($args[2]));
-        
+
         if ($sanitised_name != trim($args[2])){
             umc_error("{red}Home names must only contain numbers, letters, dashes(-) and underscores(_)");
         }
-        
+
         // check if the name already exists
         $name_check = umc_home_count($sanitised_name);
         if ($name_check > 0) {
@@ -317,10 +317,10 @@ function umc_home_update() {
 
     // check if the home exists
     if (isset($args[2])) {
-        
+
         // leave existing badly formatted names as valid things to replace
         $unsanitised_name = $args[2];
-        
+
         // check if the name actually exists to replace
         $name_check = umc_home_count($unsanitised_name);
         if ($name_check <> 1) {
@@ -336,11 +336,11 @@ function umc_home_update() {
     $log_addon = '';
     if (isset($args[3])) {
         $sanitised_name = preg_replace('/[^a-zA-Z0-9_-]+/', '', trim($args[3]));
-        
+
         if ($sanitised_name != trim($args[3])){
             umc_error("{red}Home names must only contain numbers, letters, dashes(-) and underscores(_)");
         }
-        
+
         // check if the name already exists
         $name_check = umc_home_count($sanitised_name);
         if ($name_check == 1) {
@@ -404,7 +404,9 @@ function umc_home_count($name = false, $uuid_req = false) {
     }
     global $UMC_USER;
     $name_sql = '';
-    if ($name) {
+
+    // this cannot be "if ($name)" since $home can be "0" in which case == false but not === false
+    if ($name !== false) {
         $name_sql = "AND name=" . umc_mysql_real_escape_string($name);
     }
     $sql = "SELECT count(home_id) as count FROM minecraft_srvr.homes WHERE uuid='$uuid' $name_sql;";
