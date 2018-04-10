@@ -767,6 +767,7 @@ function umc_tellraw($selector, $msg_arr, $spacer = false, $debug = false) {
 function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     global $UMC_DATA;
     $meta_cmd = '';
+    $initial_amount = $amount;
     // is the meta an array or NBT Data?
     if (substr($meta, 0, 2) == 'a:') { // we have an array
         $meta_arr = unserialize($meta);
@@ -786,13 +787,16 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $damage = 0;
     }
 
+    // we cannot give one user more than one stack at a time with this command
+    // so let's give full stacks until we need to give less than one stack.
     while ($amount > $stack_size) {
         $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
         $check = umc_ws_command('asConsole', $cmd);
         $amount = $amount - $stack_size;
     }
+    // give the leftover amount
     $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
-    umc_log('inventory', 'give', $cmd);
+    umc_log('inventory', 'give', "gave $initial_amount of $item_name ($damage $meta_cmd) to $user");
     $check = umc_ws_command('asConsole', $cmd);
     return $check;
 }
