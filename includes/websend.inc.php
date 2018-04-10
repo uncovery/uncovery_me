@@ -130,7 +130,7 @@ function umc_ws_eventhandler($event) {
  */
 function umc_ws_get_vars() {
     // make sure we are on websend
-    global $UMC_ENV, $UMC_USER; //, $UMC_USERS;
+    global $UMC_ENV, $UMC_USER, $UMC_USERS; //, $UMC_USERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if ($UMC_ENV !== 'websend') {
         XMPP_ERROR_trigger("Tried to get websend vars, but environment did not match: " . var_export($UMC_ENV, true));
@@ -157,7 +157,6 @@ function umc_ws_get_vars() {
             XMPP_ERROR_trace("Getting UUID for UMC_USER array", $json);
             $uuid = umc_user2uuid($json['Invoker']['Name']);
         }
-
 
         $UMC_USER['uuid'] = $uuid;
         $UMC_USER['userlevel'] = umc_get_uuid_level($uuid);
@@ -230,6 +229,7 @@ function umc_ws_get_vars() {
             }
         }
         $UMC_USER['online_players'] = $players;
+        $UMC_USERS[] = $players;
         $UMC_USER['player_data'] = $player_all_data;
     }
     /*
