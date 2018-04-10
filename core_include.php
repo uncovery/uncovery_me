@@ -38,6 +38,8 @@ $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
 $XMPP_ERROR['config']['enabled'] = true;
 $XMPP_ERROR['config']['track_globals'][] = 'UMC_USERS';
 
+$UMC_USERS = array();
+
 // include database abstraction
 global $UNC_DB;
 $UNC_DB = array('database' => 'minecraft', 'username' => 'minecraft', 'server' => 'localhost', 'password' => '9sd6ncC9vEcTD55Z');
