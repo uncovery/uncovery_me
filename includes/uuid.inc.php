@@ -72,7 +72,15 @@ function umc_uuid_login_logout_update($type) {
     umc_mysql_query($sql);
 }
 
+/**
+ * creates a UUID table entry if it does not exist, otherwise fetches the data from the table
+ *
+ * @param type $uuid
+ * @param type $username
+ * @return type
+ */
 function umc_uuid_userdata($uuid, $username) {
+    global $UMC_USERS;
     $sql_time = "SELECT * FROM minecraft_srvr.UUID WHERE UUID='$uuid';";
     $data = umc_mysql_fetch_all($sql_time);
     if (count($data) == 0) {
@@ -81,6 +89,7 @@ function umc_uuid_userdata($uuid, $username) {
         umc_uuid_firstlogin_update($uuid);
         // we cal lthis function again to get the data output;
         umc_uuid_userdata($uuid, $username);
+        $UMC_USERS[$uuid] = $username;
     } else {
         return $data[0];
     }
@@ -107,17 +116,17 @@ function umc_uuid_firstlogin_update($uuid) {
  */
 function umc_uuid_record_lotcount($user = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // delete all lot counts so that we can re-write the new ones
-    $sql = "UPDATE minecraft_srvr.UUID SET lot_count=0";
-    umc_mysql_execute_query($sql);    
-    
+
     if ($user) {
         $uuid = umc_uuid_getone($user, 'uuid');
         $lots = umc_user_countlots($uuid);
         $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$lots WHERE UUID='$uuid';";
         umc_mysql_query($sql);
     } else {
+        $sql = "UPDATE minecraft_srvr.UUID SET lot_count=0";
+        umc_mysql_execute_query($sql);
         // get all lot counts
         $data = umc_get_active_members('counter');
         foreach ($data as $uuid => $counter) {
@@ -239,7 +248,7 @@ function umc_uuid_getone($query, $format = 'uuid', $existing_only = false) {
  */
 function umc_user2uuid($query, $existing_only = false) {
     // get a username
-    global $UMC_USER;
+    global $UMC_USER, $UMC_USERS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     if (strlen($query) < 2) {
@@ -254,17 +263,25 @@ function umc_user2uuid($query, $existing_only = false) {
         return $UMC_USER['username'];
     }
 
+    // check in the $UMC_USERS array
+    if (isset($UMC_USERS[$query])) {
+        return $UMC_USERS[$query]; // return username
+    } else if (in_array($query, $UMC_USERS)) {
+        $uuid = array_search($query, $UMC_USERS);
+        return $uuid;
+    }
+
     if ($existing_only) {
         $checks = array(
             'umc_uuid_get_system_users',
-            'umc_uuid_get_from_wordpress',
             'umc_uuid_get_from_uuid_table',
+            'umc_uuid_get_from_wordpress',
         );
     } else {
         $checks = array(
             'umc_uuid_get_system_users',
-            'umc_uuid_get_from_wordpress',
             'umc_uuid_get_from_uuid_table',
+            'umc_uuid_get_from_wordpress',
             'umc_uuid_get_from_logfile',
             'umc_uuid_get_from_mojang'
         );
@@ -278,6 +295,13 @@ function umc_user2uuid($query, $existing_only = false) {
         }
     }
     if ($result) {
+        // add result to $UMC_USERS
+        if (strlen($query) > 17) {
+            $UMC_USERS[$query] = $result;
+        } else {
+            $UMC_USERS[$result] = $query;
+        }
+
         return $result;
     } else {
         // umc_error_longmsg("Could not find UUID/Username for $query");
