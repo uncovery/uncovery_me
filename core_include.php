@@ -72,6 +72,7 @@ require_once($UMC_PATH_MC . '/server/bin/assets/item_data.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_id2name.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_search.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_sprites.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_wiki2item.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/patterns.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/potions.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/spawn_egg.inc.php');
