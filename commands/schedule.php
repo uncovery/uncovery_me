@@ -1,5 +1,5 @@
 <?php
-echo "Running schedule...\n";
+XMPP_ERROR_trace("Running schedule.php");
 
 include('/home/minecraft/server/bin/index_wp.php');
 
@@ -14,8 +14,7 @@ echo "Done!\n";
 function run_umc_scheduler() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // list of what to do & undo or temp permissions
-    global $WS_INIT;
-    $chat_command = $WS_INIT['mod']['broadcast'];
+    $chat_command = 'broadcast';
 
     $schedule_arr = array(
         1 => array( // Monday
