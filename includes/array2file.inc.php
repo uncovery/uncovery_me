@@ -23,11 +23,18 @@
  * @param type $data
  * @param type $array_name
  * @param type $file
+ * @param string $comments this should not have a newline at the end.
  * @return string
  */
-function umc_array2file($data, $array_name, $file) {
+function umc_array2file($data, $array_name, $file, $comments = false) {
     $array_name_upper = strtoupper($array_name);
+    
+    $fixed_comments = '';
+    if ($comments) {
+        $fixed_comments = "/**\n" . preg_replace('/^/m', ' * ', $comments) . "\n */\n\n";
+    }
     $out = '<?php' . "\n"
+        . $fixed_comments
         . '$' . $array_name_upper. " = array(\n"
         . umc_array2file_line($data, 0)
         . ");";
