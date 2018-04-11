@@ -32,7 +32,7 @@ $WS_INIT['userlevel'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'PlayerJoinEvent' => 'umc_userlevel_player_check',
-        'server_pre_reboot' => 'umc_userlevel_donation_update_all',
+        'server_post_reboot' => 'umc_userlevel_donation_update_all',
     ),
     'default' => array(
         'help' => array(
