@@ -35,7 +35,10 @@ $WS_INIT['voting'] = array(  // the name of the plugin
     ),
     'disabled' => false,
     'events' => array(
+        // remind users to vote on login
         'PlayerJoinEvent' => 'umc_vote_get_votable',
+        // display upgrade history on the user profile (users.php)
+        'user_directory' => 'umc_vote_userprofile',
     ),
 );
 
@@ -53,6 +56,18 @@ $vote_ranks = array(
     'masterdonator'         => array('lvl' => 5, 'vote' => 6, 'code' => 'e', 'gap' => 12, 'next' => 'ElderDonator'),
     'elder'                 => array('lvl' => 6, 'vote' => 10, 'code' => 'o', 'gap' => false, 'next' => false),
     'elderdonator'          => array('lvl' => 6, 'vote' => 10, 'code' => 'o', 'gap' => false, 'next' => false),
+    'owner'                 => array('lvl' => 7, 'vote' => 20, 'code' => 'o', 'gap' => false, 'next' => false)
+);
+
+// getting rid of donators as distinct ranks
+$vote_ranks_raw = array(
+    'guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'gap' => 0, 'next' => 'Settler'),
+    'settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'gap' => 0, 'next' => 'Citizen'),
+    'citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'gap' => 0, 'next' => 'Architect'),
+    'architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'gap' => 2, 'next' => 'Designer'),
+    'designer'              => array('lvl' => 4, 'vote' => 3, 'code' => 'm', 'gap' => 4, 'next' => 'Master'),
+    'master'                => array('lvl' => 5, 'vote' => 6, 'code' => 'e', 'gap' => 12, 'next' => 'Elder'),
+    'elder'                 => array('lvl' => 6, 'vote' => 10, 'code' => 'o', 'gap' => false, 'next' => false),
     'owner'                 => array('lvl' => 7, 'vote' => 20, 'code' => 'o', 'gap' => false, 'next' => false)
 );
 
@@ -291,8 +306,12 @@ function umc_vote_web() {
             // what user level is it?
             $prop_lvl = strtolower(umc_get_uuid_level($proposed_uuid));
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
+            $next_level = $vote_ranks[$prop_lvl]['next'];
             // check if the user was recently promoted
-            $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap FROM minecraft_srvr.proposals  WHERE `uuid` LIKE '$proposed_uuid' ORDER BY `date` DESC LIMIT 1;";
+            $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap 
+                FROM minecraft_srvr.proposals  
+                WHERE `uuid` LIKE '$proposed_uuid'
+                ORDER BY `date` DESC LIMIT 1;";
             $D = umc_mysql_fetch_all($sql);
             $row = array();
             if (count($D) > 0) {
@@ -329,8 +348,8 @@ function umc_vote_web() {
             } else {
                 // ok to be promoted
                 $reason_sql = umc_mysql_real_escape_string($reason);
-                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`, `reason`)
-                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting', $reason_sql);";
+                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`, `reason`, `target_level`)
+                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting', $reason_sql, $next_level);";
                 umc_mysql_query($ins_proposal_sql);
                 $pr_id = umc_mysql_insert_id();
                 $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) VALUES ($pr_id, '$uuid', NOW(), 1);";
@@ -606,4 +625,46 @@ function umc_vote_elder_notify($proposed) {
         mail($row['user_email'], '[Uncovery Minecraft] '.  $subject, $content, $headers, "-fminecraft@uncovery.me");
         umc_mail_send_backend($row['UUID'], 'ab3bc877-4434-45a9-93bd-bab6df41eabf', $content, $subject, 'send'); // send from uncovery's UUID
     }
+}
+
+/**
+ * This adds information about the user's promotion history to their user profile
+ * via the event user_directory
+ * 
+ * @param type $data_array
+ */
+function umc_vote_userprofile($data_array) {
+    $uuid = $data_array['uuid'];
+    $first_join = $data_array['first_join'];
+    
+    $sql = "SELECT `date`, reason, target_level 
+        FROM minecraft_srvr.proposals  
+        WHERE proposals.uuid LIKE '$uuid' AND status='success'
+        ORDER BY `date` DESC";
+    $D = umc_mysql_fetch_all($sql);
+
+    $out = '';
+    foreach ($D as $d) {
+        $date = substr($d['date'], 0, 10);
+        $level = ucwords($d['target_level']);
+        $out .= "$date: became $level<br>";
+        if (strlen($d['reason'] > 1)){
+            $out .= "Reason:{$d['reason']}<br>";
+        }
+    }
+    // get citizen promotion
+    $citizen_sql = "SELECT `date` FROM minecraft_log.universal_log WHERE `text` LIKE '%$uuid was promoted from Settler%'";
+    $C = umc_mysql_fetch_all($citizen_sql);
+    if (count($C) > 0) {
+        $citizen_date = $C[0]['date'];
+        $out .= "$citizen_date: became Citizen<br>";
+    } else {
+        $out .= "<smaller>Citizen promotion date unknown, we only keep this record since January 2016</smaller><br>";
+    }
+   
+    $first_date = substr($first_join, 0, 10);
+    $out .= "$first_date: First joined<br>";
+
+    $data['Promotions'] = $out;
+    return $data;
 }
