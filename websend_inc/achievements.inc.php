@@ -292,7 +292,7 @@ function umc_achievements_level_check($value, $achievement) {
  */
 function umc_achievements_display_web($parameters) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $uuid = $parameters[0];
+    $uuid = $parameters['uuid'];
 
     $out = "<p><strong>Achievements:</strong><br>See the <a href=\"https://uncovery.me/about-this-server/achievements/\">Achievement page</a> for level information.";
 
