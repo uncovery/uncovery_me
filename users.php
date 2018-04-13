@@ -792,9 +792,14 @@ function umc_user_directory() {
 
 
         } */
-        $ret = umc_plugin_eventhandler('user_directory', array($uuid));
+        $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid));
         foreach ($ret as $plugin_content) {
             foreach ($plugin_content as $section => $text) {
+                // initialize the section in case the plugin created it
+                if (!isset($O[$section])) {
+                    $O[$section] = '';
+                }
+                // add the content from the plugin
                 $O[$section] .= $text;
             }
         }
