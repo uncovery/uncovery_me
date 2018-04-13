@@ -792,7 +792,7 @@ function umc_user_directory() {
 
 
         } */
-        $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid));
+        $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid, 'first_join' => $online_time[$uuid]['firstlogin']['full']));
         foreach ($ret as $plugin_content) {
             foreach ($plugin_content as $section => $text) {
                 // initialize the section in case the plugin created it
@@ -874,6 +874,9 @@ function umc_user_directory() {
                 . "</tr>\n";
         }
         $out .= "</tbody>\n</table>\n";
+        $out .= "Voting Ratio: This shows how often a user has voted for the server on server lists 
+            compared to how often they logged in within the last 30 days. So if a user was here on one day and voted on one day, they get a 1. 
+            If someone did not login at all, they get a \"n/a\". If someone logged in on 4 days but voted only once, they get a 0.25";
         echo $out;
     }
 }
