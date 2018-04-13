@@ -40,20 +40,20 @@ $WS_INIT['voting'] = array(  // the name of the plugin
 );
 
 $vote_ranks = array(
-    'guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'next' => 'Settler'),
-    'settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'Citizen'),
-    'settlerdonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'next' => 'CitizenDonator'),
-    'citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'Architect'),
-    'citizendonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'next' => 'ArchitectDonator'),
-    'architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'Designer'),
-    'architectdonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'next' => 'DesignerDonator'),
-    'designer'              => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'Master'),
-    'designerdonator'       => array('lvl' => 4, 'vote' => 2, 'code' => 'm', 'next' => 'MasterDonator'),
-    'master'                => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'Elder'),
-    'masterdonator'         => array('lvl' => 5, 'vote' => 4, 'code' => 'e', 'next' => 'ElderDonator'),
-    'elder'                 => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'elderdonator'          => array('lvl' => 6, 'vote' => 8, 'code' => 'o', 'next' => false),
-    'owner'                 => array('lvl' => 7, 'vote' => 16, 'code' => 'o', 'next' => false)
+    'guest'                 => array('lvl' => 0, 'vote' => 0, 'code' => 's', 'gap' => 0, 'next' => 'Settler'),
+    'settler'               => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'gap' => 0, 'next' => 'Citizen'),
+    'settlerdonator'        => array('lvl' => 1, 'vote' => 0, 'code' => 'c', 'gap' => 0, 'next' => 'CitizenDonator'),
+    'citizen'               => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'gap' => 0, 'next' => 'Architect'),
+    'citizendonator'        => array('lvl' => 2, 'vote' => 0, 'code' => 'a', 'gap' => 0, 'next' => 'ArchitectDonator'),
+    'architect'             => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'gap' => 2, 'next' => 'Designer'),
+    'architectdonator'      => array('lvl' => 3, 'vote' => 1, 'code' => 'd', 'gap' => 2, 'next' => 'DesignerDonator'),
+    'designer'              => array('lvl' => 4, 'vote' => 3, 'code' => 'm', 'gap' => 4, 'next' => 'Master'),
+    'designerdonator'       => array('lvl' => 4, 'vote' => 3, 'code' => 'm', 'gap' => 4, 'next' => 'MasterDonator'),
+    'master'                => array('lvl' => 5, 'vote' => 6, 'code' => 'e', 'gap' => 12, 'next' => 'Elder'),
+    'masterdonator'         => array('lvl' => 5, 'vote' => 6, 'code' => 'e', 'gap' => 12, 'next' => 'ElderDonator'),
+    'elder'                 => array('lvl' => 6, 'vote' => 10, 'code' => 'o', 'gap' => false, 'next' => false),
+    'elderdonator'          => array('lvl' => 6, 'vote' => 10, 'code' => 'o', 'gap' => false, 'next' => false),
+    'owner'                 => array('lvl' => 7, 'vote' => 20, 'code' => 'o', 'gap' => false, 'next' => false)
 );
 
 /**
@@ -224,6 +224,15 @@ function umc_vote_web() {
         $user_lvl = strtolower($UMC_USER['userlevel']);
     }
 
+    // we allow new proposals only in odd months
+    $proposals_enabled = false;
+    $proposals_disabled_reason = "Proposals are currently not possible. We allow proposals only every in odd months (Jan, March etc). Please stop by next month.";
+    $current_month = date('j');
+    if ($current_month % 2 == 0) {
+        $proposals_enabled = true;
+    }    
+    
+    
     // only active users can vote
     $is_active = umc_users_is_active($uuid);
     if (!$is_active) {
@@ -265,10 +274,9 @@ function umc_vote_web() {
         $lvl_min_req[$lvl] = round($full_vote * $lvl_percent[$lvl]);
     }
 
-    // TODO insert here a cleanup process that deletes old votes of non-promoted users
-
-
     $proposed = filter_input(INPUT_POST, 'proposal', FILTER_SANITIZE_STRING);
+    $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+    $wordcount = str_word_count($reason);
     
     // process a new proposal
     if (isset($proposed) && strlen($proposed) > 1) {
@@ -284,13 +292,13 @@ function umc_vote_web() {
             $prop_lvl = strtolower(umc_get_uuid_level($proposed_uuid));
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             // check if the user was recently promoted
-            $sql = "SELECT UNIX_TIMESTAMP(`date`) as mysql_ts FROM minecraft_srvr.proposals  WHERE `uuid` LIKE '$proposed_uuid' ORDER BY `date` DESC;";
+            $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap FROM minecraft_srvr.proposals  WHERE `uuid` LIKE '$proposed_uuid' ORDER BY `date` DESC LIMIT 1;";
             $D = umc_mysql_fetch_all($sql);
             $row = array();
             if (count($D) > 0) {
-                $row = $D[0]; // get the first (latest) entry
+                $month_gap = $D[0]['month_gap']; // get the first (latest) entry
             } else {
-                $row['mysql_ts'] = 0;
+                $month_gap = 0;
             }
             
             // let's check if there are elder proposals already
@@ -301,8 +309,9 @@ function umc_vote_web() {
             $elder_count = $C[0]['counter'];            
             if ($prop_lvl_id == 5 && $elder_count > 0) { // this is a master proposed for Elder
                 $out .= "<strong>Sorry $username, but there can be only one user proposed for Elder at a time! Please wait until the current Elder vote is over and then re-submit your proposal.</strong>";
-            } else if ((time() - $row['mysql_ts']) < 5270400) {
-                $out .= "<strong>Sorry $username, but $proposed_username was last proposed for promotion less than 2 months ago!</strong>";
+            } else if ($month_gap < $vote_ranks[$prop_lvl]['gap']) {
+                $needed_gap = $vote_ranks[$prop_lvl]['gap'];
+                $out .= "<strong>Sorry $username, but $proposed_username can only be promoted to the next level after $needed_gap month. The last promotion was $month_gap ago!</strong>";
             } else if ($user_lvl_id < 6 && ($user_lvl_id < ($prop_lvl_id + 1))) {
                 $out .= "<strong>Sorry $username, but you need to be at a higher level to propose $proposed_username for a higher rank!</strong>";
             } else if ($prop_lvl_id > 5) {
@@ -313,10 +322,15 @@ function umc_vote_web() {
                 $out .= "<strong>Sorry $username, but you can only propose users who are at least Citizen level!</strong>";
             } else if ($username == $proposed) {
                 $out .= "<strong>Sorry $username, but you cannot propose yourself!</strong>";
+            } else if ($wordcount < 100) {
+                $out .= "<strong>Sorry, $username, but the reason for the upgrade has to be at least 100 words long!";
+            } else if (!$proposals_enabled) {
+                $out .= "<strong>$proposals_disabled_reason</strong>";
             } else {
                 // ok to be promoted
-                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`)
-                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting');";
+                $reason_sql = umc_mysql_real_escape_string($reason);
+                $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`, `reason`)
+                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting', $reason_sql);";
                 umc_mysql_query($ins_proposal_sql);
                 $pr_id = umc_mysql_insert_id();
                 $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) VALUES ($pr_id, '$uuid', NOW(), 1);";
@@ -330,22 +344,34 @@ function umc_vote_web() {
         }
     }
 
+
+    
     // propose new person
     if ($user_lvl_id > 3) {
-        $out .= "<form action=\"\" method=\"post\">\n"
-            . "<span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> "
-            . "<input type=\"submit\" name=\"proposebutton\" value=\"Propose user!\">"
-            . "</span></form>";
+        if (!$proposals_enabled) {
+            $out .= "<h2>$proposals_disabled_reason</h2>";
+        } else {
+            $out .= "
+            <form action=\"\" method=\"post\">
+                <div>
+                    <span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> </span>
+                    <div>Reason for promotion (100 words minimum):
+                        <textarea name=\"reason\" style=\"width:80%;height:100px;\"></textarea>
+                    </div>
+                    <span><input type=\"submit\" name=\"proposebutton\" value=\"Propose user!\"></span>
+                </div>
+            </form>";
+        }
     } else {
         $out .= "(Since your level is too low, you cannot propose users yet.)";
     }
 
     // close old proposals
-    $upd_sql = "UPDATE minecraft_srvr.proposals SET `status`='failed' WHERE status = 'voting' AND date < NOW() - INTERVAL 2 month";
+    $upd_sql = "UPDATE minecraft_srvr.proposals SET `status`='failed' WHERE status = 'voting' AND date < NOW() - INTERVAL 1 month";
     umc_mysql_query($upd_sql, true);
 
     // list proposed people
-    $sql = "SELECT UUID.username, status, pr_id, date, proposals.uuid FROM minecraft_srvr.proposals
+    $sql = "SELECT UUID.username, status, pr_id, date, proposals.uuid, reason FROM minecraft_srvr.proposals
         LEFT JOIN minecraft_srvr.UUID ON proposals.uuid=UUID.UUID
         WHERE status IN ('voting','closed') ORDER BY `date` ASC;";
     $D = umc_mysql_fetch_all($sql);
@@ -370,8 +396,9 @@ function umc_vote_web() {
             continue;
         }
         $proposals++;
-        $sel_support = $sel_veto = '';
-        $sel_none = " selected=\"selected\"";
+        $sel_support = $sel_veto = $sel_abstain = '';
+        // pre-select that the user has not voted yet
+        $sel_none = ' selected="selected"';
         $vote_date = "n/a";
         $pr_id = $row['pr_id'];
 
@@ -395,7 +422,6 @@ function umc_vote_web() {
                 continue;
             } else if ($prop_status != 'closed'){
                 $new_vote = filter_input(INPUT_POST, 'PR_' . $pr_id, FILTER_SANITIZE_STRING);
-                $sel_support = $sel_veto = $sel_none = '';
                 // find existing votes
                 $sql = "SELECT * FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
                 $C = umc_mysql_fetch_all($sql);
@@ -410,7 +436,7 @@ function umc_vote_web() {
 			    VALUES ($vote_id, $pr_id, '$uuid', NOW(), $new_vote);";
                         umc_mysql_query($sql, true);
                     }
-                } else if ($new_vote != 0) {
+                } else if ($new_vote != 'x') {
                     $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`)
                         VALUES ($pr_id, '$uuid', NOW(), $new_vote);";
                     umc_mysql_query($sql, true);
@@ -424,7 +450,7 @@ function umc_vote_web() {
         $total_score = 0;
         $sql = "SELECT date, voter_uuid, UUID.username, vote, date FROM minecraft_srvr.proposals_votes
                 LEFT JOIN minecraft_srvr.UUID ON voter_uuid=UUID.UUID
-                WHERE pr_id=$pr_id AND vote <> 0 ORDER BY date DESC;";
+                WHERE pr_id=$pr_id ORDER BY date DESC;";
         $R = umc_mysql_fetch_all($sql);
         $email_close = "$UMC_DOMAIN/vote-for-users/\n";
         foreach ($R as $row_calc) {
@@ -434,9 +460,10 @@ function umc_vote_web() {
             $voter_score = $voter_weight * $row_calc['vote'];
             $total_score = $total_score + $voter_score;
             if ($username == 'uncovery') {
+                // we show other users votes only to the admin
                 $out .= "<tr><td>Vote:</td><td>{$row_calc['username']}</td><td>$voter_lvl</td><td>{$row_calc['vote']}</td><td>{$row_calc['date']}</td><td>$voter_score</td></tr>\n";
-                // prepare email to send if this will be closed
             }
+            // this is only for the email sent to the admin after a vote is closed
             $email_close .= "Vote: {$row_calc['username']} ($voter_lvl) on {$row_calc['date']} gave points: $voter_score\n";
         }
 
@@ -457,39 +484,62 @@ function umc_vote_web() {
             //mysql_query($sql);
         }
 
-        // show total score
+        $header2 = '';
+        // show total score only to admin
         if ($username == 'uncovery') {
             $header = "<td><strong>$total_score</strong> (of $min_req)</td>";
+            $header2 = "<td></td>";
         }
 
         // load your own score
         $score_sql = "SELECT * FROM minecraft_srvr.proposals_votes WHERE voter_uuid = '$uuid' AND pr_id=$pr_id";
         $D = umc_mysql_fetch_all($score_sql);
-        $vote_date = "n/a";
         if (count($D) > 0) {
             $row_votes = $D[0];
             $vote_id = $row_votes['vote_id'];
             $your_vote = $row_votes['vote'];
             $vote_date = $row_votes['date'];
+            $sel_none = "";
             // check if an alternative vote has been cast right now
             if ($your_vote == 1) {
                 $sel_support = " selected=\"selected\"";
             } else if ($your_vote == -1) {
                 $sel_veto = " selected=\"selected\"";
+            } else if ($your_vote == 0) {
+                $sel_abstain = " selected=\"selected\"";
+            } else {
+                XMPP_ERROR_trigger("Vote detected but not valid");
             }
         }
 
         // show voting buttons
-        $min_req = $lvl_min_req[$lvl_code];
         if ($prop_status == 'closed') {
             $vote = "Voting closed!<input type=\"hidden\" name=\"PR_$pr_id\" value=\"done\">";
             if ($username == 'uncovery') {
-                $vote_date = "<select name=\"CL_$pr_id\"><option value=\"closed\">Voting closed</option><option value=\"success\">Upgrade</option><option value=\"failed\">Fail</option></select>";
+                $vote_date = "<select name=\"CL_$pr_id\">
+                    <option value=\"closed\">Voting closed</option>
+                    <option value=\"success\">Upgrade</option>
+                    <option value=\"failed\">Fail</option>
+                </select>";
             }
         } else {
-            $vote = "<select name=\"PR_$pr_id\"><option value=\"0\" $sel_none>Abstain</option><option value=\"1\"$sel_support>Supported</option><option value=\"-1\"$sel_veto>Vetoed</option></select>";
+            $vote = "<select name=\"PR_$pr_id\">
+                <option value=\"0\"$sel_abstain>Abstain</option>
+                <option value=\"1\"$sel_support>Supported</option>
+                <option value=\"-1\"$sel_veto>Vetoed</option>
+                <option value=\"x\"$sel_none>No vote yet</option>
+            </select>";
         }
-        $out .= "<tr><td><strong><a href=\"$UMC_DOMAIN/users-2/?u={$row['username']}\">{$row['username']}</a></strong></td><td>{$row['date']}</td><td>$prop_lvl</td><td>$vote</td><td>$vote_date</td>$header</tr>\n";
+        $out .= "<tr>
+                <td><strong><a href=\"$UMC_DOMAIN/users-2/?u={$row['username']}\">{$row['username']}</a></strong></td>
+                <td>{$row['date']}</td>
+                <td>$prop_lvl</td>
+                <td>$vote</td>
+                <td>$vote_date</td>$header
+            </tr>
+            <tr>
+                <td><strong>Reason:</strong></td><td colspan=4>{$row['reason']}</td>$header2
+            </tr>";
     }
 
     if ($proposals == 0) {
