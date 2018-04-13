@@ -21,7 +21,9 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['web'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'user_directory' => 'umc_web_userprofile_info',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Website',  // give it a friendly title
@@ -155,4 +157,57 @@ function umc_web_list() {
     }
     umc_footer("Type &a/web read ID&f to read in-game");
 
+}
+
+function umc_web_userprofile_info($data) {
+    $O = array();
+    $O['Comments'] = umc_web_list_comments($data);
+    $O['Forum'] = umc_web_list_forumposts($data);
+    return $O;
+}
+
+function umc_web_list_comments($data) {
+    $username = $data['username'];
+    $sql2 = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
+        LEFT JOIN minecraft.wp_posts ON comment_post_id=id
+        WHERE comment_author = '$username' AND comment_approved='1' AND id <> 'NULL'
+        ORDER BY comment_date DESC";
+    $D2 = umc_mysql_fetch_all($sql2);
+    $out = '';
+    if (count($D2) > 0) {
+        $out = "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
+        foreach ($D2 as $row) {
+            $out .=  "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
+        }
+        $out .= "</ul>\n";
+    }
+    return $out;
+}
+
+function umc_web_list_forumposts($data) {
+    $uuid = $data['uuid'];
+    
+    $wp_id = umc_wp_get_id_from_uuid($uuid);
+    
+    $sql2 = "SELECT text, `date`, name, wp_forum_posts.parent_id as parent_id, wp_forum_posts.id as post_id
+        FROM minecraft.wp_forum_posts
+        LEFT JOIN minecraft.wp_forum_topics ON wp_forum_topics.id=wp_forum_posts.parent_id
+        WHERE author_id =$wp_id
+        ORDER BY `date` DESC";
+    $D2 = umc_mysql_fetch_all($sql2);
+
+    // sample permalink
+    // https://uncovery.me/communication/forum/?view=thread&id=1473&part=1#postid-8167
+    
+    $out = '';
+    if (count($D2) > 0) {
+        $out = "<strong>Forum Posts:</strong> (". count($D2) . ")\n<ul>\n";
+        foreach ($D2 as $row) {
+            $title = stripslashes($row['name']);
+            $out .=  "<li>" . $row['date'] 
+                . " on <a href=\"/https://uncovery.me/communication/forum/?view=thread&id={$row['parent_id']}#postid-{$row['post_id']}\">$title</a></li>\n";
+        }
+        $out .= "</ul>\n";
+    }
+    return $out;
 }
