@@ -109,7 +109,7 @@ function umc_wp_fix_uuid_meta($user_login){
 }
 
 /**
- * Get a wp user ID from the UUID
+ * Get a wp username (login name) from the UUID
  * This NEEDS to be the user_login, not display_name,
  *
  * @param string $uuid
@@ -133,6 +133,33 @@ function umc_wp_get_login_from_uuid($uuid) {
     }
     return $out;
 }
+
+/**
+ * Get a wp ID (nmumeric) from the UUID
+ * This NEEDS to be the user_login, not display_name,
+ *
+ * @param string $uuid
+ * @return string
+ */
+function umc_wp_get_id_from_uuid($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER, $UMC_ENV;
+    $current_uuid = $UMC_USER['uuid'];
+    if (($UMC_ENV == 'wordpress') && ($uuid == $current_uuid)) {
+        $out = get_current_user_id();
+    } else {
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+        $sql = "SELECT ID FROM minecraft.wp_users
+            LEFT JOIN minecraft.wp_usermeta ON ID=user_id
+            WHERE meta_value=$uuid_sql AND meta_key ='minecraft_uuid'
+	    LIMIT 1;";
+        $data = umc_mysql_fetch_all($sql);
+        $out = $data[0]['ID'];
+    }
+    return $out;
+}
+
+
 
 /**
  * Get a wp user ID from the UUID
