@@ -21,8 +21,12 @@ jQuery(document).ready(function(jQuery) {
     jQuery('.user-nickname-wrap,.user-display-name-wrap').css('display','none');
 });
 
-function WordCount(str) {
-  return str.split(" ").length;
+function WordCount(field, targetField) {
+    string = field.value;
+    str_array = string.split(" ");
+    wordcount = str_array.length;
+    jQuery('#' + targetField).text(wordcount);
+    return wordcount;
 }
 
 
