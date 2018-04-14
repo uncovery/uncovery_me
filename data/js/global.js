@@ -21,6 +21,11 @@ jQuery(document).ready(function(jQuery) {
     jQuery('.user-nickname-wrap,.user-display-name-wrap').css('display','none');
 });
 
+function WordCount(str) {
+  return str.split(" ").length;
+}
+
+
 // this should be in the footer to work
 // currently unused
 /*
