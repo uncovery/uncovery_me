@@ -373,11 +373,11 @@ function umc_vote_web() {
             $out .= "
             <form action=\"\" method=\"post\">
                 <div>
-                    <span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> </span>Word count:<span id=\"charNum\"></div>
+                    <span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> </span>
                     <div>Reason for promotion (100 words minimum):
-                        <textarea id=\"reason\" onkeyup=\"WordCount(this)\" name=\"reason\" style=\"width:80%;height:100px;\"></textarea>
+                        <textarea id=\"reason\" onkeyup=\"WordCount(this, 'charNum')\" name=\"reason\" style=\"width:80%;height:100px;\"></textarea>
                     </div>
-                    <span><input type=\"submit\" name=\"proposebutton\" value=\"Propose user!\"></span>
+                    <span><input type=\"submit\" name=\"proposebutton\" value=\"Propose user!\"></span>Word count:<span id=\"charNum\"></span>
                 </div>
             </form>";
         }
