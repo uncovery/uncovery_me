@@ -144,7 +144,7 @@ function umc_vote_get_votable($username = false, $web = false) {
 
 /**
  * Voting statistics for the website
- * 
+ *
  * @return string
  */
 function umc_vote_stats() {
@@ -213,7 +213,7 @@ function umc_vote_stats() {
 
 /**
  * website display of voting process
- * 
+ *
  * @global array $vote_ranks
  * @global type $UMC_DOMAIN
  * @global type $UMC_USER
@@ -245,9 +245,9 @@ function umc_vote_web() {
     $current_month = date('j');
     if ($current_month % 2 == 0) {
         $proposals_enabled = true;
-    }    
-    
-    
+    }
+
+
     // only active users can vote
     $is_active = umc_users_is_active($uuid);
     if (!$is_active) {
@@ -292,7 +292,7 @@ function umc_vote_web() {
     $proposed = filter_input(INPUT_POST, 'proposal', FILTER_SANITIZE_STRING);
     $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
     $wordcount = str_word_count($reason);
-    
+
     // process a new proposal
     if (isset($proposed) && strlen($proposed) > 1) {
         $proposed = umc_check_user($proposed);
@@ -308,8 +308,8 @@ function umc_vote_web() {
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             $next_level = $vote_ranks[$prop_lvl]['next'];
             // check if the user was recently promoted
-            $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap 
-                FROM minecraft_srvr.proposals  
+            $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap
+                FROM minecraft_srvr.proposals
                 WHERE `uuid` LIKE '$proposed_uuid'
                 ORDER BY `date` DESC LIMIT 1;";
             $D = umc_mysql_fetch_all($sql);
@@ -319,13 +319,13 @@ function umc_vote_web() {
             } else {
                 $month_gap = 0;
             }
-            
+
             // let's check if there are elder proposals already
             $elder_check_sql = "SELECT count(pr_id) as counter FROM minecraft_srvr.proposals
-                LEFT JOIN minecraft_srvr.permissions_inheritance ON permissions_inheritance.child=proposals.uuid 
+                LEFT JOIN minecraft_srvr.permissions_inheritance ON permissions_inheritance.child=proposals.uuid
                 WHERE proposals.status LIKE \"voting\" AND parent LIKE \"Master%\"";
             $C = umc_mysql_fetch_all($elder_check_sql);
-            $elder_count = $C[0]['counter'];            
+            $elder_count = $C[0]['counter'];
             if ($prop_lvl_id == 5 && $elder_count > 0) { // this is a master proposed for Elder
                 $out .= "<strong>Sorry $username, but there can be only one user proposed for Elder at a time! Please wait until the current Elder vote is over and then re-submit your proposal.</strong>";
             } else if ($month_gap < $vote_ranks[$prop_lvl]['gap']) {
@@ -364,7 +364,7 @@ function umc_vote_web() {
     }
 
 
-    
+
     // propose new person
     if ($user_lvl_id > 3) {
         if (!$proposals_enabled) {
@@ -373,9 +373,9 @@ function umc_vote_web() {
             $out .= "
             <form action=\"\" method=\"post\">
                 <div>
-                    <span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> </span>
+                    <span>Propose a person to be upgraded: <input type=\"text\" name=\"proposal\"> </span>Word count:<span id=\"charNum\"></div>
                     <div>Reason for promotion (100 words minimum):
-                        <textarea name=\"reason\" style=\"width:80%;height:100px;\"></textarea>
+                        <textarea id=\"reason\" onkeyup=\"WordCount(this)\" name=\"reason\" style=\"width:80%;height:100px;\"></textarea>
                     </div>
                     <span><input type=\"submit\" name=\"proposebutton\" value=\"Propose user!\"></span>
                 </div>
@@ -603,7 +603,7 @@ function umc_vote_post_news($upgraded_users) {
 
 /**
  * notify elders when someone is proposed for elder vote
- * 
+ *
  * @global type $UMC_DOMAIN
  * @param type $proposed
  */
@@ -630,15 +630,15 @@ function umc_vote_elder_notify($proposed) {
 /**
  * This adds information about the user's promotion history to their user profile
  * via the event user_directory
- * 
+ *
  * @param type $data_array
  */
 function umc_vote_userprofile($data_array) {
     $uuid = $data_array['uuid'];
     $first_join = $data_array['first_join'];
-    
-    $sql = "SELECT `date`, reason, target_level 
-        FROM minecraft_srvr.proposals  
+
+    $sql = "SELECT `date`, reason, target_level
+        FROM minecraft_srvr.proposals
         WHERE proposals.uuid LIKE '$uuid' AND status='success'
         ORDER BY `date` DESC";
     $D = umc_mysql_fetch_all($sql);
@@ -661,7 +661,7 @@ function umc_vote_userprofile($data_array) {
     } else {
         $out .= "<smaller>Citizen promotion date unknown, we only keep this record since January 2016</smaller><br>";
     }
-   
+
     $first_date = substr($first_join, 0, 10);
     $out .= "$first_date: First joined<br>";
 
