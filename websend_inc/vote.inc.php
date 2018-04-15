@@ -370,6 +370,7 @@ function umc_vote_web() {
         if (!$proposals_enabled) {
             $out .= "<h2>$proposals_disabled_reason</h2>";
         } else {
+            // the javascript for the wordcount is in /data/js/global.js
             $out .= "
             <form action=\"\" method=\"post\">
                 <div>
@@ -664,6 +665,8 @@ function umc_vote_userprofile($data_array) {
 
     $first_date = substr($first_join, 0, 10);
     $out .= "$first_date: First joined<br>";
+
+    $out .= "Note: This list only includes promotions that have been voted on (since September 2013).";
 
     $data['Promotions'] = $out;
     return $data;
