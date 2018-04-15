@@ -586,16 +586,16 @@ function umc_web_usercheck() {
     );
     $out = '';
     foreach ($tables as $table_name => $crit_field) {
-        $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> '' "
-                . "GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
+        $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> ''
+               GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
 
         $L = umc_mysql_fetch_all($sql);
         $out_arr = array();
         foreach ($L as $l) {
-            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, lastlogin, INET_NTOA(last_ip) as ip, "
-                . "CONCAT(browser_id, '<br>', ts_uuid) AS 'Browser & TS ID' "
-                . "FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'"
-                . "ORDER BY onlinetime DESC";
+            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, lastlogin, INET_NTOA(last_ip) as ip,
+                browser_id AS 'Browser ID'
+                FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'
+                ORDER BY onlinetime DESC";
             $D = umc_mysql_fetch_all($line_sql);
             foreach ($D as $d) {
                 $out_arr[] = $d;
