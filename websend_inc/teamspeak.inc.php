@@ -25,7 +25,7 @@
 global $UMC_SETTING, $WS_INIT, $UMC_TEAMSPEAK;
 
 $WS_INIT['teamspeak'] = array(  // the name of the plugin
-    'disabled' => false,
+    'disabled' => true,
     'events' => array('user_banned' => 'umc_ts_clear_rights', 'user_inactive' => 'umc_ts_clear_rights'),
     'default' => array(
         'help' => array(
@@ -84,7 +84,7 @@ $WS_INIT['teamspeak'] = array(  // the name of the plugin
  * server.
  */
 $UMC_TEAMSPEAK = array(
-    'ts_php_path' => '/home/includes/teamspeak_php/libraries/TeamSpeak3/TeamSpeak3.php',
+    'ts_php_path' => '/home/includes/ts3phpframework/libraries/TeamSpeak3/TeamSpeak3.php',
     'server_query_string_path' => "/home/includes/certificates/teamspeak_query.txt",
     'server' => false,
     'user_groups' => array(
@@ -335,8 +335,8 @@ function umc_ts_viewer() {
     $pattern = "<div id='%0' class='%1 %3' summary='%2'><span class='%4'>%5</span><span class='%6' title='%7'>%8 %9</span><span class='%10'>%11%12</span></div>\n";
 
     $ts_viewer = new TeamSpeak3_Viewer_Html(
-        "admin/img/teamspeak/viewer/",
-        "admin/img/teamspeak/flags/",
+        "/admin/img/teamspeak/viewer/",
+        "/admin/img/teamspeak/flags/",
         "data:image",
         $pattern
     );
