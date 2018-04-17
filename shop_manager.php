@@ -395,7 +395,7 @@ function umc_shopmgr_transactions() {
     $sql = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS income, amount, username AS buyer, date
         FROM minecraft_iconomy.`transactions`
         LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
-        WHERE date > '$lastmonth' AND cost > 0 $seller_str
+        WHERE date > '$lastmonth' AND cost > 0 $seller_str AND seller_uuid NOT LIKE 'cancel%' AND buyer_uuid NOT LIKE 'cancel%'
         ORDER BY date DESC
         LIMIT 100";
 
