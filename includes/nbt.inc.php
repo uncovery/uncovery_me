@@ -250,7 +250,9 @@ function umc_nbt_display_long_text($nbt_array) {
                 $text .= umc_potion_text_find($data, 'long_text');
                 break;
             case 'skullowner':
-                $text .= 'Someone\'s Skull\n';
+                $skull_owner = $data['Name'];
+                $text .= "($skull_owner)\n";
+                break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature' (umc_nbt_display_long_text)");
         }
@@ -283,7 +285,7 @@ function umc_nbt_display_short_text($nbt_array) {
                 break;
             case 'ench':
             case 'storedenchantments':
-                $text .= "Ench: ";
+                $text .= "(";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
                 $enchs = array();
                 foreach ($data as $ench) {
@@ -291,7 +293,7 @@ function umc_nbt_display_short_text($nbt_array) {
                     $ench_name = umc_enchant_text_find('id', $ench['id'], 'short');
                     $enchs[] = $ench_name . " {$ench['lvl']}";
                 }
-                $text .= implode(", ", $enchs);
+                $text .= implode(", ", $enchs).  ")";
                 break;
             case 'display':
                 if (isset($data['Name'])) {
@@ -343,6 +345,7 @@ function umc_nbt_display_short_text($nbt_array) {
                 $text .= umc_potion_text_find($data, 'short_text');
                 break;
             case 'skullowner': // TODO: Need to properly implement this.
+                
                 /**
                  {SkullOwner:
                     {Id:"f4c2cad7-0ace-4ce6-8678-69d0b653a98b",
@@ -355,9 +358,11 @@ function umc_nbt_display_short_text($nbt_array) {
                  * },
                  * Name:"Guardian"},display:{Name:"&rGuardian Head"}}"
                  */
-                $text .= 'Someone\'s Skull\n';            
+                $skull_owner = $data['Name'];
+                $text .= "($skull_owner)\n";
+                break;
             default:
-                XMPP_ERROR_trigger("Unknown NBT Type '$feature' (umc_nbt_display_short_text)");
+                XMPP_ERROR_trigger("Unknown NBT Type '$feat' (umc_nbt_display_short_text)");
         }
     }
     return $text;
