@@ -1,7 +1,9 @@
 <?php
 $WS_INIT['donation'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'user_directory' => 'umc_donation_usersdirectory',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Donation',  // give it a friendly title
@@ -23,6 +25,80 @@ $WS_INIT['donation'] = array(  // the name of the plugin
 );
 
 // sandbox instructions: https://developer.paypal.com/docs/classic/paypal-payments-standard/ht_test-pps-buttons/
+
+function umc_donation_playerstatus($uuid) {
+    global $UMC_USER;
+    if ($uuid == $UMC_USER['uuid'] && isset($UMC_USER['donator'])) {
+        return $UMC_USER['donator'];
+    }
+
+    $uuid_sql = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
+        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
+        WHERE permissions.permission='name' AND `name`=$uuid_sql AND parent LIKE ('Donator') ";
+    $D = umc_mysql_fetch_all($sql);
+    if (count($D) == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function umc_donation_usersdirectory($data){
+    $uuid = $data['uuid'];
+    // TODO move this to a plugin event
+    $donator_level = umc_donation_remains($uuid);
+    if (!$donator_level) {
+        $donator_str = "Not a donator";
+    } else if ($donator_level > 12) {
+        $donator_str = 'More than 1 year';
+    } else if ($donator_level) {
+        $donator_level_rounded = round($donator_level, 1);
+        $donator_str = "$donator_level_rounded Months";
+    }
+    $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
+    return $O;
+}
+
+function umc_donation_remains($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // we assume that they are not a donator
+
+    // today's date
+    $date_now = new DateTime("now");
+    // lets get all the donations
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid=$sql_uuid;";
+    $D = umc_mysql_fetch_all($sql);
+    // no donations, not donator
+    if (count($D) == 0) {
+        return false;
+    }
+
+    // go through all donations and find out how much is still active
+    // the problem here is that if a user donated 2 USD twice 3 months ago
+    // he is still a donator. we have to be aware about overlapping donations
+    // that extend further into the future due to the overlap
+    $donation_level = 0;
+    foreach ($D as $row) {
+        $date_donation = new DateTime($row['date']);
+        $interval = $date_donation->diff($date_now);
+        $years = $interval->format('%y'); // years since the donation
+        $months = $interval->format('%m');
+        $donation_term = ($years * 12) + $months;
+        $donation_leftover = $row['amount'] - $donation_term;
+        if ($donation_leftover < 0) {
+            $donation_leftover = 0; // do not create negative carryforward
+        }
+        $donation_level += $donation_leftover;
+    }
+    if ($donation_level > 0) {
+        return $donation_level;
+    } else {
+        return false;
+    }
+}
+
 
 function umc_donationform() {
     global $UMC_SETTING, $UMC_USER;
@@ -445,6 +521,117 @@ function umc_process_donation() {
     return $text;
 }
 
+/**
+ * go through all donators and make sure that they are downgraded if required
+ */
+function umc_userlevel_donation_update_all() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
+        FROM minecraft_srvr.donations
+        LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
+        WHERE userlevel LIKE '%Donator%' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void'
+        GROUP BY uuid
+        ORDER BY `leftover` DESC";
+    $result = umc_mysql_fetch_all($sql);
+    foreach ($result as $D) {
+        umc_userlevel_donator_update($D['uuid']);
+    }
+}
+
+/**
+ * update the donator status user depending on their past donations.
+ *
+ * @param type $uuid
+ * @return boolean
+ */
+function umc_userlevel_donator_update($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $is_donator = umc_userlevel_donation_remains($uuid);
+
+    $userlevel = umc_userlevel_get($uuid);
+    if ($userlevel == 'Owner') {
+        return false;
+    }
+
+    $base_level_arr = umc_userlevel_get_base($userlevel);
+    $base_level = $base_level_arr['level_name'];
+    if ($is_donator) {
+        if (strpos($userlevel, 'DonatorPlus')) { // all good
+            $new_level = $base_level . "Donator";
+            umc_userlevel_assign_level($uuid, $new_level);
+        } else if (strpos($userlevel, 'Donator')) { // all good
+            return;
+        } else {
+            $new_level = $userlevel . "Donator";
+            umc_userlevel_assign_level($uuid, $new_level);
+        }
+    } else { // not donator
+        if ($userlevel != $base_level) { // downgrade
+            umc_userlevel_assign_level($uuid, $base_level);
+        }
+    }
+}
+
+/**
+ * calculate if the user has active donations or not
+ *
+ * @param type $uuid
+ * @return boolean
+ */
+function umc_userlevel_donation_remains($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // we assume that they are not a donator
+
+    // today's date
+    $date_now = new DateTime("now");
+    // lets get all the donations
+    $sql_uuid = umc_mysql_real_escape_string($uuid);
+    $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid=$sql_uuid;";
+    $D = umc_mysql_fetch_all($sql);
+    // no donations, not donator
+    if (count($D) == 0) {
+        return false;
+    }
+
+    // go through all donations and find out how much is still active
+    // the problem here is that if a user donated 2 USD twice 3 months ago
+    // he is still a donator. we have to be aware about overlapping donations
+    // that extend further into the future due to the overlap
+    $donation_level = 0;
+    foreach ($D as $row) {
+        $date_donation = new DateTime($row['date']);
+        $interval = $date_donation->diff($date_now);
+        $years = $interval->format('%y'); // years since the donation
+        $months = $interval->format('%m');
+        $donation_term = ($years * 12) + $months;
+        $donation_leftover = $row['amount'] - $donation_term;
+        if ($donation_leftover < 0) {
+            $donation_leftover = 0; // do not create negative carryforward
+        }
+        $donation_level += $donation_leftover;
+    }
+    if ($donation_level > 0) {
+        return $donation_level;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * return an array of all current donators
+ *
+ * @return type
+ */
+function umc_userlevel_donators_list() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator';";
+    $D = umc_mysql_fetch_all($sql);
+    $out_arr = array();
+    foreach($D as $row) {
+        $out_arr[] = $row['uuid'];
+    }
+    return $out_arr;
+}
 
 /**
  *
