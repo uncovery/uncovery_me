@@ -1446,7 +1446,7 @@ function umc_lot_reset_process() {
     $banned_users = umc_banned_users();
     // var_dump($banned_users);
     // donators UUID => leftover days
-    $donators = umc_userlevel_donators_list();
+    $donators = umc_donation_list_donators();
 
     $dibs = umc_lot_manager_dibs_get_all();
 
