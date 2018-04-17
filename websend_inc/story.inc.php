@@ -218,9 +218,8 @@ function umc_story_show() {
     if (strlen($code) != 5) {
         umc_error('Your code needs to have 5 letters!');
     }
-    
-    $sql_code = umc_mysql_real_escape_string($code);
 
+    $sql_code = umc_mysql_real_escape_string($code);
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE code=$sql_code;";
     $D = umc_mysql_fetch_all($sql);
     $disallowed_items = array(0,8,9,10,11,34,36,43,51,52,55,26,59,60,63,64,68,71,75,78,83,90,92,93,94,95,97,99,100,104,105,115,117,118,119,120,122);
@@ -246,6 +245,9 @@ function umc_story_show() {
                     $data = explode(':', $item);
                     if ((count($data) == 3) && (!in_array($data[0], $disallowed_items))) {
                         if (is_numeric($data[0]) && is_numeric($data[1]) && is_numeric($data[2])) {
+                            umc_echo("Sorry, this story is broken, but we will fix this!");
+                            XMPP_ERROR_trigger("Story $code is broken!");
+                        } else if (!is_numeric($data[0]) && is_numeric($data[1]) && is_numeric($data[2])){
                             umc_ws_give($username, $data[0], $data[2], $data[1]);
                         }
                     }
