@@ -15,6 +15,7 @@ $WS_INIT['donation'] = array(  // the name of the plugin
     ),
 );
 
+global $donation_vars;
 $donation_vars = array(
     'use_sandbox' => false, // do we use the sandbox or the operaion variables?
     'sandbox' => array(
@@ -27,6 +28,7 @@ $donation_vars = array(
         'business_email' => 'minecraft@uncovery.me',
         'button_id' => '39TSUWZ9XPW5G', // not used?
     ),
+    'monthly_cost' => 135,
 );
 
 
@@ -176,10 +178,10 @@ function umc_donation_chart() {
         you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month.
         So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other
         plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that
-        this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome
+        this will be used to either improve or advertise the server. The monthly server costs are {$donation_vars['monthly_cost']} USD. Donations are always welcome
         and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users.
         <h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.<br>\n" . umc_donation_monthly_target()
-        . "If the donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
+        . "If the monthly donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
         . "On the right, you can see the long term development of the server income vs. expenses and does not include pre-payments done for the 2-year contract, but only the monthly costs as time goes by as if we were paying every month.\n</div>"
         . '<h2 style="clear:both;">Donate now!</h2>'
         . "\n<strong>Donations are processed manually.</strong> You will get an email from PayPal, but you will get a confirmation from the server only after we received an email from PayPal and manually processed it. \n"
@@ -216,9 +218,10 @@ function umc_donation_chart() {
  * @return type
  */
 function umc_donation_java_chart() {
+    global $donation_vars;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $monthly_cost = 135;
-    $sql_chart = "SELECT SUM(amount) as monthly, SUM(amount) - $monthly_cost as monthly_bline, DATE_FORMAT(`date`, '%Y-%m') as 'month'
+
+    $sql_chart = "SELECT SUM(amount) as monthly, SUM(amount) - {$donation_vars['monthly_cost']} as monthly_bline, DATE_FORMAT(`date`, '%Y-%m') as 'month'
         FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, '%Y-%m') ORDER BY `date`";
     $D = umc_mysql_fetch_all($sql_chart);
 
@@ -307,7 +310,8 @@ function umc_donation_top_table($outstanding) {
  * @return string
  */
 function umc_donation_stats() {
-    $monthly_costs = 135;
+    global $donation_vars;
+
     $start_date = '2010-11-01';
 
     // calculate number of months
@@ -319,7 +323,7 @@ function umc_donation_stats() {
 
     setlocale(LC_MONETARY, 'en_US');
 
-    $cost = $months * - $monthly_costs;
+    $cost = $months * - $donation_vars['monthly_costs'];
     $cost_html = money_format('%i', $cost); // add the overlap costs of 2012-08
 
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
@@ -350,6 +354,7 @@ function umc_donation_stats() {
  * @return string
  */
 function umc_donation_monthly_target() {
+    global $donation_vars;
     $datetime_now = umc_datetime();
     $this_year_month_first = $datetime_now->format('Y-m') . "-01";
 
@@ -358,12 +363,10 @@ function umc_donation_monthly_target() {
     $seconds_since_founding = $datetime_now->diff($datetime_founding);
     $months_since_founding = (($seconds_since_founding->format('%y') * 12) + $seconds_since_founding->format('%m'));
 
-    $monthly_costs = 135;
-
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations WHERE date >= '$this_year_month_first';";
     $X = umc_mysql_fetch_all($sql);
     $donated = $X[0]['donated'];
-    $percent = floor($donated / ($monthly_costs / 100));
+    $percent = floor($donated / ($donation_vars['monthly_costs'] / 100));
     $percent_css = $percent;
     // since 0% also shows a green bar, we just color it red.
     if ($percent == 0) {
@@ -377,7 +380,7 @@ function umc_donation_monthly_target() {
         $thanks  = " Thanks for contributing!";
     }
 
-    $overall_costs = $months_since_founding * $monthly_costs;
+    $overall_costs = $months_since_founding * $donation_vars['monthly_costs'];
     $overall_sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
     $D = umc_mysql_fetch_all($overall_sql);
     $overall_donated = $D[0]['donated'];
@@ -602,7 +605,7 @@ function umc_donation_update_user($uuid) {
  *
  * @return type
  */
-function umc_userlevel_donators_list() {
+function umc_donation_list_donators() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator';";
     $D = umc_mysql_fetch_all($sql);
