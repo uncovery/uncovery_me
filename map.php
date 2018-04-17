@@ -61,7 +61,7 @@ function umc_create_map() {
     }
 
     // get donators
-    $donators = umc_userlevel_donators_list();
+    $donators = umc_donation_list_donators();
 
     $track_player_icon = '';
     $find_lot = false;
@@ -541,8 +541,8 @@ function umc_lag_data($world, $format) {
         // this takes into account how often that one chunk is in the data
         // I make a divisor dependend on the frequency of that chunk
         // I multiply it by (frequency of that chunk)/max frequency
-        // assuming we have 14 datasets
-        // so if that chunk was there only once, I get 1/14, if it was there all 14 times I get 14/14 =1
+        // assuming we have 14 datasets: 
+        // so if that chunk was there only once, I get 1/14, if it was there all 14 times I get 14/14 = 1
         $weighted_tps_gap = ($l['counter']/$max_events) * $tps_gap;
 
         // calcualte opposite side block coordinates
@@ -584,16 +584,16 @@ function umc_lag_data($world, $format) {
             }
         }
 
-        if ($tps_nice < 19) {
+        //if ($tps_nice < 20) {
             if ($format == 'map') {
                 $out .= "
                 <div class=\"outerframe size16_16\" style=\"top:{$z1}px; left:{$x1}px; border: 1px solid rgba($color $opacity); $fill_css\">
                     <span class=\"innertext\" style=\"opactiy:1;\">$block_x / $block_z: $lot ($owner_string) TPS: $tps_nice</span>
                 </div>";
             }
-        } else {
-            $valid_chunks = false;
-        }
+        //} else {
+        //    $valid_chunks = false;
+        //}
     }
 
     if (!$valid_chunks) {
