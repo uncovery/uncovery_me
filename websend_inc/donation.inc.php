@@ -3,6 +3,8 @@ $WS_INIT['donation'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'user_directory' => 'umc_donation_usersdirectory',
+        'server_post_reboot' => 'umc_userlevel_donation_update_all',
+        'PlayerJoinEvent' => 'umc_donation_player_check',
     ),
     'default' => array(
         'help' => array(
@@ -43,6 +45,14 @@ function umc_donation_playerstatus($uuid) {
         return false;
     }
 }
+
+function umc_donation_player_check() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    umc_userlevel_donator_update($uuid);
+}
+
 
 function umc_donation_usersdirectory($data){
     $uuid = $data['uuid'];
