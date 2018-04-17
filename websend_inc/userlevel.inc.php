@@ -32,7 +32,6 @@ $WS_INIT['userlevel'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'PlayerJoinEvent' => 'umc_userlevel_player_check',
-        'server_post_reboot' => 'umc_userlevel_donation_update_all',
     ),
     'default' => array(
         'help' => array(
@@ -68,7 +67,6 @@ function umc_userlevel_player_check() {
     $uuid = $UMC_USER['uuid'];
 
     umc_userlevel_citizen_update($uuid);
-    umc_userlevel_donator_update($uuid);
 }
 
 /**
