@@ -13,6 +13,9 @@ $WS_INIT['donation'] = array(  // the name of the plugin
             'long' => "Check your current level etc", // a long add-on to the short  description
         ),
     ),
+);
+
+$donation_vars = array(
     'use_sandbox' => false, // do we use the sandbox or the operaion variables?
     'sandbox' => array(
         'paypal_url' => "https://www.sandbox.paypal.com/cgi-bin/webscr",
@@ -25,6 +28,7 @@ $WS_INIT['donation'] = array(  // the name of the plugin
         'button_id' => '39TSUWZ9XPW5G', // not used?
     ),
 );
+
 
 // sandbox instructions: https://developer.paypal.com/docs/classic/paypal-payments-standard/ht_test-pps-buttons/
 
@@ -125,7 +129,7 @@ function umc_donationform() {
 
 function umc_donation_chart() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING, $UMC_USER, $WS_INIT;
+    global $UMC_SETTING, $UMC_USER, $donation_vars;
 
     if (!$UMC_USER) {
         $out = "Please <a href=\"{$UMC_SETTING['path']['url']}/wp-admin/profile.php\">login</a> to buy donator status!"
@@ -138,13 +142,13 @@ function umc_donation_chart() {
 
     $out = '';
 
-    if ($WS_INIT['donation']['use_sandbox'] == true && $username != 'uncovery') {
+    if ($donation_vars['use_sandbox'] == true && $username != 'uncovery') {
         return "This page is under construction, please check back soon!";
-    } else if ($WS_INIT['donation']['use_sandbox'] == true) {
+    } else if ($donation_vars['use_sandbox'] == true) {
         $out .= "<h1> SANDBOX ACTIVE</h1>";
-        $settings = $WS_INIT['donation']['sandbox'];
+        $settings = $donation_vars['sandbox'];
     } else {
-        $settings = $WS_INIT['donation']['operation'];
+        $settings = $donation_vars['operation'];
     }
 
     $chart_data = umc_donation_java_chart();
@@ -346,8 +350,8 @@ function umc_donation_monthly_target() {
     $monthly_costs = 135;
 
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations WHERE date >= '$this_year_month_first';";
-    $D = umc_mysql_fetch_all($sql);
-    $donated = $D[0]['donated'];
+    $X = umc_mysql_fetch_all($sql);
+    $donated = $X[0]['donated'];
     $percent = floor($donated / ($monthly_costs / 100));
     $percent_css = $percent;
     // since 0% also shows a green bar, we just color it red.
@@ -405,7 +409,7 @@ function umc_donation_monthly_target() {
 
 function umc_process_donation() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $WS_INIT;
+    global $UMC_USER, $donation_vars;
 
     // code from https://github.com/paypal/ipn-code-samples/tree/master/php
 
@@ -429,12 +433,12 @@ function umc_process_donation() {
     XMPP_ERROR_trace('IPN DATA', $ipn);
     // Use the sandbox endpoint during testing.
 
-    if ($WS_INIT['donation']['use_sandbox'] == true) {
+    if ($donation_vars['use_sandbox'] == true) {
         XMPP_ERROR_trace('Sandbox is being used!');
         $ipn->useSandbox();
-        $setting = $WS_INIT['donation']['sandbox'];
+        $setting = $donation_vars['sandbox'];
     } else {
-        $setting = $WS_INIT['donation']['operation'];
+        $setting = $donation_vars['operation'];
     }
 
     XMPP_ERROR_trace('Verifying IPN...');
