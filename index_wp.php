@@ -22,7 +22,7 @@
  * It also manages direct functon calls via URL, such as the 2D map and others.s
  */
 
-global $UMC_USER, $UMC_ENV;
+global $UMC_USER, $UMC_ENV, $UMC_USERS;
 
 // do not process any functions if we have a 404 error;
 if (function_exists('is_404') && is_404()) {
