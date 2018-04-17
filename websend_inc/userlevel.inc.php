@@ -263,6 +263,48 @@ function umc_get_uuid_level($uuid) {
     }
 }
 
+
+/**
+ * promotes a user to Citizen if applicable
+ *
+ * @param type $uuid
+ * @param type $userlevel
+ * @return type
+ */
+function umc_promote_citizen($uuid, $userlevel = false) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if (!$userlevel) {
+        $userlevel = umc_get_uuid_level($uuid);
+    }
+    $settlers = array('Settler', 'SettlerDonator');
+    if (in_array($userlevel, $settlers)) {
+        /*
+        $age = umc_get_lot_owner_age('array', $lower_login);
+        if (!$age) {
+            return;
+        }
+        $age_days = $age[$lower_login]['firstlogin']['days'];
+        if ($age_days >= 90) {
+        *
+        */
+        $online_hours = umc_get_online_hours($uuid);
+        if ($online_hours >= 60) {
+            //user should be Citizen
+            if ($userlevel == 'Settler') {
+                // pex user <user> group set <group>
+                umc_exec_command("pex user $uuid group set Citizen");
+                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to Citizen (online hours: $online_hours)");
+            } else if ($userlevel == 'SettlerDonator') {
+                umc_exec_command("pex user $uuid group set CitizenDonator");
+                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to CitizenDonator (online: $online_hours)");
+            } else {
+                XMPP_ERROR_trigger("$uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
+            }
+        }
+    }
+}
+
+
 /**
  * promotes a user to Citizen if applicable
  * whenever we write the onlinetime for a user, we should check if this applies
