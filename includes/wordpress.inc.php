@@ -160,6 +160,51 @@ function umc_wp_get_id_from_uuid($uuid) {
 }
 
 
+/**
+ * Checks for a specific user to exist in wordpress
+ * Can take user_login, display_name or UUID
+ *
+ * TODO merge/replace with above function
+ *
+ * returns the wordpress ID
+ *
+ * This will replace the below umc_check_user
+ *
+ * @param type $display_name
+ */
+function umc_user_get_wordpress_id($query) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    if (strlen($query) < 2) {
+        return false;
+    }
+    $username_quoted = umc_mysql_real_escape_string($query);
+    // UUID
+    if (strlen($query) > 17) {
+        $uuid = true;
+        $sql = "SELECT user_id as ID FROM minecraft.wp_usermeta
+            WHERE meta_value LIKE $username_quoted;";
+        $D = umc_mysql_fetch_all($sql);
+    } else {
+        // Username
+        $uuid = false;
+        $sql = "SELECT ID FROM minecraft.wp_users
+            WHERE user_login LIKE $username_quoted;";
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) == 0) { // we might have the display_name, not the login
+            $sql = "SELECT ID FROM minecraft.wp_users
+                WHERE display_name LIKE $username_quoted;";
+            $D = umc_mysql_fetch_all($sql);
+        }
+    }
+
+    if (count($D) == 0) {
+        return false;
+    } else {
+        return $D[0]['ID'];
+    }
+}
+
+
 
 /**
  * Get a wp user ID from the UUID
