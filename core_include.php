@@ -27,7 +27,7 @@
  */
 global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
 global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_PATTERNS, $UMC_COLORS_DEC;
-global $ITEM_SPRITES;
+global $ITEM_SPRITES, $UMC_DATA_ITEM2WIKI;
 
 $UMC_PATH_MC = "/home/minecraft";
 
@@ -58,7 +58,6 @@ require_once($UMC_PATH_MC . '/server/bin/map.php');
 require_once($UMC_PATH_MC . '/server/bin/web.php');
 require_once($UMC_PATH_MC . '/server/bin/contests.php');
 require_once($UMC_PATH_MC . '/server/bin/shop_common.php');
-require_once($UMC_PATH_MC . '/server/bin/donation.php');
 require_once($UMC_PATH_MC . '/server/bin/lot_manager.php');
 
 require_once($UMC_PATH_MC . '/server/bin/shop_manager.php');
@@ -72,7 +71,7 @@ require_once($UMC_PATH_MC . '/server/bin/assets/item_data.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_id2name.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_search.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/item_sprites.inc.php');
-require_once($UMC_PATH_MC . '/server/bin/assets/item_wiki2item.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/item_item2wiki.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/patterns.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/potions.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/spawn_egg.inc.php');
