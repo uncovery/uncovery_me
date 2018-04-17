@@ -41,6 +41,8 @@ $UMC_SETTING = array(
         'worlds_save' => $UMC_PATH_MC . '/server/worlds_save',
     ),
     'url' => "$UMC_DOMAIN/admin/index.php",
+    // this is needed for unc_serial_curl
+    'ssl_cert' => "/home/includes/certificates/cacert.pem",
     'whitelist_file' => $UMC_PATH_MC . '/server/data/whitelist.json',
     'markers_file' => $UMC_PATH_MC . '/server/data/markers.json',
     'world_folder' => $UMC_PATH_MC . '/server/bukkit/city/',
