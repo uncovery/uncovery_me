@@ -301,114 +301,6 @@ function umc_wp_register_addFields(){
 }
 
 /**
- * custom forum widget that shows replies and topics together instead of separated.
- * This should be one day converted into a proper widget. Rigth now the widget is
- * displayed directly via calling this function in an PHP-enabled widget.
- *
- * @param type $items
- * @return type
- */
-function umc_wp_forum_widget($items = 20) {
-    // get all topics
-    $args1 = array(
-	'posts_per_page'   => $items,
-	'orderby'          => 'date',
-	'order'            => 'DESC',
-	'post_type'        => 'topic',
-	'post_status'      => 'publish',
-	'suppress_filters' => true
-    );
-    $topic_array = get_posts($args1);
-
-    // iterate the posts
-    $posts = array();
-    foreach ($topic_array as $P) {
-        // get all text fields
-        $html = umc_wp_forum_get_postlink($P);
-        $posts[$P->ID]['latest'] = $P->post_date;
-        $posts[$P->ID]['link'] = $html;
-    }
-
-    // get all replies
-    $args2 = array(
-	'posts_per_page'   => $items,
-	'orderby'          => 'date',
-	'order'            => 'DESC',
-	'post_type'        => 'reply',
-	'post_status'      => 'publish',
-	'suppress_filters' => true
-    );
-    $replies_array = get_posts($args2);
-
-    foreach ($replies_array as $P) {
-        // get all text fields
-        $user = get_userdata($P->post_author);
-        $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
-        $icon_url = umc_user_get_icon_url($uuid);
-        $verb = "replied";
-        $parent = get_post($P->post_parent);
-        $post_title = $parent->post_title;
-        $date_obj = umc_datetime($P->post_date);
-        $time_ago = umc_timer_format_diff($date_obj);
-        $link = $parent->guid . "#post-" . $P->ID;
-        $html = "<a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
-            class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-            <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
-            $user->display_name</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
-        // set data for top-level posts (instead of replies)
-        if (!isset($posts[$P->post_parent])) {
-            $parent_post = get_post($P->post_parent);
-            $posts[$P->post_parent]['link'] = umc_wp_forum_get_postlink($parent_post);
-            // the "latest" field is the sorting indicator and should be set to the date of the latest reply.
-            $posts[$P->post_parent]['latest'] = $P->post_date;
-        }
-        $posts[$P->post_parent]['replies'][$P->post_date] = $html;
-        $posts[$P->post_parent]['latest'] = max($P->post_date, $posts[$P->post_parent]['latest']);
-    }
-    // sort the array
-    usort($posts, "umc_wp_forum_sort");
-    // reverse the sorting since it's old -> new otherwise
-    //$rev_new_arr = array_reverse($new_arr, true);
-
-    // assemble the HTML
-    $out = "<ul>\n";
-    foreach ($posts as $P) {
-        $out .= "<li>\n{$P['link']}\n";
-        if (isset($P['replies']) && count($P['replies']) > 0) {
-            $out .= "<ul>\n";
-            foreach ($P['replies'] as $reply) {
-                $out .= "<li>\n$reply\n</li>\n";
-            }
-            $out .= "</ul>\n";
-        }
-        $out .="</li>\n";
-    }
-    $out .= "</ul>\n";
-    // return output
-    return $out;
-}
-
-function umc_wp_forum_sort($a, $b) {
-    return strcmp($b["latest"], $a["latest"]);
-}
-
-function umc_wp_forum_get_postlink($P) {
-    $user = get_userdata($P->post_author);
-    $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
-    $icon_url = umc_user_get_icon_url($uuid);
-    $date_obj = umc_datetime($P->post_date);
-    $time_ago = umc_timer_format_diff($date_obj);
-    $link = $P->guid;
-    $post_title = $P->post_title;
-    $html = "<a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$post_title</a><br>by
-        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
-        class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
-        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
-        $user->display_name</a><br>$time_ago ago";
-    return $html;
-}
-
-/**
  * Checks registration fields to make sure they are filled out (although that is the extent of the checking).
  * If they are not, an error is added to WP_Error
  *
@@ -483,6 +375,7 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                             If you changed your username, there is no need for a second website account.
                             It also means you should be already able to login on the minecraft server with the current account.
                             You will need to use the old username to login to this website. If you have forgotten the password, you can request it through the '<a href=\"https://uncovery.me/wp-login.php?action=lostpassword\">forgot password</a>' function.
+                            You can also just login to the minecraft server and use the <strong>/info setpass</strong> command to set a new website password.
                             Please simply continue using your existing account, your username will be displayed correctly, the user login remains the same.
                             If you have any trouble please contact an admin!";
                     $errors->add('demo_error',__($error_msg));
@@ -922,3 +815,118 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
             return false;
     }
 }
+
+// BB FORUM
+
+/**
+ * custom forum widget that shows replies and topics together instead of separated.
+ * This should be one day converted into a proper widget. Rigth now the widget is
+ * displayed directly via calling this function in an PHP-enabled widget.
+ *
+ * @param type $items
+ * @return type
+ */
+
+/*
+ 
+function umc_wp_forum_widget($items = 20) {
+    // get all topics
+    $args1 = array(
+	'posts_per_page'   => $items,
+	'orderby'          => 'date',
+	'order'            => 'DESC',
+	'post_type'        => 'topic',
+	'post_status'      => 'publish',
+	'suppress_filters' => true
+    );
+    $topic_array = get_posts($args1);
+
+    // iterate the posts
+    $posts = array();
+    foreach ($topic_array as $P) {
+        // get all text fields
+        $html = umc_wp_forum_get_postlink($P);
+        $posts[$P->ID]['latest'] = $P->post_date;
+        $posts[$P->ID]['link'] = $html;
+    }
+
+    // get all replies
+    $args2 = array(
+	'posts_per_page'   => $items,
+	'orderby'          => 'date',
+	'order'            => 'DESC',
+	'post_type'        => 'reply',
+	'post_status'      => 'publish',
+	'suppress_filters' => true
+    );
+    $replies_array = get_posts($args2);
+
+    foreach ($replies_array as $P) {
+        // get all text fields
+        $user = get_userdata($P->post_author);
+        $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
+        $icon_url = umc_user_get_icon_url($uuid);
+        $verb = "replied";
+        $parent = get_post($P->post_parent);
+        $post_title = $parent->post_title;
+        $date_obj = umc_datetime($P->post_date);
+        $time_ago = umc_timer_format_diff($date_obj);
+        $link = $parent->guid . "#post-" . $P->ID;
+        $html = "<a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+            class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
+            <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+            $user->display_name</a> $verb<br><a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$time_ago ago</a>";
+        // set data for top-level posts (instead of replies)
+        if (!isset($posts[$P->post_parent])) {
+            $parent_post = get_post($P->post_parent);
+            $posts[$P->post_parent]['link'] = umc_wp_forum_get_postlink($parent_post);
+            // the "latest" field is the sorting indicator and should be set to the date of the latest reply.
+            $posts[$P->post_parent]['latest'] = $P->post_date;
+        }
+        $posts[$P->post_parent]['replies'][$P->post_date] = $html;
+        $posts[$P->post_parent]['latest'] = max($P->post_date, $posts[$P->post_parent]['latest']);
+    }
+    // sort the array
+    usort($posts, "umc_wp_forum_sort");
+    // reverse the sorting since it's old -> new otherwise
+    //$rev_new_arr = array_reverse($new_arr, true);
+
+    // assemble the HTML
+    $out = "<ul>\n";
+    foreach ($posts as $P) {
+        $out .= "<li>\n{$P['link']}\n";
+        if (isset($P['replies']) && count($P['replies']) > 0) {
+            $out .= "<ul>\n";
+            foreach ($P['replies'] as $reply) {
+                $out .= "<li>\n$reply\n</li>\n";
+            }
+            $out .= "</ul>\n";
+        }
+        $out .="</li>\n";
+    }
+    $out .= "</ul>\n";
+    // return output
+    return $out;
+}
+
+function umc_wp_forum_sort($a, $b) {
+    return strcmp($b["latest"], $a["latest"]);
+}
+
+function umc_wp_forum_get_postlink($P) {
+    $user = get_userdata($P->post_author);
+    $uuid = get_user_meta($user->ID, 'minecraft_uuid', true);
+    $icon_url = umc_user_get_icon_url($uuid);
+    $date_obj = umc_datetime($P->post_date);
+    $time_ago = umc_timer_format_diff($date_obj);
+    $link = $P->guid;
+    $post_title = $P->post_title;
+    $html = "<a class=\"bbp-reply-topic-title\" href=\"$link\" title=\"$post_title\">$post_title</a><br>by
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\"
+        class=\"bbp-author-avatar\" rel=\"nofollow\"><img alt='' src='$icon_url' class='avatar avatar-14 photo' height='14' width='14' /></a>&nbsp;
+        <a href=\"https://uncovery.me/forums/users/$user->user_login/\" title=\"View $user->display_name&#039;s profile\" class=\"bbp-author-name\" rel=\"nofollow\">
+        $user->display_name</a><br>$time_ago ago";
+    return $html;
+}
+
+ */
