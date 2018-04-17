@@ -251,48 +251,46 @@ function umc_item_data_icon_getdata() {
 
 /**
  * get the invSprote data from the Wiki
+ * and adds it to the table minecraft_srvr.items
  */
 function umc_item_data_wiki() {
+    global $UMC_DATA_ITEM2WIKI, $UMC_CONFIG;
 
     // STEP 1: get the whole website data
     $url = 'https://minecraft.gamepedia.com/Module:InvSprite';
-    $certs = '/home/includes/unc_serial_curl/google.crt';
-    $url_data = unc_serial_curl($url,0,50, $certs);
+    $url_data = unc_serial_curl($url,0,50, $UMC_CONFIG['ssl_cert']);
 
-    // STEP 2: get only the LUA part
+    // STEP 2: filter out only the LUA part
     $matches = false;
     $regex = '/.*(return {[\S\s]*)<\/pre>/';
     preg_match($regex, $url_data[0]['content'], $matches);
 
     $searches = array(
-        0 => '/&quot;/',
-        1 => '/url = require.*,/',
-        2 => '/&amp/',
+        0 => '/&quot;/', // replace HTML entities (could be done with htmlentities?
+        1 => '/url = require.*,/', // filter out some requirements for the wiki
+        2 => '/&amp/', // replace HTML entities (could be done with htmlentities?
     );
     $replacement = array(
         0 => '"',
         1 => '',
         2 => '&',
     );
-
     $fixed = preg_replace($searches, $replacement, $matches[1]);
 
     // STEP 3: parse the LUA
     $file = new Lua();
     $output = $file->eval($fixed);
 
-    // STEP 4: Get the parts of the array
-
+    // STEP 4: Get the important parts of the array
     $ids = $output['ids'];
     $raw_sections = $output['sections'];
 
-    $sections = array();
+    // STEP 5 filter out bad sections
+    $sections = array(); // make array with sections so we can match out the bad ones
     foreach ($raw_sections as $S) {
         $s_id = $S['id'];
         $sections[$s_id] = $S['name'];
     }
-
-    // STEP 5 filter out bad sections
 
     $invalid_sections = array(
         'April Fools',
@@ -300,8 +298,7 @@ function umc_item_data_wiki() {
         "Bedrock Edition & Education Edition"
     );
 
-    // STEP 6 rename the item names properly
-
+    // STEP 6 add the sprite locations to the MySQL table where we have a perfect match
     foreach ($ids as $item_text => $I) {
         $section_id = $I['section'];
         $section_name = $sections[$section_id];
@@ -313,9 +310,40 @@ function umc_item_data_wiki() {
         }
     }
 
+    // STEP 7 take the ones without a perfect match & add them to the file array where we don't have a stored fix in the file
+    $sql = "SELECT item_name FROM minecraft_srvr.items WHERE sprite_location = 0;";
+    $D = umc_mysql_fetch_all($sql);
+    $count = 0;
 
+    // just in case this file is generated for the first time...
+    if (!isset($UMC_DATA_ITEM2WIKI)) {
+        $UMC_DATA_ITEM2WIKI = array();
+    }
 
-    return;
+    foreach ($D as $d) {
+        $name = $d['item_name'];
+        // this is for items that don't exist in the array yet, that are new in the LUA file online
+        if (!isset($UMC_DATA_ITEM2WIKI[$name])) {
+            $UMC_DATA_ITEM2WIKI[$name] = '';
+        }
+
+        // this is for the items that might be new or old, but they don't have a translation yet
+        if ($UMC_DATA_ITEM2WIKI[$name] == '') {
+            $count ++;
+        }
+    }
+
+    // STEP 8 Message the admin that there are unmatched item names that need to be filled in manually
+    if ($count > 0) {
+        XMPP_ERROR_trigger("Found $count undefined items in Inv_sprite on the minecraft wiki! Please fill the empty ones in item_wiki2item.inc.php!");
+    }
+
+    $comments = "This file is needed to translate item names where the InvSprites name in this URL
+https://minecraft.gamepedia.com/Module:InvSprite
+does not matach the actual item name. The file will automatically expanded when there are new item names found in minecraft with empty array values.
+Please look for empty array values and match their key with above URL. Once you fill those in, they will stay in the file.
+Syntax is item_name => wiki_name";
+    umc_array2file($UMC_DATA_ITEM2WIKI, 'UMC_DATA_ITEM2WIKI', '/home/minecraft/server/bin/assets/item_item2wiki.inc.php', $comments);
 }
 
 
@@ -3279,5 +3307,4 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'wood_step' => 'wooden_slab',
     'wood_sword' => 'wooden_sword',
     'workbench' => 'crafting_table',
-
 );
