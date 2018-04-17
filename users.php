@@ -26,18 +26,6 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['update_usericons'] = 'umc_update_usericons';
 
-function umc_sanity_check_users() {
-    $sql = "SELECT username, userlevel, user.uuid, count(region_id) as counter
-        FROM minecraft_worldguard.`region_players`
-        LEFT JOIN minecraft_worldguard.user ON user_id = user.id
-        LEFT JOIN minecraft_worldguard.world ON world_id = world.id
-        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
-        WHERE Owner=1 AND (userlevel LIKE 'Settler%' OR userlevel LIKE 'Citizen%') AND (world.name IN ('flatlands', 'empire'))
-        GROUP BY uuid
-        HAVING counter > 1 ";
-    $D = umc_mysql_fetch_all($sql);
-}
-
 
 /**
  * Find all users in a specific world
@@ -78,131 +66,6 @@ function umc_users_is_active($uuid) {
     return false;
 }
 
-
-/**
- * Retrieve the userlevel from a uuid
- *
- * @global type $UMC_USER
- * @param type $uuid
- * @return string
- */
-function umc_get_uuid_level($uuid) {
-    global $UMC_USER, $UMC_SETTING;
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    // check if the userlevel is already set
-    if ($uuid == $UMC_USER['uuid'] && isset($UMC_USER['userlevel'])) {
-        return $UMC_USER['userlevel'];
-    }
-
-    if (!is_array($uuid) && (strtolower($uuid) == '@console')) {
-        return "Owner";
-    }
-    if (strlen($uuid) < 35) {
-        XMPP_ERROR_trigger("umc_get_uuid_level: Tried to get uuid-level of invalid UUID: $uuid");
-    }
-
-    if (is_array($uuid)) {
-        $uuid_str = implode("','", $uuid);
-        $count = count($uuid);
-    } else {
-        $uuid_str = $uuid;
-        $count = 1;
-    }
-    //SELECT * FROM `permissions_inheritance` WHERE `child` LIKE 'a1b763b9-bd7d-4914-8b4b-8c20bddb5882' ORDER BY `child` DESC
-
-    $valid_levels_str = implode("','", $UMC_SETTING['ranks']);
-
-    $sql = "SELECT parent AS userlevel, value AS username, name AS uuid FROM minecraft_srvr.permissions
-        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
-        WHERE permissions.permission='name' AND `name` IN ('$uuid_str') AND parent IN ('$valid_levels_str') ";
-    $D = umc_mysql_fetch_all($sql);
-    $uuid_levels = array();
-    // user not found, so he's guest
-    if (count($D) == 0)  {
-        return "Guest";
-    }
-    //parent 	value 	name
-    // Owner 	uncovery	ab3bc877-4434-45a9-93bd-bab6df41eabf
-
-    // otherwise get results
-    foreach ($D as $row) {
-        $uuid = $row['uuid'];
-        $level = $row['userlevel'];
-        // for now, ignore the Donor level
-        if (!in_array($level, $UMC_SETTING['ranks'])) {
-            continue;
-        }
-        if ($level == 'NULL') {
-            $level = 'Guest';
-        }
-        $uuid_levels[$uuid] = $level;
-    }
-    // check if all users were found, if not, set them as guest
-    if (is_array($uuid)) {
-        foreach ($uuid as $user) {
-            if (!isset($uuid_levels[$user])) {
-                $uuid_levels[$user] = 'Guest';
-            }
-        }
-        return $uuid_levels;
-    } else {
-        if (!isset($uuid_levels[$uuid_str])) {
-            // umc_error_msg("Could not determine userlevel for UUID $uuid");
-            return "Guest";
-        }
-        return $uuid_levels[$uuid_str];
-    }
-}
-
-/*
-This function checks the rank permissions for the plugin rights
-*/
-function umc_rank_check($player_rank, $required_rank) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING;
-    if ($player_rank == 'Owner') {
-        return true;
-    }
-    foreach ($UMC_SETTING['ranks'] as $rank) {
-        if ($rank == $required_rank) { // We got to the required rank without finding the player's rank first, success!
-            return true;
-        }
-        if ($rank == $player_rank) { // We got to the players rank without finding the require rank first, failure.
-            return false;
-        }
-    } // We didn't find either rank yet, move on to the next one.
-    // we could not find the rank at all, fail and alert
-    XMPP_ERROR_trigger("Could not identify rank $player_rank / $required_rank (umc_rank_check)");
-    return false;
-}
-
-/**
- * This is setting a permission for a user through websend /pex user command
- * @param type $user
- * @param type $permission
- * @param type $world
- * @param string $timed
- */
-function umc_user_permission_set($user, $permission, $world = false, $timed = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (!$world) {
-        $world = '';
-    } else {
-        $world = " $world";
-    }
-    $timed_activator = ' timed';
-    if (!$timed) {
-        $timed = '';
-        $timed_activator = '';
-    }
-    $uuid = umc_uuid_getone($user, 'uuid');
-
-    $cmd = "pex user $uuid$timed_activator add $permission$world";
-    umc_exec_command($cmd, 'asConsole');
-}
-
-
 /**
  * This checks if a user has a permission by executing a console command
  * and checking the logfile if the returned response from the system exists
@@ -238,40 +101,6 @@ function umc_user_permission_get($user, $permission, $world = false) {
         return false;
     }
     // preg match pattern to find the time: '/\[(\d{2}):(\d{2}):(\d{2})\].*(true)/';
-}
-
-/**
- * retrieve the last login date of active users and their userlevel
- *
- * @return array
- */
-function umc_users_active_lastlogin_and_level() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql_1 = "SELECT user.uuid as uuid, lower(username) as username, lastlogin, userlevel
-        FROM minecraft_worldguard.region_players
-        LEFT JOIN minecraft_worldguard.user ON user_id=id
-        LEFT JOIN minecraft_srvr.UUID ON user.uuid=UUID.UUID
-        WHERE owner=1 AND user.uuid IS NOT NULL AND username is NOT NULL
-        GROUP BY username
-        ORDER BY username;";
-    // XMPP_ERROR_trace($sql);
-    $D = umc_mysql_fetch_all($sql_1);
-    $lastlogins = array('abandone-0000-0000-0000-000000000000' => array('username' => '_abandoned_', 'userlevel' => 'Guest', 'lastlogin' => '2010-01-01 00:00:00'));
-    foreach ($D as $row) {
-        $lastlogins[$row['uuid']]['lastlogin'] = $row['lastlogin'];
-        $lastlogins[$row['uuid']]['username'] = $row['username'];
-        $lastlogins[$row['uuid']]['userlevel'] = $row['userlevel'];
-        // default Guest; if there is a level set, it will be updated in the next step
-        // $lastlogins[$row['name']]['userlevel'] = 'Guest';
-    }
-
-    // chek for userlevel issues
-    foreach ($lastlogins as $uuid => $D) {
-        if (!isset($D['userlevel'])) {
-            XMPP_ERROR_trigger("User $uuid / {$D['username']} has a lot but no userlevel!!");
-        }
-    }
-    return $lastlogins;
 }
 
 /**
@@ -316,118 +145,6 @@ function umc_get_latest_settlers($limit = 5) {
         $settlers[$row['UUID']] = $row['username'];
     }
     return $settlers;
-}
-
-/**
- * returns the userlevel for a username
- *
- * @param type $username
- * @return string
- */
-function umc_get_userlevel($username) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (!is_array($username) && (strtolower($username) == '@console')) {
-        return "Owner";
-    }
-    if (is_array($username)) {
-        $user_arr = $username;
-    } else {
-        $username_str = $username;
-        $user_arr = array($username);
-    }
-    // fix username capitalization
-    $user_arr_ok = array();
-    foreach ($user_arr as $name) {
-        $sql_search = "SELECT value FROM minecraft_srvr.permissions WHERE value LIKE '$name' LIMIT 1;";
-        $D = umc_mysql_fetch_all($sql_search);
-        if (count($D) == 0){
-            return 'Guest';
-        }
-        $row = $D[0];
-        $user_arr_ok[] = $row['value'];
-    }
-    $username_str = implode("','", $user_arr_ok);
-
-    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions
-        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
-        WHERE `value` IN ('$username_str') AND permissions.permission='name';";
-    $D = umc_mysql_fetch_all($sql);
-
-    $user_levels = array();
-    // user not found, so he's guest
-    if (count($D) == 0)  {
-        return "Guest";
-    }
-    //parent 	value 	name
-    // Owner 	uncovery	ab3bc877-4434-45a9-93bd-bab6df41eabf
-
-    // otherwise get results
-    // umc_error_notify($username_str);
-    $row = $D[0];
-    $user = $row['username'];
-    $level = $row['userlevel'];
-    if ($level == NULL) {
-        $level = 'Guest';
-    }
-    $user_levels[strtolower($user)] = $level;
-    // check if all users were found, if not, set them as guest
-    if (count($user_arr_ok) > 1) {
-        foreach ($user_arr_ok as $user) {
-            $lower_user = strtolower($user);
-            if (!isset($user_levels[$lower_user])) {
-                $user_levels[$lower_user] = 'Guest';
-            }
-        }
-        return $user_levels;
-    } else {
-        $lower_user = strtolower($username_str);
-        if (!isset($user_levels[$lower_user])) {
-            XMPP_ERROR_trigger("Could not find userlevel for user $username with $sql");
-            return "Guest";
-        }
-        return $user_levels[$lower_user];
-    }
-}
-/**
- * Checks for a specific user to exist in wordpress
- * Can take user_login, display_name or UUID
- *
- * returns the wordpress ID
- *
- * This will replace the below umc_check_user
- *
- * @param type $display_name
- */
-function umc_user_get_wordpress_id($query) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (strlen($query) < 2) {
-        return false;
-    }
-    $username_quoted = umc_mysql_real_escape_string($query);
-    // UUID
-    if (strlen($query) > 17) {
-        $uuid = true;
-        $sql = "SELECT user_id as ID FROM minecraft.wp_usermeta
-            WHERE meta_value LIKE $username_quoted;";
-        $D = umc_mysql_fetch_all($sql);
-    } else {
-        // Username
-        $uuid = false;
-        $sql = "SELECT ID FROM minecraft.wp_users
-            WHERE user_login LIKE $username_quoted;";
-        $D = umc_mysql_fetch_all($sql);
-        if (count($D) == 0) { // we might have the display_name, not the login
-            $sql = "SELECT ID FROM minecraft.wp_users
-                WHERE display_name LIKE $username_quoted;";
-            $D = umc_mysql_fetch_all($sql);
-        }
-    }
-
-    if (count($D) == 0) {
-        return false;
-    } else {
-        return $D[0]['ID'];
-    }
 }
 
 /**
@@ -720,17 +437,6 @@ function umc_user_directory() {
             $O[$world] .= $data['image'];
         }
 
-        $donator_level = umc_userlevel_donation_remains($uuid);
-        if (!$donator_level) {
-            $donator_str = "Not a donator";
-        } else if ($donator_level > 12) {
-            $donator_str = 'More than 1 year';
-        } else if ($donator_level) {
-            $donator_level_rounded = round($donator_level, 1);
-            $donator_str = "$donator_level_rounded Months";
-        }
-        $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
-
         // get member since
         $online_time = umc_get_lot_owner_age('days', $uuid);
         if ($online_time) {
@@ -749,19 +455,6 @@ function umc_user_directory() {
             $O['User'] .= "<p><strong>Bio:</strong> " . $row['meta_value'] . "</p>\n";
         }
 
-        // comments
-        $sql2 = "SELECT comment_date, comment_author, id, comment_id, post_title FROM minecraft.wp_comments
-            LEFT JOIN minecraft.wp_posts ON comment_post_id=id
-            WHERE comment_author = '$username' AND comment_approved='1' AND id <> 'NULL'
-            ORDER BY comment_date DESC";
-        $D2 = umc_mysql_fetch_all($sql2);
-        if (count($D2) > 0) {
-            $O['Comments'] = "<strong>Comments:</strong> (". count($D2) . ")\n<ul>\n";
-            foreach ($D2 as $row) {
-                $O['Comments'] .=  "<li>" . $row['comment_date'] . " on <a href=\"/index.php?p=" . $row['id'] . "#comment-" . $row['comment_id'] . "\">" . $row['post_title'] . "</a></li>\n";
-            }
-            $O['Comments'] .= "</ul>\n";
-        }
         /** //TODO: This has to be updated to show the forum posts of the new forum
         //forum posts
         $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
@@ -792,7 +485,7 @@ function umc_user_directory() {
 
 
         } */
-        $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid, 'first_join' => $online_time[$uuid]['firstlogin']['full']));
+        $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid, 'username' => $username, 'first_join' => $online_time[$uuid]['firstlogin']['full']));
         foreach ($ret as $plugin_content) {
             foreach ($plugin_content as $section => $text) {
                 // initialize the section in case the plugin created it
@@ -874,8 +567,8 @@ function umc_user_directory() {
                 . "</tr>\n";
         }
         $out .= "</tbody>\n</table>\n";
-        $out .= "Voting Ratio: This shows how often a user has voted for the server on server lists 
-            compared to how often they logged in within the last 30 days. So if a user was here on one day and voted on one day, they get a 1. 
+        $out .= "Voting Ratio: This shows how often a user has voted for the server on server lists
+            compared to how often they logged in within the last 30 days. So if a user was here on one day and voted on one day, they get a 1.
             If someone did not login at all, they get a \"n/a\". If someone logged in on 4 days but voted only once, they get a 0.25";
         echo $out;
     }
@@ -1044,46 +737,13 @@ function umc_get_online_hours($user) {
     return $onlinetime;
 }
 
-/**
- * promotes a user to Citizen if applicable
- *
- * @param type $uuid
- * @param type $userlevel
- * @return type
- */
-function umc_promote_citizen($uuid, $userlevel = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (!$userlevel) {
-        $userlevel = umc_get_uuid_level($uuid);
-    }
-    $settlers = array('Settler', 'SettlerDonator');
-    if (in_array($userlevel, $settlers)) {
-        /*
-        $age = umc_get_lot_owner_age('array', $lower_login);
-        if (!$age) {
-            return;
-        }
-        $age_days = $age[$lower_login]['firstlogin']['days'];
-        if ($age_days >= 90) {
-        *
-        */
-        $online_hours = umc_get_online_hours($uuid);
-        if ($online_hours >= 60) {
-            //user should be Citizen
-            if ($userlevel == 'Settler') {
-                // pex user <user> group set <group>
-                umc_exec_command("pex user $uuid group set Citizen");
-                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to Citizen (online hours: $online_hours)");
-            } else if ($userlevel == 'SettlerDonator') {
-                umc_exec_command("pex user $uuid group set CitizenDonator");
-                umc_log("users", "promotion", "User $uuid was promoted from $userlevel to CitizenDonator (online: $online_hours)");
-            } else {
-                XMPP_ERROR_trigger("$uuid has level $userlevel and could not be promoted to Citizen! Please report to admin!");
-            }
-        }
-    }
-}
 
+/**
+ * for various functions (in-game info & web userlist)
+ *
+ * @param type $user_raw
+ * @return string
+ */
  function umc_get_userinfo($user_raw) {
     $username = strtolower($user_raw);
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
