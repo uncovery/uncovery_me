@@ -3,8 +3,8 @@ $WS_INIT['donation'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'user_directory' => 'umc_donation_usersdirectory',
-        'server_post_reboot' => 'umc_userlevel_donation_update_all',
-        'PlayerJoinEvent' => 'umc_donation_player_check',
+        'server_post_reboot' => 'umc_donation_update_all',
+        'PlayerJoinEvent' => 'umc_donation_update_current_player',
     ),
     'default' => array(
         'help' => array(
@@ -32,6 +32,13 @@ $donation_vars = array(
 
 // sandbox instructions: https://developer.paypal.com/docs/classic/paypal-payments-standard/ht_test-pps-buttons/
 
+/**
+ * checks is a user is donator or not. If the user is the current user, assigns the variable to $UMC_USER
+ *
+ * @global type $UMC_USER
+ * @param type $uuid
+ * @return boolean
+ */
 function umc_donation_playerstatus($uuid) {
     global $UMC_USER;
     if ($uuid == $UMC_USER['uuid'] && isset($UMC_USER['donator'])) {
@@ -44,17 +51,21 @@ function umc_donation_playerstatus($uuid) {
         WHERE permissions.permission='name' AND `name`=$uuid_sql AND parent LIKE ('Donator') ";
     $D = umc_mysql_fetch_all($sql);
     if (count($D) == 0) {
-        return true;
+        $donator = true;
     } else {
-        return false;
+        $donator = false;
     }
+    if ($uuid == $UMC_USER['uuid']) {
+        $UMC_USER['donator'] = $donator;
+    }
+    return $donator;
 }
 
-function umc_donation_player_check() {
+function umc_donation_update_current_player() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
-    umc_userlevel_donator_update($uuid);
+    umc_donantion_update_user($uuid);
 }
 
 
@@ -538,7 +549,7 @@ function umc_process_donation() {
 /**
  * go through all donators and make sure that they are downgraded if required
  */
-function umc_userlevel_donation_update_all() {
+function umc_donation_update_all() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
         FROM minecraft_srvr.donations
@@ -548,7 +559,7 @@ function umc_userlevel_donation_update_all() {
         ORDER BY `leftover` DESC";
     $result = umc_mysql_fetch_all($sql);
     foreach ($result as $D) {
-        umc_userlevel_donator_update($D['uuid']);
+        umc_donation_update_user($D['uuid']);
     }
 }
 
@@ -558,9 +569,9 @@ function umc_userlevel_donation_update_all() {
  * @param type $uuid
  * @return boolean
  */
-function umc_userlevel_donator_update($uuid) {
+function umc_donation_update_user($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $is_donator = umc_userlevel_donation_remains($uuid);
+    $is_donator = umc_donation_remains($uuid);
 
     $userlevel = umc_userlevel_get($uuid);
     if ($userlevel == 'Owner') {
@@ -583,51 +594,6 @@ function umc_userlevel_donator_update($uuid) {
         if ($userlevel != $base_level) { // downgrade
             umc_userlevel_assign_level($uuid, $base_level);
         }
-    }
-}
-
-/**
- * calculate if the user has active donations or not
- *
- * @param type $uuid
- * @return boolean
- */
-function umc_userlevel_donation_remains($uuid) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    // we assume that they are not a donator
-
-    // today's date
-    $date_now = new DateTime("now");
-    // lets get all the donations
-    $sql_uuid = umc_mysql_real_escape_string($uuid);
-    $sql = "SELECT amount, date FROM minecraft_srvr.donations WHERE uuid=$sql_uuid;";
-    $D = umc_mysql_fetch_all($sql);
-    // no donations, not donator
-    if (count($D) == 0) {
-        return false;
-    }
-
-    // go through all donations and find out how much is still active
-    // the problem here is that if a user donated 2 USD twice 3 months ago
-    // he is still a donator. we have to be aware about overlapping donations
-    // that extend further into the future due to the overlap
-    $donation_level = 0;
-    foreach ($D as $row) {
-        $date_donation = new DateTime($row['date']);
-        $interval = $date_donation->diff($date_now);
-        $years = $interval->format('%y'); // years since the donation
-        $months = $interval->format('%m');
-        $donation_term = ($years * 12) + $months;
-        $donation_leftover = $row['amount'] - $donation_term;
-        if ($donation_leftover < 0) {
-            $donation_leftover = 0; // do not create negative carryforward
-        }
-        $donation_level += $donation_leftover;
-    }
-    if ($donation_level > 0) {
-        return $donation_level;
-    } else {
-        return false;
     }
 }
 
