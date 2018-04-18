@@ -138,7 +138,7 @@ function umc_lot_mod() {
     if (!$user_id) {
         umc_error("Your user id cannot be found!");
     }
-    $player_group = umc_get_uuid_level($uuid);
+    $player_group = umc_userlevel_get($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -217,7 +217,7 @@ function umc_lot_addrem() {
     if (!$user_id) {
         umc_error("Your user id ($player) cannot be found!");
     }
-    $player_group = umc_get_uuid_level($uuid);
+    $player_group = umc_userlevel_get($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -316,7 +316,7 @@ function umc_lot_addrem() {
                 umc_error("The user $target does not exist in the database. Please check spelling of username");
             }
             if ($player != 'uncovery') {
-                $targ_group = umc_get_uuid_level($target_uuid);
+                $targ_group = umc_userlevel_get($target_uuid);
                 if ($targ_group == 'Guest') {
                     umc_error("You cannnot add Guests to your lot!;");
                 } else if (!in_array($target, $active_users)) {
