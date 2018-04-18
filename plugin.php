@@ -396,6 +396,8 @@ function umc_plugin_eventhandler($event, $parameters = false) {
         'AsyncPlayerPreLoginEvent',
         // websend custom events
         'ws_user_init_xp',
+        'any_websend', // run this on every call from Websend
+        'any_wordpress', // run this event on every call of wordpress
     );
     if (!in_array($event, $available_events)) {
         XMPP_ERROR_trigger("received incoming event $event which is not registered");
