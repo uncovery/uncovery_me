@@ -37,7 +37,7 @@ function umc_wp_get_vars() {
     if (!isset($user_login) || ($user_login == '') || ($user_email == '')) {
         $UMC_USER = false;
     } else {
-        if (!function_exists('umc_get_uuid_level')) {
+        if (!function_exists('umc_userlevel_get')) {
             XMPP_ERROR_send_msg("Could not get uuid_level, Env = $UMC_ENV");
             require_once('/home/minecraft/server/bin/core_include.php');
         }
