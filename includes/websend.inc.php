@@ -146,7 +146,7 @@ function umc_ws_get_vars() {
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
-        $UMC_USER['donator'] = 'Donator';
+        $UMC_USER['donator'] = true;
         $UMC_USER['uuid'] = 'Console0-0000-0000-0000-000000000000';
     } else {
         $UMC_USER['username'] = $json['Invoker']['Name'];
@@ -232,6 +232,8 @@ function umc_ws_get_vars() {
         $UMC_USERS[] = $players;
         $UMC_USER['player_data'] = $player_all_data;
     }
+
+    umc_plugin_eventhandler('any_websend');
     /*
     $current_user = new User();                         // create a user object
     $current_user->set_uuid($UMC_USER['uuid']);         // give it a uuid
