@@ -137,7 +137,7 @@ function umc_setkarma() {
     $rec_online_time = $rec_age_data[0]['online_days'];
 
     // receiver user level
-    $receiver_lvl = umc_get_uuid_level($receiver_uuid);
+    $receiver_lvl = umc_userlevel_get($receiver_uuid);
     if (($rec_online_time < 10) || ($receiver_lvl == 'Guest')) {
         umc_error("You cannot give karma to this user, he is too new!");
     }
