@@ -5,6 +5,7 @@ $WS_INIT['donation'] = array(  // the name of the plugin
         'user_directory' => 'umc_donation_usersdirectory',
         'server_post_reboot' => 'umc_donation_update_all',
         'PlayerJoinEvent' => 'umc_donation_update_current_player',
+        'any_websend' => 'umc_donation_currentuser_status',
     ),
     'default' => array(
         'help' => array(
@@ -33,6 +34,20 @@ $donation_vars = array(
 
 
 // sandbox instructions: https://developer.paypal.com/docs/classic/paypal-payments-standard/ht_test-pps-buttons/
+
+
+/**
+ * This sets checks and sets the current user's Donator status.
+ *
+ * @global type $UMC_USER
+ */
+function umc_donation_currentuser_status() {
+    global $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    umc_donation_playerstatus($uuid);
+}
+
+
 
 /**
  * checks is a user is donator or not. If the user is the current user, assigns the variable to $UMC_USER
