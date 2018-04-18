@@ -194,7 +194,7 @@ function umc_donation_chart() {
         you have to understand that the server is already paid by me in advance on a 2 year contract since that's much cheaper than paying month-by-month.
         So the donations that I receive go into my PayPal account that I use to pay other things through PayPal. I sometimes donate to other
         plugin authors if I want them to speed up some features for example. The target is however that if we ever have a surplus, that
-        this will be used to either improve or advertise the server. The monthly server costs are {$donation_vars['monthly_cost']} USD. Donations are always welcome
+        this will be used to either improve or advertise the server. The monthly server costs are 135 USD. Donations are always welcome
         and encourage me to spend more time on the server and continue to fix, upgrade and enhance it, run contests and provide an adequate support to the users.
         <h2>Donation Status</h2>\nWe have a target to cover our monthly costs with donations.<br>\n" . umc_donation_monthly_target()
         . "If the monthly donation target is exceeded, we will use the excess to fill the gaps of the past months.<br>\n"
@@ -237,7 +237,7 @@ function umc_donation_java_chart() {
     global $donation_vars;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    $sql_chart = "SELECT SUM(amount) as monthly, SUM(amount) - {$donation_vars['monthly_cost']} as monthly_bline, DATE_FORMAT(`date`, '%Y-%m') as 'month'
+    $sql_chart = "SELECT SUM(amount) as monthly, SUM(amount) - 135 as monthly_bline, DATE_FORMAT(`date`, '%Y-%m') as 'month'
         FROM minecraft_srvr.`donations` GROUP BY DATE_FORMAT(`date`, '%Y-%m') ORDER BY `date`";
     $D = umc_mysql_fetch_all($sql_chart);
 
@@ -339,7 +339,7 @@ function umc_donation_stats() {
 
     setlocale(LC_MONETARY, 'en_US');
 
-    $cost = $months * - $donation_vars['monthly_costs'];
+    $cost = $months * - 135;
     $cost_html = money_format('%i', $cost); // add the overlap costs of 2012-08
 
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
@@ -382,7 +382,7 @@ function umc_donation_monthly_target() {
     $sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations WHERE date >= '$this_year_month_first';";
     $X = umc_mysql_fetch_all($sql);
     $donated = $X[0]['donated'];
-    $percent = floor($donated / ($donation_vars['monthly_costs'] / 100));
+    $percent = floor($donated / (135 / 100));
     $percent_css = $percent;
     // since 0% also shows a green bar, we just color it red.
     if ($percent == 0) {
@@ -396,7 +396,7 @@ function umc_donation_monthly_target() {
         $thanks  = " Thanks for contributing!";
     }
 
-    $overall_costs = $months_since_founding * $donation_vars['monthly_costs'];
+    $overall_costs = $months_since_founding * 135;
     $overall_sql = "SELECT SUM(amount) as donated FROM minecraft_srvr.donations;";
     $D = umc_mysql_fetch_all($overall_sql);
     $overall_donated = $D[0]['donated'];
