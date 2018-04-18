@@ -6,6 +6,7 @@ $WS_INIT['donation'] = array(  // the name of the plugin
         'server_post_reboot' => 'umc_donation_update_all',
         'PlayerJoinEvent' => 'umc_donation_update_current_player',
         'any_websend' => 'umc_donation_currentuser_status',
+        'any_wordpress' => 'umc_donation_currentuser_status',
     ),
     'default' => array(
         'help' => array(
