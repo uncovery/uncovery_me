@@ -1,0 +1,442 @@
+/* This file defines styles for dynamic pages */
+
+/* jquery-webui-popover */
+.popover {
+  cursor: pointer;
+}
+.popover-content {
+  display: none;
+}
+.webui-popover {
+  padding-bottom: 20px;
+}
+
+.umc_fade_in {
+  display: none;
+}
+
+.donation td{
+   padding-right:4px;
+}
+.donation .numbers {
+   text-align:right;
+}
+
+.lotform {
+    padding: 5px;
+    border-bottom:1px solid #999999;
+}
+
+.lotform p {
+   margin:5px;
+}
+
+.newlotform {
+    border-bottom:1px solid #CCCCCC;
+    padding: 5px;
+}
+
+.imgdiv {
+    margin:5px;
+    float:left;
+}
+.submitbutton {
+    float:right;
+    margin:10px;
+}
+.editform {
+    background-color:#DDDDDD;
+}
+
+.lot_tabs {
+    list-style:none;
+    margin-left:0px;
+    margin-bottom:22px;
+}
+
+.entry-content h2 {
+  margin-top: 30px;
+}
+
+.lot_tabs li {
+ padding: 10px;
+ border: 1px solid black;
+ border-bottom: none;
+ float:left;
+ margin-right:5px;
+ background-color: #DDDDDD;
+ margin-bottom: -1px;
+}
+
+li.active_world {
+    border-bottom: 1px solid white;
+ background-color: #FFFFFF;
+}
+
+.formbox {
+border:1px solid black;
+}
+.strong {
+font-weight:bold
+}
+.red_text{
+color:red;
+}
+.green_text{
+color:green;
+}
+
+.log_table td {
+padding-right:5px;
+}
+
+.welcome-block {
+ border: 1px solid #AAAAAA;
+ padding-left:15px;
+ padding-right:15px;
+ border-radius:8px;
+ background-color:#EEEEEE;
+ box-shadow:5px 5px 5px #EEEEEE;
+ margin-bottom:20px;
+}
+
+
+.welcome-block .watch-action {
+display:none;
+}
+
+#main{
+  position:relative;
+}
+
+#todays_users {
+  position:absolute;
+  width:22px;
+  top:-25px;
+  right:5px;
+}
+
+.today_user_icon {
+  position:relative;
+}
+.online_user img{
+   border-right:2px solid green;
+   padding-right:1px;
+}
+.offline_user img{
+   border-right:2px solid red;
+   padding-right:1px;
+}
+
+.today_user_label{
+  position:absolute;
+  top:-10px;
+  left:30px;
+  opacity:0;
+  white-space:nowrap;
+}
+.today_user_icon:hover .today_user_label{
+  opacity:0.75;
+  transition:opacity 0.25s;
+  -moz-transition:opacity 0.25s;
+  -webkit-transition:opacity 0.25s;
+}
+
+.today_user_icon:hover .offline_user img{
+  opacity:1;
+}
+
+    #sphere table {
+            border-collapse: collapse;
+            border: 2px solid;
+            display:block;
+    }
+    #sphere td {
+            display: block;
+            background-color: #FFFFFF;
+            width: 8px;
+            height: 8px;
+    }
+    #sphere div {
+            width: 8px;
+            height: 8px;
+            overflow: hidden;
+    }
+    #sphere td.prev_empty {
+            background-color: #AAAAAA;
+    }
+    #sphere td.empty {
+            background-color: #FFFFFF;
+    }
+    #sphere td.prev_full {
+            background-color: #660000;
+    }
+    #sphere td.full {
+            background-color: #EE0000;
+    }
+    #sphere td.prev_open {
+            background-color: #006600;
+    }
+    #sphere td.open {
+            background-color: #00EE00;
+    }
+
+.webmail .line{
+    border:1px solid #aaa;
+    margin:5px;
+    padding:3px;
+    background:#eee;
+}
+
+.webmail label {
+    font-weight:bold;
+    padding-right:5px;
+}
+
+.webmail .field {
+    font-family:monospace;
+}
+
+#umc_ajax_container {
+    display:inline;
+}
+
+
+/* Teamspeak HTML viewer */
+div.ts3_viewer {
+	width:190px;
+}
+
+.ts3_viewer span.suffix{
+	float:right;
+}
+
+/*  Colors for user levels */
+.settler, .settlerdonator { color: #FF0 }
+.citizen, .citizendonator { color: #0FF }
+.architect, .architectdonator { color: #090 }
+.designer, .designerdonator { color: #00F }
+.master, .masterdonator { color: #F44 }
+.elder, .elderdonator { color: #F80 }
+.pluscolor { color: #EA2 }
+
+/* Tab Layout */
+.umc_tabs {
+    list-style:none;
+    margin-left:0px;
+    margin-bottom:22px;
+}
+
+.umc_tabs li {
+    padding: 10px;
+    border: 1px solid black;
+    border-bottom: none;
+    float:left;
+    margin-right:5px;
+    background-color: #DDDDDD;
+    margin-bottom: -1px;
+}
+
+.umc_tab_content {
+    border:1px solid black;
+}
+
+.umc_jquery_tabs {
+    overflow:auto;
+}
+
+/* JQUERY Accordion styles used in FAQ */
+#accordion .ui-accordion-header {
+    background-color: #d3d3d3;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0px;
+    text-transform: none;
+    line-height:normal;
+    font-size: 15px;
+    padding: 5px;
+    margin-bottom: 3px;
+}
+#accordion .ui-accordion-header:hover {
+    background-color: #eee;
+}
+
+#accordion .ui-accordion-content {
+    background-color: #f3f3f3;
+    border-radius: 15px;
+    margin-bottom: 7px;
+    margin-top: 7px;
+    color: #777;
+    font-size: 10pt;
+    padding: 10px;
+    padding-right: 20px;
+    margin-left: 15px;
+    padding-left: 15px;
+}
+
+#accordion {
+    margin-top: 15px;
+}
+
+#accordion .categories {
+    text-align: right;
+    font-family: monospace;
+}
+
+/* This prevents the github lables from wrapping */
+.unc_datatables span {
+    white-space: nowrap;
+}
+
+table.unc_datatables tbody td {
+    padding-left: 10px;
+}
+
+#site-generator {
+    background-image: url("/admin/img/footer.png");
+}
+
+/* BBPRESS changes */
+a .widget .bbp-author-name {
+    font-weight: normal;
+}
+
+.imagebox {
+    float:left;
+    border: 1px solid grey;
+    margin: 6px;
+    text-align:center;
+    background-color: #eee;
+    padding: 3px;
+}
+
+.imagebox img {
+    margin: 3px;
+}
+
+.lot_features {
+    float:left;
+}
+
+.street_lot_none {
+    width: 256px;
+    height: 256px;
+}
+
+.street_lot_a {
+    width: 15px;
+    height: 256px;
+    background-position: -256px 0px;
+}
+
+.street_lot_b {
+    width: 15px;
+    height: 15px;
+    background-position: -256px -256px;
+}
+
+.street_lot_c {
+    width: 256px;
+    height: 15px;
+    background-position: 0px -256px;
+}
+
+.empire_lot, .flatlands_lot, .skyblock_lot {
+    width: 128px;
+    height: 128px;
+}
+
+.aether_lot {
+    width: 192px;
+    height: 192px;
+}
+/** FAQ header bold when active **/
+.ui-accordion-header-active {
+    font-weight: bold;
+}
+/** BitCoin Miner statuspage **/
+
+.umc_bitcoin .line-div {
+    border-bottom-color: #eee;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+.umc_bitcoin .statusheader {
+    font-weight: bold;
+    padding-right: 10px;
+    display: inline-block;
+    min-width: 30%;
+}
+
+.umc_bitcoin .status {
+    box-shadow: inset 0 0 3px #000000;
+    padding: 3px;
+    display: inline-block;
+    min-width: 30px;
+    text-align: right;
+}
+
+.umc_bitcoin .help {
+    font-weight: lighter;
+    font-size-adjust: 0.4;
+    padding-left: 10px;
+}
+
+#threads_slider, #throttle_slider {
+    display: inline-block;
+    min-width: 100px;
+    margin-left: 20px;
+
+}
+.ach {
+    float:left;
+    text-align: center;
+}
+
+.ach_badge {
+    border-style: double;
+    border-color: red;
+    border-width: 7px;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    margin: 10px;
+    padding: 5px;
+    width: 100px;
+}
+
+.ach p {
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.ach_text {
+    font-size: smaller;
+}
+
+.ach .ach_number {
+    font-family: Arial Rounded MT Bold, Helvetica Rounded, Arial, sans-serif;
+    font-size: xx-large;
+}
+
+.ach_desc {
+    font-size:large;
+}
+
+.ach_title {
+    font-size: smaller;
+}
+
+.ach_progress {
+    background-color: yellow;
+    padding-left: 5px;
+    font-size: x-small;
+}
+
+.ach_progress_final {
+    color: white;
+    font-size: x-small;
+    background-color: green;
+}

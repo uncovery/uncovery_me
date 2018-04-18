@@ -1,0 +1,43 @@
+/*
+ * Uncovery Minecraft
+ * Copyright (C) 2015 uncovery.me
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+== Uncovery Minecraft Code Repository ==
+
+This project is the complete back-end of a minecraft server with many automations, features, games etc.
+It integrates with a Minecraft server, a wordpress website frontend and several backend tools such 
+as an IRC server, XMPP notifiations, Teamspeak rights management etc etc.
+The code is as of this moment not ready for installation on a third party server.
+
+ToDo: 
+
+- Documentation
+- Inclusion of integrated tools
+- modularization / plugin-creation of all optional functionality
+- configuration usage instead of hard-coded userlevels/admin names etc
+- inclusion of SQL structures in code
+- install-script
+
+To understand the code, please start reading the code in either 
+
+index_wp.php (when the code is started from Wordpress)
+
+or 
+
+index_ws.php (when the code is started from Websend/Minecraft)
+
+[the end]
