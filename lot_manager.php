@@ -205,10 +205,9 @@ function umc_lot_manager_menu($worlds, $world) {
  * @return string
  */
 function umc_lot_manager_get_lots($world, $edit_lot) {
-    global $UMC_USER, $UMC_SETTING;
+    global $UMC_USER;
 
     $world_lots = $UMC_USER['lots'][$world]['lot_list'];
-    $lot_size = $UMC_SETTING['world_data'][$world]['lot_size'];
     // list existing lots
     $out = "";
 
