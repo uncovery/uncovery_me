@@ -901,7 +901,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
     // validate input and check if lot is free
     // find world & sanitize
     $world = umc_get_lot_world($new_lot);
-    $userlevel = umc_get_uuid_level($uuid);
+    $userlevel = umc_userlevel_get($uuid);
     if (!$world) {
         XMPP_ERROR_send_msg("Guest $username tried to get lot $new_lot, but world could not be found! (umc_assign_new_lot)");
         $result = array('result' => false, 'text' => "The lot you chose is invalid!", 'cost' => false);
@@ -1960,7 +1960,7 @@ function umc_get_lot_number($uuid, $world = 'empire', $main_lots_only = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
 
-    $userlevel = umc_get_uuid_level($uuid);
+    $userlevel = umc_userlevel_get($uuid);
     $lot_limit = $UMC_SETTING['lot_limits'][$userlevel];
     if ($world == 'empire' || $world == 'flatlands') {
         $worlds = array('flatlands', 'empire');
