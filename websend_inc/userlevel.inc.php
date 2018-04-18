@@ -76,7 +76,7 @@ function umc_userlevel_player_check() {
  * @param type $uuid
  * @return boolean|string
  */
-function umc_userlevel_get($uuid) {
+function umc_userlevel_get_old($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // did we query a username instead of a uuid?
@@ -116,85 +116,13 @@ function umc_userlevel_get($uuid) {
 }
 
 /**
- * returns the userlevel for a username
- *
- * @param type $username
- * @return string
- */
-function umc_get_userlevel($username) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (!is_array($username) && (strtolower($username) == '@console')) {
-        return "Owner";
-    }
-    if (is_array($username)) {
-        $user_arr = $username;
-    } else {
-        $username_str = $username;
-        $user_arr = array($username);
-    }
-    // fix username capitalization
-    $user_arr_ok = array();
-    foreach ($user_arr as $name) {
-        $sql_search = "SELECT value FROM minecraft_srvr.permissions WHERE value LIKE '$name' LIMIT 1;";
-        $D = umc_mysql_fetch_all($sql_search);
-        if (count($D) == 0){
-            return 'Guest';
-        }
-        $row = $D[0];
-        $user_arr_ok[] = $row['value'];
-    }
-    $username_str = implode("','", $user_arr_ok);
-
-    $sql = "SELECT parent as userlevel, value as username, name as uuid FROM minecraft_srvr.permissions
-        LEFT JOIN minecraft_srvr.`permissions_inheritance` ON name=child
-        WHERE `value` IN ('$username_str') AND permissions.permission='name';";
-    $D = umc_mysql_fetch_all($sql);
-
-    $user_levels = array();
-    // user not found, so he's guest
-    if (count($D) == 0)  {
-        return "Guest";
-    }
-    //parent 	value 	name
-    // Owner 	uncovery	ab3bc877-4434-45a9-93bd-bab6df41eabf
-
-    // otherwise get results
-    // umc_error_notify($username_str);
-    $row = $D[0];
-    $user = $row['username'];
-    $level = $row['userlevel'];
-    if ($level == NULL) {
-        $level = 'Guest';
-    }
-    $user_levels[strtolower($user)] = $level;
-    // check if all users were found, if not, set them as guest
-    if (count($user_arr_ok) > 1) {
-        foreach ($user_arr_ok as $user) {
-            $lower_user = strtolower($user);
-            if (!isset($user_levels[$lower_user])) {
-                $user_levels[$lower_user] = 'Guest';
-            }
-        }
-        return $user_levels;
-    } else {
-        $lower_user = strtolower($username_str);
-        if (!isset($user_levels[$lower_user])) {
-            XMPP_ERROR_trigger("Could not find userlevel for user $username with $sql");
-            return "Guest";
-        }
-        return $user_levels[$lower_user];
-    }
-}
-
-
-/**
  * Retrieve the userlevel from a uuid
  *
  * @global type $UMC_USER
  * @param type $uuid
  * @return string
  */
-function umc_get_uuid_level($uuid) {
+function umc_userlevel_get($uuid) {
     global $UMC_USER, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
@@ -274,7 +202,7 @@ function umc_get_uuid_level($uuid) {
 function umc_promote_citizen($uuid, $userlevel = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (!$userlevel) {
-        $userlevel = umc_get_uuid_level($uuid);
+        $userlevel = umc_userlevel_get($uuid);
     }
     $settlers = array('Settler', 'SettlerDonator');
     if (in_array($userlevel, $settlers)) {
@@ -315,7 +243,7 @@ function umc_promote_citizen($uuid, $userlevel = false) {
 function umc_userlevel_citizen_update($uuid, $userlevel = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     if (!$userlevel) {
-        $userlevel = umc_userlevel_get($uuid);
+        $userlevel = umc_userlevel_get_old($uuid);
     }
     if (strpos($userlevel, 'Settler')) {
         $online_hours = umc_get_online_hours($uuid);
@@ -337,7 +265,7 @@ function umc_userlevel_promote_onelevel($uuid) {
     global $UMC_SETTING;
 
     // first, we get the current userlevel and it's base
-    $userlevels = umc_userlevel_get($uuid);
+    $userlevels = umc_userlevel_get_old($uuid);
     $userlevel = $userlevels[$uuid];
     $base_level_arr = umc_userlevel_get_base($userlevel);
     $user_base_level_id = $base_level_arr['level_id'];
