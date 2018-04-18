@@ -295,7 +295,7 @@ function umc_info_who() {
     $count = count($players_data);
 
     foreach ($players_data as  $uuid => $players_details) {
-        $level = umc_get_uuid_level($uuid);
+        $level = umc_userlevel_get($uuid);
         $player = $players_details['Name'];
 
         $new_lvl = $level;
