@@ -57,7 +57,7 @@ function umc_wp_get_vars() {
             $UMC_USER['email'] = $user_email;
             $UMC_USER['username'] = umc_uuid_getone($uuid, 'username');
             $UMC_USER['uuid'] = $uuid;
-            $UMC_USER['userlevel'] = umc_get_uuid_level($uuid);
+            $UMC_USER['userlevel'] = umc_userlevel_get($uuid);
             if (strstr($UMC_USER['userlevel'], 'Donator')) {
                 $UMC_USER['donator'] = 'Donator';
             } else {
