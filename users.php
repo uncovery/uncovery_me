@@ -415,7 +415,7 @@ function umc_user_directory() {
         }
 
         // get userlevel
-        $level = umc_get_uuid_level($uuid);
+        $level = umc_userlevel_get($uuid);
         $karma = umc_getkarma($uuid, true);
         $money = umc_money_check($uuid);
 
