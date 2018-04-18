@@ -96,7 +96,7 @@ function umc_vote_get_votable($username = false, $web = false) {
         XMPP_ERROR_trigger("websend player undidentified");
     }
 
-    $user_lvl = strtolower(umc_get_uuid_level($uuid));
+    $user_lvl = strtolower(umc_userlevel_get($uuid));
     $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return;
@@ -112,7 +112,7 @@ function umc_vote_get_votable($username = false, $web = false) {
     foreach ($D as $row) {
         $proposal = $row['uuid'];
         $proposal_username = $row['username'];
-        $prop_lvl = strtolower(umc_get_uuid_level($proposal));
+        $prop_lvl = strtolower(umc_userlevel_get($proposal));
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
         if ($prop_lvl_id < $user_lvl_id) {
             $days_left = $row['remainder'];
@@ -304,7 +304,7 @@ function umc_vote_web() {
             $proposed_username = $proposed_data['username'];
             $proposed_uuid = $proposed_data['uuid'];
             // what user level is it?
-            $prop_lvl = strtolower(umc_get_uuid_level($proposed_uuid));
+            $prop_lvl = strtolower(umc_userlevel_get($proposed_uuid));
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             $next_level = $vote_ranks[$prop_lvl]['next'];
             // check if the user was recently promoted
@@ -405,7 +405,7 @@ function umc_vote_web() {
     $upgraded_users = array();
 
     foreach ($D as $row) {
-        $prop_lvl =  strtolower(umc_get_uuid_level($row['uuid']));
+        $prop_lvl =  strtolower(umc_userlevel_get($row['uuid']));
         $prop_status = $row['status'];
         $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
         $proposed = $row['uuid'];
@@ -475,7 +475,7 @@ function umc_vote_web() {
         $email_close = "$UMC_DOMAIN/vote-for-users/\n";
         foreach ($R as $row_calc) {
             $vote_date = $row_calc['date'];
-            $voter_lvl = strtolower(umc_get_uuid_level($row_calc['voter_uuid']));
+            $voter_lvl = strtolower(umc_userlevel_get($row_calc['voter_uuid']));
             $voter_weight = $vote_ranks[$voter_lvl]['vote'];
             $voter_score = $voter_weight * $row_calc['vote'];
             $total_score = $total_score + $voter_score;
