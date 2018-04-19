@@ -20,10 +20,14 @@
 /**
  * This file handles all user-level related events and functions.
  *
- * TODO: have one donator level only
+ * TODO: Move donator level to separate permission
+ *
  * Process:
- * We downgrade all simple donators
- * Then we re-balance all the
+ *
+ * make sure that the processes checking permissions don't confuse donator levels as normal levels 
+ * Give everyone a separate donator level
+ *
+ *
  */
 
 global $UMC_SETTING, $WS_INIT;
@@ -121,14 +125,15 @@ function umc_userlevel_get_old($uuid) {
  *
  * @global type $UMC_USER
  * @param type $uuid
+ * @param type $forcecheck
  * @return string
  */
-function umc_userlevel_get($uuid) {
+function umc_userlevel_get($uuid, $forcecheck = false) {
     global $UMC_USER, $UMC_SETTING;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if the userlevel is already set (only if the user is the current
-    if ($uuid == $UMC_USER['uuid'] && isset($UMC_USER['userlevel'])) {
+    if (!$forcecheck && $uuid == $UMC_USER['uuid'] && isset($UMC_USER['userlevel'])) {
         return $UMC_USER['userlevel'];
     }
 
@@ -338,6 +343,7 @@ function umc_userlevel_remove_level($uuid, $level_raw) {
 /**
  * returns the base level of a level (without donator status)
  * while we could do this with an array, this system does not break if we add new levels
+ * OBSOLETE
  *
  * @global array $UMC_SETTING
  * @param type $userlevel
@@ -345,6 +351,7 @@ function umc_userlevel_remove_level($uuid, $level_raw) {
  */
 function umc_userlevel_get_base($userlevel) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    XMPP_ERROR_trigger("Obsolete function call: umc_userlevel_get_base");
     global $UMC_SETTING;
     // if we are not told what the userlevel us
     $base_levels = $UMC_SETTING['userlevels']['base_levels'];
@@ -376,31 +383,6 @@ function umc_rank_check($player_rank, $required_rank) {
     // we could not find the rank at all, fail and alert
     XMPP_ERROR_trigger("Could not identify rank $player_rank / $required_rank (umc_rank_check)");
     return false;
-}
-
-/**
- * This is setting a permission for a user through websend /pex user command
- * @param type $user
- * @param type $permission
- * @param type $world
- * @param string $timed
- */
-function umc_user_permission_set($user, $permission, $world = false, $timed = false) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    if (!$world) {
-        $world = '';
-    } else {
-        $world = " $world";
-    }
-    $timed_activator = ' timed';
-    if (!$timed) {
-        $timed = '';
-        $timed_activator = '';
-    }
-    $uuid = umc_uuid_getone($user, 'uuid');
-
-    $cmd = "pex user $uuid$timed_activator add $permission$world";
-    umc_exec_command($cmd, 'asConsole');
 }
 
 
