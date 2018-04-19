@@ -165,12 +165,11 @@ function umc_vanity_check($report = true) {
 function umc_vanity_cancel() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
-    $uuid = $UMC_USER['uuid'];
+    $userlevel = $UMC_USER['userlevel'];
     umc_header("Vanity Title Cancellation");
     $date_out = umc_timer_cancel($player, 'custom_title');
     if ($date_out) {
         $time_out = $date_out->format('Y-m-d H:i:s');
-        $userlevel = umc_userlevel_get($uuid);
         $donator_str = false;
         if (strstr($userlevel, 'Donator')) {
             $donator_str = '&6++&f';
@@ -223,7 +222,7 @@ function umc_vanity_set($days = false, $vanity = false) {
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
-    $userlevel = umc_userlevel_get($uuid);
+    $userlevel = $UMC_USER['userlevel'];
 
     if (!$days) {
         if (!isset($args[2])) {
