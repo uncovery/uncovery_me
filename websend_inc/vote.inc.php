@@ -82,8 +82,10 @@ function umc_vote_get_votable($username = false, $web = false) {
     if (!$username) {
         $username = $UMC_USER['username'];
         $uuid = $UMC_USER['uuid'];
+        $userlevel = strtolower($UMC_USER['userlevel']);
     } else {
         $uuid = umc_uuid_getone($username, 'uuid');
+        $userlevel = strtolower(umc_userlevel_get($uuid));
     }
 
     // only active users can vote
@@ -96,8 +98,7 @@ function umc_vote_get_votable($username = false, $web = false) {
         XMPP_ERROR_trigger("websend player undidentified");
     }
 
-    $user_lvl = strtolower(umc_userlevel_get($uuid));
-    $user_lvl_id = $vote_ranks[$user_lvl]['lvl'];
+    $user_lvl_id = $vote_ranks[$userlevel]['lvl'];
     if ($user_lvl_id < 3) { // start voting only for designers
         return;
     }
