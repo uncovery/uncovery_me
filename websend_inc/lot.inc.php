@@ -121,6 +121,7 @@ function umc_lot_mod() {
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
+    $userlevel = $UMC_USER['userlevel'];
 
     /// /lotmember lot world add target
 
@@ -138,7 +139,6 @@ function umc_lot_mod() {
     if (!$user_id) {
         umc_error("Your user id cannot be found!");
     }
-    $player_group = umc_userlevel_get($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -148,8 +148,8 @@ function umc_lot_mod() {
     if (!umc_check_lot_exists($world_id, $lot)) {
         umc_error("There is no lot $lot in world $world;");
     }
-    if ($player_group !== 'Owner' && $player_group !== 'Elder' && $player_group !== 'ElderDonator') {
-        umc_error("You are not Elder or Owner, you are $player_group!");
+    if ($userlevel !== 'Owner' && $userlevel !== 'Elder' && $userlevel !== 'ElderDonator') {
+        umc_error("You are not Elder or Owner, you are $userlevel!");
     }
 
     if ($addrem == 'add') {
@@ -181,6 +181,7 @@ function umc_lot_addrem() {
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
+    $userlevel = $UMC_USER['userlevel'];
 
     /// /lotmember lot world add target
     if ((count($args) <= 3)) {
@@ -217,7 +218,6 @@ function umc_lot_addrem() {
     if (!$user_id) {
         umc_error("Your user id ($player) cannot be found!");
     }
-    $player_group = umc_userlevel_get($uuid);
 
     $world_id = umc_get_worldguard_id('world', $world);
     if (!$world_id) {
@@ -233,8 +233,8 @@ function umc_lot_addrem() {
     if ($action == 'snow' || $action == 'ice') {
         // check if the user has Donator status.
 
-        if ($player_group !== 'Owner') {
-            if (!stristr($player_group, 'Donator')) {
+        if ($userlevel !== 'Owner') {
+            if (!stristr($userlevel, 'Donator')) {
                 umc_error("You need to be Donator level to use the snow/ice features!;");
             }
             $owner_switch = 0;
@@ -290,7 +290,7 @@ function umc_lot_addrem() {
             }
             $owner_switch = 0;
             // check if player is Owner of lot
-            if ($player_group !== 'Owner') {
+            if ($userlevel !== 'Owner') {
                 $sql = "SELECT * FROM minecraft_worldguard.region_players WHERE region_id='$lot' AND world_id=$world_id AND user_id=$user_id and Owner=1;";
                 $D3 = umc_mysql_fetch_all($sql);
                 $count = count($D3);
