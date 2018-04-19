@@ -116,7 +116,8 @@ function umc_userlevel_get_old($uuid) {
 }
 
 /**
- * Retrieve the userlevel from a uuid
+ * Retrieve the userlevel from a uuid, returns only levels from the set Array in $UMC_SETTING['ranks']
+ * Can accept an array of UUIDs and will then return an assoc array.
  *
  * @global type $UMC_USER
  * @param type $uuid
@@ -135,7 +136,7 @@ function umc_userlevel_get($uuid) {
         return "Owner";
     }
     if (strlen($uuid) < 35) {
-        XMPP_ERROR_trigger("umc_get_uuid_level: Tried to get uuid-level of invalid UUID: $uuid");
+        XMPP_ERROR_trigger("umc_userlevel_get: Tried to get uuid-level of invalid UUID: $uuid");
     }
 
     if (is_array($uuid)) {
@@ -187,7 +188,7 @@ function umc_userlevel_get($uuid) {
             // umc_error_msg("Could not determine userlevel for UUID $uuid");
             return "Guest";
         }
-        return $uuid_levels[$uuid_str];
+        return $uuid_levels[$uuid_str]; // returns only ONE level
     }
 }
 
@@ -235,7 +236,7 @@ function umc_promote_citizen($uuid, $userlevel = false) {
 
 /**
  * promotes a user to Citizen if applicable
- * whenever we write the onlinetime for a user, we should check if this applies
+ * TODO whenever we write the onlinetime for a user, we should check if this applies
  *
  * @param string $uuid
  * @param string $userlevel
@@ -286,20 +287,13 @@ function umc_userlevel_promote_onelevel($uuid) {
  * assign a new userlevel to a user
  *
  * @param type $uuid
- * @param type $newlevel
+ * @param type $newlevel_raw
  */
-function umc_userlevel_assign_level($uuid, $newlevel) {
-    global $UMC_SETTING;
+function umc_userlevel_assign_level($uuid, $newlevel_raw) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
-    // check if level is valid
-    if (!in_array($newlevel, $UMC_SETTING['ranks'])) {
-        XMPP_ERROR_trigger("Tried to set invalid userlevel $newlevel for user $uuid!");
-        return;
-    }
-
     //always make sure first letter of groupname is capitalised
-    $newlevel = ucfirst($newlevel);
+    $newlevel = ucfirst($newlevel_raw);
 
     // upgrade on the server
     $check = umc_exec_command("pex user $uuid group set $newlevel");
@@ -313,6 +307,32 @@ function umc_userlevel_assign_level($uuid, $newlevel) {
         umc_exec_command("pex reload");
     }
     umc_log("users", "promotion", "User $uuid was promoted to $newlevel");
+}
+
+/**
+ * remove a level from a user
+ *
+ * @param type $uuid
+ * @param type $level_raw
+ */
+function umc_userlevel_remove_level($uuid, $level_raw) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+
+    //always make sure first letter of groupname is capitalised
+    $level = ucfirst($level_raw);
+
+    // upgrade on the server
+    $check = umc_exec_command("pex user $uuid group remove $level");
+    // if the server was not online, we need to do it in the database directly.
+    if (!$check) {
+        $uuid_sql = umc_mysql_real_escape_string($uuid);
+        $level_sql = umc_mysql_real_escape_string($level);
+        $sql = "DELETE FROM minecraft_srvr.permissions_inheritance WHERE `parent`=$level_sql AND `child`=$uuid_sql";
+        umc_mysql_execute_query($sql);
+        // try at lease to reloaduserlvels
+        umc_exec_command("pex reload");
+    }
+    umc_log("users", "promotion", "User $uuid was removed from $level");
 }
 
 /**
