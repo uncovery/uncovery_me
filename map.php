@@ -541,7 +541,7 @@ function umc_lag_data($world, $format) {
         // this takes into account how often that one chunk is in the data
         // I make a divisor dependend on the frequency of that chunk
         // I multiply it by (frequency of that chunk)/max frequency
-        // assuming we have 14 datasets: 
+        // assuming we have 14 datasets:
         // so if that chunk was there only once, I get 1/14, if it was there all 14 times I get 14/14 = 1
         $weighted_tps_gap = ($l['counter']/$max_events) * $tps_gap;
 
@@ -619,7 +619,7 @@ function umc_lagmap() {
         </style>
     ";
 
-    $worlds = array('city', 'empire', 'aether', 'flatlands', 'kingdom', 'draftlands', 'skyblock', 'nether', 'darklands');
+    $worlds = array('city', 'empire', 'aether', 'flatlands', 'kingdom', 'draftlands', 'nether', 'darklands', 'the_end');
 
     $s_post  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     $s_get = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
