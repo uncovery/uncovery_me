@@ -442,11 +442,11 @@ function umc_web_table_format_column($name, $value) {
     } else if (in_array($name, $people_types)) {
         // if ($value == '')
         $icon_url = umc_user_get_icon_url($value);
-        return "<a href=\"?page=users&amp;user=$value\"><img title='$value' src='$icon_url' width=\"16\" alt=\"$value\">&nbsp;$value</a>";
+        return "<a href=\"https://uncovery.me/server-features/users-2/?u=$value\"><img title='$value' src='$icon_url' width=\"16\" alt=\"$value\">&nbsp;$value</a>";
     } else if (in_array($name, $uuid_types)) {
         $username = umc_user2uuid($value);
         $icon_url = umc_user_get_icon_url($username);
-        return "<a href=\"?page=users&amp;user=$username\"><img title='$username' src='$icon_url' width=\"16\" alt=\"$username\">&nbsp;$username</a>";
+        return "<a href=\"https://uncovery.me/server-features/users-2/?u=$username\"><img title='$username' src='$icon_url' width=\"16\" alt=\"$username\">&nbsp;$username</a>";
     } else if (preg_match("/price/i",$name)) {
         return number_format($value,2,".","");
     } else if ($name == 'quantity' && $value < 1) {
@@ -587,15 +587,15 @@ function umc_web_usercheck() {
     $out = '';
     foreach ($tables as $table_name => $crit_field) {
         $sql = "SELECT $crit_field FROM minecraft_srvr.UUID WHERE $crit_field <> ''
-               GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY count($crit_field) DESC, onlinetime DESC";
+               GROUP BY $crit_field HAVING count($crit_field) > 1 ORDER BY lastlogin DESC, count($crit_field) DESC";
 
         $L = umc_mysql_fetch_all($sql);
         $out_arr = array();
         foreach ($L as $l) {
-            $line_sql = "SELECT username, userlevel, lot_count, onlinetime, lastlogin, INET_NTOA(last_ip) as ip,
+            $line_sql = "SELECT username, userlevel, lot_count, round(onlinetime / 24) as OnlineTime, DATE(lastlogin) as last_login, INET_NTOA(last_ip) as ip,
                 browser_id AS 'Browser ID'
                 FROM minecraft_srvr.UUID WHERE $crit_field = '{$l[$crit_field]}'
-                ORDER BY onlinetime DESC";
+                ORDER BY lastlogin DESC, last_ip DESC";
             $D = umc_mysql_fetch_all($line_sql);
             foreach ($D as $d) {
                 $out_arr[] = $d;
@@ -604,10 +604,10 @@ function umc_web_usercheck() {
         $out .= umc_web_table($table_name, 0, $out_arr, "<h2>$table_name</h2>");
     }
 
-    $sql_donations = 'SELECT id as d_id, amount, UUID.username, email, date as d_date, lastlogin, userlevel, lot_count '
+    $sql_donations = 'SELECT id as d_id, amount, UUID.username, email, date as d_date, DATE(lastlogin) as last_login, userlevel, lot_count '
         . 'FROM minecraft_srvr.donations '
         . 'LEFT JOIN minecraft_srvr.UUID on minecraft_srvr.donations.uuid=UUID.UUID '
-        . 'WHERE UUID.lastlogin < date ';
+        . 'WHERE UUID.lastlogin < date ORDER BY lastlogin DESC';
     $C = umc_mysql_fetch_all($sql_donations);
     $out .= umc_web_table('Late Donations', 0, $C, "<h2>Late Donations</h2>");
 
