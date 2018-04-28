@@ -59,6 +59,7 @@ function umc_donation_currentuser_status() {
  * @return boolean
  */
 function umc_donation_playerstatus($uuid) {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     if ($uuid == $UMC_USER['uuid'] && isset($UMC_USER['donator'])) {
         return $UMC_USER['donator'];
