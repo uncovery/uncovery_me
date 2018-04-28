@@ -70,11 +70,12 @@ function umc_wp_get_vars() {
             $UMC_USER['uuid'] = false;
             $UMC_USER['userlevel'] = 'Guest';
         }
+        umc_plugin_eventhandler('any_wordpress');
     }
     //$UMC_USERS[$uuid] = new UMC_User($uuid);
     //$UMC_USERS[$uuid]->set_username($username);
     //$UMC_USERS[$uuid]->set_userlevel($userlevel);
-    umc_plugin_eventhandler('any_wordpress');
+
 }
 
 /**
