@@ -1,9 +1,10 @@
 <?php
+global $WS_INIT;
+
 $WS_INIT['donation'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
         'user_directory' => 'umc_donation_usersdirectory',
-        'server_post_reboot' => 'umc_donation_update_all',
         'PlayerJoinEvent' => 'umc_donation_update_current_player',
         'any_websend' => 'umc_donation_currentuser_status',
         'any_wordpress' => 'umc_donation_currentuser_status',
@@ -88,6 +89,7 @@ function umc_donation_update_current_player() {
 
 
 function umc_donation_usersdirectory($data){
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid = $data['uuid'];
     // TODO move this to a plugin event
     $donator_level = umc_donation_remains($uuid);
@@ -99,7 +101,7 @@ function umc_donation_usersdirectory($data){
         $donator_level_rounded = round($donator_level, 1);
         $donator_str = "$donator_level_rounded Months";
     }
-    $O['User'] .= "<p><strong>Donations remaining:</strong> $donator_str</p>\n";
+    $O['User'] = "<p><strong>Donations status:</strong> $donator_str</p>\n";
     return $O;
 }
 
@@ -563,23 +565,6 @@ function umc_process_donation() {
     }
     mail($s_post['payer_email'], $subject, $mailtext, $headers, "-fminecraft@uncovery.me");
     return $text;
-}
-
-/**
- * go through all donators and make sure that they are downgraded if required
- */
-function umc_donation_update_all() {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT sum(`amount`), donations.`uuid`, sum(amount - (DATEDIFF(NOW(), `date`) / 30)) as leftover
-        FROM minecraft_srvr.donations
-        LEFT JOIN minecraft_srvr.UUID ON UUID.uuid=donations.uuid
-        WHERE userlevel LIKE '%Donator%' AND amount - (DATEDIFF(NOW(), `date`) / 30) < 2 AND donations.uuid <> 'void'
-        GROUP BY uuid
-        ORDER BY `leftover` DESC";
-    $result = umc_mysql_fetch_all($sql);
-    foreach ($result as $D) {
-        umc_donation_update_user($D['uuid']);
-    }
 }
 
 /**
