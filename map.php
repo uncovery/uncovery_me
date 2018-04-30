@@ -393,6 +393,7 @@ function umc_create_map() {
 <html>
     <head>
         <title>Uncovery Minecraft 2D Map: '. $world . '</title>
+        <link rel="icon" href="https://uncovery.me/favicon.ico?v=2" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script type="text/javascript" src="/admin/js/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="/admin/js/jquery-ui.min.js"></script>
