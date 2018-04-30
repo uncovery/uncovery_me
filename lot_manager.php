@@ -135,7 +135,7 @@ function umc_lot_manager_main() {
 
     // in the dibs tab, we do not show a "new lot form".
     $out .= umc_lot_costs_simulation($world);
-    $form = umc_get_new_lot_form($world);
+    $form = umc_lot_manager_new_lot_form($world);
     if ($current_lots['avail_lots'] == 0) {
         $out .= "<div class=\"newlotform\">You do not have enough available lots to get one in $uworld!</div>";
     } else if (!$form) {
@@ -151,7 +151,7 @@ function umc_lot_manager_main() {
     }
     // dibs form
     if ($world != 'draftlands') {
-        $dibs_form = umc_get_new_lot_form($world, true);
+        $dibs_form = umc_lot_manager_new_lot_form($world, true);
         $out .= "<form class=\"newlotform\" method=\"POST\">\n"
             . "<p><strong>Call dibs for an occupied lot:</strong></p>\n"
             . "<p>If you call dibs, you will be given that lot once it becomes available and if you have the resources (money/free lots) "
@@ -521,7 +521,7 @@ function umc_lot_do_action($lot, $choice) {
             umc_log('lot_manager', 'RESET', "$username asked for reset of $lot in $world. Reset on restart pending.");
             break;
         case 'refund':
-            $costs = umc_get_lot_costs($lot);
+            $costs = umc_lot_get_costs($lot);
             $refund = $costs / 2;
             umc_money(false, $username, $refund);
             $message = "Your access to lot $lot has been removed. "
@@ -625,14 +625,16 @@ function umc_get_draftlands_kingdom_equivalent($draftlands_lot) {
 
 // displays a form to chose a new lot in a specific world.
 // merges empire & flatlands worlds
-function umc_get_new_lot_form($world, $dibs = false) {
+function umc_lot_manager_new_lot_form($world, $dibs = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
 
     $out = '';
+    $docs = "<ul>\n";
 
     if (!$dibs) {
         $avail_lots = umc_get_available_lots($world);
+        // we show flatlands & empire together
         if ($world == 'empire') {
             $avail_lots = array_merge($avail_lots, umc_get_available_lots('flatlands'));
         }
@@ -641,6 +643,7 @@ function umc_get_new_lot_form($world, $dibs = false) {
         $actions = "";
     } else {
         $avail_lots = umc_lot_manager_get_occupied_lots($world);
+        // we show flatlands & empire together
         if ($world == 'empire') {
             $avail_lots = array_merge($avail_lots, umc_lot_manager_get_occupied_lots('flatlands'));
         }
@@ -657,9 +660,8 @@ function umc_get_new_lot_form($world, $dibs = false) {
         $mainlot = umc_check_if_world_mainlot($world);
     }
 
-    $intro_text = '';
     if ($world == 'kingdom' && $dibs == false) {
-        $intro_text = "<br><strong>ATTENTION WITH SNOW</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"https://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.<br>";
+        $docs .= "<li><strong>Snow:</strong> It might not snow anymore on a lot that has snow on it now! Please see the <a href=\"https://uncovery.me/about-this-server/faq/\">FAQ</a> for more info.</li>";
     }
 
     $uuid = $UMC_USER['uuid'];
@@ -688,20 +690,31 @@ function umc_get_new_lot_form($world, $dibs = false) {
     }
     ksort($fixed_lots);
 
+    // lots might be hidden for various reasons. Show those with this array.
+    $unavailable = array(
+        'dibs' => array('count' => 0, 'reason' => 'lots unavailable since you already have dibs on them.'),
+        'draftlands' => array('count' => 0, 'reason' => 'draftlands lots unavailable since you don\'t own the corresponding Kingdom lots.'),
+        'price_issues' => array('count' => 0, 'reason' => 'lots unavailable since you cannot afford them.'),
+        'street_lots' => array('count' => 0, 'reason' => 'street lots unavailable since you don\'t own a main lot.'),
+    );
+    
     foreach ($fixed_lots as $lot) {
         // drop already diped losts
         if ($dibs && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
+            $unavailable['dibs']['count']++;
             continue;
         }
 
         // only draftland lots where the user has the equivalent kingdom lot
         if ($world == 'draftlands' && !in_array($lot, $draft_lots)) {
+            $unavailable['draftlands']['count']++;
             continue;
         }
         // check costs
-        $price = umc_get_lot_costs($lot);
+        $price = umc_lot_get_costs($lot);
         if ($price) {
             if ($price > $account) {
+                $unavailable['price_issues']['count']++;
                 continue;
             }
             $price = number_format($price * $multiplier, 0, ',', '\'');
@@ -711,18 +724,32 @@ function umc_get_new_lot_form($world, $dibs = false) {
         if (($world == 'kingdom' || $world == 'draftlands') && !$mainlot) {
             $lot_segments = explode("_", $lot);
             if (count($lot_segments) > 2) {
+                $unavailable['street_lots']['count']++;
                 continue;
             }
         }
         $count++;
         $out .= "<option value=\"$lot\">$lot @ $price</option>\n";
     }
-    $out .= "</select><br>Action on Tranfer: " . $actions;
+    $out .= "</select><br>";
+    
+    if ($actions != '') {
+        $out .= "Action on Tranfer: " . $actions;
+    }
+    
     if ($count == 0) {
         $out = umc_lot_manager_minimum_requirements($UMC_USER['userlevel'], $world);
         return false;
     }
-    return $out . $intro_text;
+    // iterate reasons of unavailability and show if lots were hidden
+    foreach ($unavailable as $title => $U) {
+        if ($U['count'] > 0) {
+            $title_nice = umc_pretty_name($title);
+            $docs .= "<li><strong>$title_nice:</strong> {$U['count']} {$U['reason']}</li>";
+        }
+    }
+    $docs .= "</ul>";
+    return $out . $docs;
 }
 
 
@@ -907,7 +934,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
         $result = array('result' => false, 'text' => "The lot you chose is invalid!", 'cost' => false);
         return $result;
     }
-    $cost = umc_get_lot_costs($new_lot);
+    $cost = umc_lot_get_costs($new_lot);
 
 
     // guests need to get either an empire or flatlands lot
@@ -978,7 +1005,7 @@ function umc_lot_manager_check_before_assign($user, $new_lot) {
  * @param type $lot
  * @return \type
  */
-function umc_get_lot_costs($lot) {
+function umc_lot_get_costs($lot) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_USER;
     // check costs
@@ -996,12 +1023,26 @@ function umc_get_lot_costs($lot) {
                     $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);
                     $count_main = $count['used_lots'];
                 }
-                $cost = pow($count_main, $price['power']) * $price['base'];
+                $cost = umc_lot_costs_exponential($count_main, $price['base'], $price['power']);
             } else {
                 $cost = $price;
             }
         }
     }
+    return $cost;
+}
+
+/**
+ * Centralized function to implement the exponential formula
+ * We need to add +1 to the lot count to make sure that the first lot is not free.
+ * 
+ * @param type $count
+ * @param type $base
+ * @param type $power
+ * @return type
+ */
+function umc_lot_costs_exponential($count, $base, $power) {
+    $cost = pow($count + 1, $power) * $base;
     return $cost;
 }
 
@@ -1026,13 +1067,13 @@ function umc_lot_costs_simulation($world) {
                 $out = "<h2>Here is a simulation of the cost progression for the $world world</h2>";
                 $out .= "<ul>";
                 foreach ($simulation_row as $count) {
-                    $cost = pow($count, $price['power']) * $price['base'];
+                    $cost = umc_lot_costs_exponential($count, $price['base'], $price['power']);
                     $cost_nice = number_format($cost, 0, ',', '\'');
                     $out .= "<li>$count lot(s): $cost_nice UNCs</li>";
                 }
                 $out .= "</ul>";
                 $count = umc_get_lot_number($UMC_USER['uuid'], $world, true);
-                $cost = pow($count['used_lots'], $price['power']) * $price['base'];
+                $cost = umc_lot_costs_exponential($count['used_lots'], $price['base'], $price['power']);
                 $cost_nice = number_format($cost, 0, ',', '\'');
                 $out .= "You currently have {$count['used_lots']} lots in $world. Your next lot will cost $cost_nice";
             } else {
