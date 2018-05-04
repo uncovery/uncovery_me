@@ -388,32 +388,27 @@ function umc_shopmgr_transactions() {
         $buyer_str = "buyer_uuid = '$uuid' AND";
     }
 
-    $lastmonth = date("Y-m-d", strtotime("-1 month"));
-
     // what did the user sell?
-    $out .= "<h2>Items sold by $username</h2>";
-    $sql = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS income, amount, username AS buyer, date
-        FROM minecraft_iconomy.`transactions`
-        LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
-        WHERE date > '$lastmonth' AND cost > 0 $seller_str AND seller_uuid NOT LIKE 'cancel%' AND buyer_uuid NOT LIKE 'cancel%'
-        ORDER BY date DESC
-        LIMIT 100";
-
+    $out .= "<h2>Users Selling</h2>";
+    $sql = "SELECT username, count(id) as transactions, ROUND(SUM(cost)) as sum_costs, ROUND(SUM(amount)) as item_count, MAX(date) as latest_transaction
+        FROM minecraft_srvr.UUID
+        LEFT JOIN minecraft_iconomy.transactions ON UUID = transactions.seller_uuid
+        WHERE lot_count > 0 AND cost > 0 AND id IS NOT NULL
+        GROUP BY UUID";
     $D1 = umc_mysql_fetch_all($sql);
 
-    $sort_column = '4, "desc"';
+    $sort_column = '1, "DESC"';
     $out .= umc_web_table('shopusers_soldbyplayer', $sort_column, $D1);
 
-    $out .= "<h2>Items bought by $username</h2>";
-    $sql2 = "SELECT CONCAT(item_name,'|', damage, '|', meta) AS item_name, cost AS expense, amount, username AS seller, date
-        FROM minecraft_iconomy.`transactions`
-        LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-        WHERE date > '$lastmonth' AND cost > 0 AND $buyer_str seller_uuid <> 'cancel00-sell-0000-0000-000000000000'
-        ORDER BY date DESC
-        LIMIT 100";
-    $D2 = umc_mysql_fetch_all($sql2);
+    $out .= "<h2>Users Buying</h2>";
+    $buyer_sql = "SELECT username, count(id) as transactions, ROUND(SUM(cost)) as sum_costs, ROUND(SUM(amount)) as item_count, MAX(date) as latest_transaction
+        FROM minecraft_srvr.UUID
+        LEFT JOIN minecraft_iconomy.transactions ON UUID = transactions.buyer_uuid
+        WHERE lot_count > 0 AND cost > 0 AND id IS NOT NULL AND seller_uuid <> 'cancel00-sell-0000-0000-000000000000'
+        GROUP BY UUID";
+    $D2 = umc_mysql_fetch_all($buyer_sql);
 
-    $sort_column2 = '4, "desc"';
+    $sort_column2 = '1, "DESC"';
     $check = umc_web_table('shopplayers_sellers', $sort_column2, $D2);
 
     if (!$check) {
