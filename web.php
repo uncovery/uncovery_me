@@ -354,28 +354,37 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
 
     if ($page_data) {
         $num_records = $page_data['record_count'];
+        $page_url = $page_data['page_url'];
+
         $current_page = $page_data['current_page'];
         if (isset($page_data['page_length'])) {
             $page_length = $page_data['page_length'];
         } else {
             $page_length = $UMC_SETTING['list_length'];
         }
-
         $page_count = round($num_records / $page_length) + 1;
 
+        $out .= "$num_records entries. Select Page: ";
 
-        for ($i=1; $i==$page_count; $i++) {
+        $jump = false;
+        for ($i=1; $i<=$page_count; $i++) {
             // we show the first 3 pages, the last 3 pages
             if (
-                ($i < 3) ||
-                ($i > ($page_count - 3)) ||
-                ($i < ($current_page + 3)) ||
-                ($i > ($current_page - 3))
+                ($i <= 3) || ($i > ($page_count - 3)) ||  // show first and last 3 pages
+                (($i < ($current_page + 2)) && ($i > ($current_page - 2))) // show the 3 pages around the current
                ) {
-
-
-                $out .= " $i ";
-
+                if ($i == $current_page) {
+                    $out .= " $i ";
+                } else {
+                    $url = sprintf($page_url, $i);
+                    $out .= " <a href=\"{$url}\">$i</a> ";
+                }
+                $jump = false;
+            } else {
+                if (!$jump) {
+                    $out .= " ... ";
+                }
+                $jump = true;
             }
         }
     }
@@ -434,7 +443,7 @@ function umc_web_table_format_column($name, $value) {
         }
         $item_arr = umc_goods_get_text($id_parts[0], $type, $meta);
         if (!$item_arr) {
-            XMPP_ERROR_send_msg("Could not identify $name $value for web table");
+            XMPP_ERROR_send_msg("Could not identify {$id_parts[0]}, $type, $meta (field $name) for web table");
         }
         $out = "<a href=\"?page=goods&amp;item={$id_parts[0]}$type_str$meta_str\">" . $item_arr['full'] . "</a>\n";
         return $out;
