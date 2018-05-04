@@ -1192,7 +1192,10 @@ function umc_shop_usersdirectory($data) {
 
     $O['Shop'] = "<p><strong>Purchase History:</strong></p>\n";
 
-    $count_sql = "SELECT count(id) as counter FROM minecraft_iconomy.transactions WHERE buyer_uuid='$uuid'";
+    $count_sql = "SELECT count(id) as counter
+        FROM minecraft_iconomy.transactions
+        LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'";
     $C = umc_mysql_fetch_all($count_sql);
     $recordcount = $C[0]['counter'];
 
@@ -1207,13 +1210,11 @@ function umc_shop_usersdirectory($data) {
     $gap = $page_length * ($current_page - 1);
 
     $sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as seller
-            FROM minecraft_iconomy.transactions
-            LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-            WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'
-            ORDER BY date DESC
-            LIMIT $gap, $page_length;";
-
-    XMPP_ERROR_send_msg($sql);
+        FROM minecraft_iconomy.transactions
+        LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'
+        ORDER BY date DESC
+        LIMIT $gap, $page_length;";
     $D = umc_mysql_fetch_all($sql);
 
     $pageinfo = array(
