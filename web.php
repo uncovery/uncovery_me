@@ -353,6 +353,7 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
         </table>";
 
     if ($page_data) {
+
         $num_records = $page_data['record_count'];
         $page_url = $page_data['page_url'];
 
@@ -366,6 +367,11 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
 
         $current_entry = $page_length * ($current_page - 1);
         $last_entry = $current_entry + $page_length;
+
+        if ($num_records < $page_length) {
+            $out .= "$num_records entries found.";
+            return $out;
+        }
 
         $out .= "$num_records entries, showing $current_entry-$last_entry. Select Page: ";
 
