@@ -7,7 +7,7 @@ $WS_INIT['shop'] = array(
     'events' => array(
         'user_banned' => 'umc_shop_cleanout_olduser',
         'user_inactive' => 'umc_shop_cleanout_olduser',
-        'user_directory' => 'umc_donation_usersdirectory',
+        'user_directory' => 'umc_shop_usersdirectory',
     ),
     'default' => array(
         'help' => array(
@@ -1185,6 +1185,31 @@ function umc_shop_cleanout_olduser($uuid) {
     }
     umc_log('user_manager', 'shop-cleanout', "$uuid had his items moved from stock & request to deposit");
 }
+
+function umc_shop_usersdirectory($data) {
+    $uuid = $data['uuid'];
+
+    $O['Shop'] = "<p><strong>Purchase History:</strong></p>\n";
+
+    $count_sql = "SELECT count(trasaction.id) ";
+
+    $sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as seller
+            FROM minecraft_iconomy.transactions
+            LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
+            WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'
+            ORDER BY date DESC
+            LIMIT 100;";
+
+    XMPP_ERROR_send_msg($sql);
+    $D = umc_mysql_fetch_all($sql);
+
+    $sort_column = '0, "desc"';
+    $O['Shop'] .= umc_web_table('shoprequests', $sort_column, $D);
+
+    return $O;
+}
+
+
 
 /**
 function umc_display_shop() {
