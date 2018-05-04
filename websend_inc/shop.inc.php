@@ -1188,23 +1188,43 @@ function umc_shop_cleanout_olduser($uuid) {
 
 function umc_shop_usersdirectory($data) {
     $uuid = $data['uuid'];
+    $username = umc_uuid_getone($uuid, 'username');
 
     $O['Shop'] = "<p><strong>Purchase History:</strong></p>\n";
 
-    $count_sql = "SELECT count(trasaction.id) ";
+    $count_sql = "SELECT count(id) as counter FROM minecraft_iconomy.transactions WHERE buyer_uuid='$uuid'";
+    $C = umc_mysql_fetch_all($count_sql);
+    $recordcount = $C[0]['counter'];
+
+    // cost/amount as '\$/PC',
+
+    $current_page = filter_input(INPUT_GET, 'listpage' , FILTER_SANITIZE_NUMBER_INT);
+    if (!$current_page) {
+        $current_page = 1;
+    }
+
+    $page_length = 50;
+    $gap = $page_length * ($current_page - 1);
 
     $sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as seller
             FROM minecraft_iconomy.transactions
             LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
             WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'
             ORDER BY date DESC
-            LIMIT 100;";
+            LIMIT $gap, $page_length;";
 
     XMPP_ERROR_send_msg($sql);
     $D = umc_mysql_fetch_all($sql);
 
+    $pageinfo = array(
+        'record_count' => $recordcount,
+        'page_length' => $page_length,
+        'current_page' => $current_page,
+        'page_url' => "https://uncovery.me/server-features/users-2/?u=$username&listpage=%s#tab7",
+    );
+
     $sort_column = '0, "desc"';
-    $O['Shop'] .= umc_web_table('shoprequests', $sort_column, $D);
+    $O['Shop'] .= umc_web_table('shoprequests', $sort_column, $D, '', array(), false, false, $pageinfo);
 
     return $O;
 }
