@@ -237,8 +237,6 @@ function umc_server_status() {
         global $UMC_USER;
         $out = "<img src=\"$UMC_DOMAIN/admin/img/online.png\" height=\"50\"><br>";
         if ($UMC_USER) {
-            $uuid = $UMC_USER['uuid'];
-            $username = strtolower($UMC_USER['username']);
             $date_new = umc_datetime();
             $now = $date_new->format('Y-m-d H:i');
 
@@ -284,7 +282,8 @@ function umc_server_status() {
  * @param array array('column' => 'function');
  * @return string
  */
-function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_cols = array(), $non_numeric_cols = false, $formats = false) {
+function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_cols = array(), $non_numeric_cols = false, $formats = false, $page_data = false) {
+    global $UMC_SETTING;
     $headers = '';
     if (!$non_numeric_cols) {
         // default numeric cols if nothing else defined
@@ -352,6 +351,35 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
             $data_out
           </tbody>
         </table>";
+
+    if ($page_data) {
+        $num_records = $page_data['record_count'];
+        $current_page = $page_data['current_page'];
+        if (isset($page_data['page_length'])) {
+            $page_length = $page_data['page_length'];
+        } else {
+            $page_length = $UMC_SETTING['list_length'];
+        }
+
+        $page_count = round($num_records / $page_length) + 1;
+
+
+        for ($i=1; $i==$page_count; $i++) {
+            // we show the first 3 pages, the last 3 pages
+            if (
+                ($i < 3) ||
+                ($i > ($page_count - 3)) ||
+                ($i < ($current_page + 3)) ||
+                ($i > ($current_page - 3))
+               ) {
+
+
+                $out .= " $i ";
+
+            }
+        }
+    }
+
     return $out;
 }
 
