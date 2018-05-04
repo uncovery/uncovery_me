@@ -143,4 +143,5 @@ $UMC_SETTING = array(
         'Elder',
         'Owner'
     ),
+    'list_length' => 100, // how long should web tables be maximal (default?)
 );
