@@ -362,9 +362,12 @@ function umc_web_table($table_name, $sort_column, $data, $pre_table = '', $hide_
         } else {
             $page_length = $UMC_SETTING['list_length'];
         }
-        $page_count = round($num_records / $page_length) + 1;
+        $page_count = round($num_records / $page_length);
 
-        $out .= "$num_records entries. Select Page: ";
+        $current_entry = $page_length * $current_page;
+        $last_entry = $current_entry + $page_length;
+
+        $out .= "$num_records entries, showing $current_entry-$last_entry. Select Page: ";
 
         $jump = false;
         for ($i=1; $i<=$page_count; $i++) {
