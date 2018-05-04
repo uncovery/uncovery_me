@@ -1195,7 +1195,7 @@ function umc_shop_usersdirectory($data) {
     $count_sql = "SELECT count(id) as counter
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'";
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0";
     $C = umc_mysql_fetch_all($count_sql);
     $recordcount = $C[0]['counter'];
 
@@ -1212,7 +1212,7 @@ function umc_shop_usersdirectory($data) {
     $sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as seller
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000'
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0
         ORDER BY date DESC
         LIMIT $gap, $page_length;";
     $D = umc_mysql_fetch_all($sql);
@@ -1225,7 +1225,45 @@ function umc_shop_usersdirectory($data) {
     );
 
     $sort_column = '0, "desc"';
-    $O['Shop'] .= umc_web_table('shoprequests', $sort_column, $D, '', array(), false, false, $pageinfo);
+    $O['Shop'] .= umc_web_table('user_purchases', $sort_column, $D, '', array(), false, false, $pageinfo);
+
+     $O['Shop'] .= "<p><strong>Sales History:</strong></p>\n";
+
+    $sales_count_sql = "SELECT count(id) as counter
+        FROM minecraft_iconomy.transactions
+        LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
+        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0";
+    $CS = umc_mysql_fetch_all($sales_count_sql);
+    $sales_recordcount = $CS[0]['counter'];
+
+    // cost/amount as '\$/PC',
+
+    $sales_current_page = filter_input(INPUT_GET, 'saleslistpage' , FILTER_SANITIZE_NUMBER_INT);
+    if (!$sales_current_page) {
+        $sales_current_page = 1;
+    }
+
+    $sales_page_length = 50;
+    $sales_gap = $sales_page_length * ($sales_current_page - 1);
+
+    $sales_sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as buyer
+        FROM minecraft_iconomy.transactions
+        LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
+        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0
+        ORDER BY date DESC
+        LIMIT $sales_gap, $sales_page_length;";
+    $SD = umc_mysql_fetch_all($sales_sql);
+
+    $sales_pageinfo = array(
+        'record_count' => $sales_recordcount,
+        'page_length' => $sales_page_length,
+        'current_page' => $sales_current_page,
+        'page_url' => "https://uncovery.me/server-features/users-2/?u=$username&saleslistpage=%s#tab7",
+    );
+
+    $O['Shop'] .= umc_web_table('user_sales', $sort_column, $SD, '', array(), false, false, $sales_pageinfo);
+
+
 
     return $O;
 }
