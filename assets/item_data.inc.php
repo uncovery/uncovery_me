@@ -239,7 +239,7 @@ function umc_item_data_icon_getdata() {
     // http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
     //wiki page here: http://minecraft.gamepedia.com/File:InvSprite.png
 
-    $source_file = 'http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png';
+    $source_file = 'https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/4/44/InvSprite.png';
     $target_directory = '/home/minecraft/server/bin/data/images';
     $R = unc_serial_curl($source_file);
     file_put_contents($target_directory . "/InvSprite.png", $R[0]['content']);
