@@ -1036,7 +1036,6 @@ function umc_do_request() {
     $item_name = $item['item_name'];
     $type = $item['type'];
     $meta = '';
-    $meta_txt = '';
 
     if ($item['notrade']) {
         umc_error("Sorry, this item is not able to be traded (yet).");
@@ -1069,6 +1068,7 @@ function umc_do_request() {
     if (!isset($args[3])) {
         if ($row) {
             $price = $row['price'];
+            umc_echo("You are requesting the same item already, adjusting amount only.");
         } else {
             umc_error("{red}Since you do not have the same item already in the shop you need to specify a price.");
         }
@@ -1078,9 +1078,15 @@ function umc_do_request() {
 
     // check if an argument was given for amount.
     $amount = umc_sanitize_input($args[4], 'amount');
-    if ($amount == NULL) {
-        // buying 0 amount available is not possible
+    if (!$row && $amount == NULL) {
+        // requesting 0 amount available is not possible
         umc_error("{red}You need to specify an amount, too!");
+    } else if ($row && $amount == NULL) {
+        umc_echo("No amount given, adjusting price for existing listing only.");
+        $amount = 0;
+        if ($price == $row['price']) {
+            umc_error("Your request price & amount is the same as the current. Either change the price, or the amount!");
+        }
     }
 
     $cost = $price * $amount;
@@ -1088,11 +1094,11 @@ function umc_do_request() {
     // if there is an existing row, recalculate price accordingly
     if ($row) {
         // give money back from the original request
-        $refund = $row['amount'] * $row['price'];
+        $current_price = $row['amount'] * $row['price']; // let's say 200
         // calculate how much this one + the old item amount would cost
-        $new_cost = ($amount + $row['amount']) * $price;
+        $new_price = ($amount + $row['amount']) * $price; // let's say 100, so refund 100
         // do the sum for the balance, can be negative
-        $cost = $new_cost - $refund;
+        $cost = $new_price - $current_price; // -100 = 100 - 200
     }
 
     $balance = umc_money_check($uuid);
@@ -1110,7 +1116,7 @@ function umc_do_request() {
             umc_echo("{white}[?]{gray} This would create a new request for "
                     . "{yellow}$amount {$item['full']}{darkgray} @ {cyan}{$price}{gray} each.");
         }
-        if ($cost > 0) {
+        if ($cost > 0) { // negative balances are charges
             umc_echo("{white}[?]{white} Your account would be charged {cyan}$cost{gray} Uncs.");
         } else {
             umc_echo("{white}[?]{white} Your account would be credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
@@ -1123,7 +1129,7 @@ function umc_do_request() {
     if ($row) { // Update existing listing
         $sum = $amount + $row['amount'];
         umc_echo("{green}[+]{gray} You already requested {yellow}"
-                . "{$row['amount']} {$item['full']}{gray}. Adding another {yellow}$amount{gray}.");
+                . "{$row['amount']} @ {$row['price']} {$item['full']}{gray}. New amount is {yellow}$amount{gray} @ price $price.");
         $sql = "UPDATE minecraft_iconomy.`request` SET `amount` = amount + '$amount', price='$price' WHERE id={$row['id']};";
         $rst = umc_mysql_query($sql);
         $posted_id = $row['id'];
@@ -1138,12 +1144,16 @@ function umc_do_request() {
         $rst = umc_mysql_query($sql);
         $posted_id = umc_mysql_insert_id();
     }
-    if ($cost > 0) {
+    if ($cost > 0) { // positive balances are charges
         umc_echo("{yellow}[$]{white} Your account has been charged {cyan}$cost{gray} Uncs.");
+        // take money from player. The money function convwerts to absolute values
+        umc_money($player, false, $cost);
     } else {
         umc_echo("{green}[$]{white} Your account has been credited {cyan}" . ($cost * -1) . "{gray} Uncs.");
+        // give money to player
+        umc_money(false, $player, $cost);
     }
-    umc_money($player, false, $cost);
+
 
     $format_color = 'green';
     if ($item['nbt_raw']) { // magix items are aqua
