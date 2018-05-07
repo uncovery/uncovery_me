@@ -1064,8 +1064,8 @@ function umc_do_request() {
     }
 
 
-    // buy item at same price, check if exists
-    if (!isset($args[3])) {
+    // check if the price was specified
+    if (!isset($args[3])) { 
         if ($row) {
             $price = $row['price'];
             umc_echo("You are requesting the same item already, adjusting amount only.");
@@ -1076,7 +1076,7 @@ function umc_do_request() {
         $price = umc_sanitize_input($args[3], 'price');
     }
 
-    // check if an argument was given for amount.
+    // check if the amount was specified
     $amount = umc_sanitize_input($args[4], 'amount');
     if (!$row && $amount == NULL) {
         // requesting 0 amount available is not possible
