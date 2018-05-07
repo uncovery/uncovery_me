@@ -211,14 +211,14 @@ function umc_mod_test_items() {
  * @param type $msg
  */
 function umc_mod_broadcast($msg) {
-    global $WS_INIT;
     $chat_command = 'broadcast';
     // we can send several messages as an array.
     if (!is_array($msg)) {
         $msg = array($msg);
     }
     foreach ($msg as $line) {
-        $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $line);
+        $str = preg_replace_callback(color_regex(), create_function('$matches', 'return color_map($matches[1]);'), $line);
+        // $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $line);
         $full_command = "$chat_command $str;";
         umc_exec_command($full_command, 'asConsole');
     }
