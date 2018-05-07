@@ -1,7 +1,7 @@
 <?php
-XMPP_ERROR_trace("Running schedule.php");
-
 include('/home/minecraft/server/bin/index_wp.php');
+
+XMPP_ERROR_trace("Running schedule.php");
 
 umc_log('system', 'daily_process', "post-reboot processes started");
 
