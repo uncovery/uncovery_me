@@ -161,11 +161,9 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     // just to deal with legacy item id
     if (is_numeric($item_name)) {
-        XMPP_ERROR_trigger('UMC_DATA_ID2NAME USAGE');
-        $item_name = $UMC_DATA_ID2NAME[$item_name];
-        // conversion failed, item does not exist
-        if (!$item_name) {
-            XMPP_ERROR_trigger("Could not identify $item_name from $item_data: DATA umc_goods_get_text");
+        if (isset($UMC_DATA_ID2NAME[$item_name])) {
+            $item_name = $UMC_DATA_ID2NAME[$item_name];
+        } else {
             return false;
         }
     }
