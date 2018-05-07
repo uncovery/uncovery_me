@@ -14,8 +14,6 @@ umc_lot_reset_process();
 // reset user lot count in UUID table
 umc_uuid_record_lotcount();
 
-umc_hardcore_resetworld();
-
 umc_usericon_get();
 
 umc_github_wordpress_update();

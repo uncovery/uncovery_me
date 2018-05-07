@@ -33,7 +33,9 @@ $HARDCORE = array(
 
 $WS_INIT['hardcore'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'server_pre_reboot' => 'umc_hardcore_resetworld',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Hardcore Gameplay',  // give it a friendly title

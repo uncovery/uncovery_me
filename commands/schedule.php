@@ -111,7 +111,7 @@ function run_umc_scheduler() {
     $default_commands = array(
         "mv gamerule doDaylightCycle false darklands",
         "time set 00:00 darklands",
-        "mv gamerule naturalRegeneration false deathlands",
+        "mv gamerule naturalRegeneration false deathlands", //TODO: move this to an event in the hardcore plugin
     );
     umc_schedule_exec($default_commands);
 
@@ -124,7 +124,6 @@ function run_umc_scheduler() {
 
     umc_schedule_exec($cmds);
 
-    umc_ban_to_database();
     // make a new ID file in case item data has changed
     include_once('/home/minecraft/server/bin/commands/make_id_file.php');
 }

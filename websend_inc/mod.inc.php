@@ -25,7 +25,9 @@ global $UMC_SETTING, $WS_INIT;
 
 $WS_INIT['mod'] = array(  // the name of the plugin
     'disabled' => false,
-    'events' => false,
+    'events' => array(
+        'server_post_reboot' => 'umc_mod_ban_to_database',
+    ),
     'default' => array(
         'help' => array(
             'title' => 'Moderator Commands',  // give it a friendly title
@@ -318,6 +320,42 @@ function umc_mod_ban() {
     umc_footer(true);
     umc_user_ban($uuid, $reason);
     // trigger plugin-even userban
+}
+
+/*
+ * this function makes sure that all banned users from the text file
+ * are actually in the database
+ */
+function umc_mod_ban_to_database() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    die();
+    global $UMC_SETTING;
+    $ban_file = json_decode(file($UMC_SETTING['banned_players_file']));
+    $banned_db = umc_banned_users();
+    foreach ($ban_file as $D) {
+        $uuid = $D['uuid'];
+        $name = strtolower($D['name']);
+        $date = $D['created'];
+        $source = $D['source'];
+        $reason = $D['reason'];
+        $admin = $D['admin'];
+        if (!in_array($uuid, $banned_db)) {
+            $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `date`, `uuid`, `source`)
+                VALUES ('$name','$reason', '$admin', '$date', '$uuid', '$source');";
+            umc_mysql_query($sql, true);
+        }
+    }
+    /* format:
+     *   {
+    "uuid": "18d29691-51f1-4166-b2cb-46cab2b9fba0",
+    "name": "iLoveMCPigs",
+    "created": "2013-12-20 11:00:54 +0800",
+    "source": "(Unknown)",
+    "expires": "forever",
+    "reason": "Banned by an operator."
+  },
+
+     */
 }
 
 
