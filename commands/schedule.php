@@ -125,7 +125,7 @@ function run_umc_scheduler() {
     umc_schedule_exec($cmds);
 
     // make a new ID file in case item data has changed
-    include_once('/home/minecraft/server/bin/commands/make_id_file.php');
+    umc_item_search_create();
 }
 
 function umc_schedule_exec($cmds) {

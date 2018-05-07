@@ -25,28 +25,30 @@
 global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_icons'] = 'umc_get_icons';
 
-/**
- * Updates all tables where item_ids are used to use the new item names
- * @global array $UMC_DATA
- */
-function umc_populate_name_field() {
-    global $UMC_DATA;
 
-    $tables = array('request', 'deposit', 'stock');
-
-    foreach ($tables as $table) {
-        foreach ($UMC_DATA as $item_name => $item_data) {
-            if (isset($item_data['subtypes'])) {
-                foreach ($item_data['subtypes'] as $type => $sub_data) {
-                    $sql = "UPDATE minecraft_iconomy.$table "
-                            . "SET item_name='$item_name' "
-                            . "WHERE damage='$type' AND item_name = '{$sub_data['name']}';";
-                    echo $sql;
-                    // umc_mysql_query($sql, true);
+function umc_item_search_create() {
+    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    // this here creates a new items array file
+    $search_arr = umc_item_data_get_namelist();
+    if (($handle = fopen("/home/minecraft/server/bukkit/plugins/Essentials/items.csv", "r")) !== FALSE) {
+        while (($items = fgetcsv($handle, 10000, ",")) !== FALSE) {
+            XMPP_ERROR_trace("Reading Essentials CSV");
+            // get the fist letter to weed out comments
+            $firstletter = substr($items[0], 0, 1);
+            if (count($items) == 3 && $firstletter !== '#' && !isset($search_arr[$items[0]])) {
+                // we get the numeric ID from the list 
+                // csv format is: 
+                // rock,1,0
+                // item_name, num_id, type_id
+                $item = umc_goods_get_text($items[1], $items[2]);
+                if ($item) { // the file contains a bunch of unobtainable stuff, we skip that
+                    $search_arr[$items[0]] = array('item_name' => $item['item_name'], 'type' => $item['type']);
                 }
             }
-
         }
+        umc_array2file($search_arr, 'ITEM_SEARCH', '/home/minecraft/server/bin/includes/item_search.inc.php');
+    } else {
+        die("Could not read items file!");
     }
 }
 
