@@ -350,29 +350,22 @@ Syntax is item_name => wiki_name";
  * fix old item names in tables
  */
 function umc_item_fix_old() {
-    $item_names = array(
-        'gold_leggings' => array('item_name' => 'gold_leggings', 'type' => false),
-    );
+    global $UMC_DATA_SPIGOT2ITEM;
+
     $tables = array(
-        'minecraft_iconomy.transactions' => array('item_name' => 'item_name', 'type' => 'damage'),
-        'minecract_iconomy.stock' => array('item_name' => 'item_name', 'type' => 'damage'),
-        'minecract_iconomy.request' => array('item_name' => 'item_name', 'type' => 'damage'),
-        'minecract_iconomy.deposit' => array('item_name' => 'item_name', 'type' => 'damage'),
+        'minecraft_iconomy.transactions',
+        'minecraft_iconomy.stock',
+        'minecraft_iconomy.request',
+        'minecraft_iconomy.deposit',
     );
     
-    foreach ($item_names as $I => $i) {
-        foreach ($tables as $table => $f) {
-            $type_fields = '';
-            if ($i['type']) {
-                $type_fields = ", {$f['type']} = '{$i['type']}'";
-            }
-            $sql = "UPDATE $table SET {$f['item_name']} = '{$i['item_name']}' $type_fields WHERE {$f['item_name']} = '$I';";
-            echo $sql;
+    foreach ($UMC_DATA_SPIGOT2ITEM as $old_name => $new_name) {
+        foreach ($tables as $table) {
+            $sql = "UPDATE $table SET `item_name` = '$new_name' WHERE `item_name` LIKE '$old_name';";
+            umc_mysql_execute_query($sql);
         }
     }
 }
-
-
 
 $UMC_DATA = array(
     'air' => array(

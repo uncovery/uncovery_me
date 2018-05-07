@@ -22,4 +22,8 @@ umc_item_data_id2namelist();
 
 umc_item_data_icon_getdata();
 
+// rename old items in the databases to the new names (item_data.inc.php)
+umc_item_fix_old();
+
 umc_plg_enum();
+
