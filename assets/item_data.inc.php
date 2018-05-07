@@ -187,9 +187,9 @@ function umc_item_data_icon_getdata() {
     $result = $service->spreadsheets_values->get($spreadsheet_id, $spreadsheet_range);
 
     $data = $result->getValues();
+    echo "processing " . count($data) . " datasets for itemsprites";
 
     $final_data = array();
-    $invalid_data = array();
 
     $icon_size = 32;
     $image_width = 1024;
@@ -233,7 +233,7 @@ function umc_item_data_icon_getdata() {
     ksort($final_data);
     //$final_data['invalid'] = $invalid_data;
 
-    umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/includes/item_sprites.inc.php');
+    umc_array2file($final_data, 'item_sprites', '/home/minecraft/server/bin/assets/item_sprites.inc.php');
 
     //TODO: Download latest version of this file:
     // http://hydra-media.cursecdn.com/minecraft.gamepedia.com/4/44/InvSprite.png
@@ -241,8 +241,8 @@ function umc_item_data_icon_getdata() {
 
     $source_file = 'https://d1u5p3l4wpay3k.cloudfront.net/minecraft_gamepedia/4/44/InvSprite.png';
     $target_directory = '/home/minecraft/server/bin/data/images';
-    $R = unc_serial_curl($source_file);
-    file_put_contents($target_directory . "/InvSprite.png", $R[0]['content']);
+    // $R = unc_serial_curl($source_file);
+    // file_put_contents($target_directory . "/InvSprite.png", $R[0]['content']);
 
     // write CSS to file
     $css_file = '/home/minecraft/server/bin/data/item_sprites.css';
@@ -345,6 +345,33 @@ Please look for empty array values and match their key with above URL. Once you 
 Syntax is item_name => wiki_name";
     umc_array2file($UMC_DATA_ITEM2WIKI, 'UMC_DATA_ITEM2WIKI', '/home/minecraft/server/bin/assets/item_item2wiki.inc.php', $comments);
 }
+
+/**
+ * fix old item names in tables
+ */
+function umc_item_fix_old() {
+    $item_names = array(
+        'gold_leggings' => array('item_name' => 'gold_leggings', 'type' => false),
+    );
+    $tables = array(
+        'minecraft_iconomy.transactions' => array('item_name' => 'item_name', 'type' => 'damage'),
+        'minecract_iconomy.stock' => array('item_name' => 'item_name', 'type' => 'damage'),
+        'minecract_iconomy.request' => array('item_name' => 'item_name', 'type' => 'damage'),
+        'minecract_iconomy.deposit' => array('item_name' => 'item_name', 'type' => 'damage'),
+    );
+    
+    foreach ($item_names as $I => $i) {
+        foreach ($tables as $table => $f) {
+            $type_fields = '';
+            if ($i['type']) {
+                $type_fields = ", {$f['type']} = '{$i['type']}'";
+            }
+            $sql = "UPDATE $table SET {$f['item_name']} = '{$i['item_name']}' $type_fields WHERE {$f['item_name']} = '$I';";
+            echo $sql;
+        }
+    }
+}
+
 
 
 $UMC_DATA = array(
