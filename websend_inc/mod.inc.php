@@ -232,8 +232,7 @@ function umc_mod_broadcast($msg) {
  * @param type $message
  */
 function umc_mod_message($user, $message) {
-    $str = preg_replace(color_regex() . "e", 'color_map(\'$1\')', $message);
-    $cmd = "tellraw $user {\"text\":\"$str\",\"bold\":false}";
+    $cmd = "tellraw $user {\"text\":\"$message\",\"bold\":false}";
     umc_exec_command($cmd, 'asConsole');
 }
 
