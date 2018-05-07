@@ -1200,7 +1200,7 @@ function umc_shop_usersdirectory($data) {
     $uuid = $data['uuid'];
     $username = umc_uuid_getone($uuid, 'username');
 
-    $O['Shop'] = "<p><strong>Purchase History:</strong></p>\nNote: Older transactions might have legacy item names which are not readable by the system. This might result in blank lines. Items with a ? indicate missing icons only.";
+    $O['Shop'] = "<p><strong>Purchase History:</strong></p>\nNote: Items with a ? indicate missing icons only.";
 
     $count_sql = "SELECT count(id) as counter
         FROM minecraft_iconomy.transactions
