@@ -140,14 +140,16 @@ function umc_create_map() {
     }
     
     // plugin content
-    // the data is returned as an array with 2 strings to this, 'html' and 'menu'.
+    // the data is returned as an array with 3 strings to this, 'html' and 'menu' 'javascript'
     // html is added to the body, menu is added to the menu. duh.
     $plugins_content = umc_plugin_eventhandler('2dmap_display', array('world' => $world));
     $plugin_html = '';
     $plugin_menu = '';
+    $plugin_javascript = '';
     foreach ($plugins_content as $plugin_content) {
         $plugin_html .= $plugin_content['html'];
         $plugin_menu .= $plugin_content['menu'];
+        $plugin_javascript .= $plugin_content['javascript'];
     }   
 
     $menu .= "<div id=\"menu_2d_map\">\n";
@@ -490,7 +492,8 @@ if ($find_lot) {
     if (!$settler_test) {
         $header .= '$(document).ready(function() {update_positions();});';
     }
-    $header .= "\n</script>\n";
+    
+    $header .= $plugin_javascript . "\n</script>\n";
 
     $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
         . "</div>n</body>\n</html>\n";
