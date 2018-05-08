@@ -22,7 +22,7 @@ global $UMC_SETTING, $WS_INIT;
 $WS_INIT['homes'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
-        // 'PlayerJoinEvent' => 'umc_home_import',
+        '2dmap_display' => 'umc_home_2d_map',
     ),
     'default' => array(
         'help' => array(
@@ -471,21 +471,27 @@ function umc_homes_array($uuid, $world = false) {
  * @param type $world
  * @return type
  */
-function umc_home_2d_map($uuid, $world) {
+function umc_home_2d_map($data) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING;
+    global $UMC_SETTING, $UMC_USER;
+    $uuid = $UMC_USER['uuid'];
+    $world = $data['world'];
     $homes = umc_homes_array($uuid, $world);
 
     $icon = $UMC_SETTING['homes']['icon_url'];
-    $out = "\n";
+    $out = "\n<!-- Homes Plugin data start-->\n";
     foreach ($homes as $world => $world_homes) {
         foreach ($world_homes as $home => $coords) {
             $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
             $top = $map_coords['z'];
             $left = $map_coords['x'];
-            $out .= "<img class='marker' style='width:20px; height:20px; z-index:99; top:{$top}px; left:{$left}px;' src='$icon' alt='Home $home $uuid'>\n";
+            $out .= "
+            <div class='marker' style='font-size: 12px; font-family: sans-serif; z-index:99; top:{$top}px; left:{$left}px;'><img style='vertical-align:middle; height:20px; width:20px;' src='$icon' alt='Home $home' title='$home'>
+                <span style='vertical-align:middle;'>$home</span>
+            </div>\n";
         }
     }
+    $out .= "\n<!-- Homes Plugin data end-->\n";
     return $out;
 }
 
