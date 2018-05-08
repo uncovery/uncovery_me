@@ -474,6 +474,9 @@ function umc_homes_array($uuid, $world = false) {
 function umc_home_2d_map($data) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING, $UMC_USER, $UMC_DOMAIN;
+    if (!$UMC_USER) {
+        return array();
+    }
     $uuid = $UMC_USER['uuid'];
     $world = $data['world'];
     $homes = umc_homes_array($uuid, $world);
@@ -500,7 +503,6 @@ function umc_home_2d_map($data) {
     $out['html'] .= "\n<!-- Homes Plugin HTML end-->\n";
     $out['javascript'] = '
         function find_home(element) {
-            alert(element.value);
             var val_arr = element.value.split("|");
             home_name = val_arr[0];
             home_top = val_arr[1];
