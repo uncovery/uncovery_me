@@ -138,6 +138,17 @@ function umc_create_map() {
             $menu .= "<form action=\"$UMC_DOMAIN/server-access/buildingrights/\" method=\"post\">\n"
             . "<input type=\"hidden\" name=\"step\" value=\"9\">\n<input type=\"hidden\" name=\"world\" value=\"$world\"><input type=\"hidden\" name=\"lot\" value=\"$player_lot\">\n";
     }
+    
+    // plugin content
+    // the data is returned as an array with 2 strings to this, 'html' and 'menu'.
+    // html is added to the body, menu is added to the menu. duh.
+    $plugins_content = umc_plugin_eventhandler('2dmap_display', array('world' => $world));
+    $plugin_html = '';
+    $plugin_menu = '';
+    foreach ($plugins_content as $plugin_content) {
+        $plugin_html .= $plugin_content['html'];
+        $plugin_menu .= $plugin_content['menu'];
+    }   
 
     $menu .= "<div id=\"menu_2d_map\">\n";
 
@@ -153,6 +164,7 @@ function umc_create_map() {
     } else {
         $menu .= "Find your user head on the map and click on the button next to it!";
     }
+    $menu .= $plugin_menu;
     $menu .= "</div>\n";
 
     $new_choices = array();
@@ -196,11 +208,7 @@ function umc_create_map() {
         $html .= umc_read_markers_file('html', $world);
     }
     
-    // plugin content
-    $plugins_content = umc_plugin_eventhandler('2dmap_display', array('world' => $world));
-    foreach ($plugins_content as $plugin_content) {
-        $html .= $plugin_content;
-    }    
+    $html .= $plugin_html;
 
     //$repl_arr = array(',','-');
     $kingdom = '';
