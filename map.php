@@ -28,6 +28,16 @@ $UMC_FUNCTIONS['create_map'] = 'umc_create_map';
 $UMC_FUNCTIONS['lagmap'] = 'umc_lagmap';
 $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
 
+/**
+ * display the 2D map
+ * 
+ * @global type $UMC_SETTING
+ * @global type $UMC_DOMAIN
+ * @global type $UMC_PATH_MC
+ * @global type $UMC_USER
+ * @global string $UMC_ENV
+ * @return type
+ */
 function umc_create_map() {
     global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER, $UMC_ENV;
     $timer = array();
@@ -184,10 +194,12 @@ function umc_create_map() {
     } else {
         $html .= umc_read_markers_file('html', $world);
     }
-    // add home markers if user is logged in
-    if ($UMC_USER) {
-        $html .= umc_home_2d_map($UMC_USER['uuid'], $world);
-    }
+    
+    // plugin content
+    $plugins_content = umc_plugin_eventhandler('2dmap_display', array('world' => $world));
+    foreach ($plugins_content as $plugin_content) {
+        $html .= $plugin_content;
+    }    
 
     //$repl_arr = array(',','-');
     $kingdom = '';
