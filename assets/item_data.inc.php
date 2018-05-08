@@ -3299,6 +3299,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'silver_glazed_terracotta' => 'light_gray_glazed_terracotta',
     'skull_item' => 'skull',
     'slime_block' => 'slime',
+    'sugarcane' => 'reeds',
     'smooth_brick' => 'stonebrick',
     'smooth_stairs' => 'stone_brick_stairs',
     'snow_ball' => 'snowball',
