@@ -218,20 +218,27 @@ function umc_nbt_display_long_text($nbt_array) {
                 break;
             case 'fireworks':
                 // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
-                $text .= "Flight Duration: " . $data['Flight'] . '\n';
-                $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
-                $e_data = $data['Explosions'][0];
-                $explosion_type = $e_data['Type'];
-                $text .= "Explosion " . $explosions[$explosion_type];
+                $elements = array();
+                $elements[] = "Flight Duration: " . $data['Flight'];
+                if (isset($data['Explosions'])) {
+                    $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
+                    $e_data = $data['Explosions'][0];
+                    $explosion_type = $e_data['Type'];
+                    $elements[] = " Explosion " . $explosions[$explosion_type];
+                }
                 if (isset($e_data['Flicker']) && $e_data['Flicker'] == 1) {
-                    $text .= ', Flicker';
+                    $elements[] = 'Flicker';
                 }
                 if (isset($e_data['Trail']) && $e_data['Trail'] == 1) {
-                    $text .= ', Trail';
+                   $elements[] = 'Trail';
                 }
-                $text .= '\n';
-                $text .= "Colors: " . count($e_data['Colors']) . '\n';
-                $text .= "Fade Colors: " . count($e_data['FadeColors']) . '\n';
+                if (isset($e_data['Colors'])) {
+                    $elements[] = "Colors: " . count($e_data['Colors']);
+                }
+                if (isset($e_data['FadeColors'])) {
+                    $elements[] = "Fade Colors: " . count($e_data['FadeColors']);
+                }
+                $text .= implode(", ", $elements);
                 break;
             case 'pages': // for books
                 $text .= ucwords($feature) . ": " . count($data) . '\n';
@@ -317,22 +324,27 @@ function umc_nbt_display_short_text($nbt_array) {
                 break;
             case 'fireworks':
                 // {Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:0,Trail:1,Colors:[11743532,5320730,8073150],FadeColors:[3887386,4312372,6719955]}]}}
-                $text .= "Flight Duration: " . $data['Flight'] . '\n';
-                $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
+                $elements = array();
+                $elements[] = "Duration: " . $data['Flight'];
                 if (isset($data['Explosions'])) {
+                    $explosions = array(0 => 'Small Ball', 1 => 'Large Ball', 2 => 'Star-Shaped', 3 => 'Creeper-Shaped',  3 => 'Sparkle',);
                     $e_data = $data['Explosions'][0];
                     $explosion_type = $e_data['Type'];
-                    $text .= "Explosion " . $explosions[$explosion_type];
+                    $elements[] = " Explosion " . $explosions[$explosion_type];
                 }
                 if (isset($e_data['Flicker']) && $e_data['Flicker'] == 1) {
-                    $text .= ', Flicker';
+                    $elements[] = 'Flicker';
                 }
                 if (isset($e_data['Trail']) && $e_data['Trail'] == 1) {
-                    $text .= ', Trail';
+                   $elements[] = 'Trail';
                 }
-                $text .= '\n';
-                $text .= "Colors: " . count($e_data['Colors']) . '\n';
-                $text .= "Fade Colors: " . count($e_data['FadeColors']) . '\n';
+                if (isset($e_data['Colors'])) {
+                    $elements[] = "Colors: " . count($e_data['Colors']);
+                }
+                if (isset($e_data['FadeColors'])) {
+                    $elements[] = "Fade Colors: " . count($e_data['FadeColors']);
+                }
+                $text .= implode(", ", $elements);
                 break;
             case 'pages': // for books
                 $text .= count($data) . ' Pages';
