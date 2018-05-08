@@ -210,7 +210,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
         }
     }
 
-    $full_clean = trim("$nice_name$meta_text$nbt_string$damage_text");
+    $full_clean = trim("$nice_name$meta_text$nbt_string$damage_spacer$damage_text");
     if ($UMC_ENV == 'wordpress') {
         global $ITEM_SPRITES;
         if (isset($ITEM_SPRITES[$item_name])) { // get background image of single image
