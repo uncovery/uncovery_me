@@ -473,25 +473,42 @@ function umc_homes_array($uuid, $world = false) {
  */
 function umc_home_2d_map($data) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_SETTING, $UMC_USER;
+    global $UMC_SETTING, $UMC_USER, $UMC_DOMAIN;
     $uuid = $UMC_USER['uuid'];
     $world = $data['world'];
     $homes = umc_homes_array($uuid, $world);
 
     $icon = $UMC_SETTING['homes']['icon_url'];
-    $out = "\n<!-- Homes Plugin data start-->\n";
+    $out = array('html'=> '', 'menu'=>  '');
+    $out['html'] = "\n<!-- Homes Plugin HTML start-->\n";
+    $out['menu'] = " Show home:\n <form action=\"$UMC_DOMAIN/admin/\" method=\"get\" style=\"display:inline;\">\n    <div style=\"display:inline;\">"
+        . "<select id=\"home_finder\" style=\"display:inline;\" onchange='find_home(this)'>\n"
+        . "<option disabled selected value> -- select a home -- </option>\n";
     foreach ($homes as $world => $world_homes) {
         foreach ($world_homes as $home => $coords) {
             $map_coords = umc_map_convert_coorindates($coords['x'], $coords['z'], $world);
             $top = $map_coords['z'];
             $left = $map_coords['x'];
-            $out .= "
-            <div class='marker' style='font-size: 12px; font-family: sans-serif; z-index:99; top:{$top}px; left:{$left}px;'><img style='vertical-align:middle; height:20px; width:20px;' src='$icon' alt='Home $home' title='$home'>
+            $out['html'] .= "
+            <div id='home_$home' class='marker' style='font-size: 12px; font-family: sans-serif; z-index:99; top:{$top}px; left:{$left}px;'><img style='vertical-align:middle; height:20px; width:20px;' src='$icon' alt='Home $home' title='$home'>
                 <span style='vertical-align:middle;'>$home</span>
             </div>\n";
+            $out['menu'] .= "<option value=\"$home|$top|$left\">$home</option>\n";
         }
     }
-    $out .= "\n<!-- Homes Plugin data end-->\n";
+    $out['menu'] .= "        </select>\n    </div></form>\n ";
+    $out['html'] .= "\n<!-- Homes Plugin HTML end-->\n";
+    $out['javascript'] = '
+        function find_home(element) {
+            alert(element.value);
+            var val_arr = element.value.split("|");
+            home_name = val_arr[0];
+            home_top = val_arr[1];
+            home_left = val_arr[2];
+            window.scrollTo(home_left - ($(window).width() / 2), home_top - ($(window).height() / 2))
+            $("#home_" + home_name).effect("shake");
+        }; 
+        ';
     return $out;
 }
 
