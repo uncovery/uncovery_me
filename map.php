@@ -30,6 +30,7 @@ $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
 
 /**
  * display the 2D map
+ * HTML can be added through event '2dmap_display'
  * 
  * @global type $UMC_SETTING
  * @global type $UMC_DOMAIN
