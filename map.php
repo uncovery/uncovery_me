@@ -167,6 +167,17 @@ function umc_create_map() {
         $menu .= "Find your user head on the map and click on the button next to it!";
     }
     $menu .= $plugin_menu;
+    
+    // get and display file date at the end of the menu
+    $image = "$UMC_PATH_MC/server/maps/$world.jpg";
+    if (file_exists($image)) {
+        $date_obj = $datetime = DateTime::createFromFormat('U', filemtime($image));
+        $date_diff = umc_timer_format_diff($date_obj);
+
+        $menu .= " <small>($world map image was updated $date_diff ago)</small>";
+    } else {
+        $menu .= "There is no image for this map!";
+    }
     $menu .= "</div>\n";
 
     $new_choices = array();
@@ -1012,19 +1023,6 @@ function umc_map_menu($worlds, $current_world, $freeswitch, $showusers = true) {
     if ($showusers) {
         $menu .= umc_read_markers_file('scrollto', $current_world);
     }
-
-    // get file date
-    $image = "$UMC_PATH_MC/server/maps/$current_world.jpg";
-    if (file_exists($image)) {
-        $date_obj = $datetime = DateTime::createFromFormat('U', filemtime($image));
-        $date_diff = umc_timer_format_diff($date_obj);
-
-        $menu .= " <small>($current_world map image was updated $date_diff ago)</small>";
-    } else {
-        $menu .= "There is no image for this map!";
-    }
-
-
     return $menu;
 }
 
