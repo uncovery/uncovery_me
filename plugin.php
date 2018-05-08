@@ -367,40 +367,7 @@ function umc_plugin_web_help($one_plugin = false) {
 function umc_plugin_eventhandler($event, $parameters = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $WS_INIT;
-    // define list of available events for security, it's questionable if we need this list.
-    // at least it should be created automatically
-    $available_events = array(
-        // server events
-        'server_pre_reboot',
-        'server_reboot',
-        'server_post_reboot',
-        // user events
-        'user_delete',
-        'user_banned',
-        'user_registered',
-        'user_inactive',
-        'user_directory',
-        // websend events, do not have parameters usually since
-        // websend sends stuff via $UMC_USER
-        'PlayerPreLoginEvent',
-        'PlayerJoinEvent',
-        'PlayerQuitEvent',
-        'PlayerKickEvent',
-        'PlayerChangedWorldEvent',
-        'PlayerGameModeChangeEvent',
-        'PlayerPortalEvent',
-        'PlayerRespawnEvent',
-        'PlayerDeathEvent',
-        'EntityDeathEvent',
-        'AsyncPlayerPreLoginEvent',
-        // websend custom events
-        'ws_user_init_xp',
-        'any_websend', // run this on every call from Websend
-        'any_wordpress', // run this event on every call of wordpress
-    );
-    if (!in_array($event, $available_events)) {
-        XMPP_ERROR_trigger("received incoming event $event which is not registered");
-    }
+
     $return_vars = array();
     foreach ($WS_INIT as $plugin => $data) {
         // check if there is a setting for the current event and if the plugin is enabled
