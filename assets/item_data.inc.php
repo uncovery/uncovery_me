@@ -36,8 +36,8 @@ function umc_item_search_create() {
             // get the fist letter to weed out comments
             $firstletter = substr($items[0], 0, 1);
             if (count($items) == 3 && $firstletter !== '#' && !isset($search_arr[$items[0]])) {
-                // we get the numeric ID from the list 
-                // csv format is: 
+                // we get the numeric ID from the list
+                // csv format is:
                 // rock,1,0
                 // item_name, num_id, type_id
                 $item = umc_goods_get_text($items[1], $items[2]);
@@ -360,7 +360,7 @@ function umc_item_fix_old() {
         'minecraft_iconomy.request',
         'minecraft_iconomy.deposit',
     );
-    
+
     foreach ($UMC_DATA_SPIGOT2ITEM as $old_name => $new_name) {
         foreach ($tables as $table) {
             $sql = "UPDATE $table SET `item_name` = '$new_name' WHERE `item_name` LIKE '$old_name';";
@@ -3292,13 +3292,16 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'record_9' => 'record_strad',
     'red_rose' => 'red_flower',
     'redstone_comparator' => 'comparator',
+    'redstone_repeater' => 'repeater',
     'redstone_lamp_off' => 'redstone_lamp',
     'redstone_torch_on' => 'redstone_torch',
     'seeds' => 'wheat_seeds',
     'silver_shulker_box' => 'light_grey_shulker_box',
     'silver_glazed_terracotta' => 'light_gray_glazed_terracotta',
+    'skeletonskull' => 'skull',
     'skull_item' => 'skull',
     'slime_block' => 'slime',
+    'slimeball' => 'slime_ball',
     'sugarcane' => 'reeds',
     'smooth_brick' => 'stonebrick',
     'smooth_stairs' => 'stone_brick_stairs',
