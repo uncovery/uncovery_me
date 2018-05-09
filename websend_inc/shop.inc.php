@@ -1205,7 +1205,7 @@ function umc_shop_usersdirectory($data) {
     $count_sql = "SELECT count(id) as counter
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid";
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid AND username IS NOT NULL";
     $C = umc_mysql_fetch_all($count_sql);
     $recordcount = $C[0]['counter'];
 
@@ -1222,7 +1222,7 @@ function umc_shop_usersdirectory($data) {
     $sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as seller
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON seller_uuid=UUID
-        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid
+        WHERE buyer_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND seller_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid AND username IS NOT NULL
         ORDER BY date DESC
         LIMIT $gap, $page_length;";
     $D = umc_mysql_fetch_all($sql);
@@ -1242,7 +1242,7 @@ function umc_shop_usersdirectory($data) {
     $sales_count_sql = "SELECT count(id) as counter
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
-        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid";
+        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid AND username IS NOT NULL";
     $CS = umc_mysql_fetch_all($sales_count_sql);
     $sales_recordcount = $CS[0]['counter'];
 
@@ -1259,7 +1259,7 @@ function umc_shop_usersdirectory($data) {
     $sales_sql = "SELECT date, CONCAT(item_name,'|', damage, '|', meta) AS item_name, amount, cost, username as buyer
         FROM minecraft_iconomy.transactions
         LEFT JOIN minecraft_srvr.UUID ON buyer_uuid=UUID
-        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid
+        WHERE seller_uuid='$uuid' AND date > '0000-00-00 00:00:00' AND buyer_uuid NOT LIKE '%-0000-000000000000' AND cost > 0 AND buyer_uuid <> seller_uuid AND username IS NOT NULL
         ORDER BY date DESC
         LIMIT $sales_gap, $sales_page_length;";
     $SD = umc_mysql_fetch_all($sales_sql);
