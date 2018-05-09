@@ -831,7 +831,7 @@ function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $sub
     $subject = umc_mysql_real_escape_string($subject_raw);
 
     $status = 'draft';
-    if ($action ==  'Send') {
+    if (strtolower($action) ==  'send') {
         $status = 'sent';
     }
     if ($msg_id) {
