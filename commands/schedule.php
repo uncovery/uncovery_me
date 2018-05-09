@@ -126,6 +126,9 @@ function run_umc_scheduler() {
 
     // make a new ID file in case item data has changed
     umc_item_search_create();
+    
+    // do github updates
+    umc_github_wordpress_update();
 }
 
 function umc_schedule_exec($cmds) {
