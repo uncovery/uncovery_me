@@ -417,18 +417,22 @@ function umc_mod_mute() {
         }
     }
 
-    $time = $args[3];
+
     if (!isset($args[3])) {
         $time = '1h';
-    } else if (!isset($timelist[$time])) {
+    } else {
+        $time = $args[3];
+    }
+    
+    if (!isset($timelist[$time])) {
         umc_error("You have to chose the time from this list: 1h 30m 15m 10m 5m 1m");
     }
 
     $seconds = $timelist[$time];
 
     $uuid = umc_user2uuid($user);
-    umc_ws_cmd("mute $user $time", 'asPlayer');
-    umc_ws_cmd("pex user $uuid timed add -herochat.* $seconds;", 'asConsole');
+    umc_ws_cmd("essentials:mute $user $time", 'asConsole');
+    umc_ws_cmd("pex user $uuid timed add -venturechat.* $seconds;", 'asConsole');
     umc_ws_cmd("pex user $uuid timed add -irc.* $seconds;", 'asConsole');
     umc_ws_cmd("pex user $uuid timed add -essentials.msg $seconds;", 'asConsole');
     umc_ws_cmd("pex user $uuid timed add -essentials.me $seconds;", 'asConsole');
@@ -472,10 +476,10 @@ function umc_mod_unmute() {
     if (strstr($txt, $search)) {
     // YAML library is not installed,
     //$yml = yaml_parse_file($file);
-    //if ($yml['muted'] == 'true') {
+        //if ($yml['muted'] == 'true') {
         $uuid = umc_user2uuid($user);
-        umc_ws_cmd("mute $user", 'asPlayer');
-        umc_ws_cmd("pex user $uuid timed remove -herochat.*;", 'asConsole');
+        umc_ws_cmd("essentials:mute $user", 'asConsole');
+        umc_ws_cmd("pex user $uuid timed remove -venturechat.*;", 'asConsole');
         umc_ws_cmd("pex user $uuid timed remove -irc.*;", 'asConsole');
         umc_ws_cmd("pex user $uuid timed remove -essentials.msg;", 'asConsole');
         umc_ws_cmd("pex user $uuid timed remove -essentials.me;", 'asConsole');
