@@ -120,7 +120,7 @@ function run_umc_scheduler() {
 
     // execute todays on-commands
     $cmds = $schedule_arr[$today]['on_cmd'];
-    umc_log('scheduler', "today", "executing commands for yesterday: $today");
+    umc_log('scheduler', "today", "executing commands for today: $today");
 
     umc_schedule_exec($cmds);
 
