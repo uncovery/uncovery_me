@@ -71,14 +71,14 @@ function umc_github_wordpress_update() {
     }
     foreach ($issues as $issue) {
         if (!isset($issue['pull_request'])) {
-            $labels = '';
+            $labels = array();
             $issue_opened_date = substr($issue['created_at'], 0, 10);
             $issue_updated_date = substr($issue['updated_at'], 0, 10);
             foreach ($issue['labels'] as $label) {
-                $labels .= "<span style='background-color: #{$label['color']}'>{$label['name']}</span>&nbsp;";
+                $labels[] = "<span style='background-color: #{$label['color']}'>{$label['name']}</span>;";
             }
             if (count($issue['labels']) > 0) {
-                $label_txt = " ($labels)";
+                $label_txt = " (". implode(", ", $labels) .")";
             }
             $text = "Issue No. {$issue['number']}, <a href='{$GITHUB['page_direct_issues']}{$issue['number']}'>{$issue['title']}</a> $label_txt";
             if ($issue['state'] == 'open') {
