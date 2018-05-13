@@ -341,6 +341,9 @@ function umc_do_find() {
             case (preg_match('/ench:(.+)/',$arg, $match) ? $arg : false):
                 $find_specific_ench = umc_sanitize_input($match[1], 'ench');
                 $qualifier .= " AND meta LIKE '%$find_specific_ench%'";
+                if (!isset($ENCH_ITEMS[$find_specific_ench])) {
+                    umc_error("Sorry, the enchantment you are looking for ($find_specific_ench) does not exist;");
+                }
                 $search_label = "{purple}{$ENCH_ITEMS[$find_specific_ench]['name']}";
                 break;
 
@@ -1065,7 +1068,7 @@ function umc_do_request() {
 
 
     // check if the price was specified
-    if (!isset($args[3])) { 
+    if (!isset($args[3])) {
         if ($row) {
             $price = $row['price'];
             umc_echo("You are requesting the same item already, adjusting amount only.");
