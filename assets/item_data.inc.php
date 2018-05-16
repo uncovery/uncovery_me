@@ -3218,6 +3218,7 @@ $UMC_DATA_SPIGOT2ITEM = array(
     'clay_balls' => 'clay_ball',
     'clay_block' => 'clay',
     'clay_brick' => 'brick',
+    'clayblock' => 'clay',
     'cobble_wall' => 'cobblestone_wall',
     'cobblestone_stairs' => 'stone_stairs',
     'dark_oak_door_item' => 'dark_oak_door',
