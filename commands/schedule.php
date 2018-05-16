@@ -5,9 +5,15 @@ XMPP_ERROR_trace("Running schedule.php");
 
 umc_log('system', 'daily_process', "post-reboot processes started");
 
-umc_plugin_eventhandler('server_post_reboot');
+// make a new ID file in case item data has changed
+umc_item_search_create();
+
+// do github updates
+umc_github_wordpress_update();
 
 run_umc_scheduler();
+
+umc_plugin_eventhandler('server_post_reboot');
 
 echo "Done!\n";
 
@@ -123,12 +129,6 @@ function run_umc_scheduler() {
     umc_log('scheduler', "today", "executing commands for today: $today");
 
     umc_schedule_exec($cmds);
-
-    // make a new ID file in case item data has changed
-    umc_item_search_create();
-    
-    // do github updates
-    umc_github_wordpress_update();
 }
 
 function umc_schedule_exec($cmds) {
