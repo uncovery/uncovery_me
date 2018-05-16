@@ -144,7 +144,7 @@ function umc_contests_info() {
     $id = $args[2];
     if (!is_numeric($id)) {
         umc_show_help($args);
-        die();
+        return;
     }
     $sql = "SELECT * FROM minecraft_srvr.contest_contests WHERE id = $id;";
     $rst = mysql_query($sql);
@@ -193,14 +193,14 @@ function umc_contests_abandon(){
     $id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($id)) {
         umc_error("You have to enter a numeric contest ID. See /contest list");
     }
     $num = $args[3];
     if (!isset($args[3])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($num)) {
         umc_error("You have to enter a numeric contest entry. See /contest info $id");
     }
@@ -251,7 +251,7 @@ function umc_contests_close() {
     $id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($id)) {
         umc_error("You have to enter a numeric contest ID ($id). See /contest list");
     }
@@ -284,7 +284,7 @@ function umc_contests_delete() {
     $id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($id)) {
         umc_error("You have to enter a numeric contest ID ($id). See /contest list");
     }
@@ -305,7 +305,7 @@ function umc_contests_refund_all() {
     $contest_id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($contest_id)) {
         umc_error("You have to enter a numeric contest ID. See /contest list");
     }
@@ -313,7 +313,7 @@ function umc_contests_refund_all() {
     $which = $args[3];
     if (!isset($args[3])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!in_array($which, array('good', 'bad'))) {
         umc_error("You have to enter good or bad.");
     } else {
@@ -341,7 +341,7 @@ function umc_contests_refund_all() {
         }
         if ($loop_count >= $max) {
             umc_echo("$max entries processed!");
-            die();
+            return;
         }
     }
 }
@@ -537,14 +537,14 @@ function umc_contests_warp(){
     $id = $args[2];
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($id)) {
         umc_error("You have to enter a numeric contest ID. See /contest list");
     }
     $num = $args[3];
     if (!isset($args[3])){
         umc_show_help($args);
-        die();
+        return;
     } else if (!is_numeric($num)) {
         umc_error("You have to enter a numeric contest entry. See /contest info $id");
     }
@@ -596,7 +596,7 @@ function umc_contests_join() {
 
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     }
 
     $id = $args[2];
