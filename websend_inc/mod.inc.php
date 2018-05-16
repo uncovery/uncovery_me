@@ -244,7 +244,7 @@ function umc_mod_banrequest() {
 
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     } else {
         $user = umc_check_user($args[2]);
         if (!$user) {
@@ -284,7 +284,7 @@ function umc_mod_ban() {
 
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     } else {
         $user = strtolower(umc_check_user($args[2]));
         if (!$user) {
@@ -410,7 +410,7 @@ function umc_mod_mute() {
 
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     } else {
         $user = umc_check_user($args[2]);
         if (!$user) {
@@ -460,7 +460,7 @@ function umc_mod_unmute() {
 
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     } else {
         $user = umc_check_user($args[2]);
         if (!$user) {
@@ -584,7 +584,7 @@ function umc_mod_warp_lot() {
     $args = $UMC_USER['args'];
     if (!isset($args[2])) {
         umc_show_help($args);
-        die();
+        return;
     }
     $lot = strtolower($args[2]);
     $world = umc_get_lot_world($lot);
