@@ -26,7 +26,8 @@ global $UMC_SETTING, $WS_INIT;
 $WS_INIT['mod'] = array(  // the name of the plugin
     'disabled' => false,
     'events' => array(
-        'server_post_reboot' => 'umc_mod_ban_to_database',
+        // we cannot read the ban file since we don't have JSON capability
+        // 'server_post_reboot' => 'umc_mod_ban_to_database',
     ),
     'default' => array(
         'help' => array(
@@ -327,7 +328,7 @@ function umc_mod_ban() {
  */
 function umc_mod_ban_to_database() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    die();
+    return;
     global $UMC_SETTING;
     $ban_file = json_decode(file($UMC_SETTING['banned_players_file']));
     $banned_db = umc_banned_users();
@@ -423,7 +424,7 @@ function umc_mod_mute() {
     } else {
         $time = $args[3];
     }
-    
+
     if (!isset($timelist[$time])) {
         umc_error("You have to chose the time from this list: 1h 30m 15m 10m 5m 1m");
     }
