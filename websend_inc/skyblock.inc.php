@@ -104,7 +104,7 @@ function umc_skyblock_warp(){
 
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else if ($world !=='skyblock') {
         umc_error('You need to be in the skyblock world to teleport!');
     } else {
@@ -143,7 +143,7 @@ function umc_skyblock_abandon(){
 
     if (!isset($args[2])){
         umc_show_help($args);
-        die();
+        return;
     } else {
         $lot = umc_sanitize_input($args[2], 'lot');
         $check = umc_check_lot_exists('skyblock', $lot);
