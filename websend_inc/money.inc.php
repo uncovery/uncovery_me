@@ -184,7 +184,7 @@ function umc_money_check($user) {
         $user = umc_user2uuid($uuid);
         if ($user == '') {
             XMPP_ERROR_trigger("Failed to get username for $uuid!");
-            die();
+            return;
         }
     }
     $sql = "SELECT balance FROM `minecraft_iconomy`.`mineconomy_accounts` WHERE uuid='$uuid';";
