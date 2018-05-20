@@ -85,7 +85,7 @@ function umc_donation_update_current_player() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     $uuid = $UMC_USER['uuid'];
-    umc_donantion_update_user($uuid);
+    umc_donation_update_user($uuid);
 }
 
 
