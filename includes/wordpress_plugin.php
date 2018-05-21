@@ -367,8 +367,8 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
                 if ($count !== 0) {
                     $old_username = $XD[0]['display_name'];
                     // $old_usermail = $XD[0]['user_email'];
-                    XMPP_ERROR_send_msg($XD);
-                    XMPP_ERROR_send_msg($UMC_USER);
+                    XMPP_ERROR_trace("Old Username Table entry", $XD);
+                    XMPP_ERROR_trace("UMC_USER", $UMC_USER);
                     XMPP_ERROR_trigger("User $user_login tried to register 2nd account!");
                     $error_msg = "<strong>ERROR:</strong> There seems to be already a user with your minecraft account!
                             The username used then was '$old_username'.
@@ -828,7 +828,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
  */
 
 /*
- 
+
 function umc_wp_forum_widget($items = 20) {
     // get all topics
     $args1 = array(
