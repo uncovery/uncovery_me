@@ -46,7 +46,7 @@ function umc_item_search_create() {
                 }
             }
         }
-        umc_array2file($search_arr, 'ITEM_SEARCH', '/home/minecraft/server/bin/includes/item_search.inc.php');
+        umc_array2file($search_arr, 'ITEM_SEARCH', '/home/minecraft/server/bin/assets/item_search.inc.php');
     } else {
         die("Could not read items file!");
     }
