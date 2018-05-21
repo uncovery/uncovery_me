@@ -317,7 +317,6 @@ function umc_wp_register_checkFields($user_login, $user_email, $errors){
     $error = false;
     $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-
     $chars = array('@', ":", "\\", "/");
     $count = 0;
     str_replace($chars, "", $user_login, $count);
