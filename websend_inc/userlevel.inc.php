@@ -343,7 +343,7 @@ function umc_userlevel_remove_level($uuid, $level_raw) {
 /**
  * returns the base level of a level (without donator status)
  * while we could do this with an array, this system does not break if we add new levels
- * OBSOLETE
+ * deprecated, still used in Donations to check if a user needs a userlevel change (umc_donation_update_user)
  *
  * @global array $UMC_SETTING
  * @param type $userlevel
@@ -351,7 +351,6 @@ function umc_userlevel_remove_level($uuid, $level_raw) {
  */
 function umc_userlevel_get_base($userlevel) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    XMPP_ERROR_trigger("Obsolete function call: umc_userlevel_get_base");
     global $UMC_SETTING;
     // if we are not told what the userlevel us
     $base_levels = $UMC_SETTING['userlevels']['base_levels'];
