@@ -669,6 +669,8 @@ function umc_do_deposit_internal($all = false) {
 
     // get players occupied box count
     $count = umc_depositbox_realcount($uuid, 'occupied');
+    
+    umc_shop_transaction_record($uuid, $recipient_uuid, $amount, 0, $item['item_name'], $data, $meta);
 
     umc_echo("{green}[+]{gray} You have now used {white}$count of $allowed{gray} deposit boxes");
 }
