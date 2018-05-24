@@ -27,7 +27,6 @@ global $XMPP_ERROR;
 
 require_once('/home/includes/xmpp_error/xmpp_error.php');
 $XMPP_ERROR['config']['project_name'] = 'Uncovery.me';
-$XMPP_ERROR['config']['ignore_warnings'] = array('wp-includes', 'iwp-client', 'jaxl');
 
 /**
  * Initialize plugins so that the hooks in Wordpress are correct
