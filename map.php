@@ -147,6 +147,9 @@ function umc_create_map() {
     $plugin_menu = '';
     $plugin_javascript = '';
     foreach ($plugins_content as $plugin_content) {
+        if (!$plugins_content) { // if plugin does not provide additonal content, it returns false
+            continue;
+        }
         $plugin_html .= $plugin_content['html'];
         $plugin_menu .= $plugin_content['menu'];
         $plugin_javascript .= $plugin_content['javascript'];
