@@ -134,7 +134,7 @@ function umc_settler_new() {
         case 4:
             if (!isset($s_post['lot'])) {
                 $step = 3;
-                umc_log('settler_test', 'step_3_fail', "$player failed step 3");
+                umc_log('settler_test', 'step_3_fail', "$player failed step 3, no lot chosen");
                 $error = 'You need to choose lot to continue!';
             }
             break;
@@ -178,7 +178,7 @@ function umc_settler_new() {
     }
 
     // questions
-    $out .= "<strong>$error</strong><br>";
+    $out .= "<strong style=\"font-size: 24px; border: 1px solid red; margin: 5px; padding: 5px;\">$error</strong><br>";
     switch ($step) {
         case 0:
             umc_log('settler_test', 'start', "$player started the settler test");
