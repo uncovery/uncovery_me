@@ -989,7 +989,7 @@ function umc_region_data($world_name) {
 }
 
 function umc_map_menu($worlds, $current_world, $freeswitch, $showusers = true) {
-    global $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER;
+    global $UMC_DOMAIN, $UMC_USER;
     $freevalue = 'false';
     if ($freeswitch) {
         $freevalue = 'true';
@@ -1001,7 +1001,7 @@ function umc_map_menu($worlds, $current_world, $freeswitch, $showusers = true) {
         $title = "Uncovery $this_uc_map map";
     }
 
-    $function = $_GET['function'];
+    $function = filter_input(INPUT_GET, 'function', FILTER_SANITIZE_STRING); 
 
     $menu = "\n<!-- Menu -->\n<strong>$title</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
         . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
