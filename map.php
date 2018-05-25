@@ -147,7 +147,7 @@ function umc_create_map() {
     $plugin_menu = '';
     $plugin_javascript = '';
     foreach ($plugins_content as $plugin_content) {
-        if (!$plugins_content) { // if plugin does not provide additonal content, it returns false
+        if (!isset($plugin_content['html'])) { // if plugin does not provide additonal content, it returns false
             continue;
         }
         $plugin_html .= $plugin_content['html'];
@@ -161,8 +161,8 @@ function umc_create_map() {
         // create the top menu
         $menu .= umc_map_menu($worlds, $world, $freeonly);
     } else if ($settler_test){
-        $menu .= "Pick a lot that looks nice to you. Closer to spawn is more convenient. <button type='button' onclick='find_spawn()'>Find Spawn</button> Then click here: "
-            . "<input id=\"settler_test_next\" type=\"submit\" name=\"Next\" value=\"Next\">\n";
+        $menu .= "Pick a lot that looks nice to you. Closer to spawn is more convenient. <button type='button' onclick='find_spawn()'>Find Spawn</button> Then a button will be visible here: "
+            . "<input style=\"display:none\" id=\"settler_test_next\" type=\"submit\" name=\"Next\" value=\"Next\">\n";
     } else if ($find_lot) {
         $menu .= "Walk in-game along the red line to your lot $player_lot and then press "
             . "<input type=\"submit\" name=\"Next\" value=\"Next\"> <button type='button' onclick='find_spawn()'>Find Spawn</button> \n";
@@ -458,6 +458,8 @@ function umc_create_map() {
             function select_lot(lot_radio, lot_name) {
                 $("#" + lot_radio).prop("checked", true);
                 $("#settler_test_next").prop("value", "Chose Lot " + lot_name);
+                $("#settler_test_next").show();
+                $("#settler_test_next").delay(500).slideDown(500);
             }
             var markers_url = "' . $UMC_DOMAIN. '/admin/index.php?function=display_markers&world=' . $world . $track_player_icon . '";
             var markers_menu_url = "' . $UMC_DOMAIN. '/admin/index.php?function=display_markers&format=scrollto&world=' . $world . '";
