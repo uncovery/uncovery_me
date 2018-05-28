@@ -262,6 +262,8 @@ $umc_wp_register_questions = array(
         'answers'=>array('0'=>'My Minecraft username', '1'=>'My email address', '2'=>'31337 sh0073rz')),
     3 => array('text'=>'In which world do you spawn?', 'true'=>2,
         'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
+    4 => array('text'=>'Have you read and do you agree to our <a href="https://uncovery.me/about-this-server/privacy-policy-data-collection-retention/">privacy, data collection and retention policy?</a>', 'true'=>1,
+        'answers'=>array('0'=>'No', '1'=>'Yes')),
     //4 => array('text'=>'In which world do you spawn?', 'true'=>2,
     //    'answers'=>array('0'=>'City world (survival mode)', '1'=>'Empire world (creative mode)', '2'=>'City world (creative mode)')),
 );
