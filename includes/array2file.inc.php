@@ -59,7 +59,12 @@ function umc_array2file_line($array, $layer, $val_change_func = false) {
         } else if(is_numeric($value)) {
             $out .= "$value,\n";
         } else {
-            $out .= "'$value',\n";
+            if (strstr($value, "'")) {
+                $out .= "\"$value\",\n";
+            } else {
+                $out .= "'$value',\n";
+            }
+            
         }
     }
     return $out;
