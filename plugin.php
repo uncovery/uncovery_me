@@ -387,7 +387,7 @@ function umc_plugin_eventhandler($event, $parameters = false) {
                 XMPP_ERROR_trace("Executing Plugin $plugin function $function without parameters");
                 $return_vars[] = $function();
             }
-            umc_log('plugin', $plugin, "Executing Event $event " . var_export($parameters, true));
+            // umc_log('plugin', $plugin, "Executing Event $event " . var_export($parameters, true));
         } else {
             // nothing done since plugin either does not have the current event or is disabled.
         }

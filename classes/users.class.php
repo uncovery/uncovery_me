@@ -85,10 +85,6 @@ class UMC_User {
         }
         $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `uuid`) VALUES ('$this->username','$reason', '$admin', '$this->uuid');";
         umc_mysql_query($sql, true);
-        // remove shop inventory
-        umc_shop_cleanout_olduser($this->uuid);
-        // remove from teamspeak
-        umc_ts_clear_rights($this->uuid);
 
         $text = "$admin banned $$this->username ($this->uuid) because of $reason";
         umc_log('mod', 'ban', $text);

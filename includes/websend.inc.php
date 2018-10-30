@@ -421,7 +421,7 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
  * @return type
  */
 function umc_ws_get_inv($inv_data) {
-    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA, $UMC_DATA_ID2NAME, $UMC_USER;
+    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA;
     // XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $inv = array();
     foreach($inv_data as $item) {
@@ -429,6 +429,7 @@ function umc_ws_get_inv($inv_data) {
         $inv[$slot] = array();
         $inv[$slot]['meta'] = false;
         $inv[$slot]['nbt'] = false;
+        $inv[$slot]['data'] = 0;
         foreach ($item as $name => $value) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
@@ -438,9 +439,9 @@ function umc_ws_get_inv($inv_data) {
                 } else if (isset($UMC_DATA[$item_typename])) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
-                    $inv[$slot]['item_name'] = $UMC_DATA_ID2NAME[$item['TypeName']];
-                    $out = "UMC_DATA_ID2NAME USAGE: ITEM ISSUE! Please add: '$item_typename' => '{$inv[$slot]['item_name']}', to the \$UMC_DATA_SPIGOT2ITEM array";
+                    $out = "UMC_DATA_ID2NAME USAGE: ITEM ISSUE! Please add: '$item_typename' to the \$UMC_DATA array";
                     XMPP_ERROR_send_msg($out);
+                    $inv[$slot]['item_name'] = $item_typename;
                 }
             } else if ($fix_name == "type") {
                 $inv[$slot]['id'] = $item['Type'];
@@ -792,15 +793,15 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     // we cannot give one user more than one stack at a time with this command
     // so let's give full stacks until we need to give less than one stack.
     while ($amount > $stack_size) {
-        $cmd = "minecraft:give $user $item_name $stack_size $damage $meta_cmd;";
+        $cmd = "minecraft:give $user $item_name$meta_cmd $stack_size;";
         $check = umc_ws_command('asConsole', $cmd);
         $amount = $amount - $stack_size;
     }
     // give the leftover amount
-    $cmd = "minecraft:give $user $item_name $amount $damage $meta_cmd;";
-    umc_log('inventory', 'give', "gave $initial_amount of $item_name ($damage $meta_cmd) to $user");
+    $cmd = "minecraft:give $user $item_name$meta_cmd $amount;";
+    umc_log('inventory', 'give', "gave $initial_amount of $item_name (command: minecraft:give $user $item_name$meta_cmd ) to $user");
     $check = umc_ws_command('asConsole', $cmd);
-    return $check;
+    return $check;    
 }
 
 

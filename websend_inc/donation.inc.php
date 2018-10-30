@@ -555,6 +555,8 @@ function umc_process_donation() {
             . "Thanks again, and have fun building your dream!\r\n\r\nSee you around,\r\nUncovery";
         $text .= "Thank you very much for donating! It is highly appreciated and will surely help to keep this server running longer. "
         . "I am always working on giving extra privileges to donators, so keep watching out!";
+        // send email to admin
+        mail('minecraft@uncovery.me', 'Donation Success', "$username made a donation of $final_value!", $headers, "-fminecraft@uncovery.me");
     } else {
         $subject = "[Uncovery Minecraft] Donation pending!";
         $text .= "There was an issue processing your payment automatically. Please wait until we have manually processed and it you will get an email from us.";

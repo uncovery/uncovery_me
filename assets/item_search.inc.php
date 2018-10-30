@@ -304,7 +304,7 @@ $ITEM_SEARCH = array(
         'item_name' => 'tallgrass',
         'type' => 0,
     ),
-    'tall_grass' => array(
+    'shrub' => array(
         'item_name' => 'tallgrass',
         'type' => 0,
     ),
@@ -612,8 +612,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'crafting_table',
         'type' => 0,
     ),
-    'wheat' => array(
-        'item_name' => 'wheat',
+    'wheat_block' => array(
+        'item_name' => 'wheat_block',
         'type' => 0,
     ),
     'farmland' => array(
@@ -660,8 +660,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'stone_pressure_plate',
         'type' => 0,
     ),
-    'iron_door' => array(
-        'item_name' => 'iron_door',
+    'iron_door_block' => array(
+        'item_name' => 'iron_door_block',
         'type' => 0,
     ),
     'wooden_pressure_plate' => array(
@@ -744,12 +744,12 @@ $ITEM_SEARCH = array(
         'item_name' => 'lit_pumpkin',
         'type' => 0,
     ),
-    'cake' => array(
-        'item_name' => 'cake',
+    'cake_block' => array(
+        'item_name' => 'cake_block',
         'type' => 0,
     ),
-    'unpowered_repeater' => array(
-        'item_name' => 'unpowered_repeater',
+    'repeater' => array(
+        'item_name' => 'repeater',
         'type' => 0,
     ),
     'powered_repeater' => array(
@@ -1044,16 +1044,20 @@ $ITEM_SEARCH = array(
         'item_name' => 'nether_brick_stairs',
         'type' => 0,
     ),
-    'nether_wart' => array(
-        'item_name' => 'nether_wart',
+    'nether_wart_block' => array(
+        'item_name' => 'nether_wart_block',
         'type' => 0,
     ),
     'enchanting_table' => array(
         'item_name' => 'enchanting_table',
         'type' => 0,
     ),
-    'cauldron' => array(
-        'item_name' => 'cauldron',
+    'brewing_stand' => array(
+        'item_name' => 'brewing_stand',
+        'type' => 0,
+    ),
+    'cauldron_block' => array(
+        'item_name' => 'cauldron_block',
         'type' => 0,
     ),
     'end_portal' => array(
@@ -1216,8 +1220,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'cobblestone_wall',
         'type' => 1,
     ),
-    'flower_pot' => array(
-        'item_name' => 'flower_pot',
+    'flower_pot_block' => array(
+        'item_name' => 'flower_pot_block',
         'type' => 0,
     ),
     'carrots' => array(
@@ -1232,8 +1236,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'wooden_button',
         'type' => 0,
     ),
-    'skull' => array(
-        'item_name' => 'skull',
+    'skull_block' => array(
+        'item_name' => 'skull_block',
         'type' => 0,
     ),
     'anvil' => array(
@@ -1312,67 +1316,67 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 0,
     ),
-    'white_clay' => array(
+    'white_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 0,
     ),
-    'orange_clay' => array(
+    'orange_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 1,
     ),
-    'magenta_clay' => array(
+    'magenta_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 2,
     ),
-    'light_blue_clay' => array(
+    'light_blue_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 3,
     ),
-    'yellow_clay' => array(
+    'yellow_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 4,
     ),
-    'lime_clay' => array(
+    'lime_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 5,
     ),
-    'pink_clay' => array(
+    'pink_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 6,
     ),
-    'gray_clay' => array(
+    'gray_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 7,
     ),
-    'light_gray_clay' => array(
+    'light_gray_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 8,
     ),
-    'cyan_clay' => array(
+    'cyan_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 9,
     ),
-    'purple_clay' => array(
+    'purple_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 10,
     ),
-    'blue_clay' => array(
+    'blue_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 11,
     ),
-    'brown_clay' => array(
+    'brown_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 12,
     ),
-    'green_clay' => array(
+    'green_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 13,
     ),
-    'red_clay' => array(
+    'red_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 14,
     ),
-    'black_clay' => array(
+    'black_terracotta' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 15,
     ),
@@ -1456,30 +1460,6 @@ $ITEM_SEARCH = array(
         'item_name' => 'leaves2',
         'type' => 1,
     ),
-    'acacia_leaves_no_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 4,
-    ),
-    'dark_oak_leaves_no_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 5,
-    ),
-    'acacia_leaves_check_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 8,
-    ),
-    'dark_oak_leaves_check_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 9,
-    ),
-    'acacia_leaves_check_decay_and_check_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 12,
-    ),
-    'dark_oak_leaves_check_decay_and_check_decay' => array(
-        'item_name' => 'leaves2',
-        'type' => 13,
-    ),
     'log2' => array(
         'item_name' => 'log2',
         'type' => 0,
@@ -1492,30 +1472,6 @@ $ITEM_SEARCH = array(
         'item_name' => 'log2',
         'type' => 1,
     ),
-    'acacia_wood_east_west' => array(
-        'item_name' => 'log2',
-        'type' => 4,
-    ),
-    'dark_oak_wood_east_west' => array(
-        'item_name' => 'log2',
-        'type' => 5,
-    ),
-    'acacia_wood_north_south' => array(
-        'item_name' => 'log2',
-        'type' => 8,
-    ),
-    'dark_oak_wood_north_south' => array(
-        'item_name' => 'log2',
-        'type' => 9,
-    ),
-    'acacia_wood_only_bark' => array(
-        'item_name' => 'log2',
-        'type' => 12,
-    ),
-    'dark_oak_wood_only_bark' => array(
-        'item_name' => 'log2',
-        'type' => 13,
-    ),
     'acacia_stairs' => array(
         'item_name' => 'acacia_stairs',
         'type' => 0,
@@ -1524,8 +1480,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'dark_oak_stairs',
         'type' => 0,
     ),
-    'slime_block' => array(
-        'item_name' => 'slime_block',
+    'slime' => array(
+        'item_name' => 'slime',
         'type' => 0,
     ),
     'barrier' => array(
@@ -1744,24 +1700,232 @@ $ITEM_SEARCH = array(
         'item_name' => 'acacia_fence',
         'type' => 0,
     ),
-    'spruce_door' => array(
-        'item_name' => 'spruce_door',
+    'spruce_door_block' => array(
+        'item_name' => 'spruce_door_block',
         'type' => 0,
     ),
-    'birch_door' => array(
-        'item_name' => 'birch_door',
+    'birch_door_block' => array(
+        'item_name' => 'birch_door_block',
         'type' => 0,
     ),
-    'jungle_door' => array(
-        'item_name' => 'jungle_door',
+    'jungle_door_block' => array(
+        'item_name' => 'jungle_door_block',
         'type' => 0,
     ),
-    'acacia_door' => array(
-        'item_name' => 'acacia_door',
+    'acacia_door_block' => array(
+        'item_name' => 'acacia_door_block',
         'type' => 0,
     ),
-    'dark_oak_door' => array(
-        'item_name' => 'dark_oak_door',
+    'dark_oak_door_block' => array(
+        'item_name' => 'dark_oak_door_block',
+        'type' => 0,
+    ),
+    'end_rod' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'chorus_plant' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'chorus_flower' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'purpur_block' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purpur_pillar' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpur_stairs' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purpur_double_slab' => array(
+        'item_name' => 'purpur_double_slab',
+        'type' => 0,
+    ),
+    'purpur_slab' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'end_bricks' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'grass_path' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'end_gateway' => array(
+        'item_name' => 'end_gateway',
+        'type' => 0,
+    ),
+    'frosted_ice' => array(
+        'item_name' => 'frosted_ice',
+        'type' => 0,
+    ),
+    'magma' => array(
+        'item_name' => 'magma',
+        'type' => 0,
+    ),
+    'red_nether_brick' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'bone_block' => array(
+        'item_name' => 'bone_block',
+        'type' => 0,
+    ),
+    'structure_void' => array(
+        'item_name' => 'structure_void',
+        'type' => 0,
+    ),
+    'observer' => array(
+        'item_name' => 'observer',
+        'type' => 0,
+    ),
+    'white_shulker_box' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'orange_shulker_box' => array(
+        'item_name' => 'orange_shulker_box',
+        'type' => 0,
+    ),
+    'magenta_shulker_box' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'light_blue_shulker_box' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'yellow_shulker_box' => array(
+        'item_name' => 'yellow_shulker_box',
+        'type' => 0,
+    ),
+    'lime_shulker_box' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'pink_shulker_box' => array(
+        'item_name' => 'pink_shulker_box',
+        'type' => 0,
+    ),
+    'gray_shulker_box' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'light_gray_shulker_box' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'cyan_shulker_box' => array(
+        'item_name' => 'cyan_shulker_box',
+        'type' => 0,
+    ),
+    'purple_shulker_box' => array(
+        'item_name' => 'purple_shulker_box',
+        'type' => 0,
+    ),
+    'blue_shulker_box' => array(
+        'item_name' => 'blue_shulker_box',
+        'type' => 0,
+    ),
+    'brown_shulker_box' => array(
+        'item_name' => 'brown_shulker_box',
+        'type' => 0,
+    ),
+    'green_shulker_box' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'red_shulker_box' => array(
+        'item_name' => 'red_shulker_box',
+        'type' => 0,
+    ),
+    'black_shulker_box' => array(
+        'item_name' => 'black_shulker_box',
+        'type' => 0,
+    ),
+    'white_glazed_terracotta' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'orange_glazed_terracotta' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'magenta_glazed_terracotta' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'light_blue_glazed_terracotta' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yellow_glazed_terracotta' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lime_glazed_terracotta' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'pink_glazed_terracotta' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'gray_glazed_terracotta' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'light_gray_glazed_terracotta' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cyan_glazed_terracotta' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'purple_glazed_terracotta' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blue_glazed_terracotta' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'brown_glazed_terracotta' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'green_glazed_terracotta' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'red_glazed_terracotta' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'black_glazed_terracotta' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'concrete' => array(
+        'item_name' => 'concrete',
+        'type' => 0,
+    ),
+    'concrete_powder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 0,
+    ),
+    'structure_block' => array(
+        'item_name' => 'structure_block',
         'type' => 0,
     ),
     'iron_shovel' => array(
@@ -1928,6 +2092,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'wheat_seeds',
         'type' => 0,
     ),
+    'wheat' => array(
+        'item_name' => 'wheat',
+        'type' => 0,
+    ),
     'bread' => array(
         'item_name' => 'bread',
         'type' => 0,
@@ -2064,6 +2232,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'saddle',
         'type' => 0,
     ),
+    'iron_door' => array(
+        'item_name' => 'iron_door',
+        'type' => 0,
+    ),
     'redstone' => array(
         'item_name' => 'redstone',
         'type' => 0,
@@ -2090,10 +2262,6 @@ $ITEM_SEARCH = array(
     ),
     'clay_ball' => array(
         'item_name' => 'clay_ball',
-        'type' => 0,
-    ),
-    'sugarcane' => array(
-        'item_name' => 'sugarcane',
         'type' => 0,
     ),
     'paper' => array(
@@ -2240,8 +2408,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'sugar',
         'type' => 0,
     ),
-    'repeater' => array(
-        'item_name' => 'repeater',
+    'cake' => array(
+        'item_name' => 'cake',
         'type' => 0,
     ),
     'cookie' => array(
@@ -2256,8 +2424,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'shears',
         'type' => 0,
     ),
-    'melonslice' => array(
-        'item_name' => 'melonslice',
+    'melon' => array(
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'pumpkin_seeds' => array(
@@ -2268,8 +2436,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'melon_seeds',
         'type' => 0,
     ),
-    'raw_beef' => array(
-        'item_name' => 'raw_beef',
+    'beef' => array(
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'cooked_beef' => array(
@@ -2304,329 +2472,13 @@ $ITEM_SEARCH = array(
         'item_name' => 'gold_nugget',
         'type' => 0,
     ),
+    'nether_wart' => array(
+        'item_name' => 'nether_wart',
+        'type' => 0,
+    ),
     'potion' => array(
         'item_name' => 'potion',
         'type' => 0,
-    ),
-    'awkward_potion' => array(
-        'item_name' => 'potion',
-        'type' => 0,
-    ),
-    'pink_potion' => array(
-        'item_name' => 'potion',
-        'type' => 1,
-    ),
-    'uninteresting_potion' => array(
-        'item_name' => 'potion',
-        'type' => 2,
-    ),
-    'bland_potion' => array(
-        'item_name' => 'potion',
-        'type' => 4,
-    ),
-    'clear_potion' => array(
-        'item_name' => 'potion',
-        'type' => 6,
-    ),
-    'milky_potion' => array(
-        'item_name' => 'potion',
-        'type' => 8,
-    ),
-    'diffuse_potion' => array(
-        'item_name' => 'potion',
-        'type' => 10,
-    ),
-    'artless_potion' => array(
-        'item_name' => 'potion',
-        'type' => 12,
-    ),
-    'thin_potion' => array(
-        'item_name' => 'potion',
-        'type' => 14,
-    ),
-    'flat_potion' => array(
-        'item_name' => 'potion',
-        'type' => 18,
-    ),
-    'bulky_potion' => array(
-        'item_name' => 'potion',
-        'type' => 20,
-    ),
-    'bungling_potion' => array(
-        'item_name' => 'potion',
-        'type' => 22,
-    ),
-    'buttered_potion' => array(
-        'item_name' => 'potion',
-        'type' => 24,
-    ),
-    'smooth_potion' => array(
-        'item_name' => 'potion',
-        'type' => 26,
-    ),
-    'suave_potion' => array(
-        'item_name' => 'potion',
-        'type' => 28,
-    ),
-    'debonair_potion' => array(
-        'item_name' => 'potion',
-        'type' => 30,
-    ),
-    'thick_potion' => array(
-        'item_name' => 'potion',
-        'type' => 32,
-    ),
-    'elegant_potion' => array(
-        'item_name' => 'potion',
-        'type' => 34,
-    ),
-    'fancy_potion' => array(
-        'item_name' => 'potion',
-        'type' => 36,
-    ),
-    'charming_potion' => array(
-        'item_name' => 'potion',
-        'type' => 38,
-    ),
-    'dashing_potion' => array(
-        'item_name' => 'potion',
-        'type' => 40,
-    ),
-    'refined_potion' => array(
-        'item_name' => 'potion',
-        'type' => 42,
-    ),
-    'cordial_potion' => array(
-        'item_name' => 'potion',
-        'type' => 44,
-    ),
-    'sparkling_potion' => array(
-        'item_name' => 'potion',
-        'type' => 46,
-    ),
-    'potent_potion' => array(
-        'item_name' => 'potion',
-        'type' => 48,
-    ),
-    'foul_potion' => array(
-        'item_name' => 'potion',
-        'type' => 50,
-    ),
-    'odorless_potion' => array(
-        'item_name' => 'potion',
-        'type' => 52,
-    ),
-    'rank_potion' => array(
-        'item_name' => 'potion',
-        'type' => 54,
-    ),
-    'harsh_potion' => array(
-        'item_name' => 'potion',
-        'type' => 56,
-    ),
-    'acrid_potion' => array(
-        'item_name' => 'potion',
-        'type' => 58,
-    ),
-    'stinky_potion' => array(
-        'item_name' => 'potion',
-        'type' => 62,
-    ),
-    'mundane_potion_(extended)' => array(
-        'item_name' => 'potion',
-        'type' => 64,
-    ),
-    'potion_of_regeneration' => array(
-        'item_name' => 'potion',
-        'type' => 65,
-    ),
-    'potion_of_swiftness' => array(
-        'item_name' => 'potion',
-        'type' => 66,
-    ),
-    'potion_of_fire_resistance' => array(
-        'item_name' => 'potion',
-        'type' => 67,
-    ),
-    'potion_of_poison' => array(
-        'item_name' => 'potion',
-        'type' => 68,
-    ),
-    'potion_of_night_vision' => array(
-        'item_name' => 'potion',
-        'type' => 70,
-    ),
-    'potion_of_weakness' => array(
-        'item_name' => 'potion',
-        'type' => 72,
-    ),
-    'mundane_potion' => array(
-        'item_name' => 'potion',
-        'type' => 8192,
-    ),
-    'potion_of_healing' => array(
-        'item_name' => 'potion',
-        'type' => 8197,
-    ),
-    'potion_of_strength' => array(
-        'item_name' => 'potion',
-        'type' => 8201,
-    ),
-    'potion_of_slowness' => array(
-        'item_name' => 'potion',
-        'type' => 8202,
-    ),
-    'potion_of_leaping' => array(
-        'item_name' => 'potion',
-        'type' => 8203,
-    ),
-    'potion_of_harming' => array(
-        'item_name' => 'potion',
-        'type' => 8204,
-    ),
-    'potion_of_water_breathing' => array(
-        'item_name' => 'potion',
-        'type' => 8205,
-    ),
-    'potion_of_invisibility' => array(
-        'item_name' => 'potion',
-        'type' => 8206,
-    ),
-    'potion_of_regeneration_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8225,
-    ),
-    'potion_of_swiftness_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8226,
-    ),
-    'potion_of_poison_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8228,
-    ),
-    'potion_of_healing_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8229,
-    ),
-    'potion_of_strength_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8233,
-    ),
-    'potion_of_night_vision_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8234,
-    ),
-    'potion_of_harming_ii' => array(
-        'item_name' => 'potion',
-        'type' => 8236,
-    ),
-    'potion_of_regeneration_ii_(extended)' => array(
-        'item_name' => 'potion',
-        'type' => 8289,
-    ),
-    'potion_of_swiftness_ii_(extended)' => array(
-        'item_name' => 'potion',
-        'type' => 8290,
-    ),
-    'potion_of_poison_ii_(extended)' => array(
-        'item_name' => 'potion',
-        'type' => 8292,
-    ),
-    'potion_of_strength_ii_(extended)' => array(
-        'item_name' => 'potion',
-        'type' => 8297,
-    ),
-    'splash_mundane_potion' => array(
-        'item_name' => 'potion',
-        'type' => 16384,
-    ),
-    'splash_potion_of_regeneration' => array(
-        'item_name' => 'potion',
-        'type' => 16385,
-    ),
-    'splash_potion_of_swiftness' => array(
-        'item_name' => 'potion',
-        'type' => 16386,
-    ),
-    'splash_potion_of_fire_resistance' => array(
-        'item_name' => 'potion',
-        'type' => 16387,
-    ),
-    'splash_potion_of_poison' => array(
-        'item_name' => 'potion',
-        'type' => 16388,
-    ),
-    'splash_potion_of_healing' => array(
-        'item_name' => 'potion',
-        'type' => 16389,
-    ),
-    'splash_potion_of_weakness' => array(
-        'item_name' => 'potion',
-        'type' => 16392,
-    ),
-    'splash_potion_of_strength' => array(
-        'item_name' => 'potion',
-        'type' => 16393,
-    ),
-    'splash_potion_of_slowness' => array(
-        'item_name' => 'potion',
-        'type' => 16394,
-    ),
-    'splash_potion_of_harming' => array(
-        'item_name' => 'potion',
-        'type' => 16396,
-    ),
-    'splash_potion_of_regeneration_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16417,
-    ),
-    'splash_potion_of_swiftness_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16418,
-    ),
-    'splash_potion_of_fire_resistance_(reverted)' => array(
-        'item_name' => 'potion',
-        'type' => 16419,
-    ),
-    'splash_potion_of_poison_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16420,
-    ),
-    'splash_potion_of_healing_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16421,
-    ),
-    'splash_potion_of_night_vision' => array(
-        'item_name' => 'potion',
-        'type' => 16422,
-    ),
-    'splash_potion_of_weakness_(reverted)' => array(
-        'item_name' => 'potion',
-        'type' => 16424,
-    ),
-    'splash_potion_of_strength_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16425,
-    ),
-    'splash_potion_of_slowness_(reverted)' => array(
-        'item_name' => 'potion',
-        'type' => 16426,
-    ),
-    'splash_potion_of_harming_ii' => array(
-        'item_name' => 'potion',
-        'type' => 16428,
-    ),
-    'splash_potion_of_invisibility' => array(
-        'item_name' => 'potion',
-        'type' => 16430,
-    ),
-    'splash_potion_of_healing_(reverted)' => array(
-        'item_name' => 'potion',
-        'type' => 16453,
-    ),
-    'splash_potion_of_harming_(reverted)' => array(
-        'item_name' => 'potion',
-        'type' => 16460,
     ),
     'glass_bottle' => array(
         'item_name' => 'glass_bottle',
@@ -2652,6 +2504,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'brewingstand',
         'type' => 0,
     ),
+    'cauldron' => array(
+        'item_name' => 'cauldron',
+        'type' => 0,
+    ),
     'ender_eye' => array(
         'item_name' => 'ender_eye',
         'type' => 0,
@@ -2663,114 +2519,6 @@ $ITEM_SEARCH = array(
     'spawn_egg' => array(
         'item_name' => 'spawn_egg',
         'type' => 0,
-    ),
-    'creeper_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 50,
-    ),
-    'skeleton_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 51,
-    ),
-    'spider_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 52,
-    ),
-    'zombie_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 54,
-    ),
-    'slime_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 55,
-    ),
-    'ghast_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 56,
-    ),
-    'pigman_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 57,
-    ),
-    'enderman_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 58,
-    ),
-    'cave_spider_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 59,
-    ),
-    'silverfish_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 60,
-    ),
-    'blaze_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 61,
-    ),
-    'magma_cube_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 62,
-    ),
-    'bat_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 65,
-    ),
-    'witch_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 66,
-    ),
-    'endermite_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 67,
-    ),
-    'guardian_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 68,
-    ),
-    'pig_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 90,
-    ),
-    'sheep_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 91,
-    ),
-    'cow_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 92,
-    ),
-    'chicken_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 93,
-    ),
-    'squid_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 94,
-    ),
-    'wolf_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 95,
-    ),
-    'mooshroom_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 96,
-    ),
-    'ocelot_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 98,
-    ),
-    'horse_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 100,
-    ),
-    'rabbit_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 101,
-    ),
-    'villager_egg' => array(
-        'item_name' => 'spawn_egg',
-        'type' => 120,
     ),
     'experience_bottle' => array(
         'item_name' => 'experience_bottle',
@@ -2796,8 +2544,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'item_frame',
         'type' => 0,
     ),
-    'flower_pot_item' => array(
-        'item_name' => 'flower_pot_item',
+    'flower_pot' => array(
+        'item_name' => 'flower_pot',
         'type' => 0,
     ),
     'carrot' => array(
@@ -2824,29 +2572,33 @@ $ITEM_SEARCH = array(
         'item_name' => 'golden_carrot',
         'type' => 0,
     ),
-    'skeletonskull' => array(
-        'item_name' => 'skeletonskull',
+    'skull' => array(
+        'item_name' => 'skull',
         'type' => 0,
     ),
     'skeleton_skull' => array(
-        'item_name' => 'skeletonskull',
+        'item_name' => 'skull',
         'type' => 0,
     ),
     'wither_skeleton_skull' => array(
-        'item_name' => 'skeletonskull',
+        'item_name' => 'skull',
         'type' => 1,
     ),
     'zombie_head' => array(
-        'item_name' => 'skeletonskull',
+        'item_name' => 'skull',
         'type' => 2,
     ),
     'head' => array(
-        'item_name' => 'skeletonskull',
+        'item_name' => 'skull',
         'type' => 3,
     ),
     'creeper_head' => array(
-        'item_name' => 'skeletonskull',
+        'item_name' => 'skull',
         'type' => 4,
+    ),
+    'dragon_head' => array(
+        'item_name' => 'skull',
+        'type' => 5,
     ),
     'carrot_on_a_stick' => array(
         'item_name' => 'carrot_on_a_stick',
@@ -2868,70 +2620,6 @@ $ITEM_SEARCH = array(
         'item_name' => 'firework_charge',
         'type' => 0,
     ),
-    'white_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 0,
-    ),
-    'orange_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 1,
-    ),
-    'magenta_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 2,
-    ),
-    'light_blue_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 3,
-    ),
-    'yellow_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 4,
-    ),
-    'lime_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 5,
-    ),
-    'pink_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 6,
-    ),
-    'gray_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 7,
-    ),
-    'light_Gray_Firework' => array(
-        'item_name' => 'firework_charge',
-        'type' => 8,
-    ),
-    'cyan_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 9,
-    ),
-    'purple_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 10,
-    ),
-    'blue_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 11,
-    ),
-    'brown_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 12,
-    ),
-    'green_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 13,
-    ),
-    'red_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 14,
-    ),
-    'black_firework_star' => array(
-        'item_name' => 'firework_charge',
-        'type' => 15,
-    ),
     'enchanted_book' => array(
         'item_name' => 'enchanted_book',
         'type' => 0,
@@ -2940,16 +2628,8 @@ $ITEM_SEARCH = array(
         'item_name' => 'comparator',
         'type' => 0,
     ),
-    'redstone_comparator_(ative)' => array(
-        'item_name' => 'comparator',
-        'type' => 0,
-    ),
-    'redstone_comparator_(inactive)' => array(
-        'item_name' => 'comparator',
-        'type' => 1,
-    ),
-    'nether_brick_item' => array(
-        'item_name' => 'nether_brick_item',
+    'netherbrick' => array(
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'quartz' => array(
@@ -3032,6 +2712,110 @@ $ITEM_SEARCH = array(
         'item_name' => 'banner',
         'type' => 0,
     ),
+    'end_crystal' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'spruce_door' => array(
+        'item_name' => 'spruce_door',
+        'type' => 0,
+    ),
+    'birch_door' => array(
+        'item_name' => 'birch_door',
+        'type' => 0,
+    ),
+    'jungle_door' => array(
+        'item_name' => 'jungle_door',
+        'type' => 0,
+    ),
+    'acacia_door' => array(
+        'item_name' => 'acacia_door',
+        'type' => 0,
+    ),
+    'dark_oak_door' => array(
+        'item_name' => 'dark_oak_door',
+        'type' => 0,
+    ),
+    'chorus_fruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'chorus_fruit_popped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'beetroot' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beetroot_seeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetroot_soup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'dragon_breath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'splash_potion' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'spectral_arrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'tipped_arrow' => array(
+        'item_name' => 'tipped_arrow',
+        'type' => 0,
+    ),
+    'lingering_potion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'shield' => array(
+        'item_name' => 'shield',
+        'type' => 0,
+    ),
+    'elytra' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'spruce_boat' => array(
+        'item_name' => 'spruce_boat',
+        'type' => 0,
+    ),
+    'birch_boat' => array(
+        'item_name' => 'birch_boat',
+        'type' => 0,
+    ),
+    'jungle_boat' => array(
+        'item_name' => 'jungle_boat',
+        'type' => 0,
+    ),
+    'acacia_boat' => array(
+        'item_name' => 'acacia_boat',
+        'type' => 0,
+    ),
+    'dark_oak_boat' => array(
+        'item_name' => 'dark_oak_boat',
+        'type' => 0,
+    ),
+    'totem_of_undying' => array(
+        'item_name' => 'totem_of_undying',
+        'type' => 0,
+    ),
+    'shulker_shell' => array(
+        'item_name' => 'shulker_shell',
+        'type' => 0,
+    ),
+    'iron_nugget' => array(
+        'item_name' => 'iron_nugget',
+        'type' => 0,
+    ),
     'record_13' => array(
         'item_name' => 'record_13',
         'type' => 0,
@@ -3092,6 +2876,62 @@ $ITEM_SEARCH = array(
         'item_name' => 'stone',
         'type' => 0,
     ),
+    'gstone' => array(
+        'item_name' => 'stone',
+        'type' => 1,
+    ),
+    'polishedgranite' => array(
+        'item_name' => 'stone',
+        'type' => 2,
+    ),
+    'pgranite' => array(
+        'item_name' => 'stone',
+        'type' => 2,
+    ),
+    'pgstone' => array(
+        'item_name' => 'stone',
+        'type' => 2,
+    ),
+    'polishedgstone' => array(
+        'item_name' => 'stone',
+        'type' => 2,
+    ),
+    'dstone' => array(
+        'item_name' => 'stone',
+        'type' => 3,
+    ),
+    'polisheddiorite' => array(
+        'item_name' => 'stone',
+        'type' => 4,
+    ),
+    'pdiorite' => array(
+        'item_name' => 'stone',
+        'type' => 4,
+    ),
+    'pdstone' => array(
+        'item_name' => 'stone',
+        'type' => 4,
+    ),
+    'polisheddstone' => array(
+        'item_name' => 'stone',
+        'type' => 4,
+    ),
+    'astone' => array(
+        'item_name' => 'stone',
+        'type' => 5,
+    ),
+    'polishedandesite' => array(
+        'item_name' => 'stone',
+        'type' => 6,
+    ),
+    'pandesite' => array(
+        'item_name' => 'stone',
+        'type' => 6,
+    ),
+    'pastone' => array(
+        'item_name' => 'stone',
+        'type' => 6,
+    ),
     'greendirt' => array(
         'item_name' => 'grass',
         'type' => 0,
@@ -3112,6 +2952,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'dirt',
         'type' => 0,
     ),
+    'cdirt' => array(
+        'item_name' => 'dirt',
+        'type' => 1,
+    ),
     'grasslessdirt' => array(
         'item_name' => 'dirt',
         'type' => 1,
@@ -3121,6 +2965,18 @@ $ITEM_SEARCH = array(
         'type' => 1,
     ),
     'grasslessland' => array(
+        'item_name' => 'dirt',
+        'type' => 1,
+    ),
+    'coarsedirt' => array(
+        'item_name' => 'dirt',
+        'type' => 1,
+    ),
+    'coarseland' => array(
+        'item_name' => 'dirt',
+        'type' => 1,
+    ),
+    'coarseearth' => array(
         'item_name' => 'dirt',
         'type' => 1,
     ),
@@ -5492,6 +5348,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'leaves',
         'type' => 3,
     ),
+    'wetsponge' => array(
+        'item_name' => 'sponge',
+        'type' => 1,
+    ),
     'blockglass' => array(
         'item_name' => 'glass',
         'type' => 0,
@@ -5572,6 +5432,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'sandstone',
         'type' => 0,
     ),
+    'cpstone' => array(
+        'item_name' => 'sandstone',
+        'type' => 1,
+    ),
     'creepersandstone' => array(
         'item_name' => 'sandstone',
         'type' => 1,
@@ -5651,6 +5515,10 @@ $ITEM_SEARCH = array(
     'chiselsastone' => array(
         'item_name' => 'sandstone',
         'type' => 1,
+    ),
+    'smstone' => array(
+        'item_name' => 'sandstone',
+        'type' => 2,
     ),
     'smoothsandstone' => array(
         'item_name' => 'sandstone',
@@ -6308,6 +6176,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'wool',
         'type' => 7,
     ),
+    'lgwool' => array(
+        'item_name' => 'wool',
+        'type' => 8,
+    ),
     'lightgraywool' => array(
         'item_name' => 'wool',
         'type' => 8,
@@ -6704,7 +6576,23 @@ $ITEM_SEARCH = array(
         'item_name' => 'red_flower',
         'type' => 3,
     ),
+    'abluet' => array(
+        'item_name' => 'red_flower',
+        'type' => 3,
+    ),
+    'azureb' => array(
+        'item_name' => 'red_flower',
+        'type' => 3,
+    ),
+    'houstonia' => array(
+        'item_name' => 'red_flower',
+        'type' => 3,
+    ),
     'redtulip' => array(
+        'item_name' => 'red_flower',
+        'type' => 4,
+    ),
+    'tulipred' => array(
         'item_name' => 'red_flower',
         'type' => 4,
     ),
@@ -6712,7 +6600,15 @@ $ITEM_SEARCH = array(
         'item_name' => 'red_flower',
         'type' => 4,
     ),
+    'tulipr' => array(
+        'item_name' => 'red_flower',
+        'type' => 4,
+    ),
     'orangetulip' => array(
+        'item_name' => 'red_flower',
+        'type' => 5,
+    ),
+    'tuliporange' => array(
         'item_name' => 'red_flower',
         'type' => 5,
     ),
@@ -6720,7 +6616,15 @@ $ITEM_SEARCH = array(
         'item_name' => 'red_flower',
         'type' => 5,
     ),
+    'tulipo' => array(
+        'item_name' => 'red_flower',
+        'type' => 5,
+    ),
     'whitetulip' => array(
+        'item_name' => 'red_flower',
+        'type' => 6,
+    ),
+    'tulipwhite' => array(
         'item_name' => 'red_flower',
         'type' => 6,
     ),
@@ -6728,7 +6632,15 @@ $ITEM_SEARCH = array(
         'item_name' => 'red_flower',
         'type' => 6,
     ),
+    'tulipw' => array(
+        'item_name' => 'red_flower',
+        'type' => 6,
+    ),
     'pinktulip' => array(
+        'item_name' => 'red_flower',
+        'type' => 7,
+    ),
+    'tulippink' => array(
         'item_name' => 'red_flower',
         'type' => 7,
     ),
@@ -6736,7 +6648,31 @@ $ITEM_SEARCH = array(
         'item_name' => 'red_flower',
         'type' => 7,
     ),
+    'tulipp' => array(
+        'item_name' => 'red_flower',
+        'type' => 7,
+    ),
     'oxeye' => array(
+        'item_name' => 'red_flower',
+        'type' => 8,
+    ),
+    'daisy' => array(
+        'item_name' => 'red_flower',
+        'type' => 8,
+    ),
+    'oxeyedaisy' => array(
+        'item_name' => 'red_flower',
+        'type' => 8,
+    ),
+    'daisyoxeye' => array(
+        'item_name' => 'red_flower',
+        'type' => 8,
+    ),
+    'moondaisy' => array(
+        'item_name' => 'red_flower',
+        'type' => 8,
+    ),
+    'daisymoon' => array(
         'item_name' => 'red_flower',
         'type' => 8,
     ),
@@ -6906,6 +6842,10 @@ $ITEM_SEARCH = array(
     ),
     'doublestoneslab' => array(
         'item_name' => 'double_stone_slab',
+        'type' => 0,
+    ),
+    'doublestoneslab2' => array(
+        'item_name' => 'double_stone_slab2',
         'type' => 0,
     ),
     'dstoneslab' => array(
@@ -8980,6 +8920,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stone_slab',
         'type' => 0,
     ),
+    'stoneslab2' => array(
+        'item_name' => 'stone_slab2',
+        'type' => 0,
+    ),
     'sslab' => array(
         'item_name' => 'stone_slab',
         'type' => 0,
@@ -9494,6 +9438,10 @@ $ITEM_SEARCH = array(
     ),
     'dynamite' => array(
         'item_name' => 'tnt',
+        'type' => 0,
+    ),
+    'bshelf' => array(
+        'item_name' => 'bookshelf',
         'type' => 0,
     ),
     'bookcase' => array(
@@ -10144,6 +10092,14 @@ $ITEM_SEARCH = array(
         'item_name' => 'fence',
         'type' => 0,
     ),
+    'oakfence' => array(
+        'item_name' => 'fence',
+        'type' => 0,
+    ),
+    'ofence' => array(
+        'item_name' => 'fence',
+        'type' => 0,
+    ),
     'netherrock' => array(
         'item_name' => 'netherrack',
         'type' => 0,
@@ -10205,10 +10161,6 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'drock' => array(
-        'item_name' => 'netherrack',
-        'type' => 0,
-    ),
-    'dstone' => array(
         'item_name' => 'netherrack',
         'type' => 0,
     ),
@@ -10281,10 +10233,6 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'lstone' => array(
-        'item_name' => 'glowstone',
-        'type' => 0,
-    ),
-    'gstone' => array(
         'item_name' => 'glowstone',
         'type' => 0,
     ),
@@ -10596,6 +10544,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass',
         'type' => 6,
     ),
+    'gyglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 7,
+    ),
     'darkgrayglass' => array(
         'item_name' => 'stained_glass',
         'type' => 7,
@@ -10703,6 +10655,10 @@ $ITEM_SEARCH = array(
     'grastainedglass' => array(
         'item_name' => 'stained_glass',
         'type' => 7,
+    ),
+    'lgglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 8,
     ),
     'lightgrayglass' => array(
         'item_name' => 'stained_glass',
@@ -10848,6 +10804,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass',
         'type' => 10,
     ),
+    'blglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 11,
+    ),
     'blueglass' => array(
         'item_name' => 'stained_glass',
         'type' => 11,
@@ -10872,6 +10832,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass',
         'type' => 11,
     ),
+    'brglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 12,
+    ),
     'brownglass' => array(
         'item_name' => 'stained_glass',
         'type' => 12,
@@ -10895,6 +10859,10 @@ $ITEM_SEARCH = array(
     'brostainedglass' => array(
         'item_name' => 'stained_glass',
         'type' => 12,
+    ),
+    'grglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 13,
     ),
     'darkgreenglass' => array(
         'item_name' => 'stained_glass',
@@ -10991,6 +10959,10 @@ $ITEM_SEARCH = array(
     'rstainedglass' => array(
         'item_name' => 'stained_glass',
         'type' => 14,
+    ),
+    'bkglass' => array(
+        'item_name' => 'stained_glass',
+        'type' => 15,
     ),
     'blackglass' => array(
         'item_name' => 'stained_glass',
@@ -11684,6 +11656,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stonebrick',
         'type' => 1,
     ),
+    'csbrick' => array(
+        'item_name' => 'stonebrick',
+        'type' => 2,
+    ),
     'crackedstone' => array(
         'item_name' => 'stonebrick',
         'type' => 2,
@@ -11764,6 +11740,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stonebrick',
         'type' => 2,
     ),
+    'crstone' => array(
+        'item_name' => 'stonebrick',
+        'type' => 3,
+    ),
     'circlestone' => array(
         'item_name' => 'stonebrick',
         'type' => 3,
@@ -11828,195 +11808,195 @@ $ITEM_SEARCH = array(
         'item_name' => 'stonebrick',
         'type' => 3,
     ),
-    'giantredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hugeredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bigredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'gredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bredmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'giantrmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hugermushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bigrmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'grmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hrmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'brmushroom' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'giantredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hugeredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bigredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'gredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bredmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'giantrmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hugermush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'bigrmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'grmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'hrmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
-    'brmush' => array(
-        'item_name' => 'brown_mushroom_block',
-        'type' => 0,
-    ),
     'giantbrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hugebrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bigbrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'gbrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hbrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bbrownmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'giantbmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hugebmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bigbmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'gbmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hbmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bbmushroom' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'giantbrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hugebrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bigbrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'gbrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hbrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bbrownmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'giantbmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hugebmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bigbmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'gbmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'hbmush' => array(
-        'item_name' => 'red_mushroom_block',
+        'item_name' => 'brown_mushroom_block',
         'type' => 0,
     ),
     'bbmush' => array(
+        'item_name' => 'brown_mushroom_block',
+        'type' => 0,
+    ),
+    'giantredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hugeredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bigredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'gredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bredmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'giantrmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hugermushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bigrmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'grmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hrmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'brmushroom' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'giantredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hugeredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bigredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'gredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bredmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'giantrmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hugermush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'bigrmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'grmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'hrmush' => array(
+        'item_name' => 'red_mushroom_block',
+        'type' => 0,
+    ),
+    'brmush' => array(
         'item_name' => 'red_mushroom_block',
         'type' => 0,
     ),
@@ -12158,10 +12138,6 @@ $ITEM_SEARCH = array(
     ),
     'glasss' => array(
         'item_name' => 'glass_pane',
-        'type' => 0,
-    ),
-    'melon' => array(
-        'item_name' => 'melon_block',
         'type' => 0,
     ),
     'watermelon' => array(
@@ -12330,6 +12306,10 @@ $ITEM_SEARCH = array(
     ),
     'redstair' => array(
         'item_name' => 'brick_stairs',
+        'type' => 0,
+    ),
+    'sbstair' => array(
+        'item_name' => 'stone_brick_stairs',
         'type' => 0,
     ),
     'stonebrickstairs' => array(
@@ -14636,6 +14616,14 @@ $ITEM_SEARCH = array(
         'item_name' => 'wooden_slab',
         'type' => 0,
     ),
+    'spslab' => array(
+        'item_name' => 'wooden_slab',
+        'type' => 1,
+    ),
+    'spstep' => array(
+        'item_name' => 'wooden_slab',
+        'type' => 1,
+    ),
     'sprucewoodenstep' => array(
         'item_name' => 'wooden_slab',
         'type' => 1,
@@ -15532,6 +15520,22 @@ $ITEM_SEARCH = array(
         'item_name' => 'cobblestone_wall',
         'type' => 0,
     ),
+    'mcswall' => array(
+        'item_name' => 'cobblestone_wall',
+        'type' => 0,
+    ),
+    'mcsfence' => array(
+        'item_name' => 'cobblestone_wall',
+        'type' => 0,
+    ),
+    'mcfence' => array(
+        'item_name' => 'cobblestone_wall',
+        'type' => 0,
+    ),
+    'mcwall' => array(
+        'item_name' => 'cobblestone_wall',
+        'type' => 1,
+    ),
     'mosscobblestonewall' => array(
         'item_name' => 'cobblestone_wall',
         'type' => 1,
@@ -15579,22 +15583,6 @@ $ITEM_SEARCH = array(
     'mcobblefence' => array(
         'item_name' => 'cobblestone_wall',
         'type' => 1,
-    ),
-    'mcswall' => array(
-        'item_name' => 'cobblestone_wall',
-        'type' => 0,
-    ),
-    'mcsfence' => array(
-        'item_name' => 'cobblestone_wall',
-        'type' => 0,
-    ),
-    'mcwall' => array(
-        'item_name' => 'cobblestone_wall',
-        'type' => 0,
-    ),
-    'mcfence' => array(
-        'item_name' => 'cobblestone_wall',
-        'type' => 0,
     ),
     'plantedcarrot' => array(
         'item_name' => 'carrots',
@@ -16264,6 +16252,30 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 0,
     ),
+    'whiteterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
+    'whiteterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
+    'whitetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
+    'wterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
+    'wterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
+    'wtcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 0,
+    ),
     'orangeclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 1,
@@ -16288,6 +16300,30 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 1,
     ),
+    'orangeterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
+    'orangeterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
+    'orangetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
+    'oterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
+    'oterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
+    'otcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 1,
+    ),
     'magentaclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 2,
@@ -16309,6 +16345,30 @@ $ITEM_SEARCH = array(
         'type' => 2,
     ),
     'mstainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'magentaterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'magentaterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'magentatcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'mterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'mterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 2,
+    ),
+    'mtcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 2,
     ),
@@ -16372,6 +16432,66 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 3,
     ),
+    'lightblueterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lightblueterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lightbluetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lightbluterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lightbluterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lightblutcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lblueterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lblueterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbluetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbluterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbluterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lblutcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
+    'lbtcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 3,
+    ),
     'yellowclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 4,
@@ -16393,6 +16513,30 @@ $ITEM_SEARCH = array(
         'type' => 4,
     ),
     'ystainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'yellowterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'yellowterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'yellowtcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'yterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'yterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 4,
+    ),
+    'ytcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 4,
     ),
@@ -16468,6 +16612,78 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 5,
     ),
+    'lightgreenterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lightgreenterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lightgreentcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgreenterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgreenterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgreentcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lightgreterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lightgreterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lightgretcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgreterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgreterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lgretcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'limeterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'limeterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'limetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'lterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
+    'ltcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 5,
+    ),
     'pinkclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 6,
@@ -16489,6 +16705,30 @@ $ITEM_SEARCH = array(
         'type' => 6,
     ),
     'pistainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'pinkterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'pinkterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'pinktcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'piterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'piterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 6,
+    ),
+    'pitcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 6,
     ),
@@ -16520,7 +16760,7 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 7,
     ),
-    'darkgreeysclay' => array(
+    'darkgreysclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 7,
     ),
@@ -16599,6 +16839,118 @@ $ITEM_SEARCH = array(
     'grastainedclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 7,
+    ),
+    'darkgrayterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgrayterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgraytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgrayterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgrayterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgraytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgreyterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgreyterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgreytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgreyterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgreyterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgreytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgraterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgraterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'darkgratcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgraterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgraterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'dgratcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'grayterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'grayterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'graytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'greyterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'greyterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'greytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'graterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'graterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'gratcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 7,
+    ),
+    'lgclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
     ),
     'lightgrayclay' => array(
         'item_name' => 'stained_hardened_clay',
@@ -16696,6 +17048,114 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 8,
     ),
+    'lgterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgtcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgrayterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgrayterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgraytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgrayterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgrayterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgraytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgreyterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgreyterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgreytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgreyterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgreyterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgreytcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgraterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgraterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lightgratcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgraterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgraterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'lgratcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'silverterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'silverterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'silvertcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'siterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'siterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
+    'sitcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 8,
+    ),
     'cyanclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 9,
@@ -16717,6 +17177,30 @@ $ITEM_SEARCH = array(
         'type' => 9,
     ),
     'cstainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'cyanterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'cyanterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'cyantcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'cterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'cterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 9,
+    ),
+    'ctcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 9,
     ),
@@ -16744,6 +17228,30 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 10,
     ),
+    'purpleterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
+    'purpleterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
+    'purpletcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
+    'puterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
+    'puterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
+    'putcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 10,
+    ),
     'blueclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 11,
@@ -16768,6 +17276,30 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 11,
     ),
+    'blueterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
+    'blueterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
+    'bluetcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
+    'bluterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
+    'bluterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
+    'blutcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 11,
+    ),
     'brownclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 12,
@@ -16789,6 +17321,30 @@ $ITEM_SEARCH = array(
         'type' => 12,
     ),
     'brostainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'brownterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'brownterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'browntcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'broterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'broterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 12,
+    ),
+    'brotcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 12,
     ),
@@ -16864,6 +17420,78 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_hardened_clay',
         'type' => 13,
     ),
+    'darkgreenterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'darkgreenterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'darkgreentcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgreenterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgreenterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgreentcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'greenterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'greenterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'greentcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'darkgreterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'darkgreterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'darkgretcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgreterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgreterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'dgretcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'greterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'greterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
+    'gretcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 13,
+    ),
     'redclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 14,
@@ -16885,6 +17513,30 @@ $ITEM_SEARCH = array(
         'type' => 14,
     ),
     'rstainedclay' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'redterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'redterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'redtcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'rterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'rterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 14,
+    ),
+    'rtcota' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 14,
     ),
@@ -16911,6 +17563,34 @@ $ITEM_SEARCH = array(
     'blastainedclay' => array(
         'item_name' => 'stained_hardened_clay',
         'type' => 15,
+    ),
+    'blackterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'blackterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'blacktcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'blaterracota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'blaterra' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'blatcota' => array(
+        'item_name' => 'stained_hardened_clay',
+        'type' => 15,
+    ),
+    'wgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 0,
     ),
     'whiteglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -16944,6 +17624,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 0,
     ),
+    'ogpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 1,
+    ),
     'orangeglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 1,
@@ -16968,6 +17652,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 1,
     ),
+    'mgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 2,
+    ),
     'magentaglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 2,
@@ -16991,6 +17679,10 @@ $ITEM_SEARCH = array(
     'mstainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 2,
+    ),
+    'lbpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 3,
     ),
     'lightblueglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -17052,6 +17744,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 3,
     ),
+    'ygpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 4,
+    ),
     'yellowglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 4,
@@ -17075,6 +17771,10 @@ $ITEM_SEARCH = array(
     'ystainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 4,
+    ),
+    'lgrpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 5,
     ),
     'lightgreenglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -17148,6 +17848,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 5,
     ),
+    'pgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 6,
+    ),
     'pinkglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 6,
@@ -17171,6 +17875,10 @@ $ITEM_SEARCH = array(
     'pistainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 6,
+    ),
+    'dgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 7,
     ),
     'darkgrayglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -17280,6 +17988,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 7,
     ),
+    'lgypane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 8,
+    ),
     'lightgrayglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 8,
@@ -17376,6 +18088,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 8,
     ),
+    'cgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 9,
+    ),
     'cyanglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 9,
@@ -17399,6 +18115,10 @@ $ITEM_SEARCH = array(
     'cstainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 9,
+    ),
+    'prpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 10,
     ),
     'purpleglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -17424,6 +18144,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 10,
     ),
+    'bgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 11,
+    ),
     'blueglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 11,
@@ -17448,6 +18172,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 11,
     ),
+    'brgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 12,
+    ),
     'brownglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 12,
@@ -17471,6 +18199,10 @@ $ITEM_SEARCH = array(
     'brostainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 12,
+    ),
+    'dgrpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 13,
     ),
     'darkgreenglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -17544,6 +18276,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'stained_glass_pane',
         'type' => 13,
     ),
+    'rgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 14,
+    ),
     'redglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 14,
@@ -17567,6 +18303,10 @@ $ITEM_SEARCH = array(
     'rstainedglasspane' => array(
         'item_name' => 'stained_glass_pane',
         'type' => 14,
+    ),
+    'blgpane' => array(
+        'item_name' => 'stained_glass_pane',
+        'type' => 15,
     ),
     'blackglasspane' => array(
         'item_name' => 'stained_glass_pane',
@@ -18136,6 +18876,66 @@ $ITEM_SEARCH = array(
         'item_name' => 'dark_oak_stairs',
         'type' => 0,
     ),
+    'slimeblock' => array(
+        'item_name' => 'slime',
+        'type' => 0,
+    ),
+    'barrierblock' => array(
+        'item_name' => 'barrier',
+        'type' => 0,
+    ),
+    'irontrapdoor' => array(
+        'item_name' => 'iron_trapdoor',
+        'type' => 0,
+    ),
+    'itrapdoor' => array(
+        'item_name' => 'iron_trapdoor',
+        'type' => 0,
+    ),
+    'irondoortrap' => array(
+        'item_name' => 'iron_trapdoor',
+        'type' => 0,
+    ),
+    'idoortrap' => array(
+        'item_name' => 'iron_trapdoor',
+        'type' => 0,
+    ),
+    'pris' => array(
+        'item_name' => 'prismarine',
+        'type' => 0,
+    ),
+    'prismarineblock' => array(
+        'item_name' => 'prismarine',
+        'type' => 0,
+    ),
+    'pbrick' => array(
+        'item_name' => 'prismarine',
+        'type' => 1,
+    ),
+    'prismarinebrick' => array(
+        'item_name' => 'prismarine',
+        'type' => 1,
+    ),
+    'dpris' => array(
+        'item_name' => 'prismarine',
+        'type' => 2,
+    ),
+    'darkprismarine' => array(
+        'item_name' => 'prismarine',
+        'type' => 2,
+    ),
+    'lantern' => array(
+        'item_name' => 'sea_lantern',
+        'type' => 0,
+    ),
+    'sealantern' => array(
+        'item_name' => 'sea_lantern',
+        'type' => 0,
+    ),
+    'sealanternblock' => array(
+        'item_name' => 'sea_lantern',
+        'type' => 0,
+    ),
     'hay' => array(
         'item_name' => 'hay_block',
         'type' => 0,
@@ -18328,6 +19128,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'carpet',
         'type' => 6,
     ),
+    'grfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 7,
+    ),
     'darkgraycarpet' => array(
         'item_name' => 'carpet',
         'type' => 7,
@@ -18399,6 +19203,10 @@ $ITEM_SEARCH = array(
     'grafloor' => array(
         'item_name' => 'carpet',
         'type' => 7,
+    ),
+    'lgfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 8,
     ),
     'lightgraycarpet' => array(
         'item_name' => 'carpet',
@@ -18496,6 +19304,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'carpet',
         'type' => 10,
     ),
+    'blfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 11,
+    ),
     'bluecarpet' => array(
         'item_name' => 'carpet',
         'type' => 11,
@@ -18512,6 +19324,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'carpet',
         'type' => 11,
     ),
+    'brfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 12,
+    ),
     'browncarpet' => array(
         'item_name' => 'carpet',
         'type' => 12,
@@ -18527,6 +19343,10 @@ $ITEM_SEARCH = array(
     'brofloor' => array(
         'item_name' => 'carpet',
         'type' => 12,
+    ),
+    'dgfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 13,
     ),
     'darkgreencarpet' => array(
         'item_name' => 'carpet',
@@ -18592,6 +19412,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'carpet',
         'type' => 14,
     ),
+    'bkfloor' => array(
+        'item_name' => 'carpet',
+        'type' => 15,
+    ),
     'blackcarpet' => array(
         'item_name' => 'carpet',
         'type' => 15,
@@ -18620,11 +19444,39 @@ $ITEM_SEARCH = array(
         'item_name' => 'hardened_clay',
         'type' => 0,
     ),
+    'terracota' => array(
+        'item_name' => 'hardened_clay',
+        'type' => 0,
+    ),
+    'terra' => array(
+        'item_name' => 'hardened_clay',
+        'type' => 0,
+    ),
+    'tcota' => array(
+        'item_name' => 'hardened_clay',
+        'type' => 0,
+    ),
     'coalblock' => array(
         'item_name' => 'coal_block',
         'type' => 0,
     ),
     'blockcoal' => array(
+        'item_name' => 'coal_block',
+        'type' => 0,
+    ),
+    'coblock' => array(
+        'item_name' => 'coal_block',
+        'type' => 0,
+    ),
+    'blockco' => array(
+        'item_name' => 'coal_block',
+        'type' => 0,
+    ),
+    'coalb' => array(
+        'item_name' => 'coal_block',
+        'type' => 0,
+    ),
+    'bcoal' => array(
         'item_name' => 'coal_block',
         'type' => 0,
     ),
@@ -18645,6 +19497,10 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'magentalilac' => array(
+        'item_name' => 'double_plant',
+        'type' => 1,
+    ),
+    'syringa' => array(
         'item_name' => 'double_plant',
         'type' => 1,
     ),
@@ -18727,6 +19583,2370 @@ $ITEM_SEARCH = array(
     'pinkpeony' => array(
         'item_name' => 'double_plant',
         'type' => 5,
+    ),
+    'paeonia' => array(
+        'item_name' => 'double_plant',
+        'type' => 5,
+    ),
+    'inverteddaylightsensor' => array(
+        'item_name' => 'daylight_detector_inverted',
+        'type' => 0,
+    ),
+    'daylightsensorinverted' => array(
+        'item_name' => 'daylight_detector_inverted',
+        'type' => 0,
+    ),
+    'daylightdetectorinverted' => array(
+        'item_name' => 'daylight_detector_inverted',
+        'type' => 0,
+    ),
+    'inverteddaylightdetector' => array(
+        'item_name' => 'daylight_detector_inverted',
+        'type' => 0,
+    ),
+    'rsstone' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 0,
+    ),
+    'redsandstone' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 0,
+    ),
+    'redsandstonechiseled' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 1,
+    ),
+    'chiseledredsandstone' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 1,
+    ),
+    'srstone' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 2,
+    ),
+    'redsandstonesmooth' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 2,
+    ),
+    'smoothredsandstone' => array(
+        'item_name' => 'red_sandstone',
+        'type' => 2,
+    ),
+    'redsandstonestair' => array(
+        'item_name' => 'red_sandstone_stairs',
+        'type' => 0,
+    ),
+    'redsandstonestairs' => array(
+        'item_name' => 'red_sandstone_stairs',
+        'type' => 0,
+    ),
+    'rsstair' => array(
+        'item_name' => 'red_sandstone_stairs',
+        'type' => 0,
+    ),
+    'stairredsandstone' => array(
+        'item_name' => 'red_sandstone_stairs',
+        'type' => 0,
+    ),
+    'doubleredsandstoneslab' => array(
+        'item_name' => 'double_stone_slab2',
+        'type' => 0,
+    ),
+    'doubleredsandstoneslabfull' => array(
+        'item_name' => 'double_stone_slab2',
+        'type' => 8,
+    ),
+    'fullredsandstoneslab' => array(
+        'item_name' => 'double_stone_slab2',
+        'type' => 8,
+    ),
+    'rsslab' => array(
+        'item_name' => 'stone_slab2',
+        'type' => 0,
+    ),
+    'redsandstoneslab' => array(
+        'item_name' => 'stone_slab2',
+        'type' => 0,
+    ),
+    'sprucefencegate' => array(
+        'item_name' => 'spruce_fence_gate',
+        'type' => 0,
+    ),
+    'sfencegate' => array(
+        'item_name' => 'spruce_fence_gate',
+        'type' => 0,
+    ),
+    'sgate' => array(
+        'item_name' => 'spruce_fence_gate',
+        'type' => 0,
+    ),
+    'sprucegate' => array(
+        'item_name' => 'spruce_fence_gate',
+        'type' => 0,
+    ),
+    'birchfencegate' => array(
+        'item_name' => 'birch_fence_gate',
+        'type' => 0,
+    ),
+    'bfencegate' => array(
+        'item_name' => 'birch_fence_gate',
+        'type' => 0,
+    ),
+    'bgate' => array(
+        'item_name' => 'birch_fence_gate',
+        'type' => 0,
+    ),
+    'birchgate' => array(
+        'item_name' => 'birch_fence_gate',
+        'type' => 0,
+    ),
+    'junglefencegate' => array(
+        'item_name' => 'jungle_fence_gate',
+        'type' => 0,
+    ),
+    'jfencegate' => array(
+        'item_name' => 'jungle_fence_gate',
+        'type' => 0,
+    ),
+    'jgate' => array(
+        'item_name' => 'jungle_fence_gate',
+        'type' => 0,
+    ),
+    'junglegate' => array(
+        'item_name' => 'jungle_fence_gate',
+        'type' => 0,
+    ),
+    'darkoakfencegate' => array(
+        'item_name' => 'dark_oak_fence_gate',
+        'type' => 0,
+    ),
+    'doakfencegate' => array(
+        'item_name' => 'dark_oak_fence_gate',
+        'type' => 0,
+    ),
+    'darkoakgate' => array(
+        'item_name' => 'dark_oak_fence_gate',
+        'type' => 0,
+    ),
+    'doakgate' => array(
+        'item_name' => 'dark_oak_fence_gate',
+        'type' => 0,
+    ),
+    'dogate' => array(
+        'item_name' => 'dark_oak_fence_gate',
+        'type' => 0,
+    ),
+    'acaciafencegate' => array(
+        'item_name' => 'acacia_fence_gate',
+        'type' => 0,
+    ),
+    'afencegate' => array(
+        'item_name' => 'acacia_fence_gate',
+        'type' => 0,
+    ),
+    'acaciagate' => array(
+        'item_name' => 'acacia_fence_gate',
+        'type' => 0,
+    ),
+    'agate' => array(
+        'item_name' => 'acacia_fence_gate',
+        'type' => 0,
+    ),
+    'sprucefence' => array(
+        'item_name' => 'spruce_fence',
+        'type' => 0,
+    ),
+    'sfence' => array(
+        'item_name' => 'spruce_fence',
+        'type' => 0,
+    ),
+    'birchfence' => array(
+        'item_name' => 'birch_fence',
+        'type' => 0,
+    ),
+    'bfence' => array(
+        'item_name' => 'birch_fence',
+        'type' => 0,
+    ),
+    'junglefence' => array(
+        'item_name' => 'jungle_fence',
+        'type' => 0,
+    ),
+    'darkoakfence' => array(
+        'item_name' => 'dark_oak_fence',
+        'type' => 0,
+    ),
+    'dofence' => array(
+        'item_name' => 'dark_oak_fence',
+        'type' => 0,
+    ),
+    'doakfence' => array(
+        'item_name' => 'dark_oak_fence',
+        'type' => 0,
+    ),
+    'acaciafence' => array(
+        'item_name' => 'acacia_fence',
+        'type' => 0,
+    ),
+    'afence' => array(
+        'item_name' => 'acacia_fence',
+        'type' => 0,
+    ),
+    'sprucedoor' => array(
+        'item_name' => 'spruce_door_block',
+        'type' => 0,
+    ),
+    'birchdoor' => array(
+        'item_name' => 'birch_door_block',
+        'type' => 0,
+    ),
+    'jungledoor' => array(
+        'item_name' => 'jungle_door_block',
+        'type' => 0,
+    ),
+    'acaciadoor' => array(
+        'item_name' => 'acacia_door_block',
+        'type' => 0,
+    ),
+    'darkoakdoor' => array(
+        'item_name' => 'dark_oak_door_block',
+        'type' => 0,
+    ),
+    'endrod' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'enderrod' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'erod' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'endlight' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'elight' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'endtorch' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'etorch' => array(
+        'item_name' => 'end_rod',
+        'type' => 0,
+    ),
+    'chorusplant' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'corusplant' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'chorusstem' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'corusstem' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'endplant' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'enderplant' => array(
+        'item_name' => 'chorus_plant',
+        'type' => 0,
+    ),
+    'chorusflower' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'corusflower' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'chorusblock' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'endflower' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'enderflower' => array(
+        'item_name' => 'chorus_flower',
+        'type' => 0,
+    ),
+    'purpurblock' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purblock' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purpleblock' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purplestone' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purstone' => array(
+        'item_name' => 'purpur_block',
+        'type' => 0,
+    ),
+    'purpurpillar' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpillar' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpillarblock' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpillarstone' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purplepillar' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpurcollum' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purcollum' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purplecollum' => array(
+        'item_name' => 'purpur_pillar',
+        'type' => 0,
+    ),
+    'purpurstairs' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purpurstep' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purpursteps' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purplestairs' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purplesteps' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purplestep' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purstairs' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'pursteps' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purstep' => array(
+        'item_name' => 'purpur_stairs',
+        'type' => 0,
+    ),
+    'purpurdoubleslab' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purpurslab' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purpurhalf' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purslab' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purpleslab' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purhalf' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'purplehalf' => array(
+        'item_name' => 'purpur_slab',
+        'type' => 0,
+    ),
+    'endstonebricks' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'endbricks' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'enderbricks' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'ebricks' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'ebrick' => array(
+        'item_name' => 'end_bricks',
+        'type' => 0,
+    ),
+    'grasspath' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'gpath' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'path' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'pathblock' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'dirtpath' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'dpath' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'worngrass' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'grasswalkway' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'dirtwalkway' => array(
+        'item_name' => 'grass_path',
+        'type' => 0,
+    ),
+    'endgateway' => array(
+        'item_name' => 'end_gateway',
+        'type' => 0,
+    ),
+    'eislandportal' => array(
+        'item_name' => 'end_gateway',
+        'type' => 0,
+    ),
+    'endgate' => array(
+        'item_name' => 'end_gateway',
+        'type' => 0,
+    ),
+    'endergate' => array(
+        'item_name' => 'end_gateway',
+        'type' => 0,
+    ),
+    'frostedice' => array(
+        'item_name' => 'frosted_ice',
+        'type' => 0,
+    ),
+    'frostediceblock' => array(
+        'item_name' => 'frosted_ice',
+        'type' => 0,
+    ),
+    'frostice' => array(
+        'item_name' => 'frosted_ice',
+        'type' => 0,
+    ),
+    'frosticeblock' => array(
+        'item_name' => 'frosted_ice',
+        'type' => 0,
+    ),
+    'magmablock' => array(
+        'item_name' => 'magma',
+        'type' => 0,
+    ),
+    'blockmagma' => array(
+        'item_name' => 'magma',
+        'type' => 0,
+    ),
+    'netherwartblock' => array(
+        'item_name' => 'nether_wart_block',
+        'type' => 0,
+    ),
+    'blocknetherwart' => array(
+        'item_name' => 'nether_wart_block',
+        'type' => 0,
+    ),
+    'rednetherbrick' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'rednetherbrickblock' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'blockrednetherbrick' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'rednbblock' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'blockrednb' => array(
+        'item_name' => 'red_nether_brick',
+        'type' => 0,
+    ),
+    'boneblock' => array(
+        'item_name' => 'bone_block',
+        'type' => 0,
+    ),
+    'skeletonboneblock' => array(
+        'item_name' => 'bone_block',
+        'type' => 0,
+    ),
+    'skeletonblock' => array(
+        'item_name' => 'bone_block',
+        'type' => 0,
+    ),
+    'structurevoid' => array(
+        'item_name' => 'structure_void',
+        'type' => 0,
+    ),
+    'budblock' => array(
+        'item_name' => 'observer',
+        'type' => 0,
+    ),
+    'bud' => array(
+        'item_name' => 'observer',
+        'type' => 0,
+    ),
+    'shulkerbox' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'whiteshulkerbox' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'wshulkerbox' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'whitechest' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'wchest' => array(
+        'item_name' => 'white_shulker_box',
+        'type' => 0,
+    ),
+    'orangeshulkerbox' => array(
+        'item_name' => 'orange_shulker_box',
+        'type' => 0,
+    ),
+    'oshulkerbox' => array(
+        'item_name' => 'orange_shulker_box',
+        'type' => 0,
+    ),
+    'orangechest' => array(
+        'item_name' => 'orange_shulker_box',
+        'type' => 0,
+    ),
+    'ochest' => array(
+        'item_name' => 'orange_shulker_box',
+        'type' => 0,
+    ),
+    'magentashulkerbox' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'magentachest' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'mshulkerbox' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'mchest' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'mashulkerbox' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'machest' => array(
+        'item_name' => 'magenta_shulker_box',
+        'type' => 0,
+    ),
+    'lightblueshulkerbox' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lightbluechest' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lblueshulkerbox' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lbluechest' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lbshulkerbox' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lbchest' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lblushulkerbox' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lightbluchest' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'lbluchest' => array(
+        'item_name' => 'light_blue_shulker_box',
+        'type' => 0,
+    ),
+    'yellowshulkerbox' => array(
+        'item_name' => 'yellow_shulker_box',
+        'type' => 0,
+    ),
+    'yshulkerbox' => array(
+        'item_name' => 'yellow_shulker_box',
+        'type' => 0,
+    ),
+    'yellowchest' => array(
+        'item_name' => 'yellow_shulker_box',
+        'type' => 0,
+    ),
+    'ychest' => array(
+        'item_name' => 'yellow_shulker_box',
+        'type' => 0,
+    ),
+    'limeshulkerbox' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'lshulkerbox' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'lgreenshulkerbox' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'lgreshulkerbox' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'limechest' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'lgrechest' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'lchest' => array(
+        'item_name' => 'lime_shulker_box',
+        'type' => 0,
+    ),
+    'pinkshulkerbox' => array(
+        'item_name' => 'pink_shulker_box',
+        'type' => 0,
+    ),
+    'pishulkerbox' => array(
+        'item_name' => 'pink_shulker_box',
+        'type' => 0,
+    ),
+    'pinkchest' => array(
+        'item_name' => 'pink_shulker_box',
+        'type' => 0,
+    ),
+    'pichest' => array(
+        'item_name' => 'pink_shulker_box',
+        'type' => 0,
+    ),
+    'grayshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'greyshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'darkgrayshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'darkgreyshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgrayshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgreyshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'grashulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'greshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgrashulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgreshulkerbox' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'graychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'greychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'darkgraychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'darkgreychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgraychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgreychest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'grachest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'darkgrachest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'dgrachest' => array(
+        'item_name' => 'gray_shulker_box',
+        'type' => 0,
+    ),
+    'silvershulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'silverchest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'sishulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'sichest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lgshulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lgchest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgrayshulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgreyshulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgraychest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgreychest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgrashulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgreshulkerbox' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgrachest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lightgrechest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lgraychest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lgreychest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'lgrachest' => array(
+        'item_name' => 'light_gray_shulker_box',
+        'type' => 0,
+    ),
+    'cyanshulkerbox' => array(
+        'item_name' => 'cyan_shulker_box',
+        'type' => 0,
+    ),
+    'cyanchest' => array(
+        'item_name' => 'cyan_shulker_box',
+        'type' => 0,
+    ),
+    'cshulkerbox' => array(
+        'item_name' => 'cyan_shulker_box',
+        'type' => 0,
+    ),
+    'cchest' => array(
+        'item_name' => 'cyan_shulker_box',
+        'type' => 0,
+    ),
+    'purpleshulkerbox' => array(
+        'item_name' => 'purple_shulker_box',
+        'type' => 0,
+    ),
+    'purplechest' => array(
+        'item_name' => 'purple_shulker_box',
+        'type' => 0,
+    ),
+    'pushulkerbox' => array(
+        'item_name' => 'purple_shulker_box',
+        'type' => 0,
+    ),
+    'puchest' => array(
+        'item_name' => 'purple_shulker_box',
+        'type' => 0,
+    ),
+    'blueshulkerbox' => array(
+        'item_name' => 'blue_shulker_box',
+        'type' => 0,
+    ),
+    'bluechest' => array(
+        'item_name' => 'blue_shulker_box',
+        'type' => 0,
+    ),
+    'blushulkerbox' => array(
+        'item_name' => 'blue_shulker_box',
+        'type' => 0,
+    ),
+    'bluchest' => array(
+        'item_name' => 'blue_shulker_box',
+        'type' => 0,
+    ),
+    'brownshulkerbox' => array(
+        'item_name' => 'brown_shulker_box',
+        'type' => 0,
+    ),
+    'brownchest' => array(
+        'item_name' => 'brown_shulker_box',
+        'type' => 0,
+    ),
+    'broshulkerbox' => array(
+        'item_name' => 'brown_shulker_box',
+        'type' => 0,
+    ),
+    'brochest' => array(
+        'item_name' => 'brown_shulker_box',
+        'type' => 0,
+    ),
+    'darkgreenshulkerbox' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'darkgreenchest' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'greenshulkerbox' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'greenchest' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'grechest' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'dgrechest' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'darkgreshulkerbox' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'darkgrechest' => array(
+        'item_name' => 'green_shulker_box',
+        'type' => 0,
+    ),
+    'redshulkerbox' => array(
+        'item_name' => 'red_shulker_box',
+        'type' => 0,
+    ),
+    'rshulkerbox' => array(
+        'item_name' => 'red_shulker_box',
+        'type' => 0,
+    ),
+    'redchest' => array(
+        'item_name' => 'red_shulker_box',
+        'type' => 0,
+    ),
+    'rchest' => array(
+        'item_name' => 'red_shulker_box',
+        'type' => 0,
+    ),
+    'blackshulkerbox' => array(
+        'item_name' => 'black_shulker_box',
+        'type' => 0,
+    ),
+    'blashulkerbox' => array(
+        'item_name' => 'black_shulker_box',
+        'type' => 0,
+    ),
+    'blackchest' => array(
+        'item_name' => 'black_shulker_box',
+        'type' => 0,
+    ),
+    'blachest' => array(
+        'item_name' => 'black_shulker_box',
+        'type' => 0,
+    ),
+    'whiteglazedterracota' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'whiteglazedterra' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'whiteglazedtcota' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'wglazedterracota' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'wglazedterra' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'wglazedtcota' => array(
+        'item_name' => 'white_glazed_terracotta',
+        'type' => 0,
+    ),
+    'orangeglazedterracota' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'orangeglazedterra' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'orangeglazedtcota' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'oglazedterracota' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'oglazedterra' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'oglazedtcota' => array(
+        'item_name' => 'orange_glazed_terracotta',
+        'type' => 0,
+    ),
+    'magentaglazedterracota' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'magentaglazedterra' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'magentaglazedtcota' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'mglazedterracota' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'mglazedterra' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'mglazedtcota' => array(
+        'item_name' => 'magenta_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightblueglazedterracota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightblueglazedterra' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightblueglazedtcota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightbluglazedterracota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightbluglazedterra' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightbluglazedtcota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lblueglazedterracota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lblueglazedterra' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lblueglazedtcota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbluglazedterracota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbluglazedterra' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbluglazedtcota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbglazedterracota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbglazedterra' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lbglazedtcota' => array(
+        'item_name' => 'light_blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yellowglazedterracota' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yellowglazedterra' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yellowglazedtcota' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yglazedterracota' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yglazedterra' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'yglazedtcota' => array(
+        'item_name' => 'yellow_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreenglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreenglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreenglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreenglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreenglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreenglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'limeglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'limeglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'limeglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lglazedterracota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lglazedterra' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lglazedtcota' => array(
+        'item_name' => 'lime_glazed_terracotta',
+        'type' => 0,
+    ),
+    'pinkglazedterracota' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'pinkglazedterra' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'pinkglazedtcota' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'piglazedterracota' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'piglazedterra' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'piglazedtcota' => array(
+        'item_name' => 'pink_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgrayglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgrayglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgrayglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgrayglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgrayglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgrayglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreyglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreyglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreyglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreyglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreyglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreyglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgraglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgraglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgraglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgraglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgraglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgraglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'grayglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'grayglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'grayglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greyglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greyglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greyglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'graglazedterracota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'graglazedterra' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'graglazedtcota' => array(
+        'item_name' => 'gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgrayglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgrayglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgrayglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgrayglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgrayglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgrayglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreyglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreyglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgreyglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreyglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreyglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgreyglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgraglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgraglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lightgraglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgraglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgraglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'lgraglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'silverglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'silverglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'silverglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'siglazedterracota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'siglazedterra' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'siglazedtcota' => array(
+        'item_name' => 'light_gray_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cyanglazedterracota' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cyanglazedterra' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cyanglazedtcota' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cglazedterracota' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cglazedterra' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'cglazedtcota' => array(
+        'item_name' => 'cyan_glazed_terracotta',
+        'type' => 0,
+    ),
+    'purpleglazedterracota' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'purpleglazedterra' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'purpleglazedtcota' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'puglazedterracota' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'puglazedterra' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'puglazedtcota' => array(
+        'item_name' => 'purple_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blueglazedterracota' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blueglazedterra' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blueglazedtcota' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'bluglazedterracota' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'bluglazedterra' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'bluglazedtcota' => array(
+        'item_name' => 'blue_glazed_terracotta',
+        'type' => 0,
+    ),
+    'brownglazedterracota' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'brownglazedterra' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'brownglazedtcota' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'broglazedterracota' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'broglazedterra' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'broglazedtcota' => array(
+        'item_name' => 'brown_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreenglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreenglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreenglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreenglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreenglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreenglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greenglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greenglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greenglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'darkgreglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'dgreglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greglazedterracota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greglazedterra' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'greglazedtcota' => array(
+        'item_name' => 'green_glazed_terracotta',
+        'type' => 0,
+    ),
+    'redglazedterracota' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'redglazedterra' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'redglazedtcota' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'rglazedterracota' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'rglazedterra' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'rglazedtcota' => array(
+        'item_name' => 'red_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blackglazedterracota' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blackglazedterra' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blackglazedtcota' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blaglazedterracota' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blaglazedterra' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'blaglazedtcota' => array(
+        'item_name' => 'black_glazed_terracotta',
+        'type' => 0,
+    ),
+    'whiteconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 0,
+    ),
+    'wconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 0,
+    ),
+    'orangeconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 1,
+    ),
+    'oconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 1,
+    ),
+    'magentaconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 2,
+    ),
+    'mconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 2,
+    ),
+    'lightblueconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 3,
+    ),
+    'lightbluconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 3,
+    ),
+    'lblueconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 3,
+    ),
+    'lbluconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 3,
+    ),
+    'lbconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 3,
+    ),
+    'yellowconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 4,
+    ),
+    'yconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 4,
+    ),
+    'lightgreenconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'lgreenconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'lightgreconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'lgreconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'limeconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'lconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 5,
+    ),
+    'pinkconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 6,
+    ),
+    'piconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 6,
+    ),
+    'darkgrayconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'dgrayconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'darkgreyconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'dgreyconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'darkgraconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'dgraconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'grayconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'greyconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'graconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 7,
+    ),
+    'lgconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lightgrayconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lgrayconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lightgreyconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lgreyconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lightgraconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'lgraconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'silverconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'siconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 8,
+    ),
+    'cyanconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 9,
+    ),
+    'cconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 9,
+    ),
+    'purpleconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 10,
+    ),
+    'puconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 10,
+    ),
+    'blueconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 11,
+    ),
+    'bluconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 11,
+    ),
+    'brownconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 12,
+    ),
+    'broconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 12,
+    ),
+    'darkgreenconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'dgreenconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'greenconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'darkgreconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'dgreconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'greconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 13,
+    ),
+    'redconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 14,
+    ),
+    'rconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 14,
+    ),
+    'blackconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 15,
+    ),
+    'blaconcrete' => array(
+        'item_name' => 'concrete',
+        'type' => 15,
+    ),
+    'whiteconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 0,
+    ),
+    'whiteconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 0,
+    ),
+    'wconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 0,
+    ),
+    'wconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 0,
+    ),
+    'orangeconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 1,
+    ),
+    'orangeconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 1,
+    ),
+    'oconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 1,
+    ),
+    'oconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 1,
+    ),
+    'magentaconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 2,
+    ),
+    'magentaconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 2,
+    ),
+    'mconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 2,
+    ),
+    'mconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 2,
+    ),
+    'lightblueconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lightblueconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lightbluconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lightbluconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lblueconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lblueconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lbluconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lbluconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lbconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'lbconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 3,
+    ),
+    'yellowconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 4,
+    ),
+    'yellowconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 4,
+    ),
+    'yconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 4,
+    ),
+    'yconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 4,
+    ),
+    'lightgreenconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lightgreenconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lgreenconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lgreenconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lightgreconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lightgreconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lgreconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lgreconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'limeconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'limeconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'lconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 5,
+    ),
+    'pinkconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 6,
+    ),
+    'pinkconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 6,
+    ),
+    'piconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 6,
+    ),
+    'piconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 6,
+    ),
+    'darkgrayconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'darkgrayconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgrayconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgrayconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'darkgreyconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'darkgreyconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgreyconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgreyconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'darkgraconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'darkgraconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgraconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'dgraconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'grayconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'grayconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'greyconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'greyconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'graconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'graconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 7,
+    ),
+    'lgconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgrayconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgrayconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgrayconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgrayconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgreyconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgreyconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgreyconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgreyconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgraconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lightgraconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgraconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'lgraconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'silverconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'silverconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'siconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'siconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 8,
+    ),
+    'cyanconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 9,
+    ),
+    'cyanconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 9,
+    ),
+    'cconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 9,
+    ),
+    'cconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 9,
+    ),
+    'purpleconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 10,
+    ),
+    'purpleconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 10,
+    ),
+    'puconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 10,
+    ),
+    'puconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 10,
+    ),
+    'blueconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 11,
+    ),
+    'blueconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 11,
+    ),
+    'bluconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 11,
+    ),
+    'bluconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 11,
+    ),
+    'brownconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 12,
+    ),
+    'brownconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 12,
+    ),
+    'broconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 12,
+    ),
+    'broconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 12,
+    ),
+    'darkgreenconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'darkgreenconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'dgreenconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'dgreenconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'greenconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'greenconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'darkgreconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'darkgreconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'dgreconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'dgreconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'greconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'greconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 13,
+    ),
+    'redconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 14,
+    ),
+    'redconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 14,
+    ),
+    'rconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 14,
+    ),
+    'rconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 14,
+    ),
+    'blackconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 15,
+    ),
+    'blackconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 15,
+    ),
+    'blaconcretepowder' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 15,
+    ),
+    'blaconcretesand' => array(
+        'item_name' => 'concrete_powder',
+        'type' => 15,
+    ),
+    'structureblock' => array(
+        'item_name' => 'structure_block',
+        'type' => 0,
     ),
     'ironshovel' => array(
         'item_name' => 'iron_shovel',
@@ -18906,6 +22126,18 @@ $ITEM_SEARCH = array(
     ),
     'bari' => array(
         'item_name' => 'iron_ingot',
+        'type' => 0,
+    ),
+    'ironnugget' => array(
+        'item_name' => 'iron_nugget',
+        'type' => 0,
+    ),
+    'nuggeti' => array(
+        'item_name' => 'iron_nugget',
+        'type' => 0,
+    ),
+    'inugget' => array(
+        'item_name' => 'iron_nugget',
         'type' => 0,
     ),
     'goldingot' => array(
@@ -20512,6 +23744,14 @@ $ITEM_SEARCH = array(
         'item_name' => 'wooden_door',
         'type' => 0,
     ),
+    'oakdoor' => array(
+        'item_name' => 'wooden_door',
+        'type' => 0,
+    ),
+    'odoor' => array(
+        'item_name' => 'wooden_door',
+        'type' => 0,
+    ),
     'bukkit' => array(
         'item_name' => 'bucket',
         'type' => 0,
@@ -20677,15 +23917,19 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'reed' => array(
-        'item_name' => 'sugarcane',
+        'item_name' => 'reeds',
+        'type' => 0,
+    ),
+    'sugarcane' => array(
+        'item_name' => 'reeds',
         'type' => 0,
     ),
     'scane' => array(
-        'item_name' => 'sugarcane',
+        'item_name' => 'reeds',
         'type' => 0,
     ),
     'bamboo' => array(
-        'item_name' => 'sugarcane',
+        'item_name' => 'reeds',
         'type' => 0,
     ),
     'papyrus' => array(
@@ -20928,6 +24172,14 @@ $ITEM_SEARCH = array(
         'item_name' => 'fish',
         'type' => 1,
     ),
+    'sfish' => array(
+        'item_name' => 'fish',
+        'type' => 1,
+    ),
+    'fishs' => array(
+        'item_name' => 'fish',
+        'type' => 1,
+    ),
     'rawclownfish' => array(
         'item_name' => 'fish',
         'type' => 2,
@@ -20948,11 +24200,51 @@ $ITEM_SEARCH = array(
         'item_name' => 'fish',
         'type' => 2,
     ),
+    'nemofish' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
+    'fishnemo' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
+    'clfish' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
+    'fishcl' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
+    'nfish' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
+    'fishn' => array(
+        'item_name' => 'fish',
+        'type' => 2,
+    ),
     'rawpufferfish' => array(
         'item_name' => 'fish',
         'type' => 3,
     ),
     'rapufferfish' => array(
+        'item_name' => 'fish',
+        'type' => 3,
+    ),
+    'pufffish' => array(
+        'item_name' => 'fish',
+        'type' => 3,
+    ),
+    'fishpuff' => array(
+        'item_name' => 'fish',
+        'type' => 3,
+    ),
+    'pfish' => array(
+        'item_name' => 'fish',
+        'type' => 3,
+    ),
+    'fishp' => array(
         'item_name' => 'fish',
         'type' => 3,
     ),
@@ -22244,6 +25536,234 @@ $ITEM_SEARCH = array(
         'item_name' => 'sugar',
         'type' => 0,
     ),
+    'whitebed' => array(
+        'item_name' => 'bed',
+        'type' => 0,
+    ),
+    'wbed' => array(
+        'item_name' => 'bed',
+        'type' => 0,
+    ),
+    'orangebed' => array(
+        'item_name' => 'bed',
+        'type' => 1,
+    ),
+    'obed' => array(
+        'item_name' => 'bed',
+        'type' => 1,
+    ),
+    'magentabed' => array(
+        'item_name' => 'bed',
+        'type' => 2,
+    ),
+    'mbed' => array(
+        'item_name' => 'bed',
+        'type' => 2,
+    ),
+    'lightbluebed' => array(
+        'item_name' => 'bed',
+        'type' => 3,
+    ),
+    'lightblubed' => array(
+        'item_name' => 'bed',
+        'type' => 3,
+    ),
+    'lbluebed' => array(
+        'item_name' => 'bed',
+        'type' => 3,
+    ),
+    'lblubed' => array(
+        'item_name' => 'bed',
+        'type' => 3,
+    ),
+    'lbbed' => array(
+        'item_name' => 'bed',
+        'type' => 3,
+    ),
+    'yellowbed' => array(
+        'item_name' => 'bed',
+        'type' => 4,
+    ),
+    'ybed' => array(
+        'item_name' => 'bed',
+        'type' => 4,
+    ),
+    'lightgreenbed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'lgreenbed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'lightgrebed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'lgrebed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'limebed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'lbed' => array(
+        'item_name' => 'bed',
+        'type' => 5,
+    ),
+    'pinkbed' => array(
+        'item_name' => 'bed',
+        'type' => 6,
+    ),
+    'pibed' => array(
+        'item_name' => 'bed',
+        'type' => 6,
+    ),
+    'darkgraybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'dgraybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'darkgreybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'dgreybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'darkgrabed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'dgrabed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'graybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'greybed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'grabed' => array(
+        'item_name' => 'bed',
+        'type' => 7,
+    ),
+    'lgbed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lightgraybed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lgraybed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lightgreybed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lgreybed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lightgrabed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'lgrabed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'silverbed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'sibed' => array(
+        'item_name' => 'bed',
+        'type' => 8,
+    ),
+    'cyanbed' => array(
+        'item_name' => 'bed',
+        'type' => 9,
+    ),
+    'cbed' => array(
+        'item_name' => 'bed',
+        'type' => 9,
+    ),
+    'purplebed' => array(
+        'item_name' => 'bed',
+        'type' => 10,
+    ),
+    'pubed' => array(
+        'item_name' => 'bed',
+        'type' => 10,
+    ),
+    'bluebed' => array(
+        'item_name' => 'bed',
+        'type' => 11,
+    ),
+    'blubed' => array(
+        'item_name' => 'bed',
+        'type' => 11,
+    ),
+    'brownbed' => array(
+        'item_name' => 'bed',
+        'type' => 12,
+    ),
+    'brobed' => array(
+        'item_name' => 'bed',
+        'type' => 12,
+    ),
+    'darkgreenbed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'dgreenbed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'greenbed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'darkgrebed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'dgrebed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'grebed' => array(
+        'item_name' => 'bed',
+        'type' => 13,
+    ),
+    'redbed' => array(
+        'item_name' => 'bed',
+        'type' => 14,
+    ),
+    'rbed' => array(
+        'item_name' => 'bed',
+        'type' => 14,
+    ),
+    'blackbed' => array(
+        'item_name' => 'bed',
+        'type' => 15,
+    ),
+    'blabed' => array(
+        'item_name' => 'bed',
+        'type' => 15,
+    ),
     'redstonerepeater' => array(
         'item_name' => 'repeater',
         'type' => 0,
@@ -22456,24 +25976,28 @@ $ITEM_SEARCH = array(
         'item_name' => 'shears',
         'type' => 0,
     ),
+    'melonslice' => array(
+        'item_name' => 'melon',
+        'type' => 0,
+    ),
     'mslice' => array(
-        'item_name' => 'melonslice',
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'slicemelon' => array(
-        'item_name' => 'melonslice',
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'watermelonslice' => array(
-        'item_name' => 'melonslice',
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'greenmelonslice' => array(
-        'item_name' => 'melonslice',
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'melongreenslice' => array(
-        'item_name' => 'melonslice',
+        'item_name' => 'melon',
         'type' => 0,
     ),
     'pumpkinseeds' => array(
@@ -22529,31 +26053,27 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'rawbeef' => array(
-        'item_name' => 'raw_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'rawsteak' => array(
-        'item_name' => 'raw_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'uncookedbeef' => array(
-        'item_name' => 'raw_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'uncookedsteak' => array(
-        'item_name' => 'raw_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'cowmeat' => array(
-        'item_name' => 'raw_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'plainbeef' => array(
-        'item_name' => 'raw_beef',
-        'type' => 0,
-    ),
-    'beef' => array(
-        'item_name' => 'cooked_beef',
+        'item_name' => 'beef',
         'type' => 0,
     ),
     'steak' => array(
@@ -23968,6 +27488,38 @@ $ITEM_SEARCH = array(
         'item_name' => 'potion',
         'type' => 8233,
     ),
+    'leapingleveliipotion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leapleveliipotion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leaplevel2potion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leapinglevel2potion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leapingiipotion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leapiipotion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leap2potion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
+    'leaping2potion' => array(
+        'item_name' => 'potion',
+        'type' => 8235,
+    ),
     'harmingleveliipotion' => array(
         'item_name' => 'potion',
         'type' => 8236,
@@ -24147,6 +27699,10 @@ $ITEM_SEARCH = array(
     'swepot' => array(
         'item_name' => 'potion',
         'type' => 8258,
+    ),
+    'frpot' => array(
+        'item_name' => 'potion',
+        'type' => 8227,
     ),
     'fireresistanceextendedpotion' => array(
         'item_name' => 'potion',
@@ -24459,6 +28015,14 @@ $ITEM_SEARCH = array(
     'slepot' => array(
         'item_name' => 'potion',
         'type' => 8266,
+    ),
+    'leapingpotion' => array(
+        'item_name' => 'potion',
+        'type' => 8267,
+    ),
+    'leappotion' => array(
+        'item_name' => 'potion',
+        'type' => 8267,
     ),
     'waterbreathingextendedpotion' => array(
         'item_name' => 'potion',
@@ -27760,6 +31324,38 @@ $ITEM_SEARCH = array(
         'item_name' => 'potion',
         'type' => 16458,
     ),
+    'splashleapingpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'splashleappotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'splleapingpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'splleappotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'leapingsplashpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'leapsplashpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'leapingsplpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
+    'leapsplpotion' => array(
+        'item_name' => 'potion',
+        'type' => 16459,
+    ),
     'splashwaterbreathingextendedpotion' => array(
         'item_name' => 'potion',
         'type' => 16461,
@@ -28360,6 +31956,22 @@ $ITEM_SEARCH = array(
         'item_name' => 'potion',
         'type' => 16489,
     ),
+    'potionofluck' => array(
+        'item_name' => 'potion',
+        'type' => 0,
+    ),
+    'potofluck' => array(
+        'item_name' => 'potion',
+        'type' => 0,
+    ),
+    'luckpotion' => array(
+        'item_name' => 'potion',
+        'type' => 0,
+    ),
+    'luckypotion' => array(
+        'item_name' => 'potion',
+        'type' => 0,
+    ),
     'glassbottle' => array(
         'item_name' => 'glass_bottle',
         'type' => 0,
@@ -28566,6 +32178,10 @@ $ITEM_SEARCH = array(
     ),
     'potionstand' => array(
         'item_name' => 'brewingstand',
+        'type' => 0,
+    ),
+    'cauld' => array(
+        'item_name' => 'cauldron',
         'type' => 0,
     ),
     'steelcauldron' => array(
@@ -28876,6 +32492,50 @@ $ITEM_SEARCH = array(
         'item_name' => 'spawn_egg',
         'type' => 66,
     ),
+    'endermiteegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 67,
+    ),
+    'endermitespawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 67,
+    ),
+    'eggendermite' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 67,
+    ),
+    'guardianegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 68,
+    ),
+    'guardianspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 68,
+    ),
+    'eggguardian' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 68,
+    ),
+    'spawneggshulker' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 69,
+    ),
+    'spawnshulker' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 69,
+    ),
+    'shulkerspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 69,
+    ),
+    'shulkeregg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 69,
+    ),
+    'shulkegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 69,
+    ),
     'pigegg' => array(
         'item_name' => 'spawn_egg',
         'type' => 90,
@@ -28987,6 +32647,66 @@ $ITEM_SEARCH = array(
     'horseegg' => array(
         'item_name' => 'spawn_egg',
         'type' => 100,
+    ),
+    'rabbitegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 101,
+    ),
+    'rabbitspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 101,
+    ),
+    'spawneggpolarbear' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'spawneggpolar' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'spawneggbear' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'spawnpolarbear' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'spawnpolar' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'spawnbear' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'polarbearspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'polarspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'bearspawnegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'polarbearegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'polaregg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'bearegg' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 102,
+    ),
+    'parrot' => array(
+        'item_name' => 'spawn_egg',
+        'type' => 105,
     ),
     'villageregg' => array(
         'item_name' => 'spawn_egg',
@@ -29105,11 +32825,11 @@ $ITEM_SEARCH = array(
         'type' => 0,
     ),
     'flowerpot' => array(
-        'item_name' => 'flower_pot_item',
+        'item_name' => 'flower_pot',
         'type' => 0,
     ),
     'pot' => array(
-        'item_name' => 'flower_pot_item',
+        'item_name' => 'flower_pot',
         'type' => 0,
     ),
     'rawpotato' => array(
@@ -29180,11 +32900,19 @@ $ITEM_SEARCH = array(
         'item_name' => 'golden_carrot',
         'type' => 0,
     ),
+    'skhead' => array(
+        'item_name' => 'skull',
+        'type' => 0,
+    ),
     'skeletonhead' => array(
         'item_name' => 'skull',
         'type' => 0,
     ),
     'headskeleton' => array(
+        'item_name' => 'skull',
+        'type' => 0,
+    ),
+    'skeletonskull' => array(
         'item_name' => 'skull',
         'type' => 0,
     ),
@@ -29239,6 +32967,10 @@ $ITEM_SEARCH = array(
     'skullwskeletion' => array(
         'item_name' => 'skull',
         'type' => 1,
+    ),
+    'zohead' => array(
+        'item_name' => 'skull',
+        'type' => 2,
     ),
     'zombiehead' => array(
         'item_name' => 'skull',
@@ -29304,6 +33036,10 @@ $ITEM_SEARCH = array(
         'item_name' => 'skull',
         'type' => 3,
     ),
+    'crhead' => array(
+        'item_name' => 'skull',
+        'type' => 4,
+    ),
     'creeperhead' => array(
         'item_name' => 'skull',
         'type' => 4,
@@ -29319,6 +33055,30 @@ $ITEM_SEARCH = array(
     'skullcreeper' => array(
         'item_name' => 'skull',
         'type' => 4,
+    ),
+    'dragonhead' => array(
+        'item_name' => 'skull',
+        'type' => 5,
+    ),
+    'dragonmask' => array(
+        'item_name' => 'skull',
+        'type' => 5,
+    ),
+    'dragonheadmask' => array(
+        'item_name' => 'skull',
+        'type' => 5,
+    ),
+    'dragmask' => array(
+        'item_name' => 'skull',
+        'type' => 5,
+    ),
+    'dragonskull' => array(
+        'item_name' => 'skull',
+        'type' => 5,
+    ),
+    'dragskull' => array(
+        'item_name' => 'skull',
+        'type' => 5,
     ),
     'carrotonastick' => array(
         'item_name' => 'carrot_on_a_stick',
@@ -29536,28 +33296,24 @@ $ITEM_SEARCH = array(
         'item_name' => 'comparator',
         'type' => 0,
     ),
-    'netherbrick' => array(
-        'item_name' => 'nether_brick',
-        'type' => 0,
-    ),
     'nbrick' => array(
-        'item_name' => 'nether_brick',
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'hellbrick' => array(
-        'item_name' => 'nether_brick',
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'deathbrick' => array(
-        'item_name' => 'nether_brick',
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'dbrick' => array(
-        'item_name' => 'nether_brick',
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'hbrick' => array(
-        'item_name' => 'nether_brick',
+        'item_name' => 'netherbrick',
         'type' => 0,
     ),
     'netherquartz' => array(
@@ -29690,6 +33446,50 @@ $ITEM_SEARCH = array(
     ),
     'hcart' => array(
         'item_name' => 'hopper_minecart',
+        'type' => 0,
+    ),
+    'prismarineshard' => array(
+        'item_name' => 'prismarine_shard',
+        'type' => 0,
+    ),
+    'priseshard' => array(
+        'item_name' => 'prismarine_shard',
+        'type' => 0,
+    ),
+    'prisemarinecrystals' => array(
+        'item_name' => 'prismarine_crystals',
+        'type' => 0,
+    ),
+    'prisecrystals' => array(
+        'item_name' => 'prismarine_crystals',
+        'type' => 0,
+    ),
+    'rabbitmeat' => array(
+        'item_name' => 'rabbit',
+        'type' => 0,
+    ),
+    'cookedrabbit' => array(
+        'item_name' => 'cooked_rabbit',
+        'type' => 0,
+    ),
+    'rabbitstew' => array(
+        'item_name' => 'rabbit_stew',
+        'type' => 0,
+    ),
+    'hasenpfeffer' => array(
+        'item_name' => 'rabbit_stew',
+        'type' => 0,
+    ),
+    'rabbitfoot' => array(
+        'item_name' => 'rabbit_foot',
+        'type' => 0,
+    ),
+    'rabbithide' => array(
+        'item_name' => 'rabbit_hide',
+        'type' => 0,
+    ),
+    'armorstand' => array(
+        'item_name' => 'armor_stand',
         'type' => 0,
     ),
     'ironhorsearmor' => array(
@@ -29886,6 +33686,538 @@ $ITEM_SEARCH = array(
     ),
     'cbcart' => array(
         'item_name' => 'command_block_minecart',
+        'type' => 0,
+    ),
+    'sheepmeat' => array(
+        'item_name' => 'mutton',
+        'type' => 0,
+    ),
+    'cookedmutton' => array(
+        'item_name' => 'cooked_mutton',
+        'type' => 0,
+    ),
+    'cookedsheep' => array(
+        'item_name' => 'cooked_mutton',
+        'type' => 0,
+    ),
+    'blackbanner' => array(
+        'item_name' => 'banner',
+        'type' => 0,
+    ),
+    'standingbanner' => array(
+        'item_name' => 'banner',
+        'type' => 0,
+    ),
+    'wallbanner' => array(
+        'item_name' => 'banner',
+        'type' => 0,
+    ),
+    'redbanner' => array(
+        'item_name' => 'banner',
+        'type' => 1,
+    ),
+    'greenbanner' => array(
+        'item_name' => 'banner',
+        'type' => 2,
+    ),
+    'brownbanner' => array(
+        'item_name' => 'banner',
+        'type' => 3,
+    ),
+    'bluebanner' => array(
+        'item_name' => 'banner',
+        'type' => 4,
+    ),
+    'purplebanner' => array(
+        'item_name' => 'banner',
+        'type' => 5,
+    ),
+    'cyanbanner' => array(
+        'item_name' => 'banner',
+        'type' => 6,
+    ),
+    'lgreybanner' => array(
+        'item_name' => 'banner',
+        'type' => 7,
+    ),
+    'lightgreybanner' => array(
+        'item_name' => 'banner',
+        'type' => 7,
+    ),
+    'greybanner' => array(
+        'item_name' => 'banner',
+        'type' => 8,
+    ),
+    'pinkbanner' => array(
+        'item_name' => 'banner',
+        'type' => 9,
+    ),
+    'limebanner' => array(
+        'item_name' => 'banner',
+        'type' => 10,
+    ),
+    'yellowbanner' => array(
+        'item_name' => 'banner',
+        'type' => 11,
+    ),
+    'lbluebanner' => array(
+        'item_name' => 'banner',
+        'type' => 12,
+    ),
+    'lightbluebanner' => array(
+        'item_name' => 'banner',
+        'type' => 12,
+    ),
+    'magentabanner' => array(
+        'item_name' => 'banner',
+        'type' => 13,
+    ),
+    'orangebanner' => array(
+        'item_name' => 'banner',
+        'type' => 14,
+    ),
+    'whitebanner' => array(
+        'item_name' => 'banner',
+        'type' => 15,
+    ),
+    'endcrystal' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'endercrystal' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'ecrystal' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'dragoncrystal' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'endgem' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'egem' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'dragongem' => array(
+        'item_name' => 'end_crystal',
+        'type' => 0,
+    ),
+    'sprucedooritem' => array(
+        'item_name' => 'spruce_door',
+        'type' => 0,
+    ),
+    'birchdooritem' => array(
+        'item_name' => 'birch_door',
+        'type' => 0,
+    ),
+    'jungledooritem' => array(
+        'item_name' => 'jungle_door',
+        'type' => 0,
+    ),
+    'acaciadooritem' => array(
+        'item_name' => 'acacia_door',
+        'type' => 0,
+    ),
+    'darkoakdooritem' => array(
+        'item_name' => 'dark_oak_door',
+        'type' => 0,
+    ),
+    'chorusfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'chorfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'corusfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'corfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'endfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'enderfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'purpurfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'purfruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'purplefruit' => array(
+        'item_name' => 'chorus_fruit',
+        'type' => 0,
+    ),
+    'chorusfruitpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'corusfruitpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'fruitpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedcfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedendfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedenderfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedpurpurfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'poppedpurfruit' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'chorpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'corpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'chorfruitpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'corfruitpopped' => array(
+        'item_name' => 'chorus_fruit_popped',
+        'type' => 0,
+    ),
+    'broot' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beet' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beets' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beetplant' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beetcrop' => array(
+        'item_name' => 'beetroot',
+        'type' => 0,
+    ),
+    'beetrootseed' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetrootseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'brootseed' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'brootseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetseed' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetsseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetplantseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetcropseeds' => array(
+        'item_name' => 'beetroot_seeds',
+        'type' => 0,
+    ),
+    'beetrootsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'brootsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'beetsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'beetssoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'beetplantsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'beetcropsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'redsoup' => array(
+        'item_name' => 'beetroot_soup',
+        'type' => 0,
+    ),
+    'dragonbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'dragonsbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'dbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'edragonbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'edragonsbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'dragonpotion' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'dragonfire' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'endbreath' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'dragonpot' => array(
+        'item_name' => 'dragon_breath',
+        'type' => 0,
+    ),
+    'watersplashpotion' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'watersplashpot' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'watersplash' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'thrownwater' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'thrownwaterpot' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'splashwater' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'splashpotionofluck' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'splashpotofluck' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'splashluckpotion' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'lucksplashpotion' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'luckysplashpotion' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'luckysplashpot' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'splashluckpot' => array(
+        'item_name' => 'splash_potion',
+        'type' => 0,
+    ),
+    'spectralarrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'specterarrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'glowstonearrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'glowingarrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'glowarrow' => array(
+        'item_name' => 'spectral_arrow',
+        'type' => 0,
+    ),
+    'lingeringpotion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'lingerpotion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'lingerpot' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'aoepotion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'aoepot' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'areapotion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'areapot' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'cloudpotion' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'cloudpot' => array(
+        'item_name' => 'lingering_potion',
+        'type' => 0,
+    ),
+    'handshield' => array(
+        'item_name' => 'shield',
+        'type' => 0,
+    ),
+    'woodshield' => array(
+        'item_name' => 'shield',
+        'type' => 0,
+    ),
+    'woodenshield' => array(
+        'item_name' => 'shield',
+        'type' => 0,
+    ),
+    'hangglider' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'glider' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'wings' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'wing' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'playerwings' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'playerwing' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'pwings' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'pwing' => array(
+        'item_name' => 'elytra',
+        'type' => 0,
+    ),
+    'spruceboat' => array(
+        'item_name' => 'spruce_boat',
+        'type' => 0,
+    ),
+    'birchboat' => array(
+        'item_name' => 'birch_boat',
+        'type' => 0,
+    ),
+    'jungleboat' => array(
+        'item_name' => 'jungle_boat',
+        'type' => 0,
+    ),
+    'acaciaboat' => array(
+        'item_name' => 'acacia_boat',
+        'type' => 0,
+    ),
+    'darkoakboat' => array(
+        'item_name' => 'dark_oak_boat',
+        'type' => 0,
+    ),
+    'totemofundying' => array(
+        'item_name' => 'dark_oak_boat',
+        'type' => 0,
+    ),
+    'totem' => array(
+        'item_name' => 'totem_of_undying',
+        'type' => 0,
+    ),
+    'shulkershell' => array(
+        'item_name' => 'shulker_shell',
         'type' => 0,
     ),
     '13disc' => array(

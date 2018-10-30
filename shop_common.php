@@ -171,10 +171,10 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     // if item name is not set at all
     if (!isset($UMC_DATA[$item_name])) {
         XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text");
-        return false;
-    } else {
-        $item_arr = $UMC_DATA[$item_name];
-    }
+        $UMC_DATA[$item_name] = array('stack' => 64, 'avail' => true);
+    } 
+    $item_arr = $UMC_DATA[$item_name];
+
 
     // calculate the damage
     $damage_text = '';
@@ -245,7 +245,6 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $out = array(
         'full' => $full,
         'full_nocolor' => "$nice_name$meta_spacer$meta_text$damage_spacer$damage_text",
-        'item_id' => $UMC_DATA[$item_name]['id'],
         'type' => $item_data,
         'full_clean' => $full_clean,
         'meta' => $meta_text,

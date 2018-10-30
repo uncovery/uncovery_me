@@ -524,8 +524,8 @@ function umc_do_deposit_internal($all = false) {
 
         // check for bugs
         if (!isset($UMC_DATA[$item_id])) {
-            XMPP_ERROR_trigger("Invalid item deposit cancelled!");
-            umc_error("Sorry, the item in your inventory is bugged, uncovery was notfied and this should be fixed soon. IF you want to speed it up, please send a ticket with as much detail as possible.");
+            XMPP_ERROR_trigger("Invalid item deposit: $item_id!");
+            $UMC_DATA[$item_id] = array('stack' => 64, 'avail' => true);
         }
 
         // deal with item metadata

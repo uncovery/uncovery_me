@@ -168,6 +168,12 @@ $ITEM_SPRITES = array(
             'y' => 30,
         ),
     ),
+    'beef' => array(
+        'coords' => array(
+            'x' => 7,
+            'y' => 26,
+        ),
+    ),
     'beetroot' => array(
         'coords' => array(
             'x' => 19,
@@ -274,6 +280,10 @@ $ITEM_SPRITES = array(
         'coords' => array(
             'x' => 31,
             'y' => 39,
+        ),
+        'damaged' => array(
+            'x' => 0,
+            'y' => 40,
         ),
     ),
     'bowl' => array(
@@ -427,6 +437,10 @@ $ITEM_SPRITES = array(
     'carrot_on_a_stick' => array(
         'coords' => array(
             'x' => 19,
+            'y' => 36,
+        ),
+        'damaged' => array(
+            'x' => 22,
             'y' => 36,
         ),
     ),
@@ -717,6 +731,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'diamond_axe' => array(
+        'damaged' => array(
+            'x' => 23,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 14,
             'y' => 37,
@@ -759,6 +777,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'diamond_hoe' => array(
+        'damaged' => array(
+            'x' => 24,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 15,
             'y' => 37,
@@ -787,18 +809,30 @@ $ITEM_SPRITES = array(
         ),
     ),
     'diamond_pickaxe' => array(
+        'damaged' => array(
+            'x' => 25,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 16,
             'y' => 37,
         ),
     ),
     'diamond_shovel' => array(
+        'damaged' => array(
+            'x' => 26,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 17,
             'y' => 37,
         ),
     ),
     'diamond_sword' => array(
+        'damaged' => array(
+            'x' => 1,
+            'y' => 40,
+        ),
         'coords' => array(
             'x' => 6,
             'y' => 40,
@@ -1113,6 +1147,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'fishing_rod' => array(
+        'damaged' => array(
+            'x' => 27,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 22,
             'y' => 37,
@@ -1125,6 +1163,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'flint_and_steel' => array(
+        'damaged' => array(
+            'x' => 28,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 23,
             'y' => 37,
@@ -1221,6 +1263,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'golden_axe' => array(
+        'damaged' => array(
+            'x' => 29,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 25,
             'y' => 37,
@@ -1263,6 +1309,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'golden_hoe' => array(
+        'damaged' => array(
+            'x' => 30,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 26,
             'y' => 37,
@@ -1285,6 +1335,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'golden_pickaxe' => array(
+        'damaged' => array(
+            'x' => 31,
+            'y' => 36,
+        ),
         'coords' => array(
             'x' => 27,
             'y' => 37,
@@ -1297,12 +1351,20 @@ $ITEM_SPRITES = array(
         ),
     ),
     'golden_shovel' => array(
+        'damaged' => array(
+            'x' => 0,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 28,
             'y' => 37,
         ),
     ),
     'golden_sword' => array(
+        'damaged' => array(
+            'x' => 2,
+            'y' => 40,
+        ),
         'coords' => array(
             'x' => 7,
             'y' => 40,
@@ -1381,6 +1443,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'iron_axe' => array(
+        'damaged' => array(
+            'x' => 1,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 29,
             'y' => 37,
@@ -1435,6 +1501,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'iron_hoe' => array(
+        'damaged' => array(
+            'x' => 2,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 30,
             'y' => 37,
@@ -1475,18 +1545,30 @@ $ITEM_SPRITES = array(
         ),
     ),
     'iron_pickaxe' => array(
+        'damaged' => array(
+            'x' => 3,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 31,
             'y' => 37,
         ),
     ),
     'iron_shovel' => array(
+        'damaged' => array(
+            'x' => 4,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 0,
             'y' => 38,
         ),
     ),
     'iron_sword' => array(
+        'damaged' => array(
+            'x' => 3,
+            'y' => 40,
+        ),
         'coords' => array(
             'x' => 8,
             'y' => 40,
@@ -2076,12 +2158,6 @@ $ITEM_SPRITES = array(
             'y' => 29,
         ),
     ),
-    'raw_beef' => array(
-        'coords' => array(
-            'x' => 7,
-            'y' => 26,
-        ),
-    ),
     'record_11' => array(
         'coords' => array(
             'x' => 31,
@@ -2347,6 +2423,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'shears' => array(
+        'damaged' => array(
+            'x' => 5,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 5,
             'y' => 38,
@@ -2396,25 +2476,19 @@ $ITEM_SPRITES = array(
             'y' => 49,
         ),
     ),
+    'slime' => array(
+        'coords' => array(
+            'x' => 23,
+            'y' => 28,
+        ),
+    ),
     'slime_ball' => array(
         'coords' => array(
             'x' => 18,
             'y' => 35,
         ),
     ),
-    'slime_block' => array(
-        'coords' => array(
-            'x' => 23,
-            'y' => 28,
-        ),
-    ),
-    'snow_ball' => array(
-        'coords' => array(
-            'x' => 9,
-            'y' => 40,
-        ),
-    ),
-    'snow_block' => array(
+    'snow' => array(
         'coords' => array(
             'x' => 29,
             'y' => 28,
@@ -2424,6 +2498,12 @@ $ITEM_SPRITES = array(
         'coords' => array(
             'x' => 6,
             'y' => 31,
+        ),
+    ),
+    'snowball' => array(
+        'coords' => array(
+            'x' => 9,
+            'y' => 40,
         ),
     ),
     'soul_sand' => array(
@@ -2805,6 +2885,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'stone_axe' => array(
+        'damaged' => array(
+            'x' => 6,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 6,
             'y' => 38,
@@ -2823,12 +2907,20 @@ $ITEM_SPRITES = array(
         ),
     ),
     'stone_hoe' => array(
+        'damaged' => array(
+            'x' => 7,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 7,
             'y' => 38,
         ),
     ),
     'stone_pickaxe' => array(
+        'damaged' => array(
+            'x' => 8,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 8,
             'y' => 38,
@@ -2841,6 +2933,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'stone_shovel' => array(
+        'damaged' => array(
+            'x' => 9,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 9,
             'y' => 38,
@@ -2889,6 +2985,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'stone_sword' => array(
+        'damaged' => array(
+            'x' => 4,
+            'y' => 40,
+        ),
         'coords' => array(
             'x' => 11,
             'y' => 40,
@@ -2968,7 +3068,7 @@ $ITEM_SPRITES = array(
             'y' => 31,
         ),
     ),
-    'totem' => array(
+    'totem_of_undying' => array(
         'coords' => array(
             'x' => 6,
             'y' => 44,
@@ -3035,6 +3135,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'wooden_axe' => array(
+        'damaged' => array(
+            'x' => 10,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 10,
             'y' => 38,
@@ -3053,12 +3157,20 @@ $ITEM_SPRITES = array(
         ),
     ),
     'wooden_hoe' => array(
+        'damaged' => array(
+            'x' => 11,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 11,
             'y' => 38,
         ),
     ),
     'wooden_pickaxe' => array(
+        'damaged' => array(
+            'x' => 12,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 12,
             'y' => 38,
@@ -3071,6 +3183,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'wooden_shovel' => array(
+        'damaged' => array(
+            'x' => 13,
+            'y' => 37,
+        ),
         'coords' => array(
             'x' => 13,
             'y' => 38,
@@ -3103,6 +3219,10 @@ $ITEM_SPRITES = array(
         ),
     ),
     'wooden_sword' => array(
+        'damaged' => array(
+            'x' => 5,
+            'y' => 40,
+        ),
         'coords' => array(
             'x' => 12,
             'y' => 40,
@@ -3197,7 +3317,5 @@ $ITEM_SPRITES = array(
             'x' => 22,
             'y' => 44,
         ),
-    ),
-    'invalid' => array(
     ),
 );

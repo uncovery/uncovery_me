@@ -2,8 +2,7 @@
 
 include('/home/minecraft/server/bin/index_wp.php');
 
-XMPP_ERROR_trace("Running schedule_pre_reboot!");
-
+XMPP_ERROR_trigger("Running schedule_pre_reboot!");
 
 umc_log('system', 'daily_process', "pre-reboot processes started");
 

@@ -8,9 +8,6 @@ umc_log('system', 'daily_process', "post-reboot processes started");
 // make a new ID file in case item data has changed
 umc_item_search_create();
 
-// do github updates
-umc_github_wordpress_update();
-
 run_umc_scheduler();
 
 umc_plugin_eventhandler('server_post_reboot');
