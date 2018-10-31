@@ -49,7 +49,8 @@ function umc_array2file_line($array, $layer, $val_change_func = false) {
         if ($val_change_func) {
             $value = $val_change_func($key, $value);
         }
-        $out .=  "$in_text'$key' => ";
+        $slash_key = addslashes($key);
+        $out .=  "$in_text'$slash_key' => ";
         if (is_array($value)) {
             $layer++;
             $out .= "array(\n"
@@ -59,16 +60,13 @@ function umc_array2file_line($array, $layer, $val_change_func = false) {
         } else if(is_numeric($value)) {
             $out .= "$value,\n";
         } else {
-            if (strstr($value, "'")) {
-                $out .= "\"$value\",\n";
-            } else {
-                $out .= "'$value',\n";
-            }
-            
+            $out .= "'" . addslashes($value) . "',\n";
         }
     }
     return $out;
 }
+
+
 
 function umc_array2file_indent($layer) {
     $text = '    ';
