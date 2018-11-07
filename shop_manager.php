@@ -121,9 +121,6 @@ function umc_shopmgr_items() {
     // get all data
     if (!isset($s_get['item']) || !isset($UMC_DATA[$s_get['item']])) {
         foreach ($UMC_DATA as $item_name => $data) {
-            if (!$data['avail']) { // we skip non-availabe items
-                continue;
-            }
             // $item = umc_goods_get_text($name);
             $variants = '';
             $title = $item_name;
