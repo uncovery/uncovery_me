@@ -666,27 +666,29 @@ function umc_lottery() {
                 $give_nbt = $ench_nbt;
                 break;
             case 'random_pet': // same as blocks below but only 1 always
+            case 'random_ore':
+            case 'random_sapling':
                 // umc_echo($type);
                 $block = $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
                 $given_block = $block[$luck2];
-                $give_nbt = "{EntityTag:{id:\"minecraft:$given_block\"}}";
-                $give_type = 'spawn_egg';
+                $give_nbt = "";
+                $give_type = $given_block;
                 $item = umc_goods_get_text($give_type, $give_data, $give_nbt);
                 $item_txt = "a " . $item['full'];
                 break;
-            case 'random_common':
-            case 'random_ore':
-            case 'random_sapling':
-            case 'random_manuf':
+            case 'random_item':
                 $block = $UMC_DATA; // $prize['blocks'];
-                $luck2 = mt_rand(0, count($prize['blocks']) - 1);
                 $luck3 = 1; // mt_rand(1, 64);
-                $give_type = array_rand($UMC_DATA);
+                $stack = 0;
+                while ($stack == 0) {
+                    $give_type = array_rand($UMC_DATA);
+                    $stack = $UMC_DATA[$give_type]['stack'];
+                }
                 $item = umc_goods_get_text($give_type);
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
-                break;
+                break;                
             case 'random_potion':
                 $types = array('lingering_potion', 'potion', 'splash_potion');
                 $type_luck = mt_rand(0, count($types) - 1);
