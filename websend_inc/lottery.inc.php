@@ -80,112 +80,93 @@ $lottery_urls = array(
 
 $lottery = array(
     'diamond' => array(
-        'chance' => 100,
+        'chance' => 99,
         'type' => 'item',
-        'data' => 264,
         'txt' => 'a shiny, tiny, diamond',
         'detail' => array(
             'item_name' => 'diamond',
-            'data' => 0,
-            'ench' => '',
-
+            'nbt' => '',
         ),
     ),
-    'diamondblock' => array(
+    'trident' => array(
+        'chance' => 1,
+        'type' => 'item',
+        'txt' => 'a trident!!',
+        'detail' => array(
+            'item_name' => 'trident',
+            'nbt' => '',
+        ),
+    ),     
+    'diamond_block' => array(
         'chance' => 10,
         'type' => 'item',
-        'data' => 57,
         'txt' => 'an ugly, heavy diamond block',
         'detail' => array(
             'item_name' => 'diamond_block',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
-    'goldenapple' => array(
+    'golden_apple' => array(
         'chance' => 70,
         'type' => 'item',
-        'data' => 322,
         'txt' => 'a shiny golden apple (Yum!)',
         'detail' => array(
             'item_name' => 'golden_apple',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
     'cake' => array(
         'chance' => 50,
         'type' => 'item',
-        'data' => 354,
         'txt' => 'an entire cake (Happy Cakeday!)',
         'detail' => array(
             'item_name' => 'cake',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
     'coal' => array(
         'chance' => 10,
         'type' => 'item',
-        'data' => 263,
         'txt' => 'a NOT shiny piece of coal',
         'detail' => array(
             'item_name' => 'coal',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
     'enchanted_pick' => array(
         'chance' => 10,
         'type' => 'item',
-        'data' => '270 1 DIG_SPEED:5 SILK_TOUCH:1 LOOT_BONUS_BLOCKS:3',
         'txt' => 'a super-enchanted wooden pickaxe',
         'detail' => array(
-            'item_name' => 'wooden_pickaxe',
-            'data' => 0,
-            'ench' => array(
-                'DIG_SPEED' => 5,
-                'SILK_TOUCH' => 1,
-                'LOOT_BONUS_BLOCKS' => 3,
-            ),
+            'item_name' => 'wooden_pickaxe',            
+            'nbt' => '{RepairCost=7,Enchantments=[{lvl=1,id="minecraft:silk_touch"},{lvl=5,id="minecraft:efficiency"},{lvl=3,id="minecraft:unbreaking"}]}',
         ),
     ),
     'enchanted_sword' => array(
         'chance' => 10,
         'type' => 'item',
-        'data' => '268 1 DAMAGE_ALL:5 KNOCKBACK:2 FIRE_ASPECT:2 LOOT_BONUS_MOBS:3',
         'txt' => 'a super-enchanted wooden sword',
         'detail' => array(
             'item_name' => 'wooden_sword',
-            'data' => 0,
-            'ench' => array(
-                'DAMAGE_ALL' => 5,
-                'KNOCKBACK' => 2,
-                'FIRE_ASPECT' => 2,
-                'LOOT_BONUS_MOBS' => 3,
-            ),
+            'nbt' => '{RepairCost=63,Enchantments=[{lvl=3,id="minecraft:unbreaking"},{lvl=5,id="minecraft:sharpness"},{lvl=3,id="minecraft:sweeping"},{lvl=3,id="minecraft:looting"},{lvl=2,id="minecraft:fire_aspect"},{lvl=2,id="minecraft:knockback"}]}',
         ),
     ),
     'dirtblock' => array(
         'chance' => 10,
         'type' => 'item',
-        'data' => 3,
         'txt' => 'a big block of extra-fine dirt',
         'detail' => array(
             'item_name' => 'dirt',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
     'cookie' => array(
         'chance' => 70,
         'type' => 'item',
-        'data' => 357,
         'txt' => 'a hot cookie (OUCH!)',
         'detail' => array(
             'item_name' => 'cookie',
-            'data' => 0,
-            'ench' => '',
+            'nbt' => '',
         ),
     ),
     'random_pet' => array(
@@ -194,8 +175,8 @@ $lottery = array(
         'data' => 'pet',
         'txt' => 'a random Animal Egg',
         'blocks' => array(
-            'donkey', 'mule', 'pig', 'sheep', 'cow', 'chicken', 'squid', 'wolf',
-            'mooshroom', 'ocelot', 'horse', 'polar_bear', 'llama', 'villager',
+            'donkey_spawn_egg', 'mule_spawn_egg', 'pig_spawn_egg', 'sheep_spawn_egg', 'cow_spawn_egg', 'chicken_spawn_egg', 'squid_spawn_egg', 'wolf_spawn_egg',
+            'mooshroom_spawn_egg', 'ocelot_spawn_egg', 'horse_spawn_egg', 'polar_bear_spawn_egg', 'llama_spawn_egg', 'villager_spawn_egg',
         ),
     ),
     'random_unc' => array(
@@ -204,55 +185,42 @@ $lottery = array(
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
     ),
-    'random_common' => array(
+/*    'random_common' => array(
         'chance' => 100,
         'type' => 'random_common',
         'data' => 'common',
         'txt' => '1-64 of random common block',
         'blocks' => array(
-            'grass:0', 'dirt:0', 'cobblestone:0', 'planks:0', 'planks:1', 'planks:2',
-            'planks:3', 'planks:4', 'planks:5', 'sand:0', 'gravel:0', 'log:0', 'log:1',
-            'log:2', 'log:3', 'log2:0', 'log2:1', 'sandstone:0', 'netherrack:0',
-            'soul_sand:0', 'mycelium:0',
+            
         ),
-    ),
+    ),*/
     'random_sapling' => array(
         'chance' => 50,
         'type' => 'random_sapling',
         'data' => 'common',
         'txt' => '1-64 of random sapling',
         'blocks' => array(
-            'sapling:0', 'sapling:1', 'sapling:2', 'sapling:3', 'sapling:4',
+            "dark_oak_sapling", "jungle_sapling", "oak_sapling", "spruce_sapling", "acacia_sapling", "birch_sapling"
         ),
     ),
     'random_ore' => array(
         'chance' => 50,
         'type' => 'random_ore',
         'data' => 'ore',
-        'txt' => '1-64 of random rare block',
+        'txt' => '1-64 of random ore',
         'blocks' => array(
-            'coal_ore:0', 'iron_ore:0', 'lapis_ore:0', 'mossy_cobblestone:0', 'diamond_ore:0',
-            'redstone_ore:0', 'ice:0', 'snow:0', 'clay:0', 'glowstone:0', 'pumpkin:0', 'stonebrick:0',
-            'mycelium:0', 'nether_brick:0', 'emerald_ore:0', 'end_stone:0', 'redstone_block:0',
-            'quartz_ore:0', 'quartz_block:0', 'coal_block:0', 'packed_ice:0',
+            'gold_ore', 'coal_ore', 'iron_ore', 'lapis_ore', 'diamond_ore', 'redstone_ore', 'emerald_ore', 'nether_quartz_ore', 
         ),
     ),
-    'random_manuf' => array(
+/*    'random_manuf' => array(
         'chance' => 140,
         'type' => 'random_manuf',
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
         'blocks' => array(
-            'glass:0', 'dispenser:0', 'noteblock:0', 'golden_rail:0', 'detector_rail:0',
-            'sticky_piston:0', 'piston:0', 'wool:0', 'stone_slab:0', 'brick_block:0',
-            'bookshelf:0', 'obsidian:0', 'chest:0', 'furnace:0', 'ladder:0', 'rail:0',
-            'stone_stairs:0', 'jukebox:0', 'lit_pumpkin:0', 'stained_glass:0',
-            'stained_glass:1', 'stained_glass:2', 'stained_glass:3', 'stained_glass:4',
-            'stained_glass:5', 'stained_glass:6', 'stained_glass:7', 'stained_glass:8',
-            'stained_glass:9', 'stained_glass:10', 'stained_glass:11', 'stained_glass:12',
-            'stained_glass:13', 'stained_glass:14', 'stained_glass:15', 'redstone_lamp:0',
+            
         ),
-    ),
+    ),*/
     'random_ench' => array(
         'chance' => 68, // rate of 69 in 1000
         'type' => 'random_ench',
