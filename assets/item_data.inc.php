@@ -26,29 +26,151 @@ global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_icons'] = 'umc_get_icons';
 
 function umc_item_data_create() {
-    $version = '1.13';
-    $path = "/home/minecraft/server/mc_assets/minecraft-data/data/pc/$version/";
     $files = array(
-    //     'blocks.json',
         'items.json',
+        'blocks.json',
+    );
+    
+    $versions = array(
+        0 => array('target' => '112', 'source' => '1.12'),
+        1 => array('target' => '113', 'source' => '1.13'),
     );
 
-    $array_data = array();
-    foreach ($files as $filename) {
-        $file_contents = file_get_contents($path . $filename);
-        $data = json_decode($file_contents);
-        foreach ($data as $obj) {
-            $name = $obj->name;
-            if (!isset($array_data[$name])) {
-                $array_data[$name] = array(
-                    'stack' => $obj->stackSize,
-                );
+    foreach ($versions as $V) {
+        $path = "/home/minecraft/server/mc_assets/minecraft-data/data/pc/{$V['source']}/";
+        $array_data = array();
+        foreach ($files as $filename) {
+            $file_contents = file_get_contents($path . $filename);
+            $data = json_decode($file_contents);
+            foreach ($data as $obj) {
+                $name = strtolower($obj->name);
+                if (!isset($array_data[$name])) {
+                    $array_data[$name] = array(
+                        'stack' => $obj->stackSize,
+                        'id' => $obj->id,
+                        'display_name' => $obj->displayName,
+                    );
+                    if (isset($obj->variations)) {
+                        $array_data[$name]['variations'] = array();
+                        foreach ($obj->variations as $var) {
+                            $var_id = $var->metadata;
+                            $array_data[$name]['variations'][$var_id] = $var->displayName;
+                        }
+                    }
+                }
+            }
+        }
+        ksort($array_data);
+        umc_array2file($array_data, "UMC_DATA_{$V['target']}", "/home/minecraft/server/bin/assets/item_details_{$V['target']}.inc.php");
+    }
+}
+
+function umc_item_data_create_icon($item_name) {
+    global $UMC_SETTING, $UMC_DOMAIN;
+    $version = $UMC_SETTING['mc_version'];    
+    
+    
+    
+    $item_sub_folder = "/admin/mc_assets/$version/items/";
+    $block_sub_folder = "/admin/mc_assets/$version/blocks/";    
+    $file = "$item_name.png";
+    
+    $item_path = $UMC_SETTING['path']['html'] . $item_sub_folder . $file;
+    $block_path = $UMC_SETTING['path']['html'] . $block_sub_folder . $file;
+    
+    $type = 'item';
+    if (!file_exists($item_path)) {
+        $type = 'block';
+    }
+    
+    $item_html = "<img src=\"$UMC_DOMAIN/$item_sub_folder$file\">";
+    
+}
+
+function umc_item_data_versionmatch() {
+    $old_version = "/home/minecraft/server/bin/assets/item_details_112.inc.php";
+    $new_version = "/home/minecraft/server/bin/assets/item_details_113.inc.php";
+    
+    global $UMC_DATA_112;
+    global $UMC_DATA_113;
+    
+    include_once($old_version);
+    include_once($new_version);
+    
+    // create a list of the new items based on display names
+    $name_arr_113 = array();
+    foreach ($UMC_DATA_113 as $name => $D) {
+        $dis_name = $D['display_name'];
+        $name_arr_113[$dis_name] = $name;
+    }
+    
+    $invalid = array();
+    
+    // iterate the old items and see if we can find them in the new list
+    $name_translate = array();
+    foreach ($UMC_DATA_112 as $name => $D) {
+        $dis_name = $D['display_name'];
+        $dis_name = str_replace("Wood ", "", $dis_name);
+        $dis_name = str_replace("Chain ", "Chainmail ", $dis_name);
+        if (isset($D['variations'])) {
+            foreach ($D['variations'] as $type_id => $var_display_name) {
+                // remove all the "Wood" for better matching
+                $var_display_name = str_replace("Wood ", "", $var_display_name);
+                $var_display_name = str_replace("Chain ", "Chainmail ", $var_display_name);
+                if (umc_itemdata_databasecheck($name, $type_id)) {
+                    if (isset($name_arr_113[$var_display_name])) {
+                        if ($name != $name_arr_113[$var_display_name]) {
+                            $name_translate[$name][$type_id] = $name_arr_113[$var_display_name]; 
+                        }
+                    } else {
+                        $invalid[$name][$type_id] = $var_display_name;
+                    }
+                }
+            }
+        } else {
+            if (umc_itemdata_databasecheck($name, 0)) {
+                if (isset($name_arr_113[$dis_name])) {
+                    if ($name != $name_arr_113[$dis_name]) {
+                        $name_translate[$name][0] = $name_arr_113[$dis_name];
+                    }
+                } else {
+                    $invalid[$name][0] = $dis_name;
+                }
             }
         }
     }
-    umc_array2file($array_data, 'UMC_DATA', '/home/minecraft/server/bin/assets/item_details.inc.php');
+    
+    $count = count($invalid);
+    $name_translate['invalid'] = $invalid;
+    umc_array2file($name_translate, 'UMC_DATA_tranlation', "/home/minecraft/server/bin/assets/item_details_translation.inc.php");
+    echo "$count invalid items found";
 }
 
+/**
+ * check if an item exists anywhere in the database
+ * 
+ * @param type $name
+ * @param type $id
+ * @return boolean
+ */
+function umc_itemdata_databasecheck($name, $id) {
+    //check invalid items if they actually exist
+    $tables = array(
+        'minecraft_iconomy.transactions',
+        'minecraft_iconomy.stock',
+        'minecraft_iconomy.request',
+        'minecraft_iconomy.deposit',
+    );
+
+    foreach ($tables as $table) {
+        $sql = "SELECT * FROM $table WHERE `item_name` = '$name' AND `damage` = $id";
+        $D = umc_mysql_fetch_all($sql);
+        if (count($D) > 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function umc_item_search_create() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
@@ -181,6 +303,7 @@ function umc_item_data_id2namelist() {
  * @param type $sub_type
  */
 function umc_item_data_icon_html($item_name, $sub_type = false) {
+ 
     $html = "<span class=\"item_sprite item_{$item_name}_{$sub_type}\"> </span>";
     return $html;
 }
@@ -376,179 +499,73 @@ Syntax is item_name => wiki_name";
  * fix old item names in tables
  */
 function umc_item_fix_old() {
-    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA;
-
+    global $UMC_PATH_MC;
+    global $potions_legacy_convert;
+    require_once($UMC_PATH_MC . '/server/bin/assets/item_details_translation.inc.php');
+    
     $tables = array(
         'minecraft_iconomy.transactions',
         'minecraft_iconomy.stock',
         'minecraft_iconomy.request',
         'minecraft_iconomy.deposit',
     );
-
-    foreach ($UMC_DATA_SPIGOT2ITEM as $old_name => $new_name) {
-        foreach ($tables as $table) {
-            $sql = "UPDATE $table SET `item_name` = '$new_name' WHERE `item_name` LIKE '$old_name';";
-            umc_mysql_execute_query($sql);
-        }
-    }
     
-    foreach ($UMC_DATA as $old_name => $new_data) {
-        if (isset($new_data['subtypes'])) {
+    foreach ($potions_legacy_convert as $old_id => $D) {
+        //if (isset($new_data['subtypes'])) {
+        $nbt = $D['nbt'];
+        $item_name = $D['item_name'];
+        echo "Updating $old_id to $item_name / $nbt: ";
             foreach ($tables as $table) {
-                $sub_types = $new_data['subtypes'];
-                foreach ($sub_types as $old_id => $sub_data) {
-                    $item_name = $sub_data['name'];
-                    $update_sql = "UPDATE $table SET `item_name` = '$item_name' WHERE `item_name` = '$old_name' AND `damage` = $old_id;";
-                    $sql = "SELECT * FROM $table WHERE `item_name` = '$old_name' AND `damage` = $old_id";
+                //$sub_types = $new_data['subtypes'];
+                //foreach ($sub_types as $old_id => $sub_data) {
+                    $update_sql = "UPDATE $table SET `nbt` = '$nbt', `damage`=0, `item_name`='$item_name' WHERE `item_name` = 'potion' AND `damage` = $old_id;";
+                    $sql = "SELECT * FROM $table WHERE `item_name` = 'potion' AND `damage` = $old_id;";
                     $D = umc_mysql_fetch_all($sql);
-                    if (count($D) > 0) {
+                    $count = count($D);
+                    if ($count > 0) {
                         umc_mysql_execute_query($update_sql);
+                        echo "Table $table found $count, ";
                     }
-                }
+                //}
             } 
-        }
+        //}
+        echo "\n";
     }
-
 }
 
-$UMC_DATA_SPIGOT2ITEM = array(
-    'acacia_door_item' => 'acacia_door',
-    'birch_door_item' => 'birch_door',
-    'birch_wood_stairs' => 'birch_stairs',
-    'boat_acacia' => 'acacia_boat',
-    'boat_birch' => 'birch_boat',
-    'boat_dark_oak' => 'dark_oak_boat',
-    'boat_jungle' => 'jungle_boat',
-    'boat_spruce' => 'spruce_boat',
-    'book_and_quill' => 'writable_book',
-    'brewing_stand_item' => 'brewingstand',
-    'brick' => 'brick_block',
-    'carrot_item' => 'carrot',
-    'carrot_stick' => 'carrot_on_a_stick',
-    'cauldron_item' => 'cauldron',
-    'clay_balls' => 'clay_ball',
-    'clay_block' => 'clay',
-    'clay_brick' => 'brick',
-    'clayblock' => 'clay',
-    'cobble_wall' => 'cobblestone_wall',
-    'cobblestone_stairs' => 'stone_stairs',
-    'dark_oak_door_item' => 'dark_oak_door',
-    'dead_bush' => 'deadbush',
-    'diamond_barding' => 'diamond_horse_armor',
-    'diamond_pick' => 'diamond_pickaxe',
-    'diamond_spade' => 'diamond_shovel',
-    'diode' => 'repeater',
-    'dragons_breath' => 'dragon_breath',
-    'empty_map' => 'map',
-    'enchantment_table' => 'enchanting_table',
-    'ender_portal_frame' => 'end_portal_frame',
-    'ender_stone' => 'end_stone',
-    'exp_bottle' => 'experience_bottle',
-    'eye_of_ender' => 'ender_eye',
-    'fireball' => 'fire_charge',
-    'firework' => 'fireworks',
-    'flower_pot_item' => 'flower_pot',
-    'gold_axe' => 'golden_axe',
-    'gold_barding' => 'golden_horse_armor',
-    'gold_boots' => 'golden_boots',
-    'gold_chestplate' => 'golden_chestplate',
-    'gold_helmet' => 'golden_helmet',
-    'gold_hoe' => 'golden_hoe',
-    'gold_leggings' => 'golden_leggings',
-    'gold_pickaxe' => 'golden_pickaxe',
-    'gold_plate' => 'light_weighted_pressure_plate',
-    'gold_record' => 'record_13',
-    'gold_spade' => 'golden_shovel',
-    'gold_sword' => 'golden_sword',
-    'green_record' => 'record_cat',
-    'grilled_pork' => 'cooked_porkchop',
-    'grilled_pork' => 'cooked_porkchop',
-    'hard_clay' => 'hardened_clay',
-    'huge_mushroom_1' => 'brown_mushroom_block',
-    'huge_mushroom_2' => 'red_mushroom_block',
-    'ink_sack' => 'dye',
-    'iron_barding' => 'iron_horse_armor',
-    'iron_fence' => 'iron_bars',
-    'iron_plate' => 'heavy_weighted_pressure_plate',
-    'iron_spade' => 'iron_shovel',
-    'jack_o_lantern' => 'lit_pumpkin',
-    'jungle_door_item' => 'jungle_door',
-    'jungle_wood_stairs' => 'jungle_stairs',
-    'leash' => 'lead',
-    'leaves_2' => 'leaves2',
-    'log_2' => 'log2',
-    'long_grass' => 'tallgrass',
-    'monster_egg' => 'spawn_egg',
-    'monster_eggs' => 'monster_egg',
-    'mushroom_soup' => 'mushroom_stew',
-    'mycel' => 'mycelium',
-    'nether_fence' => 'nether_brick_fence',
-    'nether_stalk' => 'nether_wart',
-    'nether_brick_item' => 'netherbrick',
-    'nether_quartz' => 'quartz_ore',
-    'note_block' => 'noteblock',
-    'piston_base' => 'piston',
-    'piston_sticky_base' => 'sticky_piston',
-    'pork' => 'porkchop',
-    'potato_item' => 'potato',
-    'powered_rail' => 'golden_rail',
-    'rails' => 'rail',
-    'raw_chicken' => 'chicken',
-    'raw_fish' => 'fish',
-    'raw_beef' => 'beef',
-    'raw_porkchop' => 'porkchop',
-    'record_10' => 'record_ward',
-    'record_12' => 'record_wait',
-    'record_3' => 'record_blocks',
-    'record_4' => 'record_chirp',
-    'record_5' => 'record_far',
-    'record_6' => 'record_mall',
-    'record_7' => 'record_mellohi',
-    'record_8' => 'record_stal',
-    'record_9' => 'record_strad',
-    'red_rose' => 'red_flower',
-    'redstone_comparator' => 'comparator',
-    'redstone_repeater' => 'repeater',
-    'redstone_lamp_off' => 'redstone_lamp',
-    'redstone_torch_on' => 'redstone_torch',
-    'seeds' => 'wheat_seeds',
-    'silver_shulker_box' => 'light_grey_shulker_box',
-    'silver_glazed_terracotta' => 'light_gray_glazed_terracotta',
-    'skeletonskull' => 'skull',
-    'skull_item' => 'skull',
-    'slime_block' => 'slime',
-    'slimeball' => 'slime_ball',
-    'sugarcane' => 'reeds',
-    'smooth_brick' => 'stonebrick',
-    'smooth_stairs' => 'stone_brick_stairs',
-    'snow_ball' => 'snowball',
-    'snow_block' => 'snow',
-    'spruce_door_item' => 'spruce_door',
-    'spruce_wood_stairs' => 'spruce_stairs',
-    'stained_clay' => 'stained_hardened_clay',
-    'step' => 'stone_slab',
-    'stone_plate' => 'stone_pressure_plate',
-    'stone_spade' => 'stone_shovel',
-    'storage_minecart' => 'chest_minecart',
-    'sugar_cane' => 'reeds',
-    'sulphur' => 'gunpowder',
-    'thin_glass' => 'glass_pane',
-    'totem' => 'totem_of_undying',
-    'trap_door' => 'trapdoor',
-    'unpowered_repeater' => 'repeater',
-    'watch' => 'clock',
-    'water_lily' => 'waterlily',
-    'wood' => 'planks',
-    'wood_axe' => 'wooden_axe',
-    'wood_button' => 'wooden_button',
-    'wood_door' => 'wooden_door',
-    'wood_hoe' => 'wooden_hoe',
-    'wood_pickaxe' => 'wooden_pickaxe',
-    'wood_plate' => 'wooden_pressure_plate',
-    'wood_spade' => 'wooden_shovel',
-    'wood_stairs' => 'oak_stairs',
-    'wood_step' => 'wooden_slab',
-    'wood_sword' => 'wooden_sword',
-    'workbench' => 'crafting_table',
+$potions_legacy_convert = array(
+    16 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:awkward"}'),
+    64 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:mundane"}'),
+    8194 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:swiftness"}'),
+    8195 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:fire_resistance"}'),
+    8197 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:healing"}'),
+    8197 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:healing"}'),
+    8198 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:night_vision"}'),
+    8200 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:weakness"}'),
+    8206 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:invisibility"}'),
+    8225 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:strong_regeneration"}'),
+    8226 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:strong_swiftness"}'),
+    8229 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:strong_healing"}'),
+    8233 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:strong_strength"}'),
+    8235 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:strong_leaping"}'),
+    8257 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_regeneration"}'),
+    8258 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_swiftness"}'),
+    8259 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_fire_resistance"}'),
+    8260 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_poison"}'),
+    8262 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_night_vision"}'),
+    8264 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_weakness"}'),
+    8265 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_strength"}'),
+    8267 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:leaping"}'),
+    8269 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_water_breathing"}'),
+    8270 => array('item_name'=>'potion', 'nbt'=>'{Potion:"minecraft:long_invisibility"}'),
+    16388 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:poison"}'),
+    16389 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:healing"}'),
+    16392 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:weakness"}'),
+    16396 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:harming"}'),
+    16418 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:strong_swiftness"}'),
+    16420 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:strong_poison"}'),
+    16421 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:healing"}'),
+    16425 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:strong_strength"}'),
+    16428 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:strong_harming"}'),
+    16450 => array('item_name'=>'splash_potion', 'nbt'=>'{Potion:"minecraft:long_swiftness"}'),
 );
-
