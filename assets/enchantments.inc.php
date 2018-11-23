@@ -35,7 +35,7 @@ $ENCH_ITEMS = array(
         'short' => 'Aqua',
         'name' => 'AquaAffinity',
         'items' => array(
-            'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
+            'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet', 'turtle_helmet',
         ),
         'max' => 1
     ), 
@@ -59,7 +59,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'elytra',
+            'elytra', 'turtle_helmet',
         ),
         'max' => 1
     ),   
@@ -73,6 +73,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'turtle_helmet',
         ),
         'max' => 4
     ),    
@@ -132,6 +133,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'turtle_helmet',
         ),
         'max' => 4
     ),  
@@ -162,6 +164,13 @@ $ENCH_ITEMS = array(
         ),
         'max' => 2
     ),   
+    'impaling' => array( // 62
+        'key' => 'impaling',
+        'short' => 'Impale',
+        'name' => 'Impaling',
+        'items' => array('trident'),
+        'max' => 5
+    ),      
     'infinity' => array( // 51
         'key' => 'infinity',
         'short' => 'Inf',
@@ -169,13 +178,6 @@ $ENCH_ITEMS = array(
         'items' => array('bow'),
         'max' => 1
     ),    
-    'impaling' => array( // 62
-        'key' => 'impaling',
-        'short' => 'Impale',
-        'name' => 'Impaling',
-        'items' => array('trident'),
-        'max' => 5
-    ),       
     'knockback' => array( // 19
         'key' => 'knockback',
         'short' => 'Knock',
@@ -207,14 +209,14 @@ $ENCH_ITEMS = array(
         'short' => 'Luck',
         'name' => 'Luck',
         'items' => array('fishing_rod'),
-        'max' => 1
+        'max' => 3
     ),
     'lure' => array( // 62
         'key' => 'lure',
         'short' => 'Lure',
         'name' => 'Lure',
         'items' => array('fishing_rod'),
-        'max' => 1
+        'max' => 3
     ),
     'mending' => array( // 70
         'key' => 'mending',
@@ -231,10 +233,27 @@ $ENCH_ITEMS = array(
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
-            'trident', 'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
+            'turtle_helmet', 'trident', 'bow', 'fishing_rod', 'shield', 'elytra',
+            'shears', 'flint_and_steel', 'carrot_on_a_stick', 
         ),
         'max' => 1
     ),    
+/*  
+    'multishot' => array(
+        'key' => 'multishot',
+        'short' => 'Multi',
+        'name' => 'Multishot',
+        'items' => array('crossbow'),
+        'max' => 1
+    ),    
+    'piercing' => array(
+        'key' => 'piercing',
+        'short' => 'Pierce',
+        'name' => 'Piercing',
+        'items' => array('crossbow'),
+        'max' => 4
+    ),  * 
+ */ 
     'power' => array( //48
         'key' => 'power',
         'short' => 'Power',
@@ -252,6 +271,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'turtle_helmet',
         ),
         'max' => 4
     ),    
@@ -265,6 +285,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'turtle_helmet'
         ),
         'max' => 4
     ),
@@ -274,13 +295,23 @@ $ENCH_ITEMS = array(
         'name' => 'Punch',
         'items' => array('bow'),
         'max' => 2
-    ),     
+    ),    
+    /*
+    'quick_charge' => array( //49
+        'key' => 'quick_charge',
+        'short' => 'Quick',
+        'name' => 'QuickCharge',
+        'items' => array('crossbow'),
+        'max' => 3
+    ),  
+     */      
     'respiration' => array( // 5
         'key' => 'respiration',
         'short' => 'Res',
         'name' => 'Respiration',
         'items' => array(
             'diamond_helmet', 'golden_helmet', 'iron_helmet', 'chainmail_helmet', 'leather_helmet',
+            'turtle_helmet'
         ),
         'max' => 3
     ),
@@ -359,7 +390,8 @@ $ENCH_ITEMS = array(
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
-            'trident', 'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra'
+            'turtle_helmet', 'trident', 'bow', 'shield', 'elytra',
+            'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 
         ),
         'max' => 3
     ),
@@ -378,7 +410,8 @@ $ENCH_ITEMS = array(
             'diamond_axe', 'golden_axe', 'iron_axe', 'stone_axe', 'wooden_axe',
             'diamond_sword', 'golden_sword', 'iron_sword', 'stone_sword', 'wooden_sword',
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
-            'trident', 'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 'shield', 'elytra',
+            'turtle_helmet', 'trident', 'shield', 'elytra',
+            'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 
         ),
         'max' => 1
     ),      
