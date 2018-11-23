@@ -143,6 +143,9 @@ function umc_ws_get_vars() {
     if (!isset($json['Invoker']['Name'])) {
         XMPP_ERROR_trigger("No invoker name in " . var_export($json, true));
     }
+    // add json as array to USER
+    $UMC_USER['json_array'] = $json;
+   
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
@@ -421,7 +424,7 @@ function umc_ws_cmd($cmd_raw, $how = 'asConsole', $player = false, $silent = fal
  * @return type
  */
 function umc_ws_get_inv($inv_data) {
-    global $UMC_DATA_SPIGOT2ITEM, $UMC_DATA;
+    global $UMC_DATA;
     // XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $inv = array();
     foreach($inv_data as $item) {
@@ -434,9 +437,7 @@ function umc_ws_get_inv($inv_data) {
             $fix_name = strtolower($name);
             if ($fix_name == 'typename') {
                 $item_typename = strtolower($item['TypeName']);
-                if (isset($UMC_DATA_SPIGOT2ITEM[$item_typename])) {
-                    $inv[$slot]['item_name'] = $UMC_DATA_SPIGOT2ITEM[$item_typename];
-                } else if (isset($UMC_DATA[$item_typename])) {
+                if (isset($UMC_DATA[$item_typename])) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
                     $out = "UMC_DATA_ID2NAME USAGE: ITEM ISSUE! Please add: '$item_typename' to the \$UMC_DATA array";
@@ -447,16 +448,6 @@ function umc_ws_get_inv($inv_data) {
                 $inv[$slot]['id'] = $item['Type'];
             } else if ($fix_name == 'durability') {
                 $inv[$slot]['data'] = $value;
-            } else if ($fix_name == 'meta' && (!isset($item['nbt']))) {
-                foreach ($value as $meta_type => $meta_value) {
-                    // enchantments
-                    if ($meta_type == 'Enchantments' || $meta_type == 'EnchantmentStorage') {
-                        foreach ($meta_value as $ench_data) {
-                            $e_name = $ench_data['Name'];
-                            $inv[$slot]['meta'][$e_name] = $ench_data['Level'];
-                        }
-                    }
-                }
             } else if ($fix_name == 'nbt') {
                 // convert spigot NBT to minecraft NBT
                 $nbt = umc_nbt_cleanup($value);
@@ -770,7 +761,6 @@ function umc_tellraw($selector, $msg_arr, $spacer = false, $debug = false) {
 function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
     global $UMC_DATA;
     $meta_cmd = '';
-    $initial_amount = $amount;
     // is the meta an array or NBT Data?
     if (substr($meta, 0, 2) == 'a:') { // we have an array
         $meta_arr = unserialize($meta);
@@ -796,10 +786,11 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $cmd = "minecraft:give $user $item_name$meta_cmd $stack_size;";
         $check = umc_ws_command('asConsole', $cmd);
         $amount = $amount - $stack_size;
+        umc_log('inventory', 'give', "gave $stack_size of $item_name (command: minecraft:give $stack_size) to $user");
     }
     // give the leftover amount
     $cmd = "minecraft:give $user $item_name$meta_cmd $amount;";
-    umc_log('inventory', 'give', "gave $initial_amount of $item_name (command: minecraft:give $user $item_name$meta_cmd ) to $user");
+    umc_log('inventory', 'give', "gave $amount of $item_name (command: minecraft:give $cmd) to $user");
     $check = umc_ws_command('asConsole', $cmd);
     return $check;    
 }
