@@ -186,7 +186,7 @@ $lottery = array(
         'txt' => 'a random amount of Uncs (max 500)',
     ),
     'random_item' => array(
-        'chance' => 240,
+        'chance' => 90,
         'type' => 'random_item',
         'data' => 'common',
         'txt' => '1 of random item',
@@ -195,7 +195,7 @@ $lottery = array(
         ),
     ),
     'random_sapling' => array(
-        'chance' => 50,
+        'chance' => 100,
         'type' => 'random_sapling',
         'data' => 'common',
         'txt' => '1-64 of random sapling',
@@ -228,7 +228,7 @@ $lottery = array(
         'txt' => 'a random single-enchanted item',
     ),
     'random_potion' => array(
-        'chance' => 50, // rate of 69 in 1000
+        'chance' => 100, // rate of 69 in 1000
         'type' => 'random_potion',
         'data' => 'potion',
         'txt' => 'a random potion',
@@ -647,7 +647,7 @@ function umc_lottery() {
             case 'random_ench':
                 // pick which enchantment
                 $rand_ench = array_rand($ENCH_ITEMS);
-                $rand_ench_id = $ENCH_ITEMS[$rand_ench]['id'];
+                $rand_ench_type = $ENCH_ITEMS[$rand_ench]['key'];
 
                 $ench_arr = $ENCH_ITEMS[$rand_ench];
                 //pick which item to enchant
@@ -656,8 +656,8 @@ function umc_lottery() {
                 // pick level of enchantment
                 $lvl_luck = mt_rand(1, $ench_arr['max']);
                 //echo "$item $ench_txt $lvl_luck";
-                // {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
-                $ench_nbt = "{ench:[{lvl:$lvl_luck,id:$rand_ench_id}]}";
+                // '{RepairCost:7,Enchantments:[{lvl:1,id:"minecraft:silk_touch"},{lvl:5,id:"minecraft:efficiency"},{lvl:3,id:"minecraft:unbreaking"}]}'
+                $ench_nbt = "{Enchantments:[{lvl:$lvl_luck,id:\"minecraft:$rand_ench_type\"}]}";
                 $item = umc_goods_get_text($rand_item_id, 0, $ench_nbt);
                 $item_name = $item['item_name'];
                 $full = $item['full'];
@@ -786,13 +786,14 @@ function umc_lottery_roll_dice($chance = false) {
         $chance = $data['chance']; // get the chance of the item roll
         $rank = $rank + $chance; // add chance to running total
 
-        XMPP_ERROR_trace("Chance check between $lastrank and $rank");
+        $txt_rank = $lastrank + 1; // we fix since we use > to compare
+        XMPP_ERROR_trace("Chance check between $txt_rank and $rank");
         // if roll matches the item chances range
         if ($roll <= $rank && $roll > $lastrank) {
             return array('item' => $item, 'luck' => $roll); // return the item and the roll
         }
 
-        $lastrank = $rank; // set lastrank to running total of chance
+        $lastrank = $rank ; // set lastrank to running total of chance
         $last_item = $item; // set the last item to item currently iterated
     }
     // we should not arrive here in any case
