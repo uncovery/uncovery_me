@@ -59,7 +59,7 @@ $ENCH_ITEMS = array(
             'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
             'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
             'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
-            'elytra', 'turtle_helmet',
+            'elytra', 'turtle_helmet', 'carved_pumpkin',
         ),
         'max' => 1
     ),   
@@ -412,6 +412,7 @@ $ENCH_ITEMS = array(
             'diamond_hoe', 'golden_hoe', 'iron_hoe', 'stone_hoe', 'wooden_hoe',
             'turtle_helmet', 'trident', 'shield', 'elytra',
             'bow', 'fishing_rod', 'shears', 'flint_and_steel', 'carrot_on_a_stick', 
+            'carved_pumpkin',
         ),
         'max' => 1
     ),      
