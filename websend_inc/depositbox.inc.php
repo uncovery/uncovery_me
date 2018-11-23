@@ -376,11 +376,17 @@ function umc_do_withdraw() {
             $sender = substr($id, 1); // strip the @ from the name
             $sender_uuid = umc_user2uuid($sender);
             umc_echo("{green}[+]{gray} Withdrawing items sent by {gold}$sender{gray} from your deposit");
-            $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit WHERE sender_uuid='$sender_uuid' AND recipient_uuid='$uuid'";
+            $sql = "SELECT `id`, `item_name`, `amount`, `nbt`
+                FROM minecraft_iconomy.deposit 
+                WHERE sender_uuid='$sender_uuid'
+                AND recipient_uuid='$uuid'";
             umc_log('deposit', 'withdraw', "$player tried to withdraw $amount from $sender");
         } else if ($id == 'all') { // withdrawing the whole deposit
             umc_echo("{green}[+]{gray} Withdrawing everything from your deposit...");
-            $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit WHERE recipient_uuid='$uuid' AND sender_uuid <> 'reusable-0000-0000-0000-000000000000';";
+            $sql = "SELECT `id`, `item_name`, `nbt`, `amount`
+                FROM minecraft_iconomy.deposit 
+                WHERE recipient_uuid='$uuid'
+                AND sender_uuid <> 'reusable-0000-0000-0000-000000000000';";
             umc_log('deposit', 'withdraw', "$player tried to withdraw all");
         } else { // by item name
             $find_item = umc_goods_get_text($id);
@@ -391,11 +397,10 @@ function umc_do_withdraw() {
             if (!$find_item) {
                 umc_error("There is nobody or item with that name to withdraw. Please check the manual");
             }
-            $sql = "SELECT `id`, `item_name`, `amount` FROM minecraft_iconomy.deposit
+            $sql = "SELECT `id`, `item_name`, `amount`, `nbt` FROM minecraft_iconomy.deposit
                 WHERE recipient_uuid='$uuid'
-		    AND item_name='{$find_item['item_name']}'
-		    AND damage='0'";
-            umc_log('deposit', 'withdraw', "$player tried to {$find_item['item_name']}:0");
+		AND item_name='{$find_item['item_name']}'";
+            umc_log('deposit', 'withdraw', "$player tried to withdraw {$find_item['item_name']} {$find_item['nbt']}");
         }
 
         $D2 = umc_mysql_fetch_all($sql);
@@ -403,8 +408,9 @@ function umc_do_withdraw() {
             $all_items = array();
             foreach ($D2 as $row) {
                 $id = $row['id'];
+                $nbt = $row['nbt'];
                 $item_name = $row['item_name'];
-                if($amount == 'max') {
+                if ($amount == 'max') {
                     $this_amount = $row['amount'];
                 } else if ($row['amount'] > $amount) {
                     $this_amount = $amount;
@@ -413,7 +419,7 @@ function umc_do_withdraw() {
                     $this_amount = $row['amount'];
                     $amount -= $this_amount;
                 }
-                $all_items[$id] = array('item_name' => $item_name, 'amount' => $this_amount);
+                $all_items[$id] = array('item_name' => $item_name, 'amount' => $this_amount, 'nbt' => $nbt);
             }
             umc_check_space_multiple($all_items);
             umc_log('deposit', 'withdraw', "$player is withdrawing $amount of $item_name");
