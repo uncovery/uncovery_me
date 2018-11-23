@@ -139,7 +139,7 @@ $lottery = array(
         'txt' => 'a super-enchanted wooden pickaxe',
         'detail' => array(
             'item_name' => 'wooden_pickaxe',            
-            'nbt' => '{RepairCost=7,Enchantments=[{lvl=1,id="minecraft:silk_touch"},{lvl=5,id="minecraft:efficiency"},{lvl=3,id="minecraft:unbreaking"}]}',
+            'nbt' => '{RepairCost:7,Enchantments:[{lvl:1,id:"minecraft:silk_touch"},{lvl:5,id:"minecraft:efficiency"},{lvl:3,id:"minecraft:unbreaking"}]}',
         ),
     ),
     'enchanted_sword' => array(
@@ -148,7 +148,7 @@ $lottery = array(
         'txt' => 'a super-enchanted wooden sword',
         'detail' => array(
             'item_name' => 'wooden_sword',
-            'nbt' => '{RepairCost=63,Enchantments=[{lvl=3,id="minecraft:unbreaking"},{lvl=5,id="minecraft:sharpness"},{lvl=3,id="minecraft:sweeping"},{lvl=3,id="minecraft:looting"},{lvl=2,id="minecraft:fire_aspect"},{lvl=2,id="minecraft:knockback"}]}',
+            'nbt' => '{RepairCost:63,Enchantments:[{lvl:3,id:"minecraft:unbreaking"},{lvl:5,id:"minecraft:sharpness"},{lvl:3,id:"minecraft:sweeping"},{lvl:3,id:"minecraft:looting"},{lvl:2,id:"minecraft:fire_aspect"},{lvl:2,id:"minecraft:knockback"}]}',
         ),
     ),
     'dirtblock' => array(
@@ -185,15 +185,15 @@ $lottery = array(
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
     ),
-/*    'random_common' => array(
-        'chance' => 100,
-        'type' => 'random_common',
+    'random_item' => array(
+        'chance' => 240,
+        'type' => 'random_item',
         'data' => 'common',
-        'txt' => '1-64 of random common block',
+        'txt' => '1 of random item',
         'blocks' => array(
             
         ),
-    ),*/
+    ),
     'random_sapling' => array(
         'chance' => 50,
         'type' => 'random_sapling',
@@ -555,7 +555,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls;
+    global $UMC_USER, $lottery, $ENCH_ITEMS, $lottery_urls, $UMC_DATA;
 
     $user_input = trim($UMC_USER['args'][2]);
 
@@ -608,7 +608,7 @@ function umc_lottery() {
     $give_data = 0;
     $give_type = 0;
     $give_amount = 1;
-    $give_ench = '';
+    $give_nbt = '';
     if (in_array($type, $non_deposit)) {
         $give_type = $type;
         switch ($type) {
@@ -642,8 +642,7 @@ function umc_lottery() {
             case 'item':
                 $item_txt = $prize['txt'];
                 $give_type = $detail['item_name'];
-                $give_data = $detail['data'];
-                $give_ench = $detail['ench'];
+                $give_nbt = $detail['nbt'];
                 break;
             case 'random_ench':
                 // pick which enchantment
@@ -664,30 +663,27 @@ function umc_lottery() {
                 $full = $item['full'];
                 $item_txt = "a " . $full;
                 $give_type = $item_name;
-                $give_ench = $ench_nbt;
+                $give_nbt = $ench_nbt;
                 break;
             case 'random_pet': // same as blocks below but only 1 always
                 // umc_echo($type);
                 $block = $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
                 $given_block = $block[$luck2];
-                $give_ench = "{EntityTag:{id:\"minecraft:$given_block\"}}";
-                $give_data = 0;
+                $give_nbt = "{EntityTag:{id:\"minecraft:$given_block\"}}";
                 $give_type = 'spawn_egg';
-                $item = umc_goods_get_text($give_type, $give_data, $give_ench);
+                $item = umc_goods_get_text($give_type, $give_data, $give_nbt);
                 $item_txt = "a " . $item['full'];
                 break;
             case 'random_common':
             case 'random_ore':
             case 'random_sapling':
             case 'random_manuf':
-                $block = $prize['blocks'];
+                $block = $UMC_DATA; // $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-                $luck3 = mt_rand(1, 64);
-                $given_block = explode(":", $block[$luck2]);
-                $give_type = $given_block[0];
-                $give_data = $given_block[1];
-                $item = umc_goods_get_text($give_type, $give_data);
+                $luck3 = 1; // mt_rand(1, 64);
+                $give_type = array_rand($UMC_DATA);
+                $item = umc_goods_get_text($give_type);
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
                 break;
@@ -699,12 +695,11 @@ function umc_lottery() {
                 $potion_luck = mt_rand(0, count($UMC_POTIONS) - 1);
                 $potion_keys = array_keys($UMC_POTIONS);
                 $potion_code = $potion_keys[$potion_luck];
-                $give_data = 0;
                 $item_txt = $give_type;
-                $give_ench = "{Potion:\"minecraft:$potion_code\"}";
+                $give_nbt = "{Potion:\"minecraft:$potion_code\"}";
                 $give_amount = 1;
         }
-        umc_deposit_give_item($uuid, $give_type, $give_data, $give_ench, $give_amount, 'lottery');
+        umc_deposit_give_item($uuid, $give_type, '', $give_nbt, $give_amount, 'lottery');
     }
 
 
@@ -732,7 +727,8 @@ function umc_lottery() {
             VALUES ($uuid_sql, NOW(), $service, $ip, $luck, $sql_reward);";
         umc_mysql_query($sql, true);
     } else {
-        XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_data, $give_ench)");
+        $service_fixed = 0;
+        XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_nbt)");
     }
 
     if ($user_is_online) {
