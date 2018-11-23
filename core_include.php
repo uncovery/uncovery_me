@@ -25,7 +25,7 @@
 /* UMC_FUNCTIONS: This is a list of functions that are called directly from the website, outside of Wordpress
  * The list needs to be maintained so that the function can actually be called. See index_wp for the mechanism.
  */
-global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_SPIGOT2ITEM, $UMC_DATA_ID2NAME;
+global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_ID2NAME;
 global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_PATTERNS, $UMC_COLORS_DEC;
 global $ITEM_SPRITES, $UMC_DATA_ITEM2WIKI;
 
