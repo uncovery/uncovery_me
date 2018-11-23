@@ -71,13 +71,13 @@ function umc_check_inventory($item_name, $data, $meta) {
 /**
  * Remove $amount of an item from the logged-in player's inventory
  *
- * @param type $id
+ * @param type $item_name
  * @param type $data
  * @param type $amount
  * @param type $meta
  * @return boolean
  */
-function umc_clear_inv($id, $data, $amount, $meta = '') {
+function umc_clear_inv($item_name, $data, $amount, $meta = '') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // umc_echo("trying to remove id $id, data $data, amount $amount, Enchantment $meta");
     global $UMC_USER;
@@ -105,7 +105,7 @@ function umc_clear_inv($id, $data, $amount, $meta = '') {
             $item['meta'] = serialize(false);
         }
         // echo "$slot:{$item['id']}:{$item['data']}:{$item['meta']} vs $meta";
-        if (($item['item_name'] == $id) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
+        if (($item['item_name'] == $item_name) && ($item['data'] == $data) && ($item[$comparator] == $meta)) {
             if ($amount >= $item['amount']) {
                 // we only prepare the list of to be cleared slots to remove them later with "removeitems"
                 $clearslots[] = $slot;
@@ -193,9 +193,12 @@ function umc_check_space_multiple($items) {
     $overall_need = 0;
     foreach ($items as $data) {
         $amount = $data['amount'];
+        $nbt = $data['nbt'];
         $item_name = $data['item_name'];
         if (!isset($UMC_DATA[$item_name]['stack'])) {
-            XMPP_ERROR_trigger("umc_check_space_multiple error with item {$data['item_name']}, could not find item in UMC_DATA array:" . var_export($data, true));
+            $msg = "umc_check_space_multiple error with item $item_name / $nbt, could not find item in UMC_DATA array:" . var_export($items, true);
+            XMPP_ERROR_send_msg($msg);
+            XMPP_ERROR_trigger($msg);
             umc_error("There was an error calculating your free space. The admin has been informed. Process stopped.");
         }
         $need_slots = ceil($amount / $UMC_DATA[$item_name]['stack']);
