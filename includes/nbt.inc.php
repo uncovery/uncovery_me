@@ -154,14 +154,14 @@ function umc_nbt_display_long_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
-            case 'ench':
-            case 'storedenchantments':
+            case 'ench': //for enchanted items
+            case 'storedenchantments': //for enchanted books
                 $text .= "Enchantments: ";
-                // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
+                // example enchantment {StoredEnchantments:[{lvl:2,id:"minecraft:fire_aspect"}]}
                 $enchs = array();
                 foreach ($data as $ench) {
                     // find the id in the enchantments data
-                    $ench_name = umc_enchant_text_find('id', $ench['id'], 'name');
+                    $ench_name = umc_enchant_text_find('key', $ench['id'], 'name');
                     $enchs[] = $ench_name . " Lvl {$ench['lvl']}";
                 }
                 $text .= implode(", ", $enchs) . '\n';
@@ -290,14 +290,14 @@ function umc_nbt_display_short_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
-            case 'ench':
-            case 'storedenchantments':
+            case 'ench': //for enchanted items
+            case 'storedenchantments': //for enchanted books
                 $text .= "(";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
                 $enchs = array();
                 foreach ($data as $ench) {
                     // find the id in the enchantments data
-                    $ench_name = umc_enchant_text_find('id', $ench['id'], 'short');
+                    $ench_name = umc_enchant_text_find('key', $ench['id'], 'name');
                     $enchs[] = $ench_name . " {$ench['lvl']}";
                 }
                 $text .= implode(", ", $enchs).  ")";
