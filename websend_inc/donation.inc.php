@@ -480,7 +480,7 @@ function umc_process_donation() {
     if (!$verified) {
         XMPP_ERROR_trigger("Paypal Payment Not Verified!");
         return "We could not automatically process your payment. We will do that manually, but we promise to get back to you ASAP. "
-            . "You donation length won't be affected by this. Once the donation is activated, you willr receive an email!";
+            . "You donation length won't be affected by this. Once the donation is activated, you will receive an email!";
     }
 
 
