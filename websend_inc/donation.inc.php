@@ -442,7 +442,7 @@ function umc_donation_monthly_target() {
 
 function umc_process_donation() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $donation_vars;
+    global $donation_vars;
 
     // code from https://github.com/paypal/ipn-code-samples/tree/master/php
 
@@ -483,8 +483,7 @@ function umc_process_donation() {
             . "You donation length won't be affected by this. Once the donation is activated, you willr receive an email!";
     }
 
-    $username = $UMC_USER['username'];
-    $uuid = $UMC_USER['uuid'];
+
     XMPP_ERROR_trigger("Donation Process form was accessed!");
 
     $s_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -532,6 +531,10 @@ function umc_process_donation() {
             $sql_vals[$entry] = umc_mysql_real_escape_string($s_post[$entry]);
         }
     }
+    
+    $uuid = umc_uuid_getone($s_post['option_selection2']);
+    $username = umc_uuid_getone($uuid, 'username');
+    
     // add the entry to the database
     $headers = "From: minecraft@uncovery.me" . "\r\n" .
         "Reply-To: minecraft@uncovery.me" . "\r\n" .
@@ -556,7 +559,7 @@ function umc_process_donation() {
         $text .= "Thank you very much for donating! It is highly appreciated and will surely help to keep this server running longer. "
         . "I am always working on giving extra privileges to donators, so keep watching out!";
         // send email to admin
-        mail('minecraft@uncovery.me', 'Donation Success', "$username made a donation of $final_value!", $headers, "-fminecraft@uncovery.me");
+        mail('minecraft@uncovery.me', 'Donation Success', "$username ($uuid) made a donation of $final_value for $rec_username!", $headers, "-fminecraft@uncovery.me");
     } else {
         $subject = "[Uncovery Minecraft] Donation pending!";
         $text .= "There was an issue processing your payment automatically. Please wait until we have manually processed and it you will get an email from us.";

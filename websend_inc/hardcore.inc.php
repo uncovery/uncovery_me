@@ -213,6 +213,7 @@ function umc_hardcore_resetworld() {
     if ($end_date == $today_str) {
         $cmd = '"rm -R /home/minecraft/server/bukkit/deathlands/*"';
         exec($cmd);
+        echo "Rest the hardcore world with the commend $cmd\n";
     }
 }
 

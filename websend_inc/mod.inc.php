@@ -180,30 +180,6 @@ function umc_mod_error_message() {
     */
 }
 
-function umc_mod_test_items() {
-    $broken_stuff = array(
-        'brewing_stand_item' => 'brewingstand',
-        'diode' => 'unpowered_repeater',
-        'melon' => 'melonslice',
-        'silver_shulker_box' => 'light_grey_shulker_box',
-        'skull_item' => 'skeletonskull',
-        'slime_block' => 'slime_block',
-        'snow' => 'snow_ball',
-    );
-
-    $i = 0;
-    foreach ($stuff as $core => $ess) {
-        umc_check_space(1, $ess, 0);
-        umc_echo("giving $core / $ess");
-        umc_ws_give('uncovery', $ess, 1);
-        $i++;
-        if ($i >= 20) {
-            return;
-        }
-    }
-}
-
-
 /**
  * Sends a message to all users in-game
  * This is a bridge so we do not need to change hundreds of lines of code

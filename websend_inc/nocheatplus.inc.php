@@ -158,4 +158,5 @@ function umc_nocheatplus_logimport() {
             ($date,$uuid_sql,$action,$vl,$text)";
         umc_mysql_execute_query($sql);
     }
+    echo "ran umc_nocheatplus_logimport()";
 }
