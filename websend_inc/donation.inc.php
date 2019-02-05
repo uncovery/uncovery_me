@@ -541,7 +541,7 @@ function umc_process_donation() {
         'X-Mailer: PHP/' . phpversion();
     $final_value = umc_mysql_real_escape_string($s_post['payment_gross'] - $s_post['payment_fee']);
     $recipient_text = '';
-    if ($uuid != $s_post['option_selection3']) {
+    if (isset($s_post['option_selection3']) && $uuid != $s_post['option_selection3']) {
         $rec_username = umc_uuid_getone($s_post['option_selection3'], 'username');
         $recipient_text = "The donation to be in benefit of $rec_username, as you asked.";
     }
