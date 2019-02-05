@@ -109,8 +109,15 @@ function umc_lot_manager_main() {
 
     $out .= "\n<strong>Notes:</strong>
         <ol>
-            <li>If you chose to<strong> abandon, refund or give</strong> a lot to someone else, you will <span style=\"color: #ff0000;\">lose access immediately</span>! If that gives you free available lots in the same world, you can pick a new lot immediately!</li>
-            <li>Resets will happen at the next restart of the server. Until then, you can still change your mind. Restarts are at 16:00 HKG (see time at the server status on the front page)</li>
+            <li>
+                If you chose to <strong>abandon, refund or give</strong> a lot to someone else, you will <span style=\"color: #ff0000;\">lose access immediately</span>! 
+                If that gives you free available lots in the same world, you can pick a new lot immediately!
+            </li>
+            <li>
+                If you chose to <strong>reset</strong> a lot <span style=\"color: #ff0000;\">EVERYTHING</span> on the lot will be gone! 
+                Resets will happen at the next restart of the server. Until then, you can still change your mind. 
+                Restarts are at 16:00 HKG (see time at the server status on the front page)
+            </li>
             <li>You can abandon a flatlands lot anytime and get an empire lot for it, but you cannot abandon an empire lot if it is generated with the current minecraft version!</li>
             <li>You can get dibs on an occupied lot. If nobody before you called dibs, you will get the lot once it's abandoned - provided you have the free lots/cash. This will be checcked at the moment of transfer. If you do not, the next in line gets it</li>
         </ol>
@@ -561,10 +568,13 @@ function umc_lot_do_action($lot, $choice) {
 function umc_get_lot_options($lot, $form = false){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
-    $sql = "SELECT version, mint_version FROM minecraft_srvr.lot_version WHERE lot='$lot';";
+    $sql = "SELECT version FROM minecraft_srvr.lot_version WHERE lot='$lot';";
     $D = umc_mysql_fetch_all($sql);
     $row = $D[0];
     $world = umc_get_lot_world($lot);
+
+    $mint_version = $UMC_SETTING['world_data'][$world]['mint_version'];
+
     if ($form) {
         $lot_options = array('none' => 'Leave as-is');
     } else {
@@ -597,10 +607,10 @@ function umc_get_lot_options($lot, $form = false){
         }
     }
 
-    if ($row['mint_version'] == 0) {
+    if ($mint_version == '0') {
         $lot_options['abandon'] = 'Abandon now!';
-    } else if ($row['mint_version'] != $row['version']) {
-        $lot_options['reset'] = "Reset to version " . $row['mint_version'];
+    } else if ($mint_version != $row['version']) {
+        $lot_options['reset'] = "Wipe & Reset to version " . $mint_version;
         $lot_options['abandon'] = 'Abandon now!';
     }
 
@@ -697,7 +707,7 @@ function umc_lot_manager_new_lot_form($world, $dibs = false) {
         'price_issues' => array('count' => 0, 'reason' => 'lots unavailable since you cannot afford them.'),
         'street_lots' => array('count' => 0, 'reason' => 'street lots unavailable since you don\'t own a main lot.'),
     );
-    
+
     foreach ($fixed_lots as $lot) {
         // drop already diped losts
         if ($dibs && isset($UMC_USER['lots'][$world]['dib_list'][$lot])) {
@@ -732,11 +742,11 @@ function umc_lot_manager_new_lot_form($world, $dibs = false) {
         $out .= "<option value=\"$lot\">$lot @ $price</option>\n";
     }
     $out .= "</select><br>";
-    
+
     if ($actions != '') {
         $out .= "Action on Tranfer: " . $actions;
     }
-    
+
     if ($count == 0) {
         $out = umc_lot_manager_minimum_requirements($UMC_USER['userlevel'], $world);
         return false;
@@ -1035,7 +1045,7 @@ function umc_lot_get_costs($lot) {
 /**
  * Centralized function to implement the exponential formula
  * We need to add +1 to the lot count to make sure that the first lot is not free.
- * 
+ *
  * @param type $count
  * @param type $base
  * @param type $power
@@ -1553,6 +1563,7 @@ function umc_lot_reset_process() {
             XMPP_ERROR_trigger("Could not reset lots, userlevel failure for Owner '$owner_username / $owner_uuid / $owner_level': $list_sql // $this_row");
             die("userlevel error");
         }
+        $lot_mint_version = $UMC_SETTING['world_data'][$world]['mint_version'];
 
         if (isset($banned_users[$owner_uuid])) {
             $A[$lot] = array(
@@ -1563,7 +1574,7 @@ function umc_lot_reset_process() {
                 'reset_to' => $lot,
                 'user_shop_clean' => false, // we do that via plugin-event
                 'dibs' => $lot_dibs,
-                'version_sql' => false,
+                'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                 'del_skyblock_inv' => false,
             );
         } else if ($owner_username == '_abandoned_') {
@@ -1575,7 +1586,7 @@ function umc_lot_reset_process() {
                 'reset_to' => $lot,
                 'user_shop_clean' => false,
                 'dibs' => $lot_dibs,
-                'version_sql' => false,
+                'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                 'del_skyblock_inv' => false,
             );
         } else {
@@ -1589,7 +1600,7 @@ function umc_lot_reset_process() {
                     'reset_to' => $lot,
                     'user_shop_clean' => $owner_uuid,
                     'dibs' => $lot_dibs,
-                    'version_sql' => false,
+                    'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                     'del_skyblock_inv' => false,
                 );
             } else if (($owner_lastlogin < $one_months_ago) && !$longterm_user) {
@@ -1601,7 +1612,7 @@ function umc_lot_reset_process() {
                     'reset_to' => $lot,
                     'user_shop_clean' => $owner_uuid,
                     'dibs' => $lot_dibs,
-                    'version_sql' => false,
+                    'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                     'del_skyblock_inv' => false,
                 );
             }
@@ -1613,7 +1624,7 @@ function umc_lot_reset_process() {
     }
 
     // choice based resets
-    $sql = "SELECT lot, world.name as world, choice, version, mint_version
+    $sql = "SELECT lot, world.name as world, choice, version
         FROM minecraft_srvr.lot_version
         LEFT JOIN minecraft_worldguard.region ON lot=id
         LEFT JOIN minecraft_worldguard.world ON world_id=world.id
@@ -1624,14 +1635,14 @@ function umc_lot_reset_process() {
     foreach ($R as $row) {
         $lot = $row['lot'];
         $version = $row['version'];
-        $mint_version = $row['mint_version'];
         $choice = $row['choice'];
         $world = $row['world'];
+        $mint_version = $UMC_SETTING['world_data'][$world]['mint_version'];
         // reset the lot
-        if ($choice == 'reset') { // any lot that can be reset
+        if ($choice == 'reset' && $version != $mint_version) { // any lot that can be reset to a newer version
             // set the new version to the chosen lot
             $A[$lot] = array(
-                'reason' => "Lot $lot version was set from $version to $mint_version after reset",
+                'reason' => "Lot $lot version was set from $version to $mint_version as requested by the user",
                 'source_world' => "$source_path/$world",
                 'dest_world' => "$dest_path/$world",
                 'del_skyblock_inv' => false,
@@ -1816,20 +1827,21 @@ function umc_lot_skyblock_inv_reset($uuid) {
  */
 function umc_lot_reset_all_empty() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+    $world_prefix = 'emp_';
     $sql = "SELECT region_cuboid.region_id as lot
         FROM minecraft_worldguard.region_cuboid LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id=region_players.region_id
-        WHERE SUBSTR(region_cuboid.region_id, 1, 4) IN ('bloc') AND user_id IS NULL";
+        WHERE SUBSTR(region_cuboid.region_id, 1, 4) IN ('$world_prefix') AND user_id IS NULL";
     $rst = umc_mysql_query($sql);
     while ($row = umc_mysql_fetch_array($rst)) {
         $lot = $row['lot'];
         umc_lot_add_player('_abandoned_', $lot, 1);
-        echo "Processed lot $lot!<br>";
+        echo "Processed lot $lot!\n";
     }
 }
 
 
 /**
- * Moch chunks for lot resets
+ * Move chunks for lot resets
  *
  * @global array $UMC_PATH_MC
  * @param string $source_lot
@@ -1842,7 +1854,7 @@ function umc_lot_reset_all_empty() {
 function umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, $echo = false) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
-    $exec_path = "$UMC_PATH_MC/server/chunk/copychunk";
+    $exec_path = "$UMC_PATH_MC/server/cNBT/copychunk";
 
     // get coordinates
     $sql = "SELECT * FROM minecraft_worldguard.region_cuboid WHERE region_id = '$source_lot' LIMIT 1;";
@@ -1904,7 +1916,7 @@ function umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, $ec
 function umc_temp() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
-    $exec_path = "$UMC_PATH_MC/server/chunk/copychunk";
+    $exec_path = "$UMC_PATH_MC/server/cNBT/copychunk";
     $source_world = "$UMC_PATH_MC/server/bukkit/city";
     $dest_world = "$UMC_PATH_MC/server/bukkit/kingdom";
 
