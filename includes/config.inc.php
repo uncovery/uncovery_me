@@ -29,6 +29,7 @@ $UMC_DOMAIN = "https://uncovery.me";
 ini_set('display_errors', 1);
 
 $UMC_SETTING = array(
+    'mc_version' => '1.13',
     'path' => array(
         'server' => $UMC_PATH_MC . '/server',
         'bin' => $UMC_PATH_MC . "/server/bin",
@@ -58,22 +59,25 @@ $UMC_SETTING = array(
     'world_img_dim' => array(
         'aether' => array('max_coord' => 1536, 'chunkborder' => 512),
         'empire' => array('max_coord' => 2048, 'chunkborder' => 512),
-        'empire_new' => array('max_coord' => 2048, 'chunkborder' => 512),
+        'emp_temp' => array('max_coord' => 2048, 'chunkborder' => 512),
         'flatlands' => array('max_coord' => 1280, 'chunkborder' => 256),
         'skyblock' => array('max_coord' => 1280, 'chunkborder' => 256),
         'city' => array('max_coord' => 1100, 'chunkborder' => 512, 'top_offset' => 450, 'left_offset' => -600),
         'kingdom' => array('max_coord' => 3264, 'chunkborder' => 320),
+        'king_temp' => array('max_coord' => 3264, 'chunkborder' => 320),
         'draftlands' => array('max_coord' => 3264, 'chunkborder' => 320),
         'hunger' => array('max_coord' => 125, 'chunkborder' => 256),
     ),
     'world_data' => array(
-        'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
-        'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11'),
-        'aether'    => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet',   'spawn' => 'aet_h8'),
-        'kingdom'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b'),
-        'draftlands'=> array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'draft', 'spawn' => 'draft_m12_b'),
-        'skyblock'  => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'block', 'spawn' => 'block_k11'),
-        'city'      => array('prefix' => 'city', 'spawn' => 'city_spawn'),
+        'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17', 'mint_version' => '1.13'),
+        'emp_temp'   => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17', 'mint_version' => '1.13'),
+        'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11', 'mint_version' => '0'),
+        'aether'    => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet',   'spawn' => 'aet_h8', 'mint_version' => '1.2.1'),
+        'kingdom'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b', 'mint_version' => '1.3.1'),
+        'king_temp'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b', 'mint_version' => '1.13'),
+        'draftlands'=> array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'draft', 'spawn' => 'draft_m12_b', 'mint_version' => '0'),
+        'skyblock'  => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'block', 'spawn' => 'block_k11', 'mint_version' => '0'),
+        'city'      => array('prefix' => 'city', 'spawn' => 'city_spawn', 'mint_version' => '0'),
     ),
     'lot_limits' => array(
         'Guest'                 => array('empire' => 1, 'aether' => 0, 'kingdom' =>  0, 'skyblock' => 0, 'draftlands' =>  0),
@@ -106,9 +110,9 @@ $UMC_SETTING = array(
     'lot_worlds_sql' => "('aet_', 'emp_', 'king', 'bloc', 'flat', 'draf')",
     'mint_lots' => array(
         'flatlands' => array(
-            'reset' => 'Reset to Normal flatlands lot',
-            'flat_d20' => 'Reset to lonely island lot (see flat_d20)',
-            'flat_c20' => 'Reset to tech-lot (hollow, 5-block markers, see flat_c20)',
+            'reset' => 'Wipe & Reset to Normal flatlands lot',
+            'flat_d20' => 'Wipe & Reset to lonely island lot (see flat_d20)',
+            'flat_c20' => 'Wipe & Reset to tech-lot (hollow, 5-block markers, see flat_c20)',
         ),
         'skyblock' => array(
 
