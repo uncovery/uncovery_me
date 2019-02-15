@@ -96,7 +96,7 @@ $lottery = array(
             'item_name' => 'trident',
             'nbt' => '',
         ),
-    ),     
+    ),
     'diamond_block' => array(
         'chance' => 10,
         'type' => 'item',
@@ -138,7 +138,7 @@ $lottery = array(
         'type' => 'item',
         'txt' => 'a super-enchanted wooden pickaxe',
         'detail' => array(
-            'item_name' => 'wooden_pickaxe',            
+            'item_name' => 'wooden_pickaxe',
             'nbt' => '{RepairCost:7,Enchantments:[{lvl:1,id:"minecraft:silk_touch"},{lvl:5,id:"minecraft:efficiency"},{lvl:3,id:"minecraft:unbreaking"}]}',
         ),
     ),
@@ -180,20 +180,20 @@ $lottery = array(
         ),
     ),
     'random_unc' => array(
-        'chance' => 180,
+        'chance' => 270,
         'type' => 'random_unc',
         'data' => 'unc',
         'txt' => 'a random amount of Uncs (max 500)',
     ),
-    'random_item' => array(
+/*    'random_item' => array(
         'chance' => 90,
         'type' => 'random_item',
         'data' => 'common',
         'txt' => '1 of random item',
         'blocks' => array(
-            
+
         ),
-    ),
+    ), */
     'random_sapling' => array(
         'chance' => 100,
         'type' => 'random_sapling',
@@ -209,7 +209,7 @@ $lottery = array(
         'data' => 'ore',
         'txt' => '1-64 of random ore',
         'blocks' => array(
-            'gold_ore', 'coal_ore', 'iron_ore', 'lapis_ore', 'diamond_ore', 'redstone_ore', 'emerald_ore', 'nether_quartz_ore', 
+            'gold_ore', 'coal_ore', 'iron_ore', 'lapis_ore', 'diamond_ore', 'redstone_ore', 'emerald_ore', 'nether_quartz_ore',
         ),
     ),
 /*    'random_manuf' => array(
@@ -218,7 +218,7 @@ $lottery = array(
         'data' => 'man',
         'txt' => '1-64 of random manufactured block',
         'blocks' => array(
-            
+
         ),
     ),*/
     'random_ench' => array(
@@ -350,7 +350,7 @@ function umc_lottery_reminder() {
     global $UMC_USER;
     $player = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
-    
+
     // do not tell Guests to vote
     $userlevel = $UMC_USER['userlevel'];
     if ($userlevel == "Guest") {
@@ -688,7 +688,7 @@ function umc_lottery() {
                 $item = umc_goods_get_text($give_type);
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
-                break;                
+                break;
             case 'random_potion':
                 $types = array('lingering_potion', 'potion', 'splash_potion');
                 $type_luck = mt_rand(0, count($types) - 1);
