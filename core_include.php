@@ -28,6 +28,7 @@
 global $UMC_USERS, $WS_INIT, $UMC_USER, $UMC_SETTING, $UMC_ITEMS, $UMC_DATA, $UMC_DATA_ID2NAME;
 global $UMC_ENV, $ITEM_SEARCH, $ENCH_ITEMS, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_FUNCTIONS, $UMC_PATTERNS, $UMC_COLORS_DEC;
 global $ITEM_SPRITES, $UMC_DATA_ITEM2WIKI;
+global $BROKEN_ITEMS;
 
 $UMC_PATH_MC = "/home/minecraft";
 
@@ -76,6 +77,7 @@ require_once($UMC_PATH_MC . '/server/bin/assets/item_item2wiki.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/patterns.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/potions.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/assets/spawn_egg.inc.php');
+require_once($UMC_PATH_MC . '/server/bin/assets/broken_items.inc.php');
 
 require_once($UMC_PATH_MC . '/server/bin/includes/array2file.inc.php');
 require_once($UMC_PATH_MC . '/server/bin/includes/config.inc.php');
