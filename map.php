@@ -31,7 +31,7 @@ $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
 /**
  * display the 2D map
  * HTML can be added through event '2dmap_display'
- * 
+ *
  * @global type $UMC_SETTING
  * @global type $UMC_DOMAIN
  * @global type $UMC_PATH_MC
@@ -40,7 +40,7 @@ $UMC_FUNCTIONS['display_markers'] = 'umc_display_markers';
  * @return type
  */
 function umc_create_map() {
-    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_USER, $UMC_ENV;
+    global $UMC_SETTING, $UMC_DOMAIN, $UMC_PATH_MC, $UMC_ENV;
     $timer = array();
     if (!isset($UMC_ENV)) {
         $UMC_ENV = '2Dmap';
@@ -51,7 +51,7 @@ function umc_create_map() {
 
     $file = $UMC_SETTING['map_css_file'];
     $css = "\n" . '<style type="text/css">' . file_get_contents($file) . "\n";
-    $worlds = array('city', 'empire', 'aether', 'flatlands', 'kingdom', 'draftlands', 'skyblock', 'empire_new');
+    $worlds = array('city', 'empire', 'aether', 'flatlands', 'kingdom', 'draftlands', 'skyblock', 'king_temp');
     $longterm = $UMC_SETTING['longterm'];
 
     $s_post  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -138,7 +138,7 @@ function umc_create_map() {
             $menu .= "<form action=\"$UMC_DOMAIN/server-access/buildingrights/\" method=\"post\">\n"
             . "<input type=\"hidden\" name=\"step\" value=\"9\">\n<input type=\"hidden\" name=\"world\" value=\"$world\"><input type=\"hidden\" name=\"lot\" value=\"$player_lot\">\n";
     }
-    
+
     // plugin content
     // the data is returned as an array with 3 strings to this, 'html' and 'menu' 'javascript'
     // html is added to the body, menu is added to the menu. duh.
@@ -153,7 +153,7 @@ function umc_create_map() {
         $plugin_html .= $plugin_content['html'];
         $plugin_menu .= $plugin_content['menu'];
         $plugin_javascript .= $plugin_content['javascript'];
-    }   
+    }
 
     $menu .= "<div id=\"menu_2d_map\">\n";
 
@@ -170,7 +170,7 @@ function umc_create_map() {
         $menu .= "Find your user head on the map and click on the button next to it!";
     }
     $menu .= $plugin_menu;
-    
+
     // get and display file date at the end of the menu
     $image = "$UMC_PATH_MC/server/maps/$world.jpg";
     if (file_exists($image)) {
@@ -223,7 +223,7 @@ function umc_create_map() {
     } else {
         $html .= umc_read_markers_file('html', $world);
     }
-    
+
     $html .= $plugin_html;
 
     //$repl_arr = array(',','-');
@@ -508,7 +508,7 @@ if ($find_lot) {
     if (!$settler_test) {
         $header .= '$(document).ready(function() {update_positions();});';
     }
-    
+
     $header .= $plugin_javascript . "\n</script>\n";
 
     $out =  $header . $css . "</head>\n<body>\n" .  $menu . $html
@@ -712,70 +712,96 @@ function umc_assemble_maps() {
     global $UMC_SETTING;
     // create lots
     //
-    $worlds = $UMC_SETTING['world_data'];
+    // $worlds = $UMC_SETTING['world_data'];
 
-    // $worlds = array(
-    //    'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
-    //    'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11'),
-    //    'aether'    => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet',   'spawn' => 'aet_h8'),
-    //    'kingdom'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b'),
-    //    'draftlands'=> array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'draft', 'spawn' => 'draft_m12_b'),
-    //    'skyblock'  => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'block', 'spawn' => 'block_k11'),
-    //    'city'      => array('prefix' => 'city', 'spawn' => 'city_spawn')
-    // );
+    $worlds = array(
+        'empire'    => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
+//       'emp_temp' => array('lot_size' => 128, 'lot_number' => 32, 'prefix' => 'emp',   'spawn' => 'emp_q17'),
+        'flatlands' => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'flat',  'spawn' => 'flat_k11'),
+        'aether'    => array('lot_size' => 192, 'lot_number' => 16, 'prefix' => 'aet',   'spawn' => 'aet_h8'),
+        'kingdom'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b'),
+//        'king_temp'   => array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'king',  'spawn' => 'king_m12_b'),
+        'draftlands'=> array('lot_size' => 272, 'lot_number' => 24, 'prefix' => 'draft', 'spawn' => 'draft_m12_b'),
+        'skyblock'  => array('lot_size' => 128, 'lot_number' => 20, 'prefix' => 'block', 'spawn' => 'block_k11'),
+        'city'      => array('prefix' => 'city', 'spawn' => 'city_spawn'),
+    );
 
     $maxmin = array(
-        'empire' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
-        'flatlands' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
-        'aether' => array('min_1' => -4, 'min_2' => -4, 'max_1' => 3, 'max_2' => 3),
-        'kingdom' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
-        'draftlands' => array('min_1' => -7, 'min_2' => -7, 'max_1' => 7, 'max_2' => 7),
-        'skyblock' => array('min_1' => -3, 'min_2' => -3, 'max_1' => 4, 'max_2' => 4),
-        'empire_new' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 4, 'max_2' => 4),
-        'city' => array('min_1' => -2, 'min_2' => -4, 'max_1' => 3, 'max_2' => 1),
+        'empire' => array('min_1' => -2048, 'min_2' => -2048, 'max_1' => 2048, 'max_2' => 2048),
+    //    'emp_temp' => array('min_1' => -2048, 'min_2' => -2048, 'max_1' => 2048, 'max_2' => 2048),
+        'flatlands' => array('min_1' => -1280, 'min_2' => -1280, 'max_1' => 1280, 'max_2' => 1280),
+        'aether' => array('min_1' => -1536, 'min_2' => -1536, 'max_1' => 1536, 'max_2' => 1536),
+        'kingdom' => array('min_1' => -3264, 'min_2' => -3264, 'max_1' => 3264, 'max_2' => 3264),
+    //    'king_temp' => array('min_1' => -3264, 'min_2' => -3264, 'max_1' => 3264, 'max_2' => 3264),
+        'draftlands' => array('min_1' => -3264, 'min_2' => -3264, 'max_1' => 3264, 'max_2' => 3264),
+        'skyblock' => array('min_1' => -1280, 'min_2' => -1280, 'max_1' => 1280, 'max_2' => 1280),
+        'city' => array('min_1' => -512, 'min_2' => -1536, 'max_1' => 1536, 'max_2' => 512),
         'darklands' => array('min_1' => -5, 'min_2' => -5, 'max_1' => 5, 'max_2' => 5),
     );
 
     $destination = $UMC_SETTING['path']['server'] .  "/maps";
-    $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
+    // $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
+    $mapper_folder = $UMC_SETTING['path']['server'] . '/blockmap';
+    $mapper_execution = '/BlockMap.jar render';
 
     // iterate the worlds first and delete old files
-    foreach ($worlds as $world => $dim) {
-        $del_cmd = "find $destination -name '*.png' -type f -delete";
-        exec($del_cmd);
-        XMPP_ERROR_trace(__FUNCTION__, "Deleted old files with command $del_cmd");
-    }
+
+    $del_cmd1 = "find $destination -name '*.png' -type f -delete";
+    exec($del_cmd1);
+    $del_cmd2 = "find $destination -name '*.html' -type f -delete";
+    exec($del_cmd2);
+    XMPP_ERROR_trace(__FUNCTION__, "Deleted old files with command $del_cmd1 & $del_cmd2");
+
 
     foreach ($worlds as $world => $dim) {
+        echo "$world: \n";
         // make chunk files
         // clean up data files
         $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
 
-        echo "$world: \n";
+        // check if the folder exists to make sure
+        $target_folder = "$destination/$world/png";
+        if (!file_exists($target_folder)) {
+            echo "ERROR: folder $target_folder does not exist!\n";
+            continue;
+        }
+
+        $min_x = $maxmin[$world]['min_1'];
+        $max_x = $maxmin[$world]['max_1'];
+        $min_z = $maxmin[$world]['min_2'];
+        $max_z = $maxmin[$world]['max_2'];
+
         // -biome-map $mapper_folder/biome-colors.txt -color-map $mapper_folder/block-colors.txt
-        $coordinates = "-region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']}";
-        $custom_color = "-color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
-        $command = "java -jar $mapper_folder/TMCMR.jar $folder $custom_color -create-big-image $coordinates -o $destination/$world/png";
+        // $coordinates = "--region-limit-rect {$maxmin[$world]['min_1']} {$maxmin[$world]['min_2']} {$maxmin[$world]['max_1']} {$maxmin[$world]['max_2']}";
+        $coordinates = "--min-X=$min_x --max-X=$max_x --min-Z=$min_z --max-Z=$max_z";
+        // $custom_color = "--color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
+        $custom_color = '';
+
+        $command = "java -jar $mapper_folder$mapper_execution $folder --create-big-image $coordinates -o $destination/$world/png --create-tile-html $custom_color";
         exec($command);
-        XMPP_ERROR_trace(__FUNCTION__, "$world chunk maps rendered command $command");
+        XMPP_ERROR_trace(__FUNCTION__, "$world region maps rendered command $command");
 
         // compress map to new map
-        $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}_large.jpg";
+        $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}.jpg";
         exec($command1);
         XMPP_ERROR_trace(__FUNCTION__, "$world map compressed command $command1");
 
+        /*
+         * no need to crop anymore since the new renderer is block-accurate instead of region-accurate
         $file_1 = "$destination/{$world}_large.jpg";
         $file_2 = "$destination/{$world}.jpg";
         $size = $UMC_SETTING['world_img_dim'][$world]['max_coord'] * 2;
         $border = $UMC_SETTING['world_img_dim'][$world]['chunkborder'];
         $command2 = "convert -crop '{$size}x{$size}+{$border}+{$border}' $file_1 $file_2";
-        exec($command2);
+        // exec($command2);
         XMPP_ERROR_trace(__FUNCTION__, "$world cropped map to border size with command $command2");
         // umc_assemble_tmc_map($world);
         // create lot maps
+         *
+         */
         umc_disassemble_map($world);
         XMPP_ERROR_trace(__FUNCTION__, "$world Lot maps cut, done!");
-
+        XMPP_ERROR_trigger("Map rendered");
         // umc_heatmap($world);
         // echo ", heat map rendered\n";
     }
@@ -807,7 +833,6 @@ function umc_disassemble_map($world = 'empire') {
     if ($world == 'city') {
         return;
     }
-
 
     $sql = "SELECT region_id as lot, min_x, min_z, max_x, max_z
 	FROM minecraft_worldguard.region_cuboid
@@ -845,6 +870,7 @@ function umc_disassemble_map($world = 'empire') {
             $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/{$lot}_full.png\"";
             // $command . "\n";
             exec($command);
+            echo $command;
             XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot with command $command");
         }
         XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
@@ -923,6 +949,7 @@ function umc_disassemble_map($world = 'empire') {
 #-- )
 function umc_region_data($world_name) {
     XMPP_ERROR_trace(__FUNCTION__, func_num_args());
+    global $UMC_SETTING;
     $world_id = umc_get_worldguard_id('world', $world_name);
     if ($world_id === null) {
         XMPP_ERROR_trigger("Tried to find ID for World $world_name and failed (umc_region_data)");
@@ -945,7 +972,7 @@ function umc_region_data($world_name) {
     }
 
     // enumerate all lots for drawing them
-    $reg_sql = "SELECT region_cuboid.region_id, region_cuboid.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, mint_version, count(user_id) as usercount
+    $reg_sql = "SELECT region_cuboid.region_id, region_cuboid.world_id, min_x, min_y, min_z, max_x, max_y, max_z, version, count(user_id) as usercount
         FROM minecraft_worldguard.region_cuboid
         LEFT JOIN minecraft_worldguard.region_players ON region_cuboid.region_id = region_players.region_id
         LEFT JOIN minecraft_srvr.lot_version ON region_cuboid.region_id=lot
@@ -959,7 +986,7 @@ function umc_region_data($world_name) {
         $region_list[$region_id]['min'] = array('x' => $reg_row['min_x'], 'y' => $reg_row['min_y'], 'z' => $reg_row['min_z']);
         $region_list[$region_id]['max'] = array('x' => $reg_row['max_x'], 'y' => $reg_row['max_y'], 'z' => $reg_row['max_z']);
         $region_list[$region_id]['version'] = $reg_row['version'];
-        $region_list[$region_id]['mint_version'] = $reg_row['mint_version'];
+        $region_list[$region_id]['mint_version'] = $UMC_SETTING['world_data'][$world_name]['mint_version'];
         $region_list[$region_id]['owners'] = false;
         $region_list[$region_id]['members'] = false;
 
@@ -1006,7 +1033,7 @@ function umc_map_menu($worlds, $current_world, $freeswitch, $showusers = true) {
         $title = "Uncovery $this_uc_map map";
     }
 
-    $function = filter_input(INPUT_GET, 'function', FILTER_SANITIZE_STRING); 
+    $function = filter_input(INPUT_GET, 'function', FILTER_SANITIZE_STRING);
 
     $menu = "\n<!-- Menu -->\n<strong>$title</strong>\n <button type='button' onclick='find_spawn()'>Find Spawn</button>\n"
         . " <button type='button' onclick='toggleLotDisplay()'>Display mode</button>\n"
@@ -1371,12 +1398,12 @@ function umc_create_cuboids() {
     $cuboid_sql = 'INSERT INTO minecraft_worldguard.`region_cuboid` (`region_id`, `world_id`, `min_x`, `min_y`, `min_z`, `max_x`, `max_y`, `max_z`) VALUES ';
     $player_sql = 'INSERT INTO minecraft_worldguard.`region_players` (`region_id`, `world_id`, `user_id`, `owner`) VALUES ';
     $flags_sql = 'INSERT INTO minecraft_worldguard.`region_flag` (`world_id`, `region_id`, `flag`, `value`) VALUES ';
-    $version_sql = 'INSERT INTO minecraft_srvr.`lot_version`(`lot`, `version`, `choice`, `timestamp`, `mint_version`) VALUES ';
+    $version_sql = 'INSERT INTO minecraft_srvr.`lot_version`(`lot`, `version`, `choice`, `timestamp`) VALUES ';
     foreach ($new_regions as $lot => $data) {
         $region_sql .= "\n('$lot',$world_id,'cuboid',0,NULL), ";
         $coords = $data['coords'];
         $cuboid_sql .= "\n('$lot',$world_id,{$coords['min_x']},{$coords['min_y']},{$coords['min_z']},{$coords['max_x']},{$coords['max_y']},{$coords['max_z']}), ";
-        $version_sql .= "\n('$lot','$version',{$data['reset']},NOW(),'$version'), ";
+        $version_sql .= "\n('$lot','$version',{$data['reset']},NOW()), ";
         foreach ($data['users'] as $user_id => $owner) {
             $player_sql .= "\n('$lot',$world_id,$user_id,$owner), ";
         }
