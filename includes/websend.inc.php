@@ -145,7 +145,7 @@ function umc_ws_get_vars() {
     }
     // add json as array to USER
     $UMC_USER['json_array'] = $json;
-   
+
     if ($json['Invoker']['Name'] == '@Console') {
         $UMC_USER['username'] = '@console';
         $UMC_USER['userlevel'] = 'Owner';
@@ -786,13 +786,13 @@ function umc_ws_give($user, $item_name, $amount, $damage = 0, $meta = '') {
         $cmd = "minecraft:give $user $item_name$meta_cmd $stack_size;";
         $check = umc_ws_command('asConsole', $cmd);
         $amount = $amount - $stack_size;
-        umc_log('inventory', 'give', "gave $stack_size of $item_name (command: minecraft:give $stack_size) to $user");
+        umc_log('inventory', 'give', "gave $stack_size of $item_name to $user with command: minecraft:give $cmd");
     }
     // give the leftover amount
     $cmd = "minecraft:give $user $item_name$meta_cmd $amount;";
-    umc_log('inventory', 'give', "gave $amount of $item_name (command: minecraft:give $cmd) to $user");
+    umc_log('inventory', 'give', "gave $amount of $item_name to $user with command: minecraft:give $cmd");
     $check = umc_ws_command('asConsole', $cmd);
-    return $check;    
+    return $check;
 }
 
 
