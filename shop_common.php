@@ -170,9 +170,10 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     // if item name is not set at all
     if (!isset($UMC_DATA[$item_name])) {
-        XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text");
+        // remember this one
+        umc_broken_items_add_fix($item_name);
         $UMC_DATA[$item_name] = array('stack' => 64, 'avail' => true);
-    } 
+    }
     $item_arr = $UMC_DATA[$item_name];
 
 
