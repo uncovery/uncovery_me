@@ -10,7 +10,7 @@
 function umc_nbt_cleanup($nbt_raw) {
     $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
     $nbt_clean = preg_replace($regex, ":", $nbt_raw);
-    
+
     $nbt_sorted = umc_nbt_sort_enchantments($nbt_clean);
     return $nbt_sorted;
 }
@@ -63,12 +63,12 @@ function umc_nbt_to_array($nbt) {
 /**
  * takes an NBT string, converts it to an array, sorts the enchantments,
  * then converts it back to an NBT String.
- * 
+ *
  * @param type $nbt
  */
 function umc_nbt_sort_enchantments($nbt) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    
+
     // only do this if we have enchantments in the array
     if (strpos($nbt, 'ench:') === false) {
         return $nbt;
@@ -98,11 +98,11 @@ function umc_nbt_sort_enchantments($nbt) {
 
 /**
  * take the quotes away from keys and leave them around string values
- * IN: {"ench":[{"lvl":3,"id":34},{"lvl":5,"id":48},{"lvl":2,"id":49},{"lvl":1,"id":50},{"lvl":1,"id":51}]} 
+ * IN: {"ench":[{"lvl":3,"id":34},{"lvl":5,"id":48},{"lvl":2,"id":49},{"lvl":1,"id":50},{"lvl":1,"id":51}]}
  * OUT: {ench:[{lvl:5,id:48},{lvl:2,id:49},{lvl:1,id:50},{lvl:3,id:34},{lvl:1,id:51}]}
  * @param type $json
  * @return type
- * 
+ *
  */
 function umc_nbt_from_json($json) {
     $regex = '/([,{]{1,2})"([^,}:]*)":/';
@@ -154,7 +154,8 @@ function umc_nbt_display_long_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
-            case 'ench': //for enchanted items
+            case 'ench': // deprecated?
+            case 'enchantments': //for enchanted items  
             case 'storedenchantments': //for enchanted books
                 $text .= "Enchantments: ";
                 // example enchantment {StoredEnchantments:[{lvl:2,id:"minecraft:fire_aspect"}]}
@@ -290,7 +291,8 @@ function umc_nbt_display_short_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
-            case 'ench': //for enchanted items
+            case 'ench': // deprecated?
+            case 'enchantments': //for enchanted items
             case 'storedenchantments': //for enchanted books
                 $text .= "(";
                 // example enchantment {ench:[{lvl:5,id:16},{lvl:5,id:17},{lvl:5,id:18},{lvl:2,id:19},{lvl:2,id:20},{lvl:3,id:21}]}
@@ -353,11 +355,11 @@ function umc_nbt_display_short_text($nbt_array) {
             case 'author':
                 $text .= ucwords("$feature: $data") . '\n';
                 break;
-            case 'potion': 
+            case 'potion':
                 $text .= umc_potion_text_find($data, 'short_text');
                 break;
             case 'skullowner': // TODO: Need to properly implement this.
-                
+
                 /**
                  {SkullOwner:
                     {Id:"f4c2cad7-0ace-4ce6-8678-69d0b653a98b",
