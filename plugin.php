@@ -21,6 +21,9 @@
  * This file manages the plugins in websend_inc, their help functions and events
  */
 
+/**
+ * Create a list of all plugins so we can read that instead of looking for them on every reboot
+ */
 function umc_plg_enum() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $folder = '/home/minecraft/server/bin/websend_inc';
