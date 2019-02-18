@@ -531,10 +531,10 @@ function umc_process_donation() {
             $sql_vals[$entry] = umc_mysql_real_escape_string($s_post[$entry]);
         }
     }
-    
+
     $uuid = umc_uuid_getone($s_post['option_selection2']);
     $username = umc_uuid_getone($uuid, 'username');
-    
+
     // add the entry to the database
     $headers = "From: minecraft@uncovery.me" . "\r\n" .
         "Reply-To: minecraft@uncovery.me" . "\r\n" .
@@ -544,6 +544,8 @@ function umc_process_donation() {
     if (isset($s_post['option_selection3']) && $uuid != $s_post['option_selection3']) {
         $rec_username = umc_uuid_getone($s_post['option_selection3'], 'username');
         $recipient_text = "The donation to be in benefit of $rec_username, as you asked.";
+    } else {
+        $rec_username = $username;
     }
     if ($is_ok) {
         $date = umc_mysql_real_escape_string(date('Y-m-d'));
