@@ -147,7 +147,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
-    global $UMC_DATA, $UMC_ENV, $UMC_DATA_ID2NAME;
+    global $UMC_DATA, $UMC_ENV, $UMC_DATA_ID2NAME, $UMC_SETTING, $UMC_DOMAIN;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if we have "minecraft:" in the beginning.
@@ -213,15 +213,7 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
 
     $full_clean = trim("$nice_name$meta_text$nbt_string$damage_spacer$damage_text");
     if ($UMC_ENV == 'wordpress') {
-        global $ITEM_SPRITES;
-        if (isset($ITEM_SPRITES[$item_name])) { // get background image of single image
-            if ($damage) {
-                $item_data = 'damaged';
-            }
-            $img = umc_item_data_icon_html($item_name, $item_data) ;
-        } else {
-            $img = umc_item_data_icon_html('invalid', 'unknown') . "?";
-        }
+        $img = umc_item_icon_html($item_name);
         $full = "$img $full_clean";
     } else if ($UMC_ENV == 'websend') {
         $full = "{green}$nice_name{magenta}$meta_text$nbt_string$meta_spacer{red}$damage_spacer$damage_text{white}";
