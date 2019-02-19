@@ -110,12 +110,12 @@ function umc_lot_manager_main() {
     $out .= "\n<strong>Notes:</strong>
         <ol>
             <li>
-                If you chose to <strong>abandon, refund or give</strong> a lot to someone else, you will <span style=\"color: #ff0000;\">lose access immediately</span>! 
+                If you chose to <strong>abandon, refund or give</strong> a lot to someone else, you will <span style=\"color: #ff0000;\">lose access immediately</span>!
                 If that gives you free available lots in the same world, you can pick a new lot immediately!
             </li>
             <li>
-                If you chose to <strong>reset</strong> a lot <span style=\"color: #ff0000;\">EVERYTHING</span> on the lot will be gone! 
-                Resets will happen at the next restart of the server. Until then, you can still change your mind. 
+                If you chose to <strong>reset</strong> a lot <span style=\"color: #ff0000;\">EVERYTHING</span> on the lot will be gone!
+                Resets will happen at the next restart of the server. Until then, you can still change your mind.
                 Restarts are at 16:00 HKG (see time at the server status on the front page)
             </li>
             <li>You can abandon a flatlands lot anytime and get an empire lot for it, but you cannot abandon an empire lot if it is generated with the current minecraft version!</li>
@@ -1700,7 +1700,7 @@ function umc_lot_reset_process() {
     foreach ($A as $lot => $a) {
         umc_lot_manager_reset_lot($lot, $a);
     }
-    XMPP_ERROR_trigger("Lot reset process finished");
+    XMPP_ERROR_send_msg("Lot reset process finished");
 }
 
 /**
@@ -1980,22 +1980,17 @@ function umc_restore_from_backup() {
     }
 }
 
-function umc_manual_reset_lot() {
-    $lots = array('flat_b14');
-    foreach ($lots as $lot) {
-        umc_lot_add_player('_abandoned_', $lot, 1);
-    }
-
-}
-
-function umc_flat_lot(){
+function umc_manual_restore_lot(){
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_SETTING;
-    $source_lot = 'emp_g3';
-    $source_world = "/tmp/minecraft/server/worlds/save/empire"; // "/home/minecraft/server/worlds/mint/empire";
-    $dest_lot = 'emp_g3';
+    $lots = array('emp_u10', 'emp_u9', 'emp_v10', 'emp_v9');
+    $source_world = "/home/minecraft/server/tmp/empire"; // "/home/minecraft/server/worlds/mint/empire";
     $dest_world = $UMC_SETTING['path']['worlds_save'] . "/empire";
-    umc_move_chunks($source_lot, $source_world, $dest_lot, $dest_world, true);
+
+    foreach ($lots as $lot) {
+         umc_move_chunks($lot, $source_world, $lot, $dest_world, true) . "\n";
+    }
+
     echo "execute the command above now!";
 }
 
