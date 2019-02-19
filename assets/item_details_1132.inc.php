@@ -1,5 +1,5 @@
 <?php
-$UMC_DATA = array(
+$UMC_DATA_1132 = array(
     'acacia_boat' => array(
         'stack' => 1,
         'id' => 767,

@@ -1,8 +1,8 @@
 <?php
-$UMC_DATA = array(
+$UMC_DATA_113 = array(
     'acacia_boat' => array(
         'stack' => 1,
-        'id' => 767,
+        'id' => 762,
         'display_name' => 'Acacia Boat',
     ),
     'acacia_button' => array(
@@ -12,7 +12,7 @@ $UMC_DATA = array(
     ),
     'acacia_door' => array(
         'stack' => 64,
-        'id' => 465,
+        'id' => 460,
         'display_name' => 'Acacia Door',
     ),
     'acacia_fence' => array(
@@ -97,28 +97,28 @@ $UMC_DATA = array(
     ),
     'apple' => array(
         'stack' => 64,
-        'id' => 476,
+        'id' => 471,
         'display_name' => 'Apple',
     ),
     'armor_stand' => array(
         'stack' => 16,
-        'id' => 726,
+        'id' => 721,
         'display_name' => 'Armor Stand',
     ),
     'arrow' => array(
         'stack' => 64,
-        'id' => 478,
+        'id' => 473,
         'display_name' => 'Arrow',
     ),
     'attached_melon_stem' => array(
         'stack' => 64,
         'id' => 225,
-        'display_name' => 'Attached Melon Stem',
+        'display_name' => 'Melon Stem',
     ),
     'attached_pumpkin_stem' => array(
         'stack' => 64,
         'id' => 224,
-        'display_name' => 'Attached Pumpkin Stem',
+        'display_name' => 'Melon Stem',
     ),
     'azure_bluet' => array(
         'stack' => 64,
@@ -127,7 +127,7 @@ $UMC_DATA = array(
     ),
     'baked_potato' => array(
         'stack' => 64,
-        'id' => 699,
+        'id' => 694,
         'display_name' => 'Baked Potato',
     ),
     'barrier' => array(
@@ -137,7 +137,7 @@ $UMC_DATA = array(
     ),
     'bat_spawn_egg' => array(
         'stack' => 64,
-        'id' => 639,
+        'id' => 634,
         'display_name' => 'Bat Spawn Egg',
     ),
     'beacon' => array(
@@ -152,22 +152,22 @@ $UMC_DATA = array(
     ),
     'beef' => array(
         'stack' => 64,
-        'id' => 619,
+        'id' => 614,
         'display_name' => 'Raw Beef',
     ),
     'beetroot' => array(
         'stack' => 64,
-        'id' => 754,
+        'id' => 749,
         'display_name' => 'Beetroot',
     ),
     'beetroot_seeds' => array(
         'stack' => 64,
-        'id' => 755,
+        'id' => 750,
         'display_name' => 'Beetroot Seeds',
     ),
     'beetroot_soup' => array(
         'stack' => 1,
-        'id' => 756,
+        'id' => 751,
         'display_name' => 'Beetroot Soup',
     ),
     'beetroots' => array(
@@ -177,7 +177,7 @@ $UMC_DATA = array(
     ),
     'birch_boat' => array(
         'stack' => 1,
-        'id' => 765,
+        'id' => 760,
         'display_name' => 'Birch Boat',
     ),
     'birch_button' => array(
@@ -187,7 +187,7 @@ $UMC_DATA = array(
     ),
     'birch_door' => array(
         'stack' => 64,
-        'id' => 463,
+        'id' => 458,
         'display_name' => 'Birch Door',
     ),
     'birch_fence' => array(
@@ -247,12 +247,12 @@ $UMC_DATA = array(
     ),
     'black_banner' => array(
         'stack' => 16,
-        'id' => 750,
+        'id' => 745,
         'display_name' => 'Black Banner',
     ),
     'black_bed' => array(
         'stack' => 1,
-        'id' => 611,
+        'id' => 606,
         'display_name' => 'Black Bed',
     ),
     'black_carpet' => array(
@@ -298,7 +298,7 @@ $UMC_DATA = array(
     'black_wall_banner' => array(
         'stack' => 16,
         'id' => 423,
-        'display_name' => 'Black wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'black_wool' => array(
         'stack' => 64,
@@ -307,27 +307,27 @@ $UMC_DATA = array(
     ),
     'blaze_powder' => array(
         'stack' => 64,
-        'id' => 633,
+        'id' => 628,
         'display_name' => 'Blaze Powder',
     ),
     'blaze_rod' => array(
         'stack' => 64,
-        'id' => 625,
+        'id' => 620,
         'display_name' => 'Blaze Rod',
     ),
     'blaze_spawn_egg' => array(
         'stack' => 64,
-        'id' => 640,
+        'id' => 635,
         'display_name' => 'Blaze Spawn Egg',
     ),
     'blue_banner' => array(
         'stack' => 16,
-        'id' => 746,
+        'id' => 741,
         'display_name' => 'Blue Banner',
     ),
     'blue_bed' => array(
         'stack' => 1,
-        'id' => 607,
+        'id' => 602,
         'display_name' => 'Blue Bed',
     ),
     'blue_carpet' => array(
@@ -352,7 +352,7 @@ $UMC_DATA = array(
     ),
     'blue_ice' => array(
         'stack' => 64,
-        'id' => 458,
+        'id' => 453,
         'display_name' => 'Blue Ice',
     ),
     'blue_orchid' => array(
@@ -383,7 +383,7 @@ $UMC_DATA = array(
     'blue_wall_banner' => array(
         'stack' => 16,
         'id' => 419,
-        'display_name' => 'Blue wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'blue_wool' => array(
         'stack' => 64,
@@ -392,7 +392,7 @@ $UMC_DATA = array(
     ),
     'bone' => array(
         'stack' => 64,
-        'id' => 593,
+        'id' => 588,
         'display_name' => 'Bone',
     ),
     'bone_block' => array(
@@ -402,12 +402,12 @@ $UMC_DATA = array(
     ),
     'bone_meal' => array(
         'stack' => 64,
-        'id' => 592,
+        'id' => 587,
         'display_name' => 'Bone Meal',
     ),
     'book' => array(
         'stack' => 64,
-        'id' => 562,
+        'id' => 557,
         'display_name' => 'Book',
     ),
     'bookshelf' => array(
@@ -417,12 +417,12 @@ $UMC_DATA = array(
     ),
     'bow' => array(
         'stack' => 64,
-        'id' => 477,
+        'id' => 472,
         'display_name' => 'Bow',
     ),
     'bowl' => array(
         'stack' => 64,
-        'id' => 498,
+        'id' => 493,
         'display_name' => 'Bowl',
     ),
     'brain_coral' => array(
@@ -437,27 +437,27 @@ $UMC_DATA = array(
     ),
     'brain_coral_fan' => array(
         'stack' => 64,
-        'id' => 449,
+        'id' => 444,
         'display_name' => 'Brain Coral Fan',
     ),
     'brain_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 577,
+        'id' => 572,
         'display_name' => 'Brain Coral Wall Fan',
     ),
     'bread' => array(
         'stack' => 64,
-        'id' => 514,
+        'id' => 509,
         'display_name' => 'Bread',
     ),
     'brewing_stand' => array(
         'stack' => 64,
-        'id' => 635,
+        'id' => 630,
         'display_name' => 'Brewing Stand',
     ),
     'brick' => array(
         'stack' => 64,
-        'id' => 556,
+        'id' => 551,
         'display_name' => 'Brick',
     ),
     'brick_slab' => array(
@@ -477,12 +477,12 @@ $UMC_DATA = array(
     ),
     'brown_banner' => array(
         'stack' => 16,
-        'id' => 747,
+        'id' => 742,
         'display_name' => 'Brown Banner',
     ),
     'brown_bed' => array(
         'stack' => 1,
-        'id' => 608,
+        'id' => 603,
         'display_name' => 'Brown Bed',
     ),
     'brown_carpet' => array(
@@ -538,7 +538,7 @@ $UMC_DATA = array(
     'brown_wall_banner' => array(
         'stack' => 16,
         'id' => 420,
-        'display_name' => 'Brown wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'brown_wool' => array(
         'stack' => 64,
@@ -547,7 +547,7 @@ $UMC_DATA = array(
     ),
     'bubble_column' => array(
         'stack' => 0,
-        'id' => 596,
+        'id' => 591,
         'display_name' => 'Bubble Column',
     ),
     'bubble_coral' => array(
@@ -562,17 +562,17 @@ $UMC_DATA = array(
     ),
     'bubble_coral_fan' => array(
         'stack' => 64,
-        'id' => 450,
+        'id' => 445,
         'display_name' => 'Bubble Coral Fan',
     ),
     'bubble_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 578,
+        'id' => 573,
         'display_name' => 'Bubble Coral Wall Fan',
     ),
     'bucket' => array(
         'stack' => 16,
-        'id' => 542,
+        'id' => 537,
         'display_name' => 'Bucket',
     ),
     'cactus' => array(
@@ -582,22 +582,22 @@ $UMC_DATA = array(
     ),
     'cactus_green' => array(
         'stack' => 64,
-        'id' => 579,
+        'id' => 574,
         'display_name' => 'Cactus Green',
     ),
     'cake' => array(
         'stack' => 1,
-        'id' => 595,
+        'id' => 590,
         'display_name' => 'Cake',
     ),
     'carrot' => array(
         'stack' => 64,
-        'id' => 697,
+        'id' => 692,
         'display_name' => 'Carrot',
     ),
     'carrot_on_a_stick' => array(
         'stack' => 64,
-        'id' => 709,
+        'id' => 704,
         'display_name' => 'Carrot on a Stick',
     ),
     'carrots' => array(
@@ -612,17 +612,17 @@ $UMC_DATA = array(
     ),
     'cauldron' => array(
         'stack' => 64,
-        'id' => 636,
+        'id' => 631,
         'display_name' => 'Cauldron',
     ),
     'cave_air' => array(
         'stack' => 0,
-        'id' => 595,
+        'id' => 590,
         'display_name' => 'Cave Air',
     ),
     'cave_spider_spawn_egg' => array(
         'stack' => 64,
-        'id' => 641,
+        'id' => 636,
         'display_name' => 'Cave Spider Spawn Egg',
     ),
     'chain_command_block' => array(
@@ -632,27 +632,27 @@ $UMC_DATA = array(
     ),
     'chainmail_boots' => array(
         'stack' => 64,
-        'id' => 522,
+        'id' => 517,
         'display_name' => 'Chainmail Boots',
     ),
     'chainmail_chestplate' => array(
         'stack' => 64,
-        'id' => 520,
+        'id' => 515,
         'display_name' => 'Chainmail Chestplate',
     ),
     'chainmail_helmet' => array(
         'stack' => 64,
-        'id' => 519,
+        'id' => 514,
         'display_name' => 'Chainmail Helmet',
     ),
     'chainmail_leggings' => array(
         'stack' => 64,
-        'id' => 521,
+        'id' => 516,
         'display_name' => 'Chainmail Leggings',
     ),
     'charcoal' => array(
         'stack' => 64,
-        'id' => 480,
+        'id' => 475,
         'display_name' => 'Charcoal',
     ),
     'chest' => array(
@@ -662,17 +662,17 @@ $UMC_DATA = array(
     ),
     'chest_minecart' => array(
         'stack' => 1,
-        'id' => 564,
+        'id' => 559,
         'display_name' => 'Minecart with Chest',
     ),
     'chicken' => array(
         'stack' => 64,
-        'id' => 621,
+        'id' => 616,
         'display_name' => 'Raw Chicken',
     ),
     'chicken_spawn_egg' => array(
         'stack' => 64,
-        'id' => 642,
+        'id' => 637,
         'display_name' => 'Chicken Spawn Egg',
     ),
     'chipped_anvil' => array(
@@ -707,7 +707,7 @@ $UMC_DATA = array(
     ),
     'chorus_fruit' => array(
         'stack' => 64,
-        'id' => 752,
+        'id' => 747,
         'display_name' => 'Chorus Fruit',
     ),
     'chorus_plant' => array(
@@ -722,17 +722,17 @@ $UMC_DATA = array(
     ),
     'clay_ball' => array(
         'stack' => 64,
-        'id' => 557,
+        'id' => 552,
         'display_name' => 'Clay',
     ),
     'clock' => array(
         'stack' => 64,
-        'id' => 569,
+        'id' => 564,
         'display_name' => 'Clock',
     ),
     'coal' => array(
         'stack' => 64,
-        'id' => 479,
+        'id' => 474,
         'display_name' => 'Coal',
     ),
     'coal_block' => array(
@@ -782,22 +782,22 @@ $UMC_DATA = array(
     ),
     'cocoa_beans' => array(
         'stack' => 64,
-        'id' => 580,
+        'id' => 575,
         'display_name' => 'Cocoa Beans',
     ),
     'cod' => array(
         'stack' => 64,
-        'id' => 571,
+        'id' => 566,
         'display_name' => 'Raw Cod',
     ),
     'cod_bucket' => array(
         'stack' => 1,
-        'id' => 554,
+        'id' => 549,
         'display_name' => 'Bucket of Cod',
     ),
     'cod_spawn_egg' => array(
         'stack' => 64,
-        'id' => 643,
+        'id' => 638,
         'display_name' => 'Cod Spawn Egg',
     ),
     'command_block' => array(
@@ -807,67 +807,67 @@ $UMC_DATA = array(
     ),
     'command_block_minecart' => array(
         'stack' => 1,
-        'id' => 732,
+        'id' => 727,
         'display_name' => 'Minecart with Command Block',
     ),
     'comparator' => array(
         'stack' => 64,
-        'id' => 468,
+        'id' => 463,
         'display_name' => 'Redstone Comparator',
     ),
     'compass' => array(
         'stack' => 64,
-        'id' => 567,
+        'id' => 562,
         'display_name' => 'Compass',
     ),
     'conduit' => array(
         'stack' => 64,
-        'id' => 459,
+        'id' => 454,
         'display_name' => 'Conduit',
     ),
     'cooked_beef' => array(
         'stack' => 64,
-        'id' => 620,
+        'id' => 615,
         'display_name' => 'Steak',
     ),
     'cooked_chicken' => array(
         'stack' => 64,
-        'id' => 622,
+        'id' => 617,
         'display_name' => 'Cooked Chicken',
     ),
     'cooked_cod' => array(
         'stack' => 64,
-        'id' => 575,
+        'id' => 570,
         'display_name' => 'Cooked Cod',
     ),
     'cooked_mutton' => array(
         'stack' => 64,
-        'id' => 734,
+        'id' => 729,
         'display_name' => 'Cooked Mutton',
     ),
     'cooked_porkchop' => array(
         'stack' => 64,
-        'id' => 537,
+        'id' => 532,
         'display_name' => 'Cooked Porkchop',
     ),
     'cooked_rabbit' => array(
         'stack' => 64,
-        'id' => 722,
+        'id' => 717,
         'display_name' => 'Cooked Rabbit',
     ),
     'cooked_salmon' => array(
         'stack' => 64,
-        'id' => 576,
+        'id' => 571,
         'display_name' => 'Cooked Salmon',
     ),
     'cookie' => array(
         'stack' => 64,
-        'id' => 612,
+        'id' => 607,
         'display_name' => 'Cookie',
     ),
     'cow_spawn_egg' => array(
         'stack' => 64,
-        'id' => 644,
+        'id' => 639,
         'display_name' => 'Cow Spawn Egg',
     ),
     'cracked_stone_bricks' => array(
@@ -882,18 +882,18 @@ $UMC_DATA = array(
     ),
     'creeper_head' => array(
         'stack' => 64,
-        'id' => 707,
+        'id' => 702,
         'display_name' => 'Creeper Head',
     ),
     'creeper_spawn_egg' => array(
         'stack' => 64,
-        'id' => 645,
+        'id' => 640,
         'display_name' => 'Creeper Spawn Egg',
     ),
     'creeper_wall_head' => array(
         'stack' => 64,
         'id' => 298,
-        'display_name' => 'Creeper Wall Head',
+        'display_name' => 'Mob head',
     ),
     'cut_red_sandstone' => array(
         'stack' => 64,
@@ -907,12 +907,12 @@ $UMC_DATA = array(
     ),
     'cyan_banner' => array(
         'stack' => 16,
-        'id' => 744,
+        'id' => 739,
         'display_name' => 'Cyan Banner',
     ),
     'cyan_bed' => array(
         'stack' => 1,
-        'id' => 605,
+        'id' => 600,
         'display_name' => 'Cyan Bed',
     ),
     'cyan_carpet' => array(
@@ -932,7 +932,7 @@ $UMC_DATA = array(
     ),
     'cyan_dye' => array(
         'stack' => 64,
-        'id' => 583,
+        'id' => 578,
         'display_name' => 'Cyan Dye',
     ),
     'cyan_glazed_terracotta' => array(
@@ -963,7 +963,7 @@ $UMC_DATA = array(
     'cyan_wall_banner' => array(
         'stack' => 16,
         'id' => 417,
-        'display_name' => 'Cyan wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'cyan_wool' => array(
         'stack' => 64,
@@ -982,12 +982,12 @@ $UMC_DATA = array(
     ),
     'dandelion_yellow' => array(
         'stack' => 64,
-        'id' => 588,
+        'id' => 583,
         'display_name' => 'Dandelion Yellow',
     ),
     'dark_oak_boat' => array(
         'stack' => 1,
-        'id' => 768,
+        'id' => 763,
         'display_name' => 'Dark Oak Boat',
     ),
     'dark_oak_button' => array(
@@ -997,7 +997,7 @@ $UMC_DATA = array(
     ),
     'dark_oak_door' => array(
         'stack' => 64,
-        'id' => 466,
+        'id' => 461,
         'display_name' => 'Dark Oak Door',
     ),
     'dark_oak_fence' => array(
@@ -1075,11 +1075,6 @@ $UMC_DATA = array(
         'id' => 253,
         'display_name' => 'Daylight Detector',
     ),
-    'dead_brain_coral' => array(
-        'stack' => 64,
-        'id' => 443,
-        'display_name' => 'Dead Brain Coral',
-    ),
     'dead_brain_coral_block' => array(
         'stack' => 64,
         'id' => 429,
@@ -1087,18 +1082,13 @@ $UMC_DATA = array(
     ),
     'dead_brain_coral_fan' => array(
         'stack' => 64,
-        'id' => 454,
+        'id' => 449,
         'display_name' => 'Dead Brain Coral Fan',
     ),
     'dead_brain_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 572,
+        'id' => 567,
         'display_name' => 'Dead Brain Coral Wall Fan',
-    ),
-    'dead_bubble_coral' => array(
-        'stack' => 64,
-        'id' => 444,
-        'display_name' => 'Dead Bubble Coral',
     ),
     'dead_bubble_coral_block' => array(
         'stack' => 64,
@@ -1107,23 +1097,18 @@ $UMC_DATA = array(
     ),
     'dead_bubble_coral_fan' => array(
         'stack' => 64,
-        'id' => 455,
+        'id' => 450,
         'display_name' => 'Dead Bubble Coral Fan',
     ),
     'dead_bubble_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 573,
+        'id' => 568,
         'display_name' => 'Dead Bubble Coral Wall Fan',
     ),
     'dead_bush' => array(
         'stack' => 64,
         'id' => 78,
         'display_name' => 'Dead Bush',
-    ),
-    'dead_fire_coral' => array(
-        'stack' => 64,
-        'id' => 445,
-        'display_name' => 'Dead Fire Coral',
     ),
     'dead_fire_coral_block' => array(
         'stack' => 64,
@@ -1132,18 +1117,13 @@ $UMC_DATA = array(
     ),
     'dead_fire_coral_fan' => array(
         'stack' => 64,
-        'id' => 456,
+        'id' => 451,
         'display_name' => 'Dead Fire Coral Fan',
     ),
     'dead_fire_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 574,
+        'id' => 569,
         'display_name' => 'Dead Fire Coral Wall Fan',
-    ),
-    'dead_horn_coral' => array(
-        'stack' => 64,
-        'id' => 446,
-        'display_name' => 'Dead Horn Coral',
     ),
     'dead_horn_coral_block' => array(
         'stack' => 64,
@@ -1152,18 +1132,13 @@ $UMC_DATA = array(
     ),
     'dead_horn_coral_fan' => array(
         'stack' => 64,
-        'id' => 457,
+        'id' => 452,
         'display_name' => 'Dead Horn Coral Fan',
     ),
     'dead_horn_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 575,
+        'id' => 570,
         'display_name' => 'Dead Horn Coral Wall Fan',
-    ),
-    'dead_tube_coral' => array(
-        'stack' => 64,
-        'id' => 447,
-        'display_name' => 'Dead Tube Coral',
     ),
     'dead_tube_coral_block' => array(
         'stack' => 64,
@@ -1172,17 +1147,17 @@ $UMC_DATA = array(
     ),
     'dead_tube_coral_fan' => array(
         'stack' => 64,
-        'id' => 453,
+        'id' => 448,
         'display_name' => 'Dead Tube Coral Fan',
     ),
     'dead_tube_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 571,
+        'id' => 566,
         'display_name' => 'Dead Tube Coral Wall Fan',
     ),
     'debug_stick' => array(
         'stack' => 1,
-        'id' => 773,
+        'id' => 768,
         'display_name' => 'Debug Stick',
     ),
     'detector_rail' => array(
@@ -1192,12 +1167,12 @@ $UMC_DATA = array(
     ),
     'diamond' => array(
         'stack' => 64,
-        'id' => 481,
+        'id' => 476,
         'display_name' => 'Diamond',
     ),
     'diamond_axe' => array(
         'stack' => 64,
-        'id' => 496,
+        'id' => 491,
         'display_name' => 'Diamond Axe',
     ),
     'diamond_block' => array(
@@ -1207,32 +1182,32 @@ $UMC_DATA = array(
     ),
     'diamond_boots' => array(
         'stack' => 64,
-        'id' => 530,
+        'id' => 525,
         'display_name' => 'Diamond Boots',
     ),
     'diamond_chestplate' => array(
         'stack' => 64,
-        'id' => 528,
+        'id' => 523,
         'display_name' => 'Diamond Chestplate',
     ),
     'diamond_helmet' => array(
         'stack' => 64,
-        'id' => 527,
+        'id' => 522,
         'display_name' => 'Diamond Helmet',
     ),
     'diamond_hoe' => array(
         'stack' => 64,
-        'id' => 510,
+        'id' => 505,
         'display_name' => 'Diamond Hoe',
     ),
     'diamond_horse_armor' => array(
         'stack' => 1,
-        'id' => 729,
+        'id' => 724,
         'display_name' => 'Diamond Horse Armor',
     ),
     'diamond_leggings' => array(
         'stack' => 64,
-        'id' => 529,
+        'id' => 524,
         'display_name' => 'Diamond Leggings',
     ),
     'diamond_ore' => array(
@@ -1242,17 +1217,17 @@ $UMC_DATA = array(
     ),
     'diamond_pickaxe' => array(
         'stack' => 64,
-        'id' => 495,
+        'id' => 490,
         'display_name' => 'Diamond Pickaxe',
     ),
     'diamond_shovel' => array(
         'stack' => 64,
-        'id' => 494,
+        'id' => 489,
         'display_name' => 'Diamond Shovel',
     ),
     'diamond_sword' => array(
         'stack' => 64,
-        'id' => 493,
+        'id' => 488,
         'display_name' => 'Diamond Sword',
     ),
     'diorite' => array(
@@ -1272,17 +1247,17 @@ $UMC_DATA = array(
     ),
     'dolphin_spawn_egg' => array(
         'stack' => 64,
-        'id' => 646,
+        'id' => 641,
         'display_name' => 'Dolphin Spawn Egg',
     ),
     'donkey_spawn_egg' => array(
         'stack' => 64,
-        'id' => 647,
+        'id' => 642,
         'display_name' => 'Donkey Spawn Egg',
     ),
     'dragon_breath' => array(
         'stack' => 64,
-        'id' => 757,
+        'id' => 752,
         'display_name' => 'Dragon\'s Breath',
     ),
     'dragon_egg' => array(
@@ -1292,22 +1267,22 @@ $UMC_DATA = array(
     ),
     'dragon_head' => array(
         'stack' => 64,
-        'id' => 708,
+        'id' => 703,
         'display_name' => 'Dragon Head',
     ),
     'dragon_wall_head' => array(
         'stack' => 64,
         'id' => 300,
-        'display_name' => 'Dragon Wall Head',
+        'display_name' => 'Mob head',
     ),
     'dried_kelp' => array(
         'stack' => 64,
-        'id' => 616,
+        'id' => 611,
         'display_name' => 'Dried Kelp',
     ),
     'dried_kelp_block' => array(
         'stack' => 64,
-        'id' => 560,
+        'id' => 555,
         'display_name' => 'Dried Kelp Block',
     ),
     'dropper' => array(
@@ -1317,27 +1292,27 @@ $UMC_DATA = array(
     ),
     'drowned_spawn_egg' => array(
         'stack' => 64,
-        'id' => 648,
+        'id' => 643,
         'display_name' => 'Drowned Spawn Egg',
     ),
     'egg' => array(
         'stack' => 16,
-        'id' => 566,
+        'id' => 561,
         'display_name' => 'Egg',
     ),
     'elder_guardian_spawn_egg' => array(
         'stack' => 64,
-        'id' => 649,
+        'id' => 644,
         'display_name' => 'Elder Guardian Spawn Egg',
     ),
     'elytra' => array(
         'stack' => 64,
-        'id' => 763,
+        'id' => 758,
         'display_name' => 'Elytra',
     ),
     'emerald' => array(
         'stack' => 64,
-        'id' => 694,
+        'id' => 689,
         'display_name' => 'Emerald',
     ),
     'emerald_block' => array(
@@ -1352,12 +1327,12 @@ $UMC_DATA = array(
     ),
     'enchanted_book' => array(
         'stack' => 1,
-        'id' => 714,
+        'id' => 709,
         'display_name' => 'Enchanted Book',
     ),
     'enchanted_golden_apple' => array(
         'stack' => 64,
-        'id' => 540,
+        'id' => 535,
         'display_name' => 'Enchanted Golden Apple',
     ),
     'enchanting_table' => array(
@@ -1367,7 +1342,7 @@ $UMC_DATA = array(
     ),
     'end_crystal' => array(
         'stack' => 64,
-        'id' => 751,
+        'id' => 746,
         'display_name' => 'End Crystal',
     ),
     'end_gateway' => array(
@@ -1407,32 +1382,32 @@ $UMC_DATA = array(
     ),
     'ender_eye' => array(
         'stack' => 64,
-        'id' => 637,
+        'id' => 632,
         'display_name' => 'Eye of Ender',
     ),
     'ender_pearl' => array(
         'stack' => 16,
-        'id' => 624,
+        'id' => 619,
         'display_name' => 'Ender Pearl',
     ),
     'enderman_spawn_egg' => array(
         'stack' => 64,
-        'id' => 650,
+        'id' => 645,
         'display_name' => 'Enderman Spawn Egg',
     ),
     'endermite_spawn_egg' => array(
         'stack' => 64,
-        'id' => 651,
+        'id' => 646,
         'display_name' => 'Endermite Spawn Egg',
     ),
     'evoker_spawn_egg' => array(
         'stack' => 64,
-        'id' => 652,
+        'id' => 647,
         'display_name' => 'Evoker Spawn Egg',
     ),
     'experience_bottle' => array(
         'stack' => 64,
-        'id' => 690,
+        'id' => 685,
         'display_name' => 'Bottle o\' Enchanting',
     ),
     'farmland' => array(
@@ -1442,12 +1417,12 @@ $UMC_DATA = array(
     ),
     'feather' => array(
         'stack' => 64,
-        'id' => 505,
+        'id' => 500,
         'display_name' => 'Feather',
     ),
     'fermented_spider_eye' => array(
         'stack' => 64,
-        'id' => 632,
+        'id' => 627,
         'display_name' => 'Fermented Spider Eye',
     ),
     'fern' => array(
@@ -1457,7 +1432,7 @@ $UMC_DATA = array(
     ),
     'filled_map' => array(
         'stack' => 64,
-        'id' => 613,
+        'id' => 608,
         'display_name' => 'Map',
     ),
     'fire' => array(
@@ -1467,7 +1442,7 @@ $UMC_DATA = array(
     ),
     'fire_charge' => array(
         'stack' => 64,
-        'id' => 691,
+        'id' => 686,
         'display_name' => 'Fire Charge',
     ),
     'fire_coral' => array(
@@ -1482,42 +1457,42 @@ $UMC_DATA = array(
     ),
     'fire_coral_fan' => array(
         'stack' => 64,
-        'id' => 451,
+        'id' => 446,
         'display_name' => 'Fire Coral Fan',
     ),
     'fire_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 579,
+        'id' => 574,
         'display_name' => 'Fire Coral Wall Fan',
     ),
     'firework_rocket' => array(
         'stack' => 64,
-        'id' => 712,
+        'id' => 707,
         'display_name' => 'Firework Rocket',
     ),
     'firework_star' => array(
         'stack' => 64,
-        'id' => 713,
+        'id' => 708,
         'display_name' => 'Firework Star',
     ),
     'fishing_rod' => array(
         'stack' => 64,
-        'id' => 568,
+        'id' => 563,
         'display_name' => 'Fishing Rod',
     ),
     'flint' => array(
         'stack' => 64,
-        'id' => 535,
+        'id' => 530,
         'display_name' => 'Flint',
     ),
     'flint_and_steel' => array(
         'stack' => 64,
-        'id' => 475,
+        'id' => 470,
         'display_name' => 'Flint and Steel',
     ),
     'flower_pot' => array(
         'stack' => 64,
-        'id' => 696,
+        'id' => 691,
         'display_name' => 'Flower Pot',
     ),
     'frosted_ice' => array(
@@ -1532,17 +1507,17 @@ $UMC_DATA = array(
     ),
     'furnace_minecart' => array(
         'stack' => 1,
-        'id' => 565,
+        'id' => 560,
         'display_name' => 'Minecart with Furnace',
     ),
     'ghast_spawn_egg' => array(
         'stack' => 64,
-        'id' => 653,
+        'id' => 648,
         'display_name' => 'Ghast Spawn Egg',
     ),
     'ghast_tear' => array(
         'stack' => 64,
-        'id' => 626,
+        'id' => 621,
         'display_name' => 'Ghast Tear',
     ),
     'glass' => array(
@@ -1552,7 +1527,7 @@ $UMC_DATA = array(
     ),
     'glass_bottle' => array(
         'stack' => 64,
-        'id' => 630,
+        'id' => 625,
         'display_name' => 'Glass Bottle',
     ),
     'glass_pane' => array(
@@ -1562,7 +1537,7 @@ $UMC_DATA = array(
     ),
     'glistering_melon_slice' => array(
         'stack' => 64,
-        'id' => 638,
+        'id' => 633,
         'display_name' => 'Glistering Melon Slice',
     ),
     'glowstone' => array(
@@ -1572,7 +1547,7 @@ $UMC_DATA = array(
     ),
     'glowstone_dust' => array(
         'stack' => 64,
-        'id' => 570,
+        'id' => 565,
         'display_name' => 'Glowstone Dust',
     ),
     'gold_block' => array(
@@ -1582,12 +1557,12 @@ $UMC_DATA = array(
     ),
     'gold_ingot' => array(
         'stack' => 64,
-        'id' => 483,
+        'id' => 478,
         'display_name' => 'Gold Ingot',
     ),
     'gold_nugget' => array(
         'stack' => 64,
-        'id' => 627,
+        'id' => 622,
         'display_name' => 'Gold Nugget',
     ),
     'gold_ore' => array(
@@ -1597,62 +1572,62 @@ $UMC_DATA = array(
     ),
     'golden_apple' => array(
         'stack' => 64,
-        'id' => 539,
+        'id' => 534,
         'display_name' => 'Golden Apple',
     ),
     'golden_axe' => array(
         'stack' => 64,
-        'id' => 503,
+        'id' => 498,
         'display_name' => 'Golden Axe',
     ),
     'golden_boots' => array(
         'stack' => 64,
-        'id' => 534,
+        'id' => 529,
         'display_name' => 'Golden Boots',
     ),
     'golden_carrot' => array(
         'stack' => 64,
-        'id' => 702,
+        'id' => 697,
         'display_name' => 'Golden Carrot',
     ),
     'golden_chestplate' => array(
         'stack' => 64,
-        'id' => 532,
+        'id' => 527,
         'display_name' => 'Golden Chestplate',
     ),
     'golden_helmet' => array(
         'stack' => 64,
-        'id' => 531,
+        'id' => 526,
         'display_name' => 'Golden Helmet',
     ),
     'golden_hoe' => array(
         'stack' => 64,
-        'id' => 511,
+        'id' => 506,
         'display_name' => 'Golden Hoe',
     ),
     'golden_horse_armor' => array(
         'stack' => 1,
-        'id' => 728,
+        'id' => 723,
         'display_name' => 'Golden Horse Armor',
     ),
     'golden_leggings' => array(
         'stack' => 64,
-        'id' => 533,
+        'id' => 528,
         'display_name' => 'Golden Leggings',
     ),
     'golden_pickaxe' => array(
         'stack' => 64,
-        'id' => 502,
+        'id' => 497,
         'display_name' => 'Golden Pickaxe',
     ),
     'golden_shovel' => array(
         'stack' => 64,
-        'id' => 501,
+        'id' => 496,
         'display_name' => 'Golden Shovel',
     ),
     'golden_sword' => array(
         'stack' => 64,
-        'id' => 500,
+        'id' => 495,
         'display_name' => 'Golden Sword',
     ),
     'granite' => array(
@@ -1682,12 +1657,12 @@ $UMC_DATA = array(
     ),
     'gray_banner' => array(
         'stack' => 16,
-        'id' => 742,
+        'id' => 737,
         'display_name' => 'Gray Banner',
     ),
     'gray_bed' => array(
         'stack' => 1,
-        'id' => 603,
+        'id' => 598,
         'display_name' => 'Gray Bed',
     ),
     'gray_carpet' => array(
@@ -1707,7 +1682,7 @@ $UMC_DATA = array(
     ),
     'gray_dye' => array(
         'stack' => 64,
-        'id' => 585,
+        'id' => 580,
         'display_name' => 'Gray Dye',
     ),
     'gray_glazed_terracotta' => array(
@@ -1738,7 +1713,7 @@ $UMC_DATA = array(
     'gray_wall_banner' => array(
         'stack' => 16,
         'id' => 415,
-        'display_name' => 'Gray wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'gray_wool' => array(
         'stack' => 64,
@@ -1747,12 +1722,12 @@ $UMC_DATA = array(
     ),
     'green_banner' => array(
         'stack' => 16,
-        'id' => 748,
+        'id' => 743,
         'display_name' => 'Green Banner',
     ),
     'green_bed' => array(
         'stack' => 1,
-        'id' => 609,
+        'id' => 604,
         'display_name' => 'Green Bed',
     ),
     'green_carpet' => array(
@@ -1798,7 +1773,7 @@ $UMC_DATA = array(
     'green_wall_banner' => array(
         'stack' => 16,
         'id' => 421,
-        'display_name' => 'Green wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'green_wool' => array(
         'stack' => 64,
@@ -1807,12 +1782,12 @@ $UMC_DATA = array(
     ),
     'guardian_spawn_egg' => array(
         'stack' => 64,
-        'id' => 654,
+        'id' => 649,
         'display_name' => 'Guardian Spawn Egg',
     ),
     'gunpowder' => array(
         'stack' => 64,
-        'id' => 506,
+        'id' => 501,
         'display_name' => 'Gunpowder',
     ),
     'hay_block' => array(
@@ -1822,7 +1797,7 @@ $UMC_DATA = array(
     ),
     'heart_of_the_sea' => array(
         'stack' => 64,
-        'id' => 789,
+        'id' => 784,
         'display_name' => 'Heart of the Sea',
     ),
     'heavy_weighted_pressure_plate' => array(
@@ -1837,7 +1812,7 @@ $UMC_DATA = array(
     ),
     'hopper_minecart' => array(
         'stack' => 1,
-        'id' => 718,
+        'id' => 713,
         'display_name' => 'Minecart with Hopper',
     ),
     'horn_coral' => array(
@@ -1852,22 +1827,22 @@ $UMC_DATA = array(
     ),
     'horn_coral_fan' => array(
         'stack' => 64,
-        'id' => 452,
+        'id' => 447,
         'display_name' => 'Horn Coral Fan',
     ),
     'horn_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 580,
+        'id' => 575,
         'display_name' => 'Horn Coral Wall Fan',
     ),
     'horse_spawn_egg' => array(
         'stack' => 64,
-        'id' => 655,
+        'id' => 650,
         'display_name' => 'Horse Spawn Egg',
     ),
     'husk_spawn_egg' => array(
         'stack' => 64,
-        'id' => 656,
+        'id' => 651,
         'display_name' => 'Husk Spawn Egg',
     ),
     'ice' => array(
@@ -1907,12 +1882,12 @@ $UMC_DATA = array(
     ),
     'ink_sac' => array(
         'stack' => 64,
-        'id' => 577,
+        'id' => 572,
         'display_name' => 'Ink Sac',
     ),
     'iron_axe' => array(
         'stack' => 64,
-        'id' => 474,
+        'id' => 469,
         'display_name' => 'Iron Axe',
     ),
     'iron_bars' => array(
@@ -1927,47 +1902,47 @@ $UMC_DATA = array(
     ),
     'iron_boots' => array(
         'stack' => 64,
-        'id' => 526,
+        'id' => 521,
         'display_name' => 'Iron Boots',
     ),
     'iron_chestplate' => array(
         'stack' => 64,
-        'id' => 524,
+        'id' => 519,
         'display_name' => 'Iron Chestplate',
     ),
     'iron_door' => array(
         'stack' => 64,
-        'id' => 460,
+        'id' => 455,
         'display_name' => 'Iron Door',
     ),
     'iron_helmet' => array(
         'stack' => 64,
-        'id' => 523,
+        'id' => 518,
         'display_name' => 'Iron Helmet',
     ),
     'iron_hoe' => array(
         'stack' => 64,
-        'id' => 509,
+        'id' => 504,
         'display_name' => 'Iron Hoe',
     ),
     'iron_horse_armor' => array(
         'stack' => 1,
-        'id' => 727,
+        'id' => 722,
         'display_name' => 'Iron Horse Armor',
     ),
     'iron_ingot' => array(
         'stack' => 64,
-        'id' => 482,
+        'id' => 477,
         'display_name' => 'Iron Ingot',
     ),
     'iron_leggings' => array(
         'stack' => 64,
-        'id' => 525,
+        'id' => 520,
         'display_name' => 'Iron Leggings',
     ),
     'iron_nugget' => array(
         'stack' => 64,
-        'id' => 771,
+        'id' => 766,
         'display_name' => 'Iron Nugget',
     ),
     'iron_ore' => array(
@@ -1977,17 +1952,17 @@ $UMC_DATA = array(
     ),
     'iron_pickaxe' => array(
         'stack' => 64,
-        'id' => 473,
+        'id' => 468,
         'display_name' => 'Iron Pickaxe',
     ),
     'iron_shovel' => array(
         'stack' => 64,
-        'id' => 472,
+        'id' => 467,
         'display_name' => 'Iron Shovel',
     ),
     'iron_sword' => array(
         'stack' => 64,
-        'id' => 484,
+        'id' => 479,
         'display_name' => 'Iron Sword',
     ),
     'iron_trapdoor' => array(
@@ -1997,7 +1972,7 @@ $UMC_DATA = array(
     ),
     'item_frame' => array(
         'stack' => 64,
-        'id' => 695,
+        'id' => 690,
         'display_name' => 'Item Frame',
     ),
     'jack_o_lantern' => array(
@@ -2012,7 +1987,7 @@ $UMC_DATA = array(
     ),
     'jungle_boat' => array(
         'stack' => 1,
-        'id' => 766,
+        'id' => 761,
         'display_name' => 'Jungle Boat',
     ),
     'jungle_button' => array(
@@ -2022,7 +1997,7 @@ $UMC_DATA = array(
     ),
     'jungle_door' => array(
         'stack' => 64,
-        'id' => 464,
+        'id' => 459,
         'display_name' => 'Jungle Door',
     ),
     'jungle_fence' => array(
@@ -2082,7 +2057,7 @@ $UMC_DATA = array(
     ),
     'kelp' => array(
         'stack' => 64,
-        'id' => 559,
+        'id' => 554,
         'display_name' => 'Kelp',
     ),
     'kelp_plant' => array(
@@ -2092,7 +2067,7 @@ $UMC_DATA = array(
     ),
     'knowledge_book' => array(
         'stack' => 1,
-        'id' => 772,
+        'id' => 767,
         'display_name' => 'Knowledge Book',
     ),
     'ladder' => array(
@@ -2107,7 +2082,7 @@ $UMC_DATA = array(
     ),
     'lapis_lazuli' => array(
         'stack' => 64,
-        'id' => 581,
+        'id' => 576,
         'display_name' => 'Lapis Lazuli',
     ),
     'lapis_ore' => array(
@@ -2127,37 +2102,37 @@ $UMC_DATA = array(
     ),
     'lava_bucket' => array(
         'stack' => 1,
-        'id' => 544,
+        'id' => 539,
         'display_name' => 'Lava Bucket',
     ),
     'lead' => array(
         'stack' => 64,
-        'id' => 730,
+        'id' => 725,
         'display_name' => 'Lead',
     ),
     'leather' => array(
         'stack' => 64,
-        'id' => 550,
+        'id' => 545,
         'display_name' => 'Leather',
     ),
     'leather_boots' => array(
         'stack' => 64,
-        'id' => 518,
+        'id' => 513,
         'display_name' => 'Leather Boots',
     ),
     'leather_chestplate' => array(
         'stack' => 64,
-        'id' => 516,
+        'id' => 511,
         'display_name' => 'Leather Tunic',
     ),
     'leather_helmet' => array(
         'stack' => 64,
-        'id' => 515,
+        'id' => 510,
         'display_name' => 'Leather Cap',
     ),
     'leather_leggings' => array(
         'stack' => 64,
-        'id' => 517,
+        'id' => 512,
         'display_name' => 'Leather Pants',
     ),
     'lever' => array(
@@ -2167,12 +2142,12 @@ $UMC_DATA = array(
     ),
     'light_blue_banner' => array(
         'stack' => 16,
-        'id' => 738,
+        'id' => 733,
         'display_name' => 'Light Blue Banner',
     ),
     'light_blue_bed' => array(
         'stack' => 1,
-        'id' => 599,
+        'id' => 594,
         'display_name' => 'Light Blue Bed',
     ),
     'light_blue_carpet' => array(
@@ -2192,7 +2167,7 @@ $UMC_DATA = array(
     ),
     'light_blue_dye' => array(
         'stack' => 64,
-        'id' => 589,
+        'id' => 584,
         'display_name' => 'Light Blue Dye',
     ),
     'light_blue_glazed_terracotta' => array(
@@ -2223,7 +2198,7 @@ $UMC_DATA = array(
     'light_blue_wall_banner' => array(
         'stack' => 16,
         'id' => 411,
-        'display_name' => 'Light blue wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'light_blue_wool' => array(
         'stack' => 64,
@@ -2232,12 +2207,12 @@ $UMC_DATA = array(
     ),
     'light_gray_banner' => array(
         'stack' => 16,
-        'id' => 743,
+        'id' => 738,
         'display_name' => 'Light Gray Banner',
     ),
     'light_gray_bed' => array(
         'stack' => 1,
-        'id' => 604,
+        'id' => 599,
         'display_name' => 'Light Gray Bed',
     ),
     'light_gray_carpet' => array(
@@ -2257,7 +2232,7 @@ $UMC_DATA = array(
     ),
     'light_gray_dye' => array(
         'stack' => 64,
-        'id' => 584,
+        'id' => 579,
         'display_name' => 'Light Gray Dye',
     ),
     'light_gray_glazed_terracotta' => array(
@@ -2288,7 +2263,7 @@ $UMC_DATA = array(
     'light_gray_wall_banner' => array(
         'stack' => 16,
         'id' => 416,
-        'display_name' => 'Light gray wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'light_gray_wool' => array(
         'stack' => 64,
@@ -2312,12 +2287,12 @@ $UMC_DATA = array(
     ),
     'lime_banner' => array(
         'stack' => 16,
-        'id' => 740,
+        'id' => 735,
         'display_name' => 'Lime Banner',
     ),
     'lime_bed' => array(
         'stack' => 1,
-        'id' => 601,
+        'id' => 596,
         'display_name' => 'Lime Bed',
     ),
     'lime_carpet' => array(
@@ -2337,7 +2312,7 @@ $UMC_DATA = array(
     ),
     'lime_dye' => array(
         'stack' => 64,
-        'id' => 587,
+        'id' => 582,
         'display_name' => 'Lime Dye',
     ),
     'lime_glazed_terracotta' => array(
@@ -2368,7 +2343,7 @@ $UMC_DATA = array(
     'lime_wall_banner' => array(
         'stack' => 16,
         'id' => 413,
-        'display_name' => 'Lime wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'lime_wool' => array(
         'stack' => 64,
@@ -2377,22 +2352,22 @@ $UMC_DATA = array(
     ),
     'lingering_potion' => array(
         'stack' => 1,
-        'id' => 761,
+        'id' => 756,
         'display_name' => 'Lingering Potion',
     ),
     'llama_spawn_egg' => array(
         'stack' => 64,
-        'id' => 657,
+        'id' => 652,
         'display_name' => 'Llama Spawn Egg',
     ),
     'magenta_banner' => array(
         'stack' => 16,
-        'id' => 737,
+        'id' => 732,
         'display_name' => 'Magenta Banner',
     ),
     'magenta_bed' => array(
         'stack' => 1,
-        'id' => 598,
+        'id' => 593,
         'display_name' => 'Magenta Bed',
     ),
     'magenta_carpet' => array(
@@ -2412,7 +2387,7 @@ $UMC_DATA = array(
     ),
     'magenta_dye' => array(
         'stack' => 64,
-        'id' => 590,
+        'id' => 585,
         'display_name' => 'Magenta Dye',
     ),
     'magenta_glazed_terracotta' => array(
@@ -2443,7 +2418,7 @@ $UMC_DATA = array(
     'magenta_wall_banner' => array(
         'stack' => 16,
         'id' => 410,
-        'display_name' => 'Magenta wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'magenta_wool' => array(
         'stack' => 64,
@@ -2457,17 +2432,17 @@ $UMC_DATA = array(
     ),
     'magma_cream' => array(
         'stack' => 64,
-        'id' => 634,
+        'id' => 629,
         'display_name' => 'Magma Cream',
     ),
     'magma_cube_spawn_egg' => array(
         'stack' => 64,
-        'id' => 658,
+        'id' => 653,
         'display_name' => 'Magma Cube Spawn Egg',
     ),
     'map' => array(
         'stack' => 64,
-        'id' => 701,
+        'id' => 696,
         'display_name' => 'Empty Map',
     ),
     'melon' => array(
@@ -2477,12 +2452,12 @@ $UMC_DATA = array(
     ),
     'melon_seeds' => array(
         'stack' => 64,
-        'id' => 618,
+        'id' => 613,
         'display_name' => 'Melon Seeds',
     ),
     'melon_slice' => array(
         'stack' => 64,
-        'id' => 615,
+        'id' => 610,
         'display_name' => 'Melon Slice',
     ),
     'melon_stem' => array(
@@ -2492,17 +2467,17 @@ $UMC_DATA = array(
     ),
     'milk_bucket' => array(
         'stack' => 1,
-        'id' => 551,
+        'id' => 546,
         'display_name' => 'Milk Bucket',
     ),
     'minecart' => array(
         'stack' => 1,
-        'id' => 545,
+        'id' => 540,
         'display_name' => 'Minecart',
     ),
     'mooshroom_spawn_egg' => array(
         'stack' => 64,
-        'id' => 659,
+        'id' => 654,
         'display_name' => 'Mooshroom Spawn Egg',
     ),
     'mossy_cobblestone' => array(
@@ -2523,11 +2498,11 @@ $UMC_DATA = array(
     'moving_piston' => array(
         'stack' => 64,
         'id' => 117,
-        'display_name' => 'Moving Piston',
+        'display_name' => 'Block moved by Piston',
     ),
     'mule_spawn_egg' => array(
         'stack' => 64,
-        'id' => 660,
+        'id' => 655,
         'display_name' => 'Mule Spawn Egg',
     ),
     'mushroom_stem' => array(
@@ -2537,72 +2512,72 @@ $UMC_DATA = array(
     ),
     'mushroom_stew' => array(
         'stack' => 1,
-        'id' => 499,
+        'id' => 494,
         'display_name' => 'Mushroom Stew',
     ),
     'music_disc_11' => array(
         'stack' => 1,
-        'id' => 784,
+        'id' => 779,
         'display_name' => 'Music Disc',
     ),
     'music_disc_13' => array(
         'stack' => 1,
-        'id' => 774,
+        'id' => 769,
         'display_name' => 'Music Disc',
     ),
     'music_disc_blocks' => array(
         'stack' => 1,
-        'id' => 776,
+        'id' => 771,
         'display_name' => 'Music Disc',
     ),
     'music_disc_cat' => array(
         'stack' => 1,
-        'id' => 775,
+        'id' => 770,
         'display_name' => 'Music Disc',
     ),
     'music_disc_chirp' => array(
         'stack' => 1,
-        'id' => 777,
+        'id' => 772,
         'display_name' => 'Music Disc',
     ),
     'music_disc_far' => array(
         'stack' => 1,
-        'id' => 778,
+        'id' => 773,
         'display_name' => 'Music Disc',
     ),
     'music_disc_mall' => array(
         'stack' => 1,
-        'id' => 779,
+        'id' => 774,
         'display_name' => 'Music Disc',
     ),
     'music_disc_mellohi' => array(
         'stack' => 1,
-        'id' => 780,
+        'id' => 775,
         'display_name' => 'Music Disc',
     ),
     'music_disc_stal' => array(
         'stack' => 1,
-        'id' => 781,
+        'id' => 776,
         'display_name' => 'Music Disc',
     ),
     'music_disc_strad' => array(
         'stack' => 1,
-        'id' => 782,
+        'id' => 777,
         'display_name' => 'Music Disc',
     ),
     'music_disc_wait' => array(
         'stack' => 1,
-        'id' => 785,
+        'id' => 780,
         'display_name' => 'Music Disc',
     ),
     'music_disc_ward' => array(
         'stack' => 1,
-        'id' => 783,
+        'id' => 778,
         'display_name' => 'Music Disc',
     ),
     'mutton' => array(
         'stack' => 64,
-        'id' => 733,
+        'id' => 728,
         'display_name' => 'Raw Mutton',
     ),
     'mycelium' => array(
@@ -2612,17 +2587,17 @@ $UMC_DATA = array(
     ),
     'name_tag' => array(
         'stack' => 64,
-        'id' => 731,
+        'id' => 726,
         'display_name' => 'Name Tag',
     ),
     'nautilus_shell' => array(
         'stack' => 64,
-        'id' => 788,
+        'id' => 783,
         'display_name' => 'Nautilus Shell',
     ),
     'nether_brick' => array(
         'stack' => 64,
-        'id' => 715,
+        'id' => 710,
         'display_name' => 'Nether Brick',
     ),
     'nether_brick_fence' => array(
@@ -2657,12 +2632,12 @@ $UMC_DATA = array(
     ),
     'nether_star' => array(
         'stack' => 64,
-        'id' => 710,
+        'id' => 705,
         'display_name' => 'Nether Star',
     ),
     'nether_wart' => array(
         'stack' => 64,
-        'id' => 628,
+        'id' => 623,
         'display_name' => 'Nether Wart',
     ),
     'nether_wart_block' => array(
@@ -2682,7 +2657,7 @@ $UMC_DATA = array(
     ),
     'oak_boat' => array(
         'stack' => 1,
-        'id' => 549,
+        'id' => 544,
         'display_name' => 'Oak Boat',
     ),
     'oak_button' => array(
@@ -2692,7 +2667,7 @@ $UMC_DATA = array(
     ),
     'oak_door' => array(
         'stack' => 64,
-        'id' => 461,
+        'id' => 456,
         'display_name' => 'Oak Door',
     ),
     'oak_fence' => array(
@@ -2762,17 +2737,17 @@ $UMC_DATA = array(
     ),
     'ocelot_spawn_egg' => array(
         'stack' => 64,
-        'id' => 661,
+        'id' => 656,
         'display_name' => 'Ocelot Spawn Egg',
     ),
     'orange_banner' => array(
         'stack' => 16,
-        'id' => 736,
+        'id' => 731,
         'display_name' => 'Orange Banner',
     ),
     'orange_bed' => array(
         'stack' => 1,
-        'id' => 597,
+        'id' => 592,
         'display_name' => 'Orange Bed',
     ),
     'orange_carpet' => array(
@@ -2792,7 +2767,7 @@ $UMC_DATA = array(
     ),
     'orange_dye' => array(
         'stack' => 64,
-        'id' => 591,
+        'id' => 586,
         'display_name' => 'Orange Dye',
     ),
     'orange_glazed_terracotta' => array(
@@ -2828,7 +2803,7 @@ $UMC_DATA = array(
     'orange_wall_banner' => array(
         'stack' => 16,
         'id' => 409,
-        'display_name' => 'Orange wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'orange_wool' => array(
         'stack' => 64,
@@ -2847,17 +2822,17 @@ $UMC_DATA = array(
     ),
     'painting' => array(
         'stack' => 64,
-        'id' => 538,
+        'id' => 533,
         'display_name' => 'Painting',
     ),
     'paper' => array(
         'stack' => 64,
-        'id' => 561,
+        'id' => 556,
         'display_name' => 'Paper',
     ),
     'parrot_spawn_egg' => array(
         'stack' => 64,
-        'id' => 662,
+        'id' => 657,
         'display_name' => 'Parrot Spawn Egg',
     ),
     'peony' => array(
@@ -2872,27 +2847,27 @@ $UMC_DATA = array(
     ),
     'phantom_membrane' => array(
         'stack' => 64,
-        'id' => 787,
+        'id' => 782,
         'display_name' => 'Phantom Membrane',
     ),
     'phantom_spawn_egg' => array(
         'stack' => 64,
-        'id' => 663,
+        'id' => 658,
         'display_name' => 'Phantom Spawn Egg',
     ),
     'pig_spawn_egg' => array(
         'stack' => 64,
-        'id' => 664,
+        'id' => 659,
         'display_name' => 'Pig Spawn Egg',
     ),
     'pink_banner' => array(
         'stack' => 16,
-        'id' => 741,
+        'id' => 736,
         'display_name' => 'Pink Banner',
     ),
     'pink_bed' => array(
         'stack' => 1,
-        'id' => 602,
+        'id' => 597,
         'display_name' => 'Pink Bed',
     ),
     'pink_carpet' => array(
@@ -2912,7 +2887,7 @@ $UMC_DATA = array(
     ),
     'pink_dye' => array(
         'stack' => 64,
-        'id' => 586,
+        'id' => 581,
         'display_name' => 'Pink Dye',
     ),
     'pink_glazed_terracotta' => array(
@@ -2948,7 +2923,7 @@ $UMC_DATA = array(
     'pink_wall_banner' => array(
         'stack' => 16,
         'id' => 414,
-        'display_name' => 'Pink wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'pink_wool' => array(
         'stack' => 64,
@@ -2967,13 +2942,13 @@ $UMC_DATA = array(
     ),
     'player_head' => array(
         'stack' => 64,
-        'id' => 705,
+        'id' => 700,
         'display_name' => 'Player Head',
     ),
     'player_wall_head' => array(
         'stack' => 64,
         'id' => 296,
-        'display_name' => 'Player Wall Head',
+        'display_name' => 'Mob head',
     ),
     'podzol' => array(
         'stack' => 64,
@@ -2982,12 +2957,12 @@ $UMC_DATA = array(
     ),
     'poisonous_potato' => array(
         'stack' => 64,
-        'id' => 700,
+        'id' => 695,
         'display_name' => 'Poisonous Potato',
     ),
     'polar_bear_spawn_egg' => array(
         'stack' => 64,
-        'id' => 665,
+        'id' => 660,
         'display_name' => 'Polar Bear Spawn Egg',
     ),
     'polished_andesite' => array(
@@ -3007,7 +2982,7 @@ $UMC_DATA = array(
     ),
     'popped_chorus_fruit' => array(
         'stack' => 64,
-        'id' => 753,
+        'id' => 748,
         'display_name' => 'Popped Chorus Fruit',
     ),
     'poppy' => array(
@@ -3017,12 +2992,12 @@ $UMC_DATA = array(
     ),
     'porkchop' => array(
         'stack' => 64,
-        'id' => 536,
+        'id' => 531,
         'display_name' => 'Raw Porkchop',
     ),
     'potato' => array(
         'stack' => 64,
-        'id' => 698,
+        'id' => 693,
         'display_name' => 'Potato',
     ),
     'potatoes' => array(
@@ -3032,113 +3007,113 @@ $UMC_DATA = array(
     ),
     'potion' => array(
         'stack' => 1,
-        'id' => 629,
+        'id' => 624,
         'display_name' => 'Potion',
     ),
     'potted_acacia_sapling' => array(
         'stack' => 64,
         'id' => 265,
-        'display_name' => 'Potted Acacia Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_allium' => array(
         'stack' => 64,
         'id' => 271,
-        'display_name' => 'Potted Allium',
+        'display_name' => 'Flower Pot',
     ),
     'potted_azure_bluet' => array(
         'stack' => 64,
         'id' => 272,
-        'display_name' => 'Potted Azure Bluet',
+        'display_name' => 'Flower Pot',
     ),
     'potted_birch_sapling' => array(
         'stack' => 64,
         'id' => 263,
-        'display_name' => 'Potted Birch Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_blue_orchid' => array(
         'stack' => 64,
         'id' => 270,
-        'display_name' => 'Potted Blue Orchid',
+        'display_name' => 'Flower Pot',
     ),
     'potted_brown_mushroom' => array(
         'stack' => 64,
         'id' => 279,
-        'display_name' => 'Potted Brown Mushroom',
+        'display_name' => 'Flower Pot',
     ),
     'potted_cactus' => array(
         'stack' => 64,
         'id' => 281,
-        'display_name' => 'Potted Cactus',
+        'display_name' => 'Flower Pot',
     ),
     'potted_dandelion' => array(
         'stack' => 64,
         'id' => 268,
-        'display_name' => 'Potted Dandelion',
+        'display_name' => 'Flower Pot',
     ),
     'potted_dark_oak_sapling' => array(
         'stack' => 64,
         'id' => 266,
-        'display_name' => 'Potted Dark Oak Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_dead_bush' => array(
         'stack' => 64,
         'id' => 280,
-        'display_name' => 'Potted Dead Bush',
+        'display_name' => 'Flower Pot',
     ),
     'potted_fern' => array(
         'stack' => 64,
         'id' => 267,
-        'display_name' => 'Potted Fern',
+        'display_name' => 'Flower Pot',
     ),
     'potted_jungle_sapling' => array(
         'stack' => 64,
         'id' => 264,
-        'display_name' => 'Potted Jungle Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_oak_sapling' => array(
         'stack' => 64,
         'id' => 261,
-        'display_name' => 'Potted Oak Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_orange_tulip' => array(
         'stack' => 64,
         'id' => 274,
-        'display_name' => 'Potted Orange Tulip',
+        'display_name' => 'Flower Pot',
     ),
     'potted_oxeye_daisy' => array(
         'stack' => 64,
         'id' => 277,
-        'display_name' => 'Potted Oxeye Daisy',
+        'display_name' => 'Flower Pot',
     ),
     'potted_pink_tulip' => array(
         'stack' => 64,
         'id' => 276,
-        'display_name' => 'Potted Pink Tulip',
+        'display_name' => 'Flower Pot',
     ),
     'potted_poppy' => array(
         'stack' => 64,
         'id' => 269,
-        'display_name' => 'Potted Poppy',
+        'display_name' => 'Flower Pot',
     ),
     'potted_red_mushroom' => array(
         'stack' => 64,
         'id' => 278,
-        'display_name' => 'Potted Red Mushroom',
+        'display_name' => 'Flower Pot',
     ),
     'potted_red_tulip' => array(
         'stack' => 64,
         'id' => 273,
-        'display_name' => 'Potted Red Tulip',
+        'display_name' => 'Flower Pot',
     ),
     'potted_spruce_sapling' => array(
         'stack' => 64,
         'id' => 262,
-        'display_name' => 'Potted Spruce Sapling',
+        'display_name' => 'Flower Pot',
     ),
     'potted_white_tulip' => array(
         'stack' => 64,
         'id' => 275,
-        'display_name' => 'Potted White Tulip',
+        'display_name' => 'Flower Pot',
     ),
     'powered_rail' => array(
         'stack' => 64,
@@ -3167,12 +3142,12 @@ $UMC_DATA = array(
     ),
     'prismarine_crystals' => array(
         'stack' => 64,
-        'id' => 720,
+        'id' => 715,
         'display_name' => 'Prismarine Crystals',
     ),
     'prismarine_shard' => array(
         'stack' => 64,
-        'id' => 719,
+        'id' => 714,
         'display_name' => 'Prismarine Shard',
     ),
     'prismarine_slab' => array(
@@ -3187,17 +3162,17 @@ $UMC_DATA = array(
     ),
     'pufferfish' => array(
         'stack' => 64,
-        'id' => 574,
+        'id' => 569,
         'display_name' => 'Pufferfish',
     ),
     'pufferfish_bucket' => array(
         'stack' => 1,
-        'id' => 552,
+        'id' => 547,
         'display_name' => 'Bucket of Pufferfish',
     ),
     'pufferfish_spawn_egg' => array(
         'stack' => 64,
-        'id' => 666,
+        'id' => 661,
         'display_name' => 'Pufferfish Spawn Egg',
     ),
     'pumpkin' => array(
@@ -3207,12 +3182,12 @@ $UMC_DATA = array(
     ),
     'pumpkin_pie' => array(
         'stack' => 64,
-        'id' => 711,
+        'id' => 706,
         'display_name' => 'Pumpkin Pie',
     ),
     'pumpkin_seeds' => array(
         'stack' => 64,
-        'id' => 617,
+        'id' => 612,
         'display_name' => 'Pumpkin Seeds',
     ),
     'pumpkin_stem' => array(
@@ -3222,12 +3197,12 @@ $UMC_DATA = array(
     ),
     'purple_banner' => array(
         'stack' => 16,
-        'id' => 745,
+        'id' => 740,
         'display_name' => 'Purple Banner',
     ),
     'purple_bed' => array(
         'stack' => 1,
-        'id' => 606,
+        'id' => 601,
         'display_name' => 'Purple Bed',
     ),
     'purple_carpet' => array(
@@ -3247,7 +3222,7 @@ $UMC_DATA = array(
     ),
     'purple_dye' => array(
         'stack' => 64,
-        'id' => 582,
+        'id' => 577,
         'display_name' => 'Purple Dye',
     ),
     'purple_glazed_terracotta' => array(
@@ -3278,7 +3253,7 @@ $UMC_DATA = array(
     'purple_wall_banner' => array(
         'stack' => 16,
         'id' => 418,
-        'display_name' => 'Purple wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'purple_wool' => array(
         'stack' => 64,
@@ -3307,7 +3282,7 @@ $UMC_DATA = array(
     ),
     'quartz' => array(
         'stack' => 64,
-        'id' => 716,
+        'id' => 711,
         'display_name' => 'Nether Quartz',
     ),
     'quartz_block' => array(
@@ -3332,27 +3307,27 @@ $UMC_DATA = array(
     ),
     'rabbit' => array(
         'stack' => 64,
-        'id' => 721,
+        'id' => 716,
         'display_name' => 'Raw Rabbit',
     ),
     'rabbit_foot' => array(
         'stack' => 64,
-        'id' => 724,
+        'id' => 719,
         'display_name' => 'Rabbit\'s Foot',
     ),
     'rabbit_hide' => array(
         'stack' => 64,
-        'id' => 725,
+        'id' => 720,
         'display_name' => 'Rabbit Hide',
     ),
     'rabbit_spawn_egg' => array(
         'stack' => 64,
-        'id' => 667,
+        'id' => 662,
         'display_name' => 'Rabbit Spawn Egg',
     ),
     'rabbit_stew' => array(
         'stack' => 1,
-        'id' => 723,
+        'id' => 718,
         'display_name' => 'Rabbit Stew',
     ),
     'rail' => array(
@@ -3362,12 +3337,12 @@ $UMC_DATA = array(
     ),
     'red_banner' => array(
         'stack' => 16,
-        'id' => 749,
+        'id' => 744,
         'display_name' => 'Red Banner',
     ),
     'red_bed' => array(
         'stack' => 1,
-        'id' => 610,
+        'id' => 605,
         'display_name' => 'Red Bed',
     ),
     'red_carpet' => array(
@@ -3453,7 +3428,7 @@ $UMC_DATA = array(
     'red_wall_banner' => array(
         'stack' => 16,
         'id' => 422,
-        'display_name' => 'Red wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'red_wool' => array(
         'stack' => 64,
@@ -3462,7 +3437,7 @@ $UMC_DATA = array(
     ),
     'redstone' => array(
         'stack' => 64,
-        'id' => 547,
+        'id' => 542,
         'display_name' => 'Redstone',
     ),
     'redstone_block' => array(
@@ -3488,7 +3463,7 @@ $UMC_DATA = array(
     'redstone_wall_torch' => array(
         'stack' => 64,
         'id' => 167,
-        'display_name' => 'Redstone Wall Torch',
+        'display_name' => 'Redstone Torch (active)',
     ),
     'redstone_wire' => array(
         'stack' => 64,
@@ -3497,7 +3472,7 @@ $UMC_DATA = array(
     ),
     'repeater' => array(
         'stack' => 64,
-        'id' => 467,
+        'id' => 462,
         'display_name' => 'Redstone Repeater',
     ),
     'repeating_command_block' => array(
@@ -3512,32 +3487,32 @@ $UMC_DATA = array(
     ),
     'rose_red' => array(
         'stack' => 64,
-        'id' => 578,
+        'id' => 573,
         'display_name' => 'Rose Red',
     ),
     'rotten_flesh' => array(
         'stack' => 64,
-        'id' => 623,
+        'id' => 618,
         'display_name' => 'Rotten Flesh',
     ),
     'saddle' => array(
         'stack' => 1,
-        'id' => 546,
+        'id' => 541,
         'display_name' => 'Saddle',
     ),
     'salmon' => array(
         'stack' => 64,
-        'id' => 572,
+        'id' => 567,
         'display_name' => 'Raw Salmon',
     ),
     'salmon_bucket' => array(
         'stack' => 1,
-        'id' => 553,
+        'id' => 548,
         'display_name' => 'Bucket of Salmon',
     ),
     'salmon_spawn_egg' => array(
         'stack' => 64,
-        'id' => 668,
+        'id' => 663,
         'display_name' => 'Salmon Spawn Egg',
     ),
     'sand' => array(
@@ -3562,7 +3537,7 @@ $UMC_DATA = array(
     ),
     'scute' => array(
         'stack' => 64,
-        'id' => 471,
+        'id' => 466,
         'display_name' => 'Scute',
     ),
     'sea_lantern' => array(
@@ -3582,17 +3557,17 @@ $UMC_DATA = array(
     ),
     'shears' => array(
         'stack' => 64,
-        'id' => 614,
+        'id' => 609,
         'display_name' => 'Shears',
     ),
     'sheep_spawn_egg' => array(
         'stack' => 64,
-        'id' => 669,
+        'id' => 664,
         'display_name' => 'Sheep Spawn Egg',
     ),
     'shield' => array(
         'stack' => 64,
-        'id' => 762,
+        'id' => 757,
         'display_name' => 'Shield',
     ),
     'shulker_box' => array(
@@ -3602,47 +3577,47 @@ $UMC_DATA = array(
     ),
     'shulker_shell' => array(
         'stack' => 64,
-        'id' => 770,
+        'id' => 765,
         'display_name' => 'Shulker Shell',
     ),
     'shulker_spawn_egg' => array(
         'stack' => 64,
-        'id' => 670,
+        'id' => 665,
         'display_name' => 'Shulker Spawn Egg',
     ),
     'sign' => array(
         'stack' => 16,
-        'id' => 541,
+        'id' => 536,
         'display_name' => 'Sign',
     ),
     'silverfish_spawn_egg' => array(
         'stack' => 64,
-        'id' => 671,
+        'id' => 666,
         'display_name' => 'Silverfish Spawn Egg',
     ),
     'skeleton_horse_spawn_egg' => array(
         'stack' => 64,
-        'id' => 673,
+        'id' => 668,
         'display_name' => 'Skeleton Horse Spawn Egg',
     ),
     'skeleton_skull' => array(
         'stack' => 64,
-        'id' => 703,
+        'id' => 698,
         'display_name' => 'Skeleton Skull',
     ),
     'skeleton_spawn_egg' => array(
         'stack' => 64,
-        'id' => 672,
+        'id' => 667,
         'display_name' => 'Skeleton Spawn Egg',
     ),
     'skeleton_wall_skull' => array(
         'stack' => 64,
         'id' => 290,
-        'display_name' => 'Skeleton Wall Skull',
+        'display_name' => 'Mob head',
     ),
     'slime_ball' => array(
         'stack' => 64,
-        'id' => 563,
+        'id' => 558,
         'display_name' => 'Slimeball',
     ),
     'slime_block' => array(
@@ -3652,7 +3627,7 @@ $UMC_DATA = array(
     ),
     'slime_spawn_egg' => array(
         'stack' => 64,
-        'id' => 674,
+        'id' => 669,
         'display_name' => 'Slime Spawn Egg',
     ),
     'smooth_quartz' => array(
@@ -3687,7 +3662,7 @@ $UMC_DATA = array(
     ),
     'snowball' => array(
         'stack' => 16,
-        'id' => 548,
+        'id' => 543,
         'display_name' => 'Snowball',
     ),
     'soul_sand' => array(
@@ -3702,22 +3677,22 @@ $UMC_DATA = array(
     ),
     'spectral_arrow' => array(
         'stack' => 64,
-        'id' => 759,
+        'id' => 754,
         'display_name' => 'Spectral Arrow',
     ),
     'spider_eye' => array(
         'stack' => 64,
-        'id' => 631,
+        'id' => 626,
         'display_name' => 'Spider Eye',
     ),
     'spider_spawn_egg' => array(
         'stack' => 64,
-        'id' => 675,
+        'id' => 670,
         'display_name' => 'Spider Spawn Egg',
     ),
     'splash_potion' => array(
         'stack' => 1,
-        'id' => 758,
+        'id' => 753,
         'display_name' => 'Splash Potion',
     ),
     'sponge' => array(
@@ -3727,7 +3702,7 @@ $UMC_DATA = array(
     ),
     'spruce_boat' => array(
         'stack' => 1,
-        'id' => 764,
+        'id' => 759,
         'display_name' => 'Spruce Boat',
     ),
     'spruce_button' => array(
@@ -3737,7 +3712,7 @@ $UMC_DATA = array(
     ),
     'spruce_door' => array(
         'stack' => 64,
-        'id' => 462,
+        'id' => 457,
         'display_name' => 'Spruce Door',
     ),
     'spruce_fence' => array(
@@ -3797,12 +3772,12 @@ $UMC_DATA = array(
     ),
     'squid_spawn_egg' => array(
         'stack' => 64,
-        'id' => 676,
+        'id' => 671,
         'display_name' => 'Squid Spawn Egg',
     ),
     'stick' => array(
         'stack' => 64,
-        'id' => 497,
+        'id' => 492,
         'display_name' => 'Stick',
     ),
     'sticky_piston' => array(
@@ -3817,7 +3792,7 @@ $UMC_DATA = array(
     ),
     'stone_axe' => array(
         'stack' => 64,
-        'id' => 492,
+        'id' => 487,
         'display_name' => 'Stone Axe',
     ),
     'stone_brick_slab' => array(
@@ -3842,12 +3817,12 @@ $UMC_DATA = array(
     ),
     'stone_hoe' => array(
         'stack' => 64,
-        'id' => 508,
+        'id' => 503,
         'display_name' => 'Stone Hoe',
     ),
     'stone_pickaxe' => array(
         'stack' => 64,
-        'id' => 491,
+        'id' => 486,
         'display_name' => 'Stone Pickaxe',
     ),
     'stone_pressure_plate' => array(
@@ -3857,7 +3832,7 @@ $UMC_DATA = array(
     ),
     'stone_shovel' => array(
         'stack' => 64,
-        'id' => 490,
+        'id' => 485,
         'display_name' => 'Stone Shovel',
     ),
     'stone_slab' => array(
@@ -3867,17 +3842,17 @@ $UMC_DATA = array(
     ),
     'stone_sword' => array(
         'stack' => 64,
-        'id' => 489,
+        'id' => 484,
         'display_name' => 'Stone Sword',
     ),
     'stray_spawn_egg' => array(
         'stack' => 64,
-        'id' => 677,
+        'id' => 672,
         'display_name' => 'Stray Spawn Egg',
     ),
     'string' => array(
         'stack' => 64,
-        'id' => 504,
+        'id' => 499,
         'display_name' => 'String',
     ),
     'stripped_acacia_log' => array(
@@ -3942,7 +3917,7 @@ $UMC_DATA = array(
     ),
     'structure_block' => array(
         'stack' => 64,
-        'id' => 469,
+        'id' => 464,
         'display_name' => 'Structure Block',
     ),
     'structure_void' => array(
@@ -3952,12 +3927,12 @@ $UMC_DATA = array(
     ),
     'sugar' => array(
         'stack' => 64,
-        'id' => 594,
+        'id' => 589,
         'display_name' => 'Sugar',
     ),
     'sugar_cane' => array(
         'stack' => 64,
-        'id' => 558,
+        'id' => 553,
         'display_name' => 'Sugar Cane',
     ),
     'sunflower' => array(
@@ -3982,7 +3957,7 @@ $UMC_DATA = array(
     ),
     'tipped_arrow' => array(
         'stack' => 64,
-        'id' => 760,
+        'id' => 755,
         'display_name' => 'Tipped Arrow',
     ),
     'tnt' => array(
@@ -3992,7 +3967,7 @@ $UMC_DATA = array(
     ),
     'tnt_minecart' => array(
         'stack' => 1,
-        'id' => 717,
+        'id' => 712,
         'display_name' => 'Minecart with TNT',
     ),
     'torch' => array(
@@ -4002,7 +3977,7 @@ $UMC_DATA = array(
     ),
     'totem_of_undying' => array(
         'stack' => 1,
-        'id' => 769,
+        'id' => 764,
         'display_name' => 'Totem of Undying',
     ),
     'trapped_chest' => array(
@@ -4012,7 +3987,7 @@ $UMC_DATA = array(
     ),
     'trident' => array(
         'stack' => 64,
-        'id' => 786,
+        'id' => 781,
         'display_name' => 'Trident',
     ),
     'tripwire' => array(
@@ -4027,17 +4002,17 @@ $UMC_DATA = array(
     ),
     'tropical_fish' => array(
         'stack' => 64,
-        'id' => 573,
+        'id' => 568,
         'display_name' => 'Tropical Fish',
     ),
     'tropical_fish_bucket' => array(
         'stack' => 1,
-        'id' => 555,
+        'id' => 550,
         'display_name' => 'Bucket of Tropical Fish',
     ),
     'tropical_fish_spawn_egg' => array(
         'stack' => 64,
-        'id' => 678,
+        'id' => 673,
         'display_name' => 'Tropical Fish Spawn Egg',
     ),
     'tube_coral' => array(
@@ -4052,12 +4027,12 @@ $UMC_DATA = array(
     ),
     'tube_coral_fan' => array(
         'stack' => 64,
-        'id' => 448,
+        'id' => 443,
         'display_name' => 'Tube Coral Fan',
     ),
     'tube_coral_wall_fan' => array(
         'stack' => 64,
-        'id' => 576,
+        'id' => 571,
         'display_name' => 'Tube Coral Wall Fan',
     ),
     'turtle_egg' => array(
@@ -4067,27 +4042,27 @@ $UMC_DATA = array(
     ),
     'turtle_helmet' => array(
         'stack' => 64,
-        'id' => 470,
+        'id' => 465,
         'display_name' => 'Turtle Shell',
     ),
     'turtle_spawn_egg' => array(
         'stack' => 64,
-        'id' => 679,
+        'id' => 674,
         'display_name' => 'Turtle Spawn Egg',
     ),
     'vex_spawn_egg' => array(
         'stack' => 64,
-        'id' => 680,
+        'id' => 675,
         'display_name' => 'Vex Spawn Egg',
     ),
     'villager_spawn_egg' => array(
         'stack' => 64,
-        'id' => 681,
+        'id' => 676,
         'display_name' => 'Villager Spawn Egg',
     ),
     'vindicator_spawn_egg' => array(
         'stack' => 64,
-        'id' => 682,
+        'id' => 677,
         'display_name' => 'Vindicator Spawn Egg',
     ),
     'vine' => array(
@@ -4097,7 +4072,7 @@ $UMC_DATA = array(
     ),
     'void_air' => array(
         'stack' => 0,
-        'id' => 594,
+        'id' => 589,
         'display_name' => 'Void Air',
     ),
     'wall_sign' => array(
@@ -4108,7 +4083,7 @@ $UMC_DATA = array(
     'wall_torch' => array(
         'stack' => 64,
         'id' => 138,
-        'display_name' => 'Wall Torch',
+        'display_name' => 'Torch',
     ),
     'water' => array(
         'stack' => 0,
@@ -4117,7 +4092,7 @@ $UMC_DATA = array(
     ),
     'water_bucket' => array(
         'stack' => 1,
-        'id' => 543,
+        'id' => 538,
         'display_name' => 'Water Bucket',
     ),
     'wet_sponge' => array(
@@ -4127,22 +4102,22 @@ $UMC_DATA = array(
     ),
     'wheat' => array(
         'stack' => 64,
-        'id' => 513,
+        'id' => 508,
         'display_name' => 'Wheat',
     ),
     'wheat_seeds' => array(
         'stack' => 64,
-        'id' => 512,
+        'id' => 507,
         'display_name' => 'Wheat Seeds',
     ),
     'white_banner' => array(
         'stack' => 16,
-        'id' => 735,
+        'id' => 730,
         'display_name' => 'White Banner',
     ),
     'white_bed' => array(
         'stack' => 1,
-        'id' => 596,
+        'id' => 591,
         'display_name' => 'White Bed',
     ),
     'white_carpet' => array(
@@ -4193,7 +4168,7 @@ $UMC_DATA = array(
     'white_wall_banner' => array(
         'stack' => 16,
         'id' => 408,
-        'display_name' => 'White wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'white_wool' => array(
         'stack' => 64,
@@ -4202,72 +4177,72 @@ $UMC_DATA = array(
     ),
     'witch_spawn_egg' => array(
         'stack' => 64,
-        'id' => 683,
+        'id' => 678,
         'display_name' => 'Witch Spawn Egg',
     ),
     'wither_skeleton_skull' => array(
         'stack' => 64,
-        'id' => 704,
+        'id' => 699,
         'display_name' => 'Wither Skeleton Skull',
     ),
     'wither_skeleton_spawn_egg' => array(
         'stack' => 64,
-        'id' => 684,
+        'id' => 679,
         'display_name' => 'Wither Skeleton Spawn Egg',
     ),
     'wither_skeleton_wall_skull' => array(
         'stack' => 64,
         'id' => 292,
-        'display_name' => 'Wither Skeleton Wall Skull',
+        'display_name' => 'Mob head',
     ),
     'wolf_spawn_egg' => array(
         'stack' => 64,
-        'id' => 685,
+        'id' => 680,
         'display_name' => 'Wolf Spawn Egg',
     ),
     'wooden_axe' => array(
         'stack' => 64,
-        'id' => 488,
+        'id' => 483,
         'display_name' => 'Wooden Axe',
     ),
     'wooden_hoe' => array(
         'stack' => 64,
-        'id' => 507,
+        'id' => 502,
         'display_name' => 'Wooden Hoe',
     ),
     'wooden_pickaxe' => array(
         'stack' => 64,
-        'id' => 487,
+        'id' => 482,
         'display_name' => 'Wooden Pickaxe',
     ),
     'wooden_shovel' => array(
         'stack' => 64,
-        'id' => 486,
+        'id' => 481,
         'display_name' => 'Wooden Shovel',
     ),
     'wooden_sword' => array(
         'stack' => 64,
-        'id' => 485,
+        'id' => 480,
         'display_name' => 'Wooden Sword',
     ),
     'writable_book' => array(
         'stack' => 1,
-        'id' => 692,
+        'id' => 687,
         'display_name' => 'Book and Quill',
     ),
     'written_book' => array(
         'stack' => 16,
-        'id' => 693,
+        'id' => 688,
         'display_name' => 'Written Book',
     ),
     'yellow_banner' => array(
         'stack' => 16,
-        'id' => 739,
+        'id' => 734,
         'display_name' => 'Yellow Banner',
     ),
     'yellow_bed' => array(
         'stack' => 1,
-        'id' => 600,
+        'id' => 595,
         'display_name' => 'Yellow Bed',
     ),
     'yellow_carpet' => array(
@@ -4313,7 +4288,7 @@ $UMC_DATA = array(
     'yellow_wall_banner' => array(
         'stack' => 16,
         'id' => 412,
-        'display_name' => 'Yellow wall banner',
+        'display_name' => 'Wall Banner',
     ),
     'yellow_wool' => array(
         'stack' => 64,
@@ -4322,32 +4297,32 @@ $UMC_DATA = array(
     ),
     'zombie_head' => array(
         'stack' => 64,
-        'id' => 706,
+        'id' => 701,
         'display_name' => 'Zombie Head',
     ),
     'zombie_horse_spawn_egg' => array(
         'stack' => 64,
-        'id' => 687,
+        'id' => 682,
         'display_name' => 'Zombie Horse Spawn Egg',
     ),
     'zombie_pigman_spawn_egg' => array(
         'stack' => 64,
-        'id' => 688,
+        'id' => 683,
         'display_name' => 'Zombie Pigman Spawn Egg',
     ),
     'zombie_spawn_egg' => array(
         'stack' => 64,
-        'id' => 686,
+        'id' => 681,
         'display_name' => 'Zombie Spawn Egg',
     ),
     'zombie_villager_spawn_egg' => array(
         'stack' => 64,
-        'id' => 689,
+        'id' => 684,
         'display_name' => 'Zombie Villager Spawn Egg',
     ),
     'zombie_wall_head' => array(
         'stack' => 64,
         'id' => 294,
-        'display_name' => 'Zombie Wall Head',
+        'display_name' => 'Mob head',
     ),
 );
