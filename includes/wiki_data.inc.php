@@ -47,7 +47,7 @@ function umc_block_icons_get_wiki() {
 
     $icon_urls = array();
     foreach ($matches as $match) {
-        $item_name = strtolower($match['item_name']);
+        $item_name = str_replace(" ",  "", strtolower($match['item_name']));
         if (isset($UMC_DATA[$item_name])) {
             $icon_urls[$item_name] = $match['full_url'];
         }
@@ -109,7 +109,7 @@ function umc_item_icons_get_wiki() {
 
     $icon_positions = array();
     foreach ($matches as $match) {
-        $item_name = strtolower($match['item_name']);
+        $item_name = str_replace(" ",  "", strtolower($match['item_name']));
         $position = $match['position'];
         if (isset($UMC_DATA[$item_name])) {
             $icon_positions[$item_name] = $position;
