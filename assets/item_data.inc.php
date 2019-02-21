@@ -87,7 +87,7 @@ function umc_broken_items_add_fix($item_name) {
     if (!isset($BROKEN_ITEMS[$item_name])) {
         // we don't, add it to the list of items
         ksort($BROKEN_ITEMS);
-        XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text, added to broken items list, please add correct value!");
+        XMPP_ERROR_trigger("Could not identify $item_name, added to broken items list, please add correct value!");
         $BROKEN_ITEMS[$item_name] = false;
         umc_array2file($BROKEN_ITEMS, "BROKEN_ITEMS", "/home/minecraft/server/bin/assets/broken_items.inc.php");
     } else {
@@ -95,10 +95,10 @@ function umc_broken_items_add_fix($item_name) {
         // just to make sure
         $check = umc_itemdata_databasecheck($item_name);
         if (!$check) {
-            XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text, it's already in the broken items list but NOT in the database????");
+            XMPP_ERROR_trigger("ERROR: Could not identify $item_name, it is already in the broken items list but NOT in the database????");
         } else {
             // ok, now let's try to fix it
-            XMPP_ERROR_trigger("Could not identify $item_name as STRING umc_goods_get_text, it's already in the broken items list so we try adn fix it...");
+            XMPP_ERROR_send_msg("Notice: Could not identify $item_name, it is already in the broken items list so we try and fix it...");
             umc_item_fix_old($item_name, $BROKEN_ITEMS[$item_name]);
         }
     }
@@ -116,10 +116,13 @@ function umc_item_fix_old($search, $replace) {
     );
 
     foreach ($tables as $table) {
-        $update_sql = "UPDATE $table SET `item_name` = REPLACE(`item_name`, $search, $replace) WHERE `item_name` LIKE '$search';";
-        XMPP_ERROR_send_msg($update_sql);
-        // $X = umc_mysql_query($update_sql);
+        $search_sql = umc_mysql_real_escape_string($search);
+        $replace_sql = umc_mysql_real_escape_string($replace);
+        $update_sql = "UPDATE $table SET `item_name` = REPLACE(`item_name`, $search_sql, $replace_sql) WHERE `item_name` LIKE $search_sql;";
+        XMPP_ERROR_trace("fix old SQL", $update_sql);
+        $X = umc_mysql_query($update_sql);
     }
+    XMPP_ERROR_trigger("tried to rename $search into $replace in item name tables!");
 }
 
 
