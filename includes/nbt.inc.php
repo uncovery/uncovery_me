@@ -154,6 +154,11 @@ function umc_nbt_display_long_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
+            case 'damage': // armor dyes
+                if ($data > 0) {
+                    $text .= "Damaged";
+                }
+                break;
             case 'ench': // deprecated?
             case 'enchantments': //for enchanted items  
             case 'storedenchantments': //for enchanted books
@@ -291,6 +296,11 @@ function umc_nbt_display_short_text($nbt_array) {
                     $text .= "dyed";
                 }
                 break;
+            case 'damage': // armor dyes
+                if ($data > 0) {
+                    $text .= "Dmgd.";
+                }
+                break;                
             case 'ench': // deprecated?
             case 'enchantments': //for enchanted items
             case 'storedenchantments': //for enchanted books
