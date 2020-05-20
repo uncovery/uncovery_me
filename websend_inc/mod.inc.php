@@ -155,7 +155,8 @@ function umc_mod_error_message() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_USER;
     // umc_exec_command($cmd, 'asConsole');
-    $username = $UMC_USER['username'];
+    $args = $UMC_USER['args'];
+    $string = implode(" " , $args); 
 
     $data = array(
         array('text'=>'Thanks for the test', 'format' => array('red', 'bold')),
@@ -164,7 +165,7 @@ function umc_mod_error_message() {
     );
     umc_text_format($data, false, true);
 
-    XMPP_ERROR_trigger('test');
+    XMPP_ERROR_trigger('test: ' . $string);
 
     /*
     if (isset($UMC_USER['inv'][0]['nbt']) && $UMC_USER['inv'][0]['nbt']) {
@@ -318,7 +319,7 @@ function umc_mod_ban_to_database() {
         if (!in_array($uuid, $banned_db)) {
             $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `date`, `uuid`, `source`)
                 VALUES ('$name','$reason', '$admin', '$date', '$uuid', '$source');";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         }
     }
     /* format:
@@ -371,7 +372,7 @@ function umc_mod_record_lag() {
     foreach ($m as $data) {
         $sql = "INSERT INTO `minecraft_srvr`.`lag_location` (`location_id`, `x_coord`, `y_coord`, `z_coord`, `date`, `world`)
             VALUES (NULL, '{$data->x}', '{$data->y}', '{$data->z}', CURRENT_TIMESTAMP, '{$data->world}');";
-        umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
     }
 }
 
