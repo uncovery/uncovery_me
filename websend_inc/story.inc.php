@@ -77,7 +77,7 @@ function umc_story_admin() {
     if (isset($_POST['delete'])) {
         $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
         $sql = "DELETE FROM minecraft_iconomy.story WHERE uuid='$uuid' AND code=$code;";
-        umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
     } else if (isset($_POST['add'])) {
         $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
         $warp = umc_mysql_real_escape_string(strip_tags($_POST['warp']));
@@ -98,7 +98,7 @@ function umc_story_admin() {
             $sql2_raw = "INSERT INTO minecraft_iconomy.story (`uuid`, `story`, `code`, `storyline`, `game_mode`, `items`, `clear_inv`, `warp`)
                 VALUES ('$uuid', $save_story, $code, $save_title, $game_mode, $save_items, '$save_clear_inv', $warp)";
             $sql2 = str_replace('&','_', $sql2_raw); // this removes strings that can be abused by the minimap
-            umc_mysql_query($sql2);
+            umc_mysql_execute_query($sql2);
         }
     } else if (isset($_POST['edit'])) {
         $code = umc_mysql_real_escape_string(strip_tags($_POST['storycode']));
@@ -145,7 +145,7 @@ function umc_story_admin() {
 		`clear_inv`='$save_clear_inv'
             WHERE uuid='$uuid' and code=$code;";
         $sql_update = str_replace('&','_', $sql); // this removes strings that can be abused by the minimap
-        umc_mysql_query($sql_update, true);
+        umc_mysql_execute_query($sql_update);
     }
 
     $sql = "SELECT * FROM minecraft_iconomy.story WHERE uuid='$uuid' ORDER BY storyline, id;";
@@ -189,7 +189,7 @@ function umc_story_admin() {
         Title: <input type=\"text\" name=\"storyline\" value=\"$title\"> <br>
         Game mode: $mode_drop (creative works in city & flatlands only)<br>
         Clear inventory? <input type=\"checkbox\" name=\"clear_inv\" value=\"clear_inv\"$inv_checked/> (city & flatlands only)<br>
-        Give items: <input type=\"text\" name=\"items\" value=\"$items\"> (Format: item_id:damage:amount;... city & flatlands only)<br>
+        Give items: <input type=\"text\" name=\"items\" value=\"$items\"> (Format: item_name:amount;... city & flatlands only)<br>
         Warp to point: <input type=\"text\" name=\"warp\" value=\"$warp\"> (Format: 'story_yourwarp'; Ask Uncovery to create a warp point for you, only works in city. Do not include the story_ here)<br>
         <textarea rows=\"10\" name=\"story\">$story</textarea>
         <input type=\"hidden\" name=\"storycode\" value=\"$pass\">
@@ -199,7 +199,7 @@ function umc_story_admin() {
 }
 
 function umc_story_show() {
-    global $UMC_USER, $UMC_COLORS, $game_modes;
+    global $UMC_USER, $UMC_COLORS, $game_modes, $UMC_DATA;
     $username = $UMC_USER['username'];
     $uuid = $UMC_USER['uuid'];
     $args = $UMC_USER['args'];
@@ -243,13 +243,16 @@ function umc_story_show() {
             if (count($items) > 0) {
                 foreach ($items as $item) {
                     $data = explode(':', $item);
-                    if ((count($data) == 3) && (!in_array($data[0], $disallowed_items))) {
-                        if (is_numeric($data[0]) && is_numeric($data[1]) && is_numeric($data[2])) {
-                            umc_echo("Sorry, this story is broken, but we will fix this!");
-                            XMPP_ERROR_trigger("Story $code is broken!");
-                        } else if (!is_numeric($data[0]) && is_numeric($data[1]) && is_numeric($data[2])){
-                            umc_ws_give($username, $data[0], $data[2], $data[1]);
-                        }
+                    $item_name = $data[0];
+                    $item_amount = $data[1];
+                    if (is_numeric($item_amount) && isset($UMC_DATA[$item_name]) && $item_amount < $UMC_DATA[$item_name]['stack']) {
+                        umc_ws_give($username, $item_name, $item_amount, $data[1]);
+                    } else if (!isset($UMC_DATA[$item_name])) {
+                        umc_echo("Sorry, this story is broken, it tries to give you a non-existing item, but we will fix this!");
+                        XMPP_ERROR_trigger("Story $code is broken! (non-existing item");
+                    } else {
+                        umc_echo("Sorry, this story is broken, it tries to give you more than {$UMC_DATA[$item_name]['stack']} $item_name, but we will fix this!");
+                        XMPP_ERROR_trigger("Story $code is broken! (item amount too large");
                     }
                 }
             }
@@ -268,7 +271,7 @@ function umc_story_show() {
         $count = count($D3);
         if ($count == 0) {
             $sql = "INSERT INTO minecraft_iconomy.story_users (`uuid`, `story_id`) VALUES ('$uuid', '{$row['id']}');";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         }
 
         $pages = explode("[BR]", $story);
