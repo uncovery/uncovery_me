@@ -420,7 +420,7 @@ function umc_lot_manager_dib_add($uuid, $lot, $action) {
         return false;
     }
     $sql = "INSERT INTO minecraft_srvr.lot_reservation(`uuid`, `lot`, `world`, `action`) VALUES ('$uuid','$lot','$world','$action')";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
     // refresh the variable
     $UMC_USER['lots'][$world]['dib_list'] = umc_lot_manager_dib_get_number($uuid, $world);
     $out = "Successfully added dib for lot $lot;";
@@ -523,7 +523,7 @@ function umc_lot_do_action($lot, $choice) {
             break;
         case 'reset':
             $sql = "UPDATE minecraft_srvr.lot_version SET `choice`='reset' WHERE lot='$lot';";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
             $message = 'Your lot $lot will be reset on the next server restart. Please get all your goods from it ASAP.';
             umc_log('lot_manager', 'RESET', "$username asked for reset of $lot in $world. Reset on restart pending.");
             break;
@@ -540,7 +540,7 @@ function umc_lot_do_action($lot, $choice) {
             break;
         case 'none':
             $sql = "UPDATE minecraft_srvr.lot_version SET `choice`=NULL WHERE lot='$lot';";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
             break;
         default:
             if ($world == 'kingdom') { // gifting choices for kingdom
@@ -553,7 +553,7 @@ function umc_lot_do_action($lot, $choice) {
                 }
             } else if (($world == 'flatlands') || ($world == 'skyblock') || ($world == 'draftlands')) {
                 $sql = "UPDATE minecraft_srvr.lot_version SET `choice`='$choice' WHERE lot='$lot';";
-                umc_mysql_query($sql, true);
+                umc_mysql_execute_query($sql);
                 umc_log('lot_manager', 'RESET', "$username had lot $lot reset to choice $choice");
             } else {
                 XMPP_ERROR_trigger("$username had invalid choice $choice for $lot in $world!");
@@ -917,7 +917,7 @@ function umc_lot_set_flag($lot, $flag, $value) {
     } else { // nothing to do
         return;
     }
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 }
 
 /**
@@ -1165,7 +1165,7 @@ function umc_lot_add_player($player, $lot, $owner = 1, $cost = false) {
     }
     $sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner) " .
             "VALUES ('$lot', $world_id, $user_id, $owner)";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     XMPP_ERROR_send_msg("$player was added to lot $lot; Owner: $owner");
     umc_log('lot_manager', 'add_player_to_lot', "$player was added to lot $lot; Owner: $owner");
     if ($owner == 1) {
@@ -1422,9 +1422,8 @@ function umc_get_worldguard_id($type, $name, $add = false) {
     } else if (($type == 'user') && $add) {
         $uuid = umc_uuid_getone($name, 'uuid');
         $sql = "INSERT INTO minecraft_worldguard.user (uuid) VALUES ('$uuid');";
-        $rst = umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
         $user_id = umc_mysql_insert_id();
-        umc_mysql_free_result($rst);
         if (!$user_id) {
             XMPP_ERROR_trigger("Error with username '$name/$uuid'. User does not exist and could not create! (umc_get_worldguard_id)");
             return false;
@@ -1505,7 +1504,7 @@ function umc_lot_reset_process() {
         LEFT JOIN minecraft_srvr.permissions_inheritance ON UUID.UUID=permissions_inheritance.child
         SET userlevel = parent
         WHERE parent != userlevel';
-    umc_mysql_query($upd_sql, true);
+    umc_mysql_execute_query($upd_sql);
 
     // get dates for -1 Month and -2 months
     $now_datetime = umc_datetime();
@@ -1787,7 +1786,7 @@ function umc_lot_manager_reset_lot($lot, $a) {
     }
     umc_log('lot_manager', 'reset', $reason);
     if ($a['version_sql']) {
-        umc_mysql_query($a['version_sql'], true);
+        umc_mysql_execute_query($a['version_sql']);
     }
     if ($a['new_owner']) { // give lot to dibs owner and charge money
         umc_lot_add_player($a['new_owner'], $lot, 1, $a['new_owner_costs']);
