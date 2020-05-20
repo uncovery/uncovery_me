@@ -26,20 +26,21 @@ global $UMC_FUNCTIONS;
 $UMC_FUNCTIONS['get_icons'] = 'umc_get_icons';
 
 function umc_item_data_create() {
+    global $UMC_PATH_MC, $UMC_DOMAIN;
+
     $files = array(
         'items' => 'items.json',
         'blocks' => 'blocks.json',
     );
 
     $versions = array(
-        0 => array('target' => '112', 'source' => '1.12'),
-        1 => array('target' => '113', 'source' => '1.13'),
-        2 => array('target' => '1132', 'source' => '1.13.2'),
+        4 => array('target' => '1152', 'source' => '1.15.2'),
     );
 
     // versions iterations
     foreach ($versions as $V) {
-        $path = "/home/minecraft/server/mc_assets/minecraft-data/data/pc/{$V['source']}/";
+        $path = "$UMC_PATH_MC/server/mc_assets/minecraft-data/data/pc/{$V['source']}/";
+
         $array_data = array();
 
         // we iterates blocks & items
@@ -47,22 +48,24 @@ function umc_item_data_create() {
             $file_contents = file_get_contents($path . $filename);
             $data = json_decode($file_contents);
             foreach ($data as $obj) {
-                $name = strtolower($obj->name);
+                $item_name = strtolower($obj->name);
                 // we do not re-add blocks for which we have items already
                 // this needs to be improved since the block data stacksize is more accurate than the items
-                if (!isset($array_data[$name])) {
-                    $array_data[$name] = array(
+                if (!isset($array_data[$item_name])) {
+
+                    $array_data[$item_name] = array(
                         'stack' => $obj->stackSize,
                         'id' => $obj->id,
                         'display_name' => $obj->displayName,
+                        'icon_url' => umc_item_icon_html($item_name),
                     );
 
                     // variations are only pre 1.13
                     if (isset($obj->variations)) {
-                        $array_data[$name]['variations'] = array();
+                        $array_data[$item_name]['variations'] = array();
                         foreach ($obj->variations as $var) {
                             $var_id = $var->metadata;
-                            $array_data[$name]['variations'][$var_id] = $var->displayName;
+                            $array_data[$item_name]['variations'][$var_id] = $var->displayName;
                         }
                     }
                 }
@@ -72,10 +75,99 @@ function umc_item_data_create() {
         ksort($array_data);
         umc_array2file($array_data, "UMC_DATA_{$V['target']}", "/home/minecraft/server/bin/assets/item_details_{$V['target']}.inc.php");
     }
+    XMPP_ERROR_trigger("test");
+}
+
+// this uses /mc_assets/minecraft-data to get al enchantment data from the wiki
+function umc_enchantment_data_create() {
+    global $UMC_SETTING, $UMC_PATH_MC;
+
+    $version = $UMC_SETTING['mc_version_minor'];
+    $path = "$UMC_PATH_MC/server/mc_assets/minecraft-data/data/pc/$version/";
+    $file_contents = file_get_contents($path . 'enchantments.json');
+    $data = json_decode($file_contents);
+
+    $short_names = array(
+        'aqua_affinity' => 'Aqua',
+        'bane_of_arthropods' => 'Bane',
+        'blast_protection' => 'Blast',
+        'unbreaking' => 'UnBr',
+        'channeling' => 'Chan',
+        'binding_curse' => 'Bind',
+        'vanishing_curse' => 'Vanish',
+        'depth_strider' => 'Depth',
+        'efficiency' => 'Eff',
+        'feather_falling' => 'Feat',
+        'fire_aspect' => 'FireA',
+        'fire_protection' => 'FProt',
+        'flame' => 'Flame',
+        'fortune' => 'Fort',
+        'frost_walker' => 'Frost',
+        'impaling' => 'Imp',
+        'infinity' => 'Inf',
+        'knockback' => 'Knock',
+        'looting' => 'Loot',
+        'loyalty' => 'Loyal',
+        'luck_of_the_sea' => 'Luck',
+        'lure' => 'Lure',
+        'mending' => 'Mend',
+        'multishot' => 'Mult',
+        'piercing' => 'Pierc',
+        'power' => 'Pow',
+        'projectile_protection' => 'PProt',
+        'protection' => 'Prot',
+        'punch' => 'Punch',
+        'quick_charge' => 'QChar',
+        'respiration' => 'Resp',
+        'riptide' => 'Rip',
+        'sharpness' => 'Sharp',
+        'silk_touch' => 'Silk',
+        'smite' => 'Smite',
+        'sweeping' => 'Sweep',
+        'thorns' => 'Thorn',
+        'unbreaking' => 'Unbr',
+    );
+
+    $array_data = array();
+    foreach ($data as $obj) {
+        $fullname = $obj->itemName;
+        $name_split = explode(".", $fullname);
+        $item_name = $name_split[1];
+
+        $item_array = array();
+        foreach ($obj->primaries as $item) {
+            $name_split = explode(".", $item);
+            $item_array[] = $name_split[1];
+        }
+        foreach ($obj->secondaries as $item) {
+            $name_split = explode(".", $item);
+            $item_array[] = $name_split[1];
+        }
+
+        $conflict_array = array();
+        foreach ($obj->excludes as $ench) {
+            $name_split = explode(".", $ench);
+            $conflict_array[] = $name_split[1];
+        }
+
+        $array_data[$item_name] = array(
+            'key' => $fullname,
+            'name' => $obj->displayName,
+            'short' => $short_names[$item_name],
+            'max' => $obj->maxLevel,
+            'items' => $item_array,
+            'conflicts' => $conflict_array,
+            'probability' => $obj->probability,
+        );
+    }
+
+    ksort($array_data);
+    umc_array2file($array_data, "UMC_DATA_ENCHANTMENTS", "/home/minecraft/server/bin/assets/item_enchantments.inc.php");
 }
 
 /**
  * this checks for broken items and fixes if possible.
+ * this is for items where the name does not match to what ITEM_DATA says
  *
  * @global boolean $BROKEN_ITEMS
  * @param type $item_name
@@ -84,12 +176,16 @@ function umc_broken_items_add_fix($item_name) {
     global $BROKEN_ITEMS;
 
     // check if we know about this one already
-    if (!isset($BROKEN_ITEMS[$item_name])) {
+    if (substr($item_name, 0) == '@') {
+        // this is a system item, ignore
+    } else if (!isset($BROKEN_ITEMS[$item_name])) {
         // we don't, add it to the list of items
         ksort($BROKEN_ITEMS);
         XMPP_ERROR_trigger("Could not identify $item_name, added to broken items list, please add correct value!");
         $BROKEN_ITEMS[$item_name] = false;
         umc_array2file($BROKEN_ITEMS, "BROKEN_ITEMS", "/home/minecraft/server/bin/assets/broken_items.inc.php");
+    } else if ($BROKEN_ITEMS[$item_name] == '') {
+        XMPP_ERROR_send_msg("Notice: Could not identify $item_name, it is already in the broken items  but no valid name exists yet...");
     } else {
         // we know about this already, let's check if we can find this in the DB?
         // just to make sure
@@ -120,7 +216,7 @@ function umc_item_fix_old($search, $replace) {
         $replace_sql = umc_mysql_real_escape_string($replace);
         $update_sql = "UPDATE $table SET `item_name` = REPLACE(`item_name`, $search_sql, $replace_sql) WHERE `item_name` LIKE $search_sql;";
         XMPP_ERROR_trace("fix old SQL", $update_sql);
-        $X = umc_mysql_query($update_sql);
+        umc_mysql_execute_query($update_sql);
     }
     XMPP_ERROR_trigger("tried to rename $search into $replace in item name tables!");
 }
@@ -216,25 +312,33 @@ function umc_item_data_versionmatch() {
     echo "$count invalid items found";
 }
 
-
 function umc_item_search_create() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     // this here creates a new items array file
-    $search_arr = umc_item_data_get_namelist();
-    if (($handle = fopen("/home/minecraft/server/bukkit/plugins/Essentials/items.csv", "r")) !== FALSE) {
-        while (($items = fgetcsv($handle, 10000, ",")) !== FALSE) {
-            XMPP_ERROR_trace("Reading Essentials CSV");
-            // get the fist letter to weed out comments
-            $firstletter = substr($items[0], 0, 1);
-            if (count($items) == 3 && $firstletter !== '#' && !isset($search_arr[$items[0]])) {
-                // we get the numeric ID from the list
-                // csv format is:
-                // rock,1,0
-                // item_name, num_id, type_id
-                $item = umc_goods_get_text($items[1], $items[2]);
-                if ($item) { // the file contains a bunch of unobtainable stuff, we skip that
-                    $search_arr[$items[0]] = array('item_name' => $item['item_name'], 'type' => $item['type']);
-                }
+    $search_arr = array(); // umc_item_data_get_namelist();
+    if (($handle = file_get_contents("/home/minecraft/server/bukkit/plugins/Essentials/items.json", "r")) !== FALSE) {
+        // strip comments
+        $regex = "/(#[a-z0-9]*)/";
+        $fixed = preg_replace($regex, "", $handle);
+        // decode to array
+        $json = json_decode($fixed, true);
+
+        $materials = array();
+        $search_terms = array();
+
+        // first we get all the materials from the list and put the rest into another one
+        foreach ($json as $text => $data) {
+            if (is_array($data) && isset($data['material'])) {
+                $materials[$text] = strtolower($data['material']);
+            } else {
+                $search_terms[$text] = $data;
+            }
+        }
+
+        // then we iterate the search terms (all json without materials)
+        foreach ($search_terms as $text => $item_name) {
+            if (isset($materials[$item_name])) {
+                $search_arr[$text] = array('item_name' => $item_name);
             }
         }
         umc_array2file($search_arr, 'ITEM_SEARCH', '/home/minecraft/server/bin/assets/item_search.inc.php');
