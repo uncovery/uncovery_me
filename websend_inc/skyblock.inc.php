@@ -182,7 +182,7 @@ function umc_skyblock_abandon(){
     $world_id = $row['world_id'];
     $ins_user_sql = "INSERT INTO minecraft_worldguard.region_players (region_id, world_id, user_id, Owner)
         VALUES ('$lot', $world_id, $abandon_id, 1);";
-    umc_mysql_query($ins_user_sql, true);
+    umc_mysql_execute_query($ins_user_sql);
     umc_ws_cmd('region load -w skyblock', 'asConsole');
     umc_echo("You have succcessfully abandoned the lot $lot! It will be reset with the next reboot. You can then register a new one!");
 }
@@ -253,7 +253,7 @@ function umc_skyblock_challenge_select() {
         }
         $sql = "INSERT INTO `minecraft_quiz`.`block_games` (`game_id`, `username`, `start`, `end`, `status`, `challenge_id`, `sub_challenge_id`, `lot`)
             VALUES (NULL, '$player', NOW(), NULL, 'selected', '$challenge', '$sub_challenge', '$challenge_lot');";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
         umc_echo("Please type {green}/skyblock start{white} or {green}/skyblock cancel");
         umc_footer();
     }
@@ -265,7 +265,7 @@ function umc_skyblock_challenge_select() {
  */
 function umc_skyblock_challenge_cancel() {
     $sql = "UPDATE `minecraft_quiz`.`block_games` SET status='cancelled' WHERE status IN ('selected','started') AND username='$player';";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
     umc_echo("Your unfinished challenges have been cancelled");
 }
 
