@@ -192,7 +192,7 @@ function umc_web_list_forumposts($data) {
     $sql2 = "SELECT text, `date`, name, wp_forum_posts.parent_id as parent_id, wp_forum_posts.id as post_id
         FROM minecraft.wp_forum_posts
         LEFT JOIN minecraft.wp_forum_topics ON wp_forum_topics.id=wp_forum_posts.parent_id
-        WHERE author_id =$wp_id
+        WHERE minecraft.wp_forum_posts.author_id =$wp_id
         ORDER BY `date` DESC";
     $D2 = umc_mysql_fetch_all($sql2);
 
