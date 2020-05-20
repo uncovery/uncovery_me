@@ -29,7 +29,8 @@ $UMC_DOMAIN = "https://uncovery.me";
 ini_set('display_errors', 1);
 
 $UMC_SETTING = array(
-    'mc_version' => '1.13',
+    'mc_version' => '1.15',
+    'mc_version_minor' => '1.15.2',
     'path' => array(
         'server' => $UMC_PATH_MC . '/server',
         'bin' => $UMC_PATH_MC . "/server/bin",
@@ -43,7 +44,7 @@ $UMC_SETTING = array(
     ),
     'url' => "$UMC_DOMAIN/admin/index.php",
     // this is needed for unc_serial_curl
-    'ssl_cert' => "/home/includes/certificates/cacert.pem",
+    'ssl_cert' => '/home/includes/unc_serial_curl/google.crt',
     'whitelist_file' => $UMC_PATH_MC . '/server/data/whitelist.json',
     'markers_file' => $UMC_PATH_MC . '/server/data/markers.json',
     'world_folder' => $UMC_PATH_MC . '/server/bukkit/city/',
