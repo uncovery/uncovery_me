@@ -36,22 +36,12 @@ function umc_check_inventory($item_name, $data, $meta) {
     $inv = $UMC_USER['inv'];
     $amount = 0;
 
-    // this needs to be numeric since the inventory slots are still numeeric
-    /*
-    if (is_numeric($item_name)) {
-        $item_id = $UMC_DATA[$item_name]['id'];
-    } else {
-        $item_id = $item_name;
-    }
-     *
-     */
     if (strpos($meta, "{") === 0) {
         $comparator = 'nbt';
     } else if (!is_array($meta)) {
         $comparator = 'meta';
         $meta = unserialize($meta);
     }
-    //umc_error_longmsg($meta);
 
     foreach ($inv as $inv_item) {
         // we have to make sure we do not compare enchanted w. non-enchated items
@@ -125,7 +115,7 @@ function umc_clear_inv($item_name, $data, $amount, $meta = '') {
     if (count($clearslots) > 0) {
         umc_ws_cmd("removeitems $player " . implode(" ", $clearslots), 'asConsole');
     }
-    
+
     if ($amount != $removed && $amount > 0) {
         XMPP_ERROR_trigger("Could not remove item $id:$data in amount $amount (" . var_export($meta, true) . ") from user $player!");
     }
