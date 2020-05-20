@@ -107,7 +107,7 @@ function umc_hardcore_start() {
             $ins_sql = "INSERT INTO minecraft_srvr.hardcore(`uuid`, `entry_date`) VALUES ('$uuid' ,NOW())";
         }
 
-        umc_mysql_query($ins_sql, true);
+        umc_mysql_execute_query($ins_sql);
         umc_ws_cmd("warp hardcore $player");
     }
 }
@@ -130,7 +130,7 @@ function umc_hardcore_exit() {
         WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
         LIMIT 1;";
 
-    umc_mysql_query($score_sql, true);
+    umc_mysql_execute_query($score_sql);
     umc_ws_cmd("warp spawn $player");
 }
 
@@ -169,7 +169,7 @@ function umc_hardcore_commit() {
             WHERE `uuid`='$uuid' AND entry_date >= '{$P['start_date']}' AND entry_date < '{$P['end_date']}'
             LIMIT 1;";
 
-        umc_mysql_query($score_sql, true);
+        umc_mysql_execute_query($score_sql);
     } else {
         $itemlist = '';
         foreach ($rates as $item_name => $value) {
