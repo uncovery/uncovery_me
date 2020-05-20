@@ -31,19 +31,20 @@
 		{
                     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
                     $this->stream = fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
-                    if($this->stream){
+                    if ($this->stream){
                         $this->writeRawByte(21);
                         $this->writeString("websendmagic");
                         $seed = $this->readRawInt();
                         $hashedPassword = hash($this->hashAlgorithm, $seed.$this->password);
                         $this->writeString($hashedPassword);
                         $result = $this->readRawInt();
-                        if($result == 1){
-                                return true;
-                        }else{
-                                return false;
+                        if ($result == 1) {
+                            return true;
+                        } else {
+                            return false;
                         }
-                    }else{
+                    } else {
+                        XMPP_ERROR_trace("connect() failed", $this);
                         return false;
                     }
 		}
@@ -53,17 +54,20 @@
 		*/
 		public function disconnect()
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(20);
 		}
 
 		//NETWORK IO
 		private function writeRawInt( $i )
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			fwrite( $this->stream, pack( "N", $i ), 4 );
 		}
 
 		private function writeRawDouble( $d )
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			fwrite( $this->stream, strrev( pack( "d", $d ) ) );
 		}
 
@@ -74,6 +78,7 @@
 
 		private function writeChar( $char )
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$v = ord($char);
 			$this->writeRawByte((0xff & ($v >> 8)));
 			$this->writeRawByte((0xff & $v));
@@ -81,6 +86,7 @@
 
 		private function writeChars( $string )
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$array = str_split($string);
 			foreach($array as &$cur)
 			{
@@ -92,6 +98,7 @@
 
 		private function writeString( $string )
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$array = str_split($string);
 			$this->writeRawInt(count($array));
 			foreach($array as &$cur)
@@ -104,6 +111,7 @@
 
 		private function readRawInt()
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$a = $this->readRawByte();
 			$b = $this->readRawByte();
 			$c = $this->readRawByte();
@@ -116,6 +124,7 @@
 		}
 		private function readRawDouble()
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$up = unpack( "di", strrev( fread( $this->stream, 8 ) ) );
 			$d = $up["i"];
 			return $d;
@@ -131,12 +140,14 @@
 		}
 		private function readRawUnsignedByte()
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$up = unpack( "Ci", fread( $this->stream, 1 ) );
 			$b = $up["i"];
 			return $b;
 		}
 		private function readChar()
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$byte1 = $this->readRawByte();
 			$byte2 = $this->readRawByte();
 			$charValue = chr(utf8_decode((($byte1 << 8) | ($byte2 & 0xff))));
@@ -144,6 +155,7 @@
 		}
 		private function readChars($len)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$buf = "";
 			for($i = 0;$i<$len;$i++)
 			{
@@ -165,6 +177,7 @@
 		*/
 		public function doCommandAsPlayer($cmmd, $playerName)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(1);
 			$this->writeString($cmmd);
 			if(isset($playerName))
@@ -192,19 +205,18 @@
 		* @param string $cmmd Command and arguments to run.
 		* @return true if the command was found, else false
 		*/
-		public function doCommandAsConsole($cmmd)
-		{
-			$this->writeRawByte(2);
-			$this->writeString($cmmd);
+		public function doCommandAsConsole($cmmd) {
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
+                    $this->writeRawByte(2);
+                    $this->writeString($cmmd);
 
-			if($this->readRawInt() == 1)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+                    if($this->readRawInt() == 1) {
+
+                        return true;
+                    } else {
+                        XMPP_ERROR_trace("doCommandAsConsole failed", $this);
+                        return false;
+                    }
 		}
 
 		/**
@@ -215,6 +227,7 @@
 		*/
 		public function doScript($scriptName)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(3);
 			$this->writeString($scriptName);
 		}
@@ -226,6 +239,7 @@
 		*/
 		public function startPluginOutputListening($pluginName)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(4);
 			$this->writeString($pluginName);
 		}
@@ -238,6 +252,7 @@
 		*/
 		public function stopPluginOutputListening($pluginName)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(5);
 			$this->writeString($pluginName);
 			$size = $this->readRawInt();
@@ -254,6 +269,7 @@
 		*/
 		public function writeOutputToConsole($message)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(10);
 			$this->writeString($message);
 		}
@@ -267,6 +283,7 @@
 		*/
 		public function writeOutputToPlayer($message, $playerName)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(11);
 			$this->writeString($message);
 			if(isset($playerName))
@@ -295,6 +312,7 @@
 		*/
 		public function broadcast($message)
 		{
+                    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 			$this->writeRawByte(12);
 			$this->writeString($message);
 		}
