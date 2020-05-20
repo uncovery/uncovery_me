@@ -302,7 +302,7 @@ function umc_exec_command($cmd, $how = 'asConsole', $player = false) {
             break;
     }
     if (!$check) {
-        XMPP_ERROR_trigger("Could not verify correct connection to websend (umc_exec_command / $cmd / $how / $player)");
+        XMPP_ERROR_trigger("Could not verify correct command execution to websend (umc_exec_command / $cmd / $how / $player)");
     }
     $ws->disconnect();
     return $check;
@@ -338,10 +338,12 @@ function umc_ws_plugin_comms($plugin, $cmd) {
 function umc_ws_connect() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     global $UMC_PATH_MC;
-    require_once "$UMC_PATH_MC/server/bin/includes/websend_class.php";
+    require_once("$UMC_PATH_MC/server/bin/includes/websend_class.php");
     $ws = new Websend("74.208.161.223"); //, 4445
+    XMPP_ERROR_trace("Websend connection status: ", $ws);
     $password = file_get_contents("/home/includes/certificates/websend_code.txt");
     $ws->password = $password;
+    XMPP_ERROR_trace("Websend password send status: ", $ws);
     if (!$ws->connect()) {
         // try again
         XMPP_ERROR_trace("websend Auth failed (attempt 1, trying again)", "none");
@@ -440,7 +442,7 @@ function umc_ws_get_inv($inv_data) {
                 if (isset($UMC_DATA[$item_typename])) {
                     $inv[$slot]['item_name'] = $item_typename;
                 } else {
-                    $out = "UMC_DATA_ID2NAME USAGE: ITEM ISSUE! Please add: '$item_typename' to the \$UMC_DATA array";
+                    $out = "UMC_DATA: ITEM ISSUE! Please add: '$item_typename' to the \$UMC_DATA array";
                     XMPP_ERROR_send_msg($out);
                     $inv[$slot]['item_name'] = $item_typename;
                 }
@@ -448,11 +450,13 @@ function umc_ws_get_inv($inv_data) {
                 $inv[$slot]['id'] = $item['Type'];
             } else if ($fix_name == 'durability') {
                 $inv[$slot]['data'] = $value;
-            } else if ($fix_name == 'nbt') {
-                // convert spigot NBT to minecraft NBT
-                $nbt = umc_nbt_cleanup($value);
-                $inv[$slot]['nbt'] = $nbt;
-                $inv[$slot]['meta'] = false;
+            } else if ($fix_name == 'nbt_raw') {
+                $fixed = umc_nbt_raw_prepare($value);
+                $inv[$slot]['nbt'] = $fixed;
+            } else if ($fix_name == 'nbt_json') {
+                $raw_array = json_decode($value, true);
+                $nbt_array = umc_nbt_json_prepare($raw_array);
+                $inv[$slot]['nbt_array'] = $nbt_array;
             } else {
                 $name = strtolower($name);
                 $inv[$slot][$name] = $value;
