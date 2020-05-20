@@ -239,7 +239,7 @@ function umc_ts_authorize() {
     $target_ts_uuid = $this_user_obj["client_unique_identifier"];
     $ts_uuid = umc_mysql_real_escape_string($target_ts_uuid);
     $ins_sql = "UPDATE minecraft_srvr.UUID SET ts_uuid=$ts_uuid WHERE UUID='$uuid';";
-    umc_mysql_query($ins_sql, true);
+    umc_mysql_execute_query($ins_sql);
     umc_echo("Adding TS ID $ts_uuid to database");
     umc_footer("Done!");
 
@@ -309,7 +309,7 @@ function umc_ts_clear_rights($uuid, $echo = false) {
         // also remove TS UUID from DB
         $ins_sql = "UPDATE minecraft_srvr.UUID SET ts_uuid='' WHERE ts_uuid='$ts_uuid';";
         XMPP_ERROR_trace("removing uuid from DB", $ts_uuid);
-        umc_mysql_query($ins_sql, true);
+        umc_mysql_execute_query($ins_sql);
         return true;
     } else {
         XMPP_ERROR_trace("Prev UUID not found");
