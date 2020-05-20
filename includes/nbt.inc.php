@@ -1,6 +1,64 @@
 <?php
 
 /**
+ * we need to remove a trailing "s" from enchatment levels
+ *
+ * @param type $nbt
+ * @return type
+ */
+function umc_nbt_raw_prepare($nbt) {
+    $regex = "/(lvl:)(\d)(s)/";
+
+    $fixed = preg_replace($regex, '$1$2', $nbt);
+
+    return $fixed;
+}
+
+/**
+ * we need to streamline the array and sort enchantments
+ *
+ * @param type $json
+ * @return type
+ */
+function umc_nbt_json_prepare($json) {
+    $fixed_data = umc_nbt_json_array_cleaner($json['map']);
+    $sorted_nbt = umc_nbt_sort_enchantments($fixed_data);
+
+    return $sorted_nbt;
+}
+
+/**
+ * streamline the array
+ * 
+ * @param type $nbt_array
+ * @return type
+ */
+function umc_nbt_json_array_cleaner($nbt_array) {
+
+    $new_data = array();
+
+    if (!is_array($nbt_array)) {
+        return $nbt_array;
+    }
+
+    foreach ($nbt_array as $index => $value) {
+        if (isset($value['data'])) {
+            $new_value = $value['data'];
+        } else if (isset($value['map'])) {
+            $new_value = $value['map'];
+        } else {
+            $new_value = $value;
+        }
+        $new_data[$index] = umc_nbt_json_array_cleaner($new_value);
+    }
+
+    return $new_data;
+}
+
+
+/**
+ * LEGACY
+ *
  * Fix the = into : for proper minecraft-valid NBT
  * The result can be used in /give etc
  *
@@ -11,7 +69,17 @@ function umc_nbt_cleanup($nbt_raw) {
     $regex = "/=(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)/";
     $nbt_clean = preg_replace($regex, ":", $nbt_raw);
 
-    $nbt_sorted = umc_nbt_sort_enchantments($nbt_clean);
+    if (strpos($nbt_clean, 'ench:') === false) {
+        return $nbt;
+    }
+    // convert the NBT to an array so we can search it
+    $array = umc_nbt_to_array($nbt);
+
+    $nbt_sorted = umc_nbt_sort_enchantments($array);
+
+    $json = json_encode($nbt_sorted); // convert the array to JSON
+    $out_nbt = umc_nbt_from_json($json); // fix the JSON to valid NBT
+
     return $nbt_sorted;
 }
 
@@ -32,9 +100,11 @@ function umc_nbt_to_array($nbt) {
     // TODO: do this regex only if we actually have a book (or whatever else this applies to)
     preg_match_all($fix_regex, $nbt, $matches);
 
+    XMPP_ERROR_trace("regex matches", $matches);
+
     // this regex marks the array keys so that they can be put in quotes.
     // this regex basically puts all the array keys from the NBT data into match $2 and puts quotes around them.
-    $fix_nbt_regex = '/([,{]{1,2})([^,}:]*):/';
+    $fix_nbt_regex = '/([,{]{1,2})([^,"}:]*):/';
 
     // do we have a multi-level JSON?
     if ($matches && isset($matches['inside'][0])) {
@@ -49,12 +119,20 @@ function umc_nbt_to_array($nbt) {
         // put quotes around the keys
         $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
     }
-    // XMPP_ERROR_trace("nbt_fixed", $json);
-
+    XMPP_ERROR_trace("nbt_fixed", $json);
+    
     // now we have valid json, decode it please
     $nbt_array = json_decode($json, true);
     if (!$nbt_array) {
-        XMPP_ERROR_trigger("NBT Array invalid: $json");
+        XMPP_ERROR_trace("NBT Array invalid, attempting fix: $json");
+        
+        // second-level fix
+        $json2 = preg_replace("/(\d*)[Lbdfs]([,\]}])/", '$1$2', $json);
+        $nbt_array = json_decode($json2, true);
+        
+        if (!$nbt_array) {
+            XMPP_ERROR_trigger("NBT Array invalid: $json2");
+        }
     }
 
     return $nbt_array;
@@ -66,19 +144,12 @@ function umc_nbt_to_array($nbt) {
  *
  * @param type $nbt
  */
-function umc_nbt_sort_enchantments($nbt) {
-    XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-
-    // only do this if we have enchantments in the array
-    if (strpos($nbt, 'ench:') === false) {
-        return $nbt;
-    }
-    // convert the NBT to an array so we can search it
-    $array = umc_nbt_to_array($nbt);
-
+function umc_nbt_sort_enchantments($nbt_array) {
     // let's iterate the array
-    foreach ($array as $key => $value) {
-        if (strtolower($key) == 'ench') { // find the enchantment
+    $array = array();
+
+    foreach ($nbt_array as $key => $value) {
+        if (strtolower($key) == 'enchantments') { // find the enchantment
             $types = array();
             $levels = array();
             foreach ($value as $valkey => $row) { // get a sortable array for array_multisort
@@ -86,14 +157,11 @@ function umc_nbt_sort_enchantments($nbt) {
                 $levels[$valkey] = $row['lvl'];
             }
             array_multisort($types, SORT_DESC, $levels, SORT_DESC, $value); // sort it
-            $array[$key] = $value; //re-insert
+            $nbt_array[$key] = $value; //re-insert
         }
     }
 
-    $json = json_encode($array); // convert the array to JSON
-    $out_nbt = umc_nbt_from_json($json); // fix the JSON to valid NBT
-
-    return $out_nbt;
+    return $nbt_array;
 }
 
 /**
@@ -160,7 +228,7 @@ function umc_nbt_display_long_text($nbt_array) {
                 }
                 break;
             case 'ench': // deprecated?
-            case 'enchantments': //for enchanted items  
+            case 'enchantments': //for enchanted items
             case 'storedenchantments': //for enchanted books
                 $text .= "Enchantments: ";
                 // example enchantment {StoredEnchantments:[{lvl:2,id:"minecraft:fire_aspect"}]}
@@ -266,6 +334,11 @@ function umc_nbt_display_long_text($nbt_array) {
                 $skull_owner = $data['Name'];
                 $text .= "($skull_owner)\n";
                 break;
+            case 'blockstatetag':
+                // honey
+                $honeylevel = $data['honey_level'];
+		$text .= "(Honeylevel $honeylevel)";
+               break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feature' (umc_nbt_display_long_text)");
         }
@@ -300,7 +373,7 @@ function umc_nbt_display_short_text($nbt_array) {
                 if ($data > 0) {
                     $text .= "Dmgd.";
                 }
-                break;                
+                break;
             case 'ench': // deprecated?
             case 'enchantments': //for enchanted items
             case 'storedenchantments': //for enchanted books
@@ -385,6 +458,11 @@ function umc_nbt_display_short_text($nbt_array) {
                 $skull_owner = $data['Name'];
                 $text .= "($skull_owner)\n";
                 break;
+            case 'blockstatetag':
+                // honey
+                $honeylevel = $data['honey_level'];
+		$text .= "(Honey $honeylevel)";
+               break;            
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feat' (umc_nbt_display_short_text)");
         }
@@ -397,10 +475,10 @@ function umc_nbt_display_short_text($nbt_array) {
 
 /**
  * temp maintenance to convert legacy enchantments to NBT
- * @global type $ENCH_ITEMS
+ * @global type $UMC_DATA_ENCHANTMENTS
  */
 function umc_nbt_fix() {
-    global $ENCH_ITEMS;
+    global $UMC_DATA_ENCHANTMENTS;
     $sql = 'SELECT * FROM minecraft_iconomy.stock WHERE meta LIKE "a:%" ORDER BY id DESC' ;
     $D = umc_mysql_fetch_all($sql);
     foreach ($D as $row) {
@@ -413,7 +491,7 @@ function umc_nbt_fix() {
         $nbt = '{ench:[';
         $nbt_arr = array();
         foreach ($meta_arr as $ench => $lvl) {
-            $id = $ENCH_ITEMS[$ench]['id'];
+            $id = $UMC_DATA_ENCHANTMENTS[$ench]['id'];
             $nbt_arr[] = "{lvl:$lvl,id:$id}";
         }
         $nbt .= implode(",", $nbt_arr);
