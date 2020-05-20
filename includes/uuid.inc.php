@@ -54,7 +54,7 @@ function umc_uuid_record_usertimes($type) {
                 return;
             }
             $online_sql = "UPDATE minecraft_srvr.UUID SET onlinetime=onlinetime+$seconds WHERE UUID='$uuid';";
-            umc_mysql_query($online_sql);
+            umc_mysql_execute_query($online_sql);
         } else {
             XMPP_ERROR_trigger("User login was later than last logout! ".  var_export($D, true));
         }
@@ -69,7 +69,7 @@ function umc_uuid_login_logout_update($type) {
     $userlevel = $UMC_USER['userlevel'];
     $ip = $UMC_USER['ip'];
     $sql = "UPDATE minecraft_srvr.UUID SET last_ip=INET_ATON('$ip'), $type=NOW(), lot_count=$lots, userlevel='$userlevel' WHERE UUID='$uuid';";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
 }
 
 /**
@@ -85,7 +85,7 @@ function umc_uuid_userdata($uuid, $username) {
     $data = umc_mysql_fetch_all($sql_time);
     if (count($data) == 0) {
         $ins_sql = "INSERT INTO minecraft_srvr.UUID (UUID, username) VALUES ('$uuid', '$username');";
-        umc_mysql_query($ins_sql);
+        umc_mysql_execute_query($ins_sql);
         umc_uuid_firstlogin_update($uuid);
         // we cal lthis function again to get the data output;
         umc_uuid_userdata($uuid, $username);
@@ -103,7 +103,7 @@ function umc_uuid_firstlogin_update($uuid) {
     if (count($D) > 0) {
         $date = $D[0]['user_registered'];
         $up_sql = "UPDATE minecraft_srvr.UUID SET firstlogin='$date' WHERE UUID='$uuid';";
-        umc_mysql_query($up_sql);
+        umc_mysql_execute_query($up_sql);
     }
 }
 
@@ -123,7 +123,7 @@ function umc_uuid_record_lotcount($user = false) {
         $uuid = umc_uuid_getone($user, 'uuid');
         $lots = umc_user_countlots($uuid);
         $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$lots WHERE UUID='$uuid';";
-        umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
     } else {
         $sql = "UPDATE minecraft_srvr.UUID SET lot_count=0";
         umc_mysql_execute_query($sql);
@@ -131,7 +131,7 @@ function umc_uuid_record_lotcount($user = false) {
         $data = umc_get_active_members('counter');
         foreach ($data as $uuid => $counter) {
             $sql = "UPDATE minecraft_srvr.UUID SET lot_count=$counter WHERE UUID='$uuid';";
-            umc_mysql_query($sql);
+            umc_mysql_execute_query($sql);
         }
     }
 }
@@ -457,11 +457,11 @@ function umc_uuid_get_from_logfile($query) {
         $check_data = umc_mysql_fetch_all($check_sql);
         if (count($check_data) == 0) {
             $ins_sql = "INSERT INTO minecraft_srvr.UUID (UUID, username) VALUES ('$uuid', '$username');";
-            umc_mysql_query($ins_sql);
+            umc_mysql_execute_query($ins_sql);
         } else {
             if ($check_data[0]['username'] != $username) {
                 $sql = "UPDATE minecraft_srvr.UUID SET username='$username' WHERE UUID='$uuid';";
-                umc_mysql_query($sql);
+                umc_mysql_execute_query($sql);
             }
         }
     }
@@ -484,6 +484,7 @@ function umc_uuid_get_from_logfile($query) {
  * @return boolean
  */
 function umc_uuid_get_from_mojang($username, $timer = false) {
+    global $UMC_CONFIG;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     if (strlen($username) < 17) {
@@ -564,6 +565,7 @@ function umc_uuid_check_history($uuid) {
  * @return boolean
  */
 function umc_uuid_mojang_usernames($uuid) {
+    global $UMC_CONFIG;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $uuid_raw = str_replace("-", "", $uuid);
     // https://api.mojang.com/user/profiles/a0130adc42ad4e619da2f90a5bc310d3/names
