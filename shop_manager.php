@@ -113,7 +113,7 @@ function umc_shopmgr_show_deposit() {
 
 function umc_shopmgr_items() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_DATA;
+    global $UMC_DATA, $ITEM_UNAVAILABLE;
 
     $s_get = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
     $non_numeric_cols = array('item_name');
@@ -122,29 +122,24 @@ function umc_shopmgr_items() {
     if (!isset($s_get['item']) || !isset($UMC_DATA[$s_get['item']])) {
         foreach ($UMC_DATA as $item_name => $data) {
             // $item = umc_goods_get_text($name);
-            $variants = '';
-            $title = $item_name;
-            $sub_text = '';
-            $sub_count = 0;
-            if (isset($data['group'])) {
-                $variants = "(" . count($data['subtypes']) . " types)"; //TODO: This counts non-available subtypes as well!
-                $title = $data['group'];
-                $sub_count = count($data['subtypes']);
-                $sub_text = "$sub_count sub-types";
+
+            if (in_array($item_name, $ITEM_UNAVAILABLE)) {
+                continue;
             }
+
             // get stock
             $stock_amount = umc_shop_count_amounts('stock', $item_name);
             $request_amount = umc_shop_count_amounts('request', $item_name);
 
             $items[$item_name] = array(
+                // 'icon' => umc_item_icon_html($item_name),
                 'item_name' => $item_name,
-                'sub_types'=> $sub_text,
                 'stock' => $stock_amount,
                 'requests' => $request_amount,
                 'stack_size' => $data['stack'],
             );
         }
-        return umc_web_table("goods", "0, 'asc'", $items, '', array(), $non_numeric_cols);
+        return umc_web_table("goods", "1, 'asc'", $items, '', array(), $non_numeric_cols);
     // get only one item's sub-items
     } else if (isset($s_get['item']) && isset($UMC_DATA[$s_get['item']])) {
         // get only one subitem
