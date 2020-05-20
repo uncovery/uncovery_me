@@ -141,8 +141,9 @@ function umc_get_todays_users() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     $online_users = umc_read_markers_file('array');
-    $sql = "SELECT username, lastlogin, uuid FROM minecraft_srvr.UUID "
-        . "WHERE lastlogin >= now() - INTERVAL 1 DAY ORDER BY lastlogin DESC";
+    $sql = "SELECT username, lastlogin, uuid FROM minecraft_srvr.UUID
+        WHERE lastlogin >= now() - INTERVAL 1 DAY
+        ORDER BY lastlogin DESC";
     $data = umc_mysql_fetch_all($sql);
     $json = false;
     $json_arr = array();
@@ -152,6 +153,9 @@ function umc_get_todays_users() {
     }
     $out = "<div id=\"todays_users\">";
     $count = count($data);
+    if ($count == 0) {
+        return '';
+    }
     $opacity_step = 1 / $count;
     $opacity = 1;
     foreach ($data as $user) {
@@ -253,6 +257,9 @@ function umc_server_status() {
             //$out .= '<strong>Builders:</strong> '.  $result . '<br>';
             $out .= '<strong>Online Users:</strong> ';
             $online_users = umc_read_markers_file('array');
+            if (!$online_users) {
+                $online_users = array();
+            }
             $no_users = count($online_users);
             if ($no_users > 0 && $online_users != '') {
                 $out .= "($no_users) ";
@@ -692,7 +699,7 @@ function umc_web_set_fingerprint() {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
     $uuid = filter_input(INPUT_GET, 'uuid', FILTER_SANITIZE_STRING);
     $sql = "UPDATE minecraft_srvr.UUID SET browser_id='$id' WHERE UUID='$uuid';";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
 }
 
 function umc_web_userstats() {
