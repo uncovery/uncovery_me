@@ -551,7 +551,7 @@ function umc_process_donation() {
         $date = umc_mysql_real_escape_string(date('Y-m-d'));
         $sql = "INSERT INTO minecraft_srvr.donations (`amount`, `uuid`, `email`, `date`, `txn_id`)
             VALUES ($final_value, {$sql_vals['option_selection3']}, {$sql_vals['payer_email']}, $date, {$sql_vals['txn_id']})";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
         XMPP_ERROR_trigger("Donation SQL executed!");
         $subject = "[Uncovery Minecraft] Donation activated!";
         $mailtext = "Dear $username, \r\n\r\nWe have just received and activated your donation. Thanks a lot for contributing to Uncovery Minecraft!\r\n"
