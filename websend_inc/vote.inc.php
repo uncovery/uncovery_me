@@ -308,6 +308,20 @@ function umc_vote_web() {
             $prop_lvl = strtolower(umc_userlevel_get($proposed_uuid));
             $prop_lvl_id = $vote_ranks[$prop_lvl]['lvl'];
             $next_level = $vote_ranks[$prop_lvl]['next'];
+
+            // let's check first if the user has ever been voted on. The user might have been promoted
+            // without votes and then the month gap fails.
+            $vote_check_sql = "SELECT uuid from minecraft_srvr.proposals WHERE uuid LIKE '$proposed_uuid';";
+            $VC = umc_mysql_fetch_all($vote_check_sql);
+            $no_votes_architect = false;
+            $out .= "Checking if the user has been voted for...";
+            if (count($VC) == 0 && $prop_lvl_id > 2) { // architect or higher without votes
+                $no_votes_architect = true;
+                $out .= " No!<Br>";
+            } else {
+                $out .= " Yes!<br>";
+            }
+
             // check if the user was recently promoted
             $sql = "SELECT round((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`date`)) / (60 * 60 * 24 * 30.5)) as month_gap
                 FROM minecraft_srvr.proposals
@@ -329,9 +343,10 @@ function umc_vote_web() {
             $elder_count = $C[0]['counter'];
             if ($prop_lvl_id == 5 && $elder_count > 0) { // this is a master proposed for Elder
                 $out .= "<strong>Sorry $username, but there can be only one user proposed for Elder at a time! Please wait until the current Elder vote is over and then re-submit your proposal.</strong>";
-            } else if ($month_gap < $vote_ranks[$prop_lvl]['gap']) {
+            } else if (($month_gap < $vote_ranks[$prop_lvl]['gap']) && $no_votes_architect == false) {
+                // we ignore the months gap if there are no votes at all
                 $needed_gap = $vote_ranks[$prop_lvl]['gap'];
-                $out .= "<strong>Sorry $username, but $proposed_username can only be promoted to the next level after $needed_gap month. The last promotion was $month_gap ago!</strong>";
+                $out .= "<strong>Sorry $username, but $proposed_username can only be promoted to the next level after $needed_gap month. The last promotion was $month_gap months ago!</strong>";
             } else if ($user_lvl_id < 6 && ($user_lvl_id < ($prop_lvl_id + 1))) {
                 $out .= "<strong>Sorry $username, but you need to be at a higher level to propose $proposed_username for a higher rank!</strong>";
             } else if ($prop_lvl_id > 5) {
@@ -350,11 +365,11 @@ function umc_vote_web() {
                 // ok to be promoted
                 $reason_sql = umc_mysql_real_escape_string($reason);
                 $ins_proposal_sql = "INSERT INTO `minecraft_srvr`.`proposals` (`pr_id`, `uuid`, `proposer_uuid`, `date`, `status`, `reason`, `target_level`)
-                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting', $reason_sql, $next_level);";
-                umc_mysql_query($ins_proposal_sql);
+                    VALUES (NULL, '$proposed_uuid', '$uuid', NOW(), 'voting', $reason_sql, '$next_level');";
+                umc_mysql_execute_query($ins_proposal_sql);
                 $pr_id = umc_mysql_insert_id();
                 $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`) VALUES ($pr_id, '$uuid', NOW(), 1);";
-                umc_mysql_query($sql, true);
+                umc_mysql_execute_query($sql);
                 $out .= "Thanks $username, $proposed_username as been submitted for voting, and your vote has been set, too!";
 
                 if ($prop_lvl_id == 5) { // we propose a Master for promotion, inform all elders
@@ -389,7 +404,7 @@ function umc_vote_web() {
 
     // close old proposals
     $upd_sql = "UPDATE minecraft_srvr.proposals SET `status`='failed' WHERE status = 'voting' AND date < NOW() - INTERVAL 1 month";
-    umc_mysql_query($upd_sql, true);
+    umc_mysql_execute_query($upd_sql);
 
     // list proposed people
     $sql = "SELECT UUID.username, status, pr_id, date, proposals.uuid, reason FROM minecraft_srvr.proposals
@@ -429,7 +444,7 @@ function umc_vote_web() {
                 $new_vote = filter_input(INPUT_POST, 'CL_' . $pr_id, FILTER_SANITIZE_STRING);
                 // var_dump($_POST);
                 $sql = "UPDATE minecraft_srvr.`proposals` SET `status` = '$new_vote' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1;";
-                umc_mysql_query($sql);
+                umc_mysql_execute_query($sql);
                 // echo $sql;
                 if ($new_vote == 'success') {
                     XMPP_ERROR_trigger("$proposed got promoted!");
@@ -451,16 +466,16 @@ function umc_vote_web() {
                     $vote_id = $row_check['vote_id'];
                     if ($new_vote == 0) {
                         $sql = "DELETE FROM minecraft_srvr.`proposals_votes` WHERE pr_id=$pr_id and voter_uuid='$uuid';";
-                        umc_mysql_query($sql, true);
+                        umc_mysql_execute_query($sql);
                     } else if ($row_check['vote'] != $new_vote) {
                         $sql = "REPLACE INTO minecraft_srvr.`proposals_votes` (`vote_id`, `pr_id`, `voter_uuid`, `date`, `vote`)
 			    VALUES ($vote_id, $pr_id, '$uuid', NOW(), $new_vote);";
-                        umc_mysql_query($sql, true);
+                        umc_mysql_execute_query($sql);
                     }
                 } else if ($new_vote != 'x') {
                     $sql = "INSERT INTO minecraft_srvr.`proposals_votes` (`pr_id`, `voter_uuid`, `date`, `vote`)
                         VALUES ($pr_id, '$uuid', NOW(), $new_vote);";
-                    umc_mysql_query($sql, true);
+                    umc_mysql_execute_query($sql);
                 }
             } else if ($prop_status == 'closed') {
                 // a user tried to vote on a closed vote... what to do?
@@ -494,7 +509,7 @@ function umc_vote_web() {
         if (abs($total_score) >= $min_req && $prop_status == 'voting') {
             // close vote
             $sql = "UPDATE minecraft_srvr.`proposals` SET `status` = 'closed' WHERE `proposals`.`pr_id`=$pr_id LIMIT 1 ";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
             // send email with status report
             $email_text = $email_close . "Total Score: $total_score\n\rRequired: " . abs($lvl_min_req[$lvl_code]);
             $headers = 'From:minecraft@uncovery.me' . "\r\nReply-To:minecraft@uncovery.me\r\n" . 'X-Mailer: PHP/' . phpversion();
