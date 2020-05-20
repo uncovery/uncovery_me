@@ -86,17 +86,17 @@ function umc_db_take_item($table, $id, $amount, $player) {
  * convert Meta data into nice text
  * TODO: This is deprecated and nbt data should override this.
  *
- * @global type $ENCH_ITEMS
+ * @global type $UMC_DATA_ENCHANTMENTS
  * @param type $meta_arr
  * @param type $size
  * @return string
  */
 function umc_get_meta_txt($meta_arr, $size = 'long') {
-    global $ENCH_ITEMS;
+    global $UMC_DATA_ENCHANTMENTS;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $out = '';
     $e = 0;
-    if (strpos($meta_arr, "{") === 0) { // we have NBT, not legacy meta data
+    if (!is_array($meta_arr) && strpos($meta_arr, "{") === 0) { // we have NBT, not legacy meta data
         $out = umc_nbt_display($meta_arr, $size . '_text');
         return $out;
     } else if (!is_array($meta_arr)) {
@@ -111,21 +111,21 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
         return;
     }
     foreach ($meta_arr as $meta_name => $lvl) {
-        if (isset($ENCH_ITEMS[$meta_name])) {
+        if (isset($UMC_DATA_ENCHANTMENTS[$meta_name])) {
             if ($size == 'long') {
-                $meta_name = $ENCH_ITEMS[$meta_name]['name'];
+                $meta_name = $UMC_DATA_ENCHANTMENTS[$meta_name]['name'];
             } else {
-                $meta_name = $ENCH_ITEMS[$meta_name]['short'];
+                $meta_name = $UMC_DATA_ENCHANTMENTS[$meta_name]['short'];
             }
             $out .= "$meta_name $lvl";
         } else { // some enchantments are stored wrong, with lowercase names instead of codes
             // this should not be needed anymore once there are no lowercase enchantments in the deposit
-            foreach ($ENCH_ITEMS as $code => $data) {
+            foreach ($UMC_DATA_ENCHANTMENTS as $code => $data) {
                 if (strtolower($data['name']) == $meta_name) {
                     if ($size == 'long') {
-                        $meta_name = $ENCH_ITEMS[$code]['name'];
+                        $meta_name = $UMC_DATA_ENCHANTMENTS[$code]['name'];
                     } else {
-                        $meta_name = $ENCH_ITEMS[$code]['short'];
+                        $meta_name = $UMC_DATA_ENCHANTMENTS[$code]['short'];
                     }
                     break;
                 }
@@ -147,7 +147,7 @@ function umc_get_meta_txt($meta_arr, $size = 'long') {
  * @param string $meta
  */
 function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
-    global $UMC_DATA, $UMC_ENV, $UMC_DATA_ID2NAME, $UMC_SETTING, $UMC_DOMAIN;
+    global $UMC_DATA, $UMC_ENV, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
 
     // check if we have "minecraft:" in the beginning.
@@ -309,5 +309,5 @@ function umc_shop_transaction_record($from, $to, $amount, $value, $item, $type =
     $meta_sql = umc_mysql_real_escape_string($meta);
     $ins_sql = "INSERT INTO minecraft_iconomy.`transactions` (`damage`, `buyer_uuid`, `seller_uuid`, `item_name`, `cost`, `amount`, `meta`)
         VALUES ('$type', '$to_uuid', '$from_uuid', '$item_name', '$value', '$amount', $meta_sql);";
-    umc_mysql_query($ins_sql, true);
+    umc_mysql_execute_query($ins_sql);
 }
