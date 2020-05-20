@@ -109,7 +109,7 @@ function umc_timer_cancel($user, $type) {
     $existing_timer = umc_timer_get($user, $type);
     if ($existing_timer) {
         $sql = "DELETE FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
         umc_log('timer', 'cancel', "$type timer for $user");
         return $existing_timer;
     } else {
@@ -138,7 +138,7 @@ function umc_timer_get($user, $type) {
         } else {
             $sql_del = "DELETE FROM minecraft_srvr.timers WHERE username='$user' AND type='$type';";
             umc_log('timer', 'removed', "$type timer for $user");
-            umc_mysql_query($sql_del, true);
+            umc_mysql_execute_query($sql_del);
             return false;
         }
     } else {
