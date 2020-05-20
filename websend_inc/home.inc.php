@@ -214,7 +214,7 @@ function umc_home_add($uuid, $name, $force = false){
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
         . "($name_sql,$uuid_sql,'empire','66.565','64','-57.219','0');"; // home is empire spawn
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 
 }
 
@@ -269,7 +269,7 @@ function umc_home_buy() {
     // add the new entry to the database
     $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
         . "($name,'{$UMC_USER['uuid']}','{$UMC_USER['world']}','{$UMC_USER['coords']['x']}','{$UMC_USER['coords']['y']}','{$UMC_USER['coords']['z']}','{$UMC_USER['coords']['yaw']}');";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 
     // output user feedback regarding their purchase
     umc_header("Buying a home");
@@ -301,7 +301,7 @@ function umc_home_sell() {
     $bank = umc_money_check($UMC_USER['uuid']);
     $newcount = $count - 1;
     $sql = "DELETE FROM minecraft_srvr.`homes` WHERE uuid='{$UMC_USER['uuid']}' AND name=$name;";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_header("Selling a home");
     umc_echo("You currently have $count homes, selling one.");
     umc_echo("This home sell earns you $cost Uncs! You now have $bank Uncs in your account.");
@@ -357,7 +357,7 @@ function umc_home_update() {
     $sql = "UPDATE minecraft_srvr.`homes` SET $name_update `world`='{$UMC_USER['world']}',`x`='{$UMC_USER['coords']['x']}',`y`='{$UMC_USER['coords']['y']}',`z`='{$UMC_USER['coords']['z']}',`yaw`='{$UMC_USER['coords']['yaw']}' "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$replacing LIMIT 1;";
 
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_log('home', 'update', "{$UMC_USER['uuid']}/{$UMC_USER['username']} updated home {$args[2]} $log_addon!");
     umc_echo("The coordinates of home {$args[2]} were updated to the current location $log_addon!");
 }
@@ -388,7 +388,7 @@ function umc_home_rename() {
     }
     $sql = "UPDATE minecraft_srvr.`homes` SET `name`=$new_name "
         . "WHERE uuid='{$UMC_USER['uuid']}' AND name=$old_name LIMIT 1;";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_log('home', 'rename', "{$UMC_USER['uuid']}/{$UMC_USER['username']} renamed home {$args[2]} to $sanitised_name!");
     umc_echo("The name of home {$args[2]} was updated to $sanitised_name!");
 }
@@ -480,7 +480,7 @@ function umc_home_2d_map($data) {
     $uuid = $UMC_USER['uuid'];
     $world = $data['world'];
     $homes = umc_homes_array($uuid, $world);
-    
+
     if (count($homes) == 0) {
         return false;
     }
@@ -513,7 +513,7 @@ function umc_home_2d_map($data) {
             home_left = val_arr[2];
             window.scrollTo(home_left - ($(window).width() / 2), home_top - ($(window).height() / 2))
             $("#home_" + home_name).effect("shake");
-        }; 
+        };
         ';
     return $out;
 }
@@ -553,7 +553,7 @@ function umc_home_import() {
             // XMPP_ERROR_trigger($h);
             $sql = "INSERT INTO minecraft_srvr.`homes`(`name`, `uuid`, `world`, `x`, `y`, `z`, `yaw`) VALUES "
                 . "($name,'$uuid','{$h['world']}','{$h['x']}','{$h['y']}','{$h['z']}','{$h['yaw']}');";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         }
         umc_log('home', 'import', "$uuid/$username $count homes have been imported!");
     }
