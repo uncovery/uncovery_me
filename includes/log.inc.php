@@ -36,8 +36,7 @@ function umc_error_log() {
 		AND `message`='{$f_row['message']}'
 		AND `line`='{$f_row['line']}'
 		AND `file`=$file;";
-        $rst_del = umc_mysql_query($sql_del);
-        umc_mysql_free_result($rst_del);
+        $rst_del = umc_mysql_execute_query($sql_del);
         umc_mysql_free_result($rst_find);
     }
 
@@ -84,7 +83,7 @@ function umc_log($plugin, $action, $text) {
 
     $sql = "INSERT INTO `minecraft_log`.`universal_log` (`log_id`, `date`, `time`, `plugin`, `username`, `action`, `text`)
         VALUES (NULL, CURRENT_DATE(), CURRENT_TIME(),$sql_plugin, $sql_player, $sqlaction, $sqltext);";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 }
 
 // this returns the different types of plugin data in the log database
@@ -885,7 +884,7 @@ function umc_log_chat_import() {
         $day = $date_parts[2];
         $hour = $date_parts[3];
         $min = $date_parts[3];
-        umc_mysql_query($ins, true);
+        umc_mysql_execute_query($ins);
         $file = "$year-$month-{$day}_{$hour}_{$min}_chat_log.tar.bz2";
         rename($file, "$target_path/$year/$month/$file");
     }
