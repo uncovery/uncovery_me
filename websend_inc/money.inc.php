@@ -144,7 +144,7 @@ function umc_money($source_raw = false, $target = false, $amount_raw = 0) {
             $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
                 SET `balance`=`balance`-'$amount'
 		WHERE `mineconomy_accounts`.`uuid` = '$source_uuid';";
-            umc_mysql_query($sql);
+            umc_mysql_execute_query($sql);
         } else if ($UMC_ENV == 'websend') {
             umc_error("There is not enough money in the account! You need $amount but have only $balance Uncs.");
         }
@@ -156,7 +156,7 @@ function umc_money($source_raw = false, $target = false, $amount_raw = 0) {
         $sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
 	    SET `balance` = `balance` + '$amount'
             WHERE `mineconomy_accounts`.`uuid` = '$target_uuid';";
-        umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
     }
     // logging
     if (!$target) {$target = "System";}
@@ -201,14 +201,14 @@ function umc_money_check($user) {
             $fix_sql = "UPDATE `minecraft_iconomy`.`mineconomy_accounts`
 		 SET uuid='$uuid'
                  WHERE account='$user';";
-            umc_mysql_query($fix_sql, true);
+            umc_mysql_execute_query($fix_sql);
             // try again
             return umc_money_check($user);
         } else {
             // insert row
             $sql3 = "INSERT INTO `minecraft_iconomy`.`mineconomy_accounts` (`uuid`, `account`, `balance`)
                 VALUES ('$uuid', '$user', '100');";
-            umc_mysql_query($sql3, true);
+            umc_mysql_execute_query($sql3);
             return 0;
         }
     }
