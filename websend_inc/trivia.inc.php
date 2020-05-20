@@ -129,7 +129,7 @@ function umc_trivia_new() {
 
     // create the quiz
     $sql = "INSERT INTO minecraft_quiz.quizzes (`master`, `start`, `questions`, `price`) VALUES ('$player', NOW(),'$questions','$price');";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
     $id = umc_mysql_insert_id();
     // announce quiz and send first question
     umc_footer();
@@ -180,13 +180,13 @@ function umc_trivia_ask_users() {
 
     $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET status='asked'
         WHERE quiz_id=$quiz_id AND status='preparing';";
-    umc_mysql_query($upd_sql, true);
+    umc_mysql_execute_query($upd_sql);
 
     $question_no = $quiz_arr['question_no'];
 
     // update counter
     $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id = $question_id";
-    umc_mysql_query($question_sql, true);
+    umc_mysql_execute_query($question_sql);
 
     umc_mod_broadcast("&3[Trivia]&f Quiz No $quiz_id Question $question_no:&4");
     umc_mod_broadcast("&3[Trivia]&f Question: $question&4");
@@ -234,7 +234,7 @@ function umc_trivia_answer() {
     $answer_str = umc_mysql_real_escape_string($answer);
     $sql = "INSERT INTO minecraft_quiz.quiz_answers (quiz_id, question_id, answer_text, username, time, result)
         VALUES ({$quiz_arr['id']}, {$quiz_arr['question_id']}, $answer_str, '$player', NOW(), 'wrong');";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
 
     // message the quizmaster
     umc_exec_command("----------------- New Trivia Answer -----------------", 'toPlayer', $master);
@@ -294,10 +294,10 @@ function umc_trivia_skip() {
     // set all questions wrong
     $id = $quiz_arr['id'];
     $update_sql = "UPDATE minecraft_quiz.quiz_answers SET result='wrong' WHERE quiz_id=$id and question_id={$quiz_arr['question_id']};";
-    umc_mysql_query($update_sql);
+    umc_mysql_execute_query($update_sql);
 
     $close_sql = "UPDATE minecraft_quiz.quiz_questions SET status='solved' WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']};";
-    umc_mysql_query($close_sql);
+    umc_mysql_execute_query($close_sql);
     umc_mod_broadcast("&3[Trivia]&f &4 Quiz No $quiz_id Question $question_no&4");
     umc_mod_broadcast("&3[Trivia]&f &2No correct answers, this question has been skipped!&4");
     umc_mod_broadcast("&3[Trivia]&f &2Correct answer would have been $answer&4");
@@ -330,10 +330,10 @@ function umc_trivia_solve() {
     $answer_id = $args[2];
 
     $update_sql = "UPDATE minecraft_quiz.quiz_answers SET result='right' WHERE answer_id=$answer_id;";
-    umc_mysql_query($update_sql);
+    umc_mysql_execute_query($update_sql);
     $close_sql = "UPDATE minecraft_quiz.quiz_questions SET status='solved' WHERE quiz_id={$quiz_arr['id']} AND question_id={$quiz_arr['question_id']};";
     //umc_echo($close_aql);
-    umc_mysql_query($close_sql);
+    umc_mysql_execute_query($close_sql);
 
     // get answer user
     $sql = "SELECT * FROM minecraft_quiz.quiz_answers wHERE answer_id=$answer_id;";
@@ -454,15 +454,15 @@ function umc_trivia_pick_question($quiz_id) {
         // insert new question
         $ins_sql = "INSERT INTO minecraft_quiz.quiz_questions (`question_id`, `question_no`, `quiz_id`, `status`)
             VALUES ({$question_arr['id']}, $next_question_no, $quiz_id, 'preparing');";
-        umc_mysql_query($ins_sql, true);
+        umc_mysql_execute_query($ins_sql);
     } else {
         // update existing question
         $upd_sql = "UPDATE minecraft_quiz.quiz_questions SET question_id={$question_arr['id']}
             WHERE quiz_id=$quiz_id AND question_no=$question_no;";
-        umc_mysql_query($upd_sql, true);
+        umc_mysql_execute_query($upd_sql);
         // mark question as skipped
         $question_sql = "UPDATE minecraft_quiz.catalogue SET skipped=skipped+1 WHERE question_id=$question_id";
-        umc_mysql_query($question_sql, true);
+        umc_mysql_execute_query($question_sql);
     }
     $question_arr['question_no'] = $next_question_no;
     return $question_arr;
@@ -511,7 +511,7 @@ function umc_trivia_close_quiz($quiz_arr = false) {
     } else {
          $sql = "UPDATE minecraft_quiz.quizzes SET end=NOW(), winner='', points=0 WHERE quiz_id=$quiz_id;";
     }
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_mod_broadcast("&3[Trivia]&f Thanks for participating. Create your own quiz with /trivia new!");
     umc_log('trivia', 'close', "$player closed trivia $quiz_id and gave $prize to $winner_str each");
 }
