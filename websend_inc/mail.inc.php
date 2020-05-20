@@ -167,7 +167,7 @@ function umc_mail_new($recipient = false) {
     $mysql_title = trim(umc_mysql_real_escape_string($title));
     $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
             VALUES ('$uuid','$recipient_uuid', $mysql_title,'','draft', NOW());";
-    umc_mysql_query($sql);
+    umc_mysql_execute_query($sql);
     $id = umc_mysql_insert_id();
     umc_mail_display($id);
 }
@@ -195,7 +195,7 @@ function umc_mail_text() {
     }
     $sql_message = umc_mysql_real_escape_string(trim($message));
     $sql = "UPDATE minecraft_srvr.user_mail SET `message` = CONCAT(`message`, $sql_message), date_time=NOW() WHERE msg_id=$id LIMIT 1";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_mail_display($id);
 }
 
@@ -210,7 +210,7 @@ function umc_mail_send() {
         umc_error("You need to create a new message using {green}/mail new <recipient> <title>{white} first!");
     }
     $sql = "UPDATE minecraft_srvr.user_mail SET status = 'sent', date_time=NOW() WHERE msg_id=$id LIMIT 1";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_echo("Mail ID $id was sent successfully!");
     $uuid = $UMC_USER['uuid'];
     umc_mail_check($uuid);
@@ -241,7 +241,7 @@ function umc_mail_quick_send($title, $message, $recipient_uuid, $sender_uuid = f
 
     $sql = 'INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`) '
         . "VALUES ('$sender_uuid', '$recipient_uuid', $title_sql, $message_sql, 'sent', NOW());";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 }
 
 /*
@@ -301,7 +301,7 @@ function umc_mail_display($id) {
     umc_footer();
     if ($player == $recipient && $status == 'sent') {
         $read_sql = "UPDATE minecraft_srvr.`user_mail` SET status='read' WHERE msg_id=$id;";
-        umc_mysql_query($read_sql, true);
+        umc_mysql_execute_query($read_sql);
     }
 }
 
@@ -568,7 +568,7 @@ function umc_mail_delete_update_status($oldstatus, $role, $msg_id) {
         XMPP_ERROR_trigger("Invalid delete status");
     }
     $update_sql = "UPDATE `minecraft_srvr`.`user_mail` SET `status` = '$newstatus' WHERE `user_mail`.`msg_id` = $msg_id;";
-    umc_mysql_query($update_sql, true);
+    umc_mysql_execute_query($update_sql);
 }
 
 /**
@@ -615,7 +615,7 @@ function umc_mail_web() {
 
     if ($action == 'Mark all read') {
         $read_sql = "UPDATE minecraft_srvr.`user_mail` SET status='read' WHERE recipient_uuid='$uuid';";
-        umc_mysql_query($read_sql, true);
+        umc_mysql_execute_query($read_sql);
     }
 
     if ($action == 'Reply') {
@@ -727,7 +727,7 @@ function umc_mail_web() {
             $buttons .= "</div>";
             if ($mail['status'] == 'sent') {
                 $read_sql = "UPDATE minecraft_srvr.`user_mail` SET status='read' WHERE msg_id={$mail['msg_id']};";
-                umc_mysql_query($read_sql, true);
+                umc_mysql_execute_query($read_sql);
                 $mail['status'] = 'read';
             }
             $sender = umc_user2uuid($mail['sender_uuid']);
@@ -842,7 +842,7 @@ function umc_mail_send_backend($recipient_uuid, $sender_uuid, $message_raw, $sub
         $sql = "INSERT INTO minecraft_srvr.user_mail (`sender_uuid`, `recipient_uuid`, `title`, `message`, `status`, `date_time`)
             VALUES ($sender,$recipient,$subject,$message,'$status', NOW());";
     }
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 
     if ($action == 'Send') {
         $mail_id = umc_mysql_insert_id();
