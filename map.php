@@ -777,7 +777,7 @@ function umc_assemble_maps() {
         // $custom_color = "--color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
         $custom_color = '';
 
-        $command = "java -jar $mapper_folder$mapper_execution $folder --create-big-image $coordinates -o $destination/$world/png --create-tile-html $custom_color";
+        $command = "/etc/alternatives/jre_14/bin/java -jar $mapper_folder$mapper_execution $folder --create-big-image $coordinates -o $destination/$world/png --create-tile-html $custom_color";
         exec($command);
         XMPP_ERROR_trace(__FUNCTION__, "$world region maps rendered command $command");
 
@@ -1170,11 +1170,17 @@ function umc_read_markers_file($format = 'html', $world = 'empire', $user = fals
     $m = json_decode($text);
     // no users
     if (!$m) {
-        return '';
+        if ($format == 'array') {
+            return array();
+        }
+        return false;
     }
     $out_arr = array();
 
     if (count($m) == 0) {
+        if ($format == 'array') {
+            return array();
+        }
         return '';
     }
     if ($format == 'scrollto') {
