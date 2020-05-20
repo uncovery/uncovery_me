@@ -27,14 +27,14 @@ $UMC_FUNCTIONS['usericon_get'] = 'umc_usericon_get';
 
 /**
  * Get the usericon from the minecraft server
- * 
+ *
  * @global type $UMC_PATH_MC
  * @param type $users
  * @param type $update
  */
 function umc_usericon_get($users = false, $update = true) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_PATH_MC;
+    global $UMC_PATH_MC, $UMC_CONFIG;
     $steve_head = '/home/minecraft/server/bin/data/steve.png';
 
     if (!$users) {
@@ -63,7 +63,7 @@ function umc_usericon_get($users = false, $update = true) {
         if (!$update && file_exists("$UMC_PATH_MC/server/bin/data/full_skins/$uuid.png")) {
             continue;
         }
-        
+
         if ($uuid == 'abandone-0000-0000-0000-000000000000') {
             continue;
         }
@@ -72,9 +72,9 @@ function umc_usericon_get($users = false, $update = true) {
                 'uuid' => $uuid,
                 'url' => $d['response']['url'],
                 'reason' => 'Could not download user data',
-            );    
+            );
         }
-        
+
         $base64_texture = '';
         $d_arr = json_decode($d['content']);
         if (!$d_arr) {
@@ -97,8 +97,8 @@ function umc_usericon_get($users = false, $update = true) {
         //  }
         //}
         if (!isset($d_arr->properties)) {
-            XMPP_ERROR_trace("json", $d_arr);
             XMPP_ERROR_trigger("Failed to retrieve properties for $uuid");
+            continue;
         }
         $prop_count = count($d_arr->properties);
         for ($i=0; $i<$prop_count; $i++) {
@@ -113,7 +113,8 @@ function umc_usericon_get($users = false, $update = true) {
 
         $texture_arr = json_decode($raw_texture);
         if (!$texture_arr) {
-            XMPP_ERROR_trigger("Failed to decode texture: $raw_texture");
+            XMPP_ERROR_trigger("Failed to decode texture: $raw_texture / $base64_texture");
+            continue;
         }
 
         $time_stamp = $texture_arr->timestamp;
@@ -123,15 +124,23 @@ function umc_usericon_get($users = false, $update = true) {
             if (isset($texture_arr->textures->SKIN)) { // user did not set skin
                 $skin_urls[$uuid] = $texture_arr->textures->SKIN->url;
                 // echo $texture_arr->textures->SKIN->url . "<br>\n";
+                XMPP_ERROR_trace("$uuid skin url set: " . $skin_urls[$uuid]);
             } else {
                 XMPP_ERROR_trace("$uuid does not have a skin: $raw_texture");
                 $no_skin[] = $uuid;
             }
+        } else {
+            XMPP_ERROR_trace("$uuid has a user icon that is newer than the skin");
         }
     }
 
-    $S = unc_serial_curl($skin_urls);
+    XMPP_ERROR_trace("downloading " . count($skin_urls) . " userskins.... ");
+
+    $S = unc_serial_curl($skin_urls, 0, 50, '/home/includes/unc_serial_curl/google.crt');
+
     foreach ($S as $uuid => $s) {
+        XMPP_ERROR_trace("downloading $uuid.... ");
+
         $skin_file = "$UMC_PATH_MC/server/bin/data/full_skins/$uuid.png";
         $head_file = "$UMC_PATH_MC/server/bin/data/user_icons/$uuid.png";
         if ($s['response']['content_type'] !== 'image/png' && $s['response']['http_code'] !== 200) {
@@ -151,7 +160,7 @@ function umc_usericon_get($users = false, $update = true) {
             );
             continue;
         }
-        
+
         // convert to head icon, resize to 20x20
         $command = "convert -crop '8x8+8+8' -scale 20 \"$skin_file\" \"$head_file\"";
         exec($command);
@@ -169,7 +178,7 @@ function umc_usericon_get($users = false, $update = true) {
             } else {
                 XMPP_ERROR_trace("used steve head for $head_file");
             }
-        }        
+        }
     }
 
     if (count($failed_users) > 0) {
