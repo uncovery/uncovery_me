@@ -369,7 +369,7 @@ function umc_user_ban($user, $reason) {
         $admin = 'wordpress';
     }
     $sql = "INSERT INTO minecraft_srvr.`banned_users`(`username`, `reason`, `admin`, `uuid`) VALUES ('$username','$reason', '$admin', '$uuid');";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     // remove shop inventory
     umc_plugin_eventhandler('user_banned', $uuid);
     umc_wp_ban_user($uuid);
