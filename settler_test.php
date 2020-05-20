@@ -408,7 +408,7 @@ function umc_settler_new() {
                 umc_exec_command($cmd);
                 // update UUID database
                 $sql = "UPDATE minecraft_srvr.UUID SET userlevel='Settler' WHERE UUID='{$UMC_USER['uuid']}';";
-                umc_mysql_query($sql);
+                umc_mysql_execute_query($sql);
                 umc_exec_command('pex reload');
                 umc_mod_broadcast("Congrats $player for becoming Settler!");
                 XMPP_ERROR_send_msg("$userlevel $player got promoted with command " . $cmd);
