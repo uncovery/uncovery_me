@@ -271,7 +271,7 @@ function umc_hunger_announce() {
         // create database entry
         $sql = "INSERT INTO minecraft_iconomy.`hunger_games` (`admin`, `status`, `x`, `z`)
             VALUES ('$uuid', 'preparing', {$center['x']}, {$center['z']});";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
 
         umc_hunger_addplayer($uuid);
 
@@ -334,7 +334,7 @@ function umc_hunger_start() {
     // Starting the game...
     // Update game and player status
     $sql = "UPDATE minecraft_iconomy.hunger_games set status='started', start=NOW() WHERE id=$id;";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 
     foreach ($droppedplayers as $uuid => $player) {
         if ($HUNGER['announce']) {
@@ -343,7 +343,7 @@ function umc_hunger_start() {
             umc_echo("[Hunger] The user $player did not make it into the hunger world before the game start and will be removed");
         }
         $sql = "UPDATE hunger_players set status='noshow' WHERE status='preparing' and game_id=$id AND uuid='$uuid';";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
     }
 
     // adjust world size
@@ -356,7 +356,7 @@ function umc_hunger_start() {
         umc_ws_cmd($cmd, 'asConsole');
         umc_ws_cmd("ci $player", 'asConsole');
         $sql = "UPDATE minecraft_iconomy.hunger_players set status='playing' WHERE status='preparing' and game_id=$id AND uuid='$uuid';";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
     }
 
     $world_size = $HUNGER['current_game']['size'];
@@ -395,7 +395,7 @@ function umc_hunger_stop() {
                 umc_echo("[Hunger] The current hunger game has been cancelled by $player.");
             }
             $sql = "UPDATE minecraft_iconomy.hunger_games SET end=NOW(), status='aborted' WHERE id={$HUNGER['current_game']['id']};";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         } else {
             umc_error("[Hunger] $admin_username is still online. Ask him/her to stop the game.");
         }
@@ -428,7 +428,7 @@ function umc_hunger_abort() {
         umc_echo("[Hunger] The current hunger game has been {red}cancelled{purple}.");
     }
     $sql = "UPDATE minecraft_iconomy.hunger_games SET end=NOW(), status='aborted' WHERE id={$game['id']};";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     // do this anyhow for security
     umc_hunger_remove_perms('all');
     umc_log('hunger', 'abort', "game was cancelled");
@@ -580,7 +580,7 @@ function umc_hunger_check() {
             }
             if (!$found) {
                 $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='left', death=NOW() WHERE uuid='$db_uuid' and game_id = {$HUNGER['current_game']['id']};";
-                umc_mysql_query($sql, true);
+                umc_mysql_execute_query($sql);
             }
         }
         if(!umc_hunger_check_winner()) {
@@ -642,7 +642,7 @@ function umc_hunger_trophy() {
     umc_echo("[Hunger] all good, taking trophy...");
     #-- All good, do the work!
     $sql = "UPDATE minecraft_iconomy.hunger_games SET trophy_claimed = 'y' WHERE id = $game_id";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_echo("[Hunger] charging {$HUNGER['trophy_cost']}...");
     umc_money($player, false, $HUNGER['trophy_cost']);
 
@@ -765,7 +765,7 @@ function umc_hunger_addplayer() {
     umc_ws_cmd("warp hunger $player");
 
     $sql = "INSERT INTO minecraft_iconomy.`hunger_players` (`uuid`, `game_id`, `status`) VALUES ('$player_uuid', $game_id, 'preparing');";
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
     umc_echo("[Hunger] You ($player) were added to Hunger Game #$game_id.");
     XMPP_ERROR_send_msg("Added user $player to the hunger game");
 }
@@ -851,10 +851,10 @@ function umc_hunger_check_winner() {
         if (!in_array($winner, $HUNGER['current_game']['players']['alive'])) {
             $sql_game = "UPDATE minecraft_iconomy.`hunger_games`
                 SET status='aborted', end=NOW() WHERE id = $id;";
-            umc_mysql_query($sql_game, true);
+            umc_mysql_execute_query($sql_game);
             $sql_player = "UPDATE minecraft_iconomy.`hunger_players`
                 SET status='left' WHERE uuid='$winner_uuid' and game_id = $id;";
-            umc_mysql_query($sql_player, true);
+            umc_mysql_execute_query($sql_player);
             if ($HUNGER['announce']) {
                 umc_mod_broadcast("The Hunger Game has been aborted, no active players online.", $HUNGER['channel']);
             } else {
@@ -863,9 +863,9 @@ function umc_hunger_check_winner() {
         } else { // properly finished game
             $sql_winner = "UPDATE minecraft_iconomy.`hunger_games`
                 SET status='ended', winner='$winner_uuid', end=NOW() WHERE id = $id;";
-            umc_mysql_query($sql_winner, true);
+            umc_mysql_execute_query($sql_winner);
             $sql = "UPDATE minecraft_iconomy.`hunger_players` SET status='winner' WHERE uuid='$winner_uuid' and game_id = $id;";
-            umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
             if ($HUNGER['announce']) {
                 umc_mod_broadcast("The Hunger Game has ended! $winner wins!;", $HUNGER['channel']);
             } else {
