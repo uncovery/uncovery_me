@@ -288,10 +288,10 @@ function umc_do_cancel() {
 
         if ($amount < $row['amount']) { // Update existing listing
             $sql = "UPDATE minecraft_iconomy.`request` SET `amount`=amount-'$amount' WHERE id={$row['id']} LIMIT 1;";
-            $rst = umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         } else { // Delete the listing entirely
             $sql = "DELETE FROM minecraft_iconomy.`request` WHERE id={$row['id']}";
-            $rst = umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
         }
 
         $cost = $amount * $row['price'];
@@ -307,11 +307,11 @@ function umc_do_cancel() {
  *
  * @global type $UMC_USER
  * @global type $UMC_DATA_ID2NAME
- * @global type $ENCH_ITEMS
+ * @global type $UMC_DATA_ENCHANTMENTS
  */
 function umc_do_find() {
 
-    global $UMC_USER, $ENCH_ITEMS, $UMC_DATA_ID2NAME;
+    global $UMC_USER, $UMC_DATA_ENCHANTMENTS, $UMC_DATA_ID2NAME;
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $args = $UMC_USER['args'];
 
@@ -341,10 +341,10 @@ function umc_do_find() {
             case (preg_match('/ench:(.+)/',$arg, $match) ? $arg : false):
                 $find_specific_ench = umc_sanitize_input($match[1], 'ench');
                 $qualifier .= " AND meta LIKE '%$find_specific_ench%'";
-                if (!isset($ENCH_ITEMS[$find_specific_ench])) {
+                if (!isset($UMC_DATA_ENCHANTMENTS[$find_specific_ench])) {
                     umc_error("Sorry, the enchantment you are looking for ($find_specific_ench) does not exist;");
                 }
-                $search_label = "{purple}{$ENCH_ITEMS[$find_specific_ench]['name']}";
+                $search_label = "{purple}{$UMC_DATA_ENCHANTMENTS[$find_specific_ench]['name']}";
                 break;
 
             // match broadly any enchanted result
@@ -393,11 +393,11 @@ function umc_do_find() {
                 if (!$find_item) {
                     umc_error("Could not find this item");
                 }
-                $item = umc_goods_get_text($find_item['item_name'], $find_item['type']);
+                $item = umc_goods_get_text($find_item['item_name']);
                 //if ($UMC_ITEMS[$find_item['id']][0]['avail'] == false) {
                 //    umc_error("{red}Sorry, this item (ID {$find_item['id']}) is unavailable in the game!",true);
                 //}
-                $qualifier .= " AND item_name='{$find_item['item_name']}' AND damage='{$find_item['type']}'";
+                $qualifier .= " AND item_name='{$find_item['item_name']}'";
                 $search_label = $item['full'];
         }
     }
@@ -618,7 +618,7 @@ function umc_do_offer_internal($deposit) {
             $sum = $amount + $row['amount'];
             umc_echo("{green}[+]{gray}You already had {$row['amount']} {$item['full']} in the shop. Adding $amount to ID {$row['id']}");
             $sql = "UPDATE minecraft_iconomy.`stock` SET `amount` = amount + '$amount', price='$price' WHERE `stock`.`id`={$row['id']} LIMIT 1;";
-            $rst = umc_mysql_query($sql, true);
+            umc_mysql_execute_query($sql);
             $posted_id = $row['id'];
         } else { // Create a new listing.
             $sum = $amount;
@@ -630,7 +630,7 @@ function umc_do_offer_internal($deposit) {
                 umc_error("There was an error, please send a ticket with the details so it can be fixed");
             }
 
-            $rst = umc_mysql_query($sql);
+            umc_mysql_execute_query($sql);
             $posted_id = umc_mysql_insert_id();
         }
 	if ($deposit) {
@@ -994,16 +994,16 @@ function umc_do_sell_internal($from_deposit=false) {
         $sql = "INSERT INTO minecraft_iconomy.`deposit` (`damage` ,`sender_uuid` ,`item_name` ,`recipient_uuid` ,`amount` ,`meta`)
             VALUES ('{$request_item['type']}', 'shop0000-0000-0000-0000-000000000000', '{$request_item['item_name']}', '$recipient_uuid', '$amount', $meta_sql);";
     }
-    umc_mysql_query($sql, true);
+    umc_mysql_execute_query($sql);
 
     if ($amount < $request['amount']) { // Update existing listing
         $sql = "UPDATE minecraft_iconomy.`request` SET `amount`=amount-'$amount' WHERE id={$request['id']} LIMIT 1;";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
         //umc_echo("{purple}".$sql);
         //umc_echo("{red}".mysql_error());
     } else { // Delete the listing entirely
         $sql = "DELETE FROM minecraft_iconomy.`request` WHERE id={$request['id']}";
-        umc_mysql_query($sql, true);
+        umc_mysql_execute_query($sql);
         //umc_echo("{red}".mysql_error());
     }
     // record transaction
@@ -1030,6 +1030,11 @@ function umc_do_request() {
     $args = $UMC_USER['args'];
 
     // this returns a item_array already
+    
+    if ($args == array()) {
+        umc_error("You need to specify an item!");
+    }
+    
     $item_check = umc_sanitize_input($args[2], 'item');
     if (!$item_check) {
         umc_error("{red}Unknown item ({yellow}$args[2]{red}). Try using {yellow}/search{red} to find names.");
@@ -1134,7 +1139,7 @@ function umc_do_request() {
         umc_echo("{green}[+]{gray} You already requested {yellow}"
                 . "{$row['amount']} @ {$row['price']} {$item['full']}{gray}. New amount is {yellow}$amount{gray} @ price $price.");
         $sql = "UPDATE minecraft_iconomy.`request` SET `amount` = amount + '$amount', price='$price' WHERE id={$row['id']};";
-        $rst = umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
         $posted_id = $row['id'];
     } else { // Create a new listing.
         $sum = $amount;
@@ -1144,7 +1149,7 @@ function umc_do_request() {
         $sql = "INSERT INTO minecraft_iconomy.`request` (`id` ,`damage` ,`uuid` ,`item_name` ,`price` ,`amount` ,`meta`)
                 VALUES (NULL , '$type', '$uuid', '{$item['item_name']}', '$price', '$amount', $meta_sql);";
         //XMPP_ERROR_trigger($sql);
-        $rst = umc_mysql_query($sql);
+        umc_mysql_execute_query($sql);
         $posted_id = umc_mysql_insert_id();
     }
     if ($cost > 0) { // positive balances are charges
@@ -1188,7 +1193,7 @@ function umc_shop_cleanout_olduser($uuid) {
     umc_log('shop', 'reset', "cleaning shop for user $uuid");
     // delete all requests
     $requests_sql = "DELETE FROM minecraft_iconomy.request WHERE uuid='$uuid';";
-    umc_mysql_query($requests_sql, true);
+    umc_mysql_execute_query($requests_sql);
 
     // move all items from stock to deposit
     $sql = "SELECT * FROM minecraft_iconomy.stock WHERE uuid='$uuid';";
@@ -1214,7 +1219,7 @@ function umc_shop_usersdirectory($data) {
 
     // cost/amount as '\$/PC',
 
-    $current_page = filter_input(INPUT_GET, 'listpage' , FILTER_SANITIZE_NUMBER_INT);
+    $current_page = filter_input(INPUT_GET, 'listpage', FILTER_VALIDATE_INT);
     if (!$current_page) {
         $current_page = 1;
     }
