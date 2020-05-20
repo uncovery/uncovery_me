@@ -46,7 +46,7 @@ $WS_INIT['lot'] = array(
             'long' => 'This will display an in-game menu for your lot for easier management. If you do not give a lot argument, it will use your current lot.',
         ),
         'function' => 'umc_lot_manage',
-    ),    
+    ),
     'add' => array(
         'help' => array(
             'short' => 'Add features to your lot;',
@@ -85,7 +85,7 @@ $WS_INIT['lot'] = array(
         'security' => array(
             'level' => 'Owner',
          ),
-    ),    
+    ),
     'mod' => array(
         'help' => array(
             'short' => 'Add/Remove yourself from a flatlands lot for emergency fixes',
@@ -155,7 +155,7 @@ function umc_lot_mod() {
     if ($addrem == 'add') {
         $sql_ins = "INSERT INTO minecraft_worldguard.region_players (`region_id`, `world_id`, `user_id`, `Owner`)
             VALUES ('$lot', '$world_id', $user_id, 0);";
-        umc_mysql_query($sql_ins, true);
+        umc_mysql_execute_query($sql_ins);
         umc_echo("Added you to $lot in the $world!");
     } else if ($addrem == 'rem') {
         // check if target is there at all
@@ -165,7 +165,7 @@ function umc_lot_mod() {
             umc_error("It appears you are not a member of lot $lot in world $world!");
         }
         $sql_del = "DELETE FROM minecraft_worldguard.region_players WHERE region_id = '$lot' AND world_id = $world_id AND user_id = $user_id AND Owner=0;";
-        umc_mysql_query($sql_del, true);
+        umc_mysql_execute_query($sql_del);
         umc_echo("Removed you from $lot in the $world!");
     } else {
         umc_error("You can only use [add] or [rem], not {$args[1]}!");
@@ -269,11 +269,11 @@ function umc_lot_addrem() {
         if ($count == 0) {
             // insert
             $ins_sql = "INSERT INTO minecraft_worldguard.region_flag (region_id, world_id, flag, value) VALUES ('$lot', $world_id, '$flagname', '$flag');";
-            umc_mysql_query($ins_sql, true);
+            umc_mysql_execute_query($ins_sql);
         } else {
             // update
             $upd_sql = "UPDATE minecraft_worldguard.region_flag SET value='$flag' WHERE region_id='$lot' AND world_id=$world_id AND flag='$flagname';";
-            umc_mysql_query($upd_sql, true);
+            umc_mysql_execute_query($upd_sql);
         }
         umc_echo("done!");
         umc_log('lot', 'addrem', "$player changed $action property of $lot");
@@ -361,13 +361,13 @@ function umc_lot_addrem() {
                 $owners = umc_get_lot_members($lot, true);
                 // remove all current owners
                 foreach ($owners as $uuid => $username) {
-                    umc_lot_rem_player($uuid, $lot, 1);     
+                    umc_lot_rem_player($uuid, $lot, 1);
                 }
                 // add the new owner
                 umc_lot_add_player($target, $lot, 1);
                 umc_echo("Gave $lot to $target in the $world! Old Owners removed!");
                 // logfile entry
-                umc_log('lot', 'addrem', "$player gave lot to $target");             
+                umc_log('lot', 'addrem', "$player gave lot to $target");
             } else {
                 umc_show_help($args);
             }
@@ -553,13 +553,13 @@ function umc_lot_manage() {
     } else { // no lot given, get the current user's lot
         $world = $UMC_USER['world'];
         $x = round($UMC_USER['coords']['x'],1);
-        $z = round($UMC_USER['coords']['z'],1);    
+        $z = round($UMC_USER['coords']['z'],1);
         $lot = umc_lot_get_from_coords($x, $z, $world);
         if (!$lot) {
             umc_error('There is no lot here!');
         }
         $lot_owners = umc_get_lot_members($lot, true);
-        if (!in_array(strtolower($player), $lot_owners)) {
+        if ($lot_owners && !in_array(strtolower($player), $lot_owners)) {
             $text = 'You are not owner of this lot! Owners are ' . implode(",", $lot_owners);
             XMPP_ERROR_trigger($text);
             umc_error($text);
@@ -567,7 +567,7 @@ function umc_lot_manage() {
     }
     $lot_members = umc_get_lot_members($lot, false);
     $online_users = $UMC_USER['online_players'];
-    
+
     umc_header("Lot $lot");
     // show current users for removal
     $members_str = array();
@@ -581,21 +581,21 @@ function umc_lot_manage() {
         }
     }
     umc_text_format($members_str, false, false);
-    
+
     // show active users for adding
     $new_members_str = array();
     $new_members_str[] = array('text' => 'Current Users: ', 'format' => 'blue');
     if (count($online_users) == 0) {
         $members_str[] = array('text' => "(No online users)", 'format' => 'white');
-    }    
+    }
     foreach ($online_users as $user) {
        if (($lot_members && in_array($user, $lot_members)) || $user == strtolower($player)) {
            continue;
        }
        $new_members_str[] = array('text' => "$user ", 'format' => 'white');
        $new_members_str[] = array('text' => "[+] ", 'format' => array('green', 'run_command' => "/lot add $lot member $user", 'show_text' => "Add $user to lot"));
-    } 
+    }
     umc_text_format($new_members_str, false, false);
-    
+
     umc_footer();
 }
