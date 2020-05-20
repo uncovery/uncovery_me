@@ -1,34 +1,40 @@
 <?php
 
 function umc_item_icon_html($item_name) {
-    global $UMC_DOMAIN, $UMC_SETTING, $ITEM_SPRITES;
+    global $UMC_DOMAIN, $UMC_SETTING, $ITEM_SPRITES, $UMC_PATH_MC;
     $version = $UMC_SETTING['mc_version'];
-    $assets_blocks_path = $UMC_SETTING['path']['server'] . "/mc_assets/minecraft-assets/data/$version/blocks";
+    $assets_path = "$UMC_PATH_MC/mc_assets/minecraft-assets/data/$version";
 
-    $wiki_icon_path = $UMC_SETTING['path']['server'] . "/bin/data/item_icons";
-
-    if (file_exists("$wiki_icon_path/$item_name.png")) {
-        $url = $UMC_DOMAIN . "/websend/item_icons/$item_name.png";
-        $img = "<img src=\"$url\">";
-        return $img;
+    if (file_exists($assets_path . "blocks/$item_name.png")) {
+        $icon_url = "$UMC_DOMAIN/websend/mc-assets/$version/blocks/$item_name.png";
+        $html = "<img src=\"$icon_url\">";
+    } else if (file_exists($assets_path . "items/$item_name.png")) {
+        $icon_url = "$UMC_DOMAIN/websend/mc-assets/$version/items/$item_name.png";
+        $html = "<img src=\"$icon_url\">";
+    } else if (file_exists("$UMC_PATH_MC/server/bin/data/item_icons/$item_name.png")) {
+        $icon_url = $UMC_DOMAIN . "/websend/item_icons/$item_name.png";
+        $html = "<img src=\"$icon_url\">";
     } else if (isset($ITEM_SPRITES[$item_name])) {
-        $img = "<span class=\"item_sprite item_{$item_name}\"> </span>";
-    /*} else if (file_exists("$assets_blocks_path/$item_name.png")) {
-        $url = $UMC_DOMAIN . "/admin/mc_assets/$version/blocks/$item_name.png";
-        $img = "<img src=\"$url\">";
-        return $img;*/
+        $html = "<span class=\"item_sprite item_{$item_name}\"> </span>";
     } else {
-        $item_name = 'invalid: ' . "$assets_blocks_path/$item_name.png" . "?";
-        $img = "<span class=\"item_sprite item_{$item_name}\"> </span> ?" ;
+        XMPP_ERROR_trace("$item_name icon not found" );
+        $html = "<span> </span> ?" ;
     }
-    return $img;
+    return $html;
 }
 
+/**
+ * get icons for blocks, those are individual icons
+ *
+ * @global type $UMC_DATA
+ * @global type $UMC_PATH_MC
+ * @return type
+ */
 function umc_block_icons_get_wiki() {
-    global $UMC_CONFIG, $UMC_DATA, $UMC_PATH_MC;
+    global $UMC_DATA, $UMC_PATH_MC;
 
-    // STEP 1: get the whole website data
-    $url = 'https://minecraft.gamepedia.com/Java_Edition_data_values';
+    // STEP 1: get the whole website data, only for blocks, those are individual icons
+    $url = 'https://minecraft.gamepedia.com/index.php?title=Java_Edition_data_values/Blocks';
 
     $url_data = unc_serial_curl($url, 0, 50, '/home/includes/unc_serial_curl/google.crt'); // ,0,50, $UMC_CONFIG['ssl_cert']
 
@@ -43,24 +49,27 @@ function umc_block_icons_get_wiki() {
 
     // now get all valid item_name URLS and write them into an array
 
-    echo "found " . count($matches) . " Matches!\n";
+    echo "found " . count($matches) . " block Matches!\n";
 
     $icon_urls = array();
     foreach ($matches as $match) {
         $item_name = str_replace(" ",  "", strtolower($match['item_name']));
         if (isset($UMC_DATA[$item_name])) {
             $icon_urls[$item_name] = $match['full_url'];
+        } else {
+            echo "could not match $item_name\n";
         }
     }
 
-    echo "found " . count($icon_urls) . " valid item names!\n";
+
+    echo "found " . count($icon_urls) . " valid block names!\n";
 
     // now pass all the URLS to serial_curl
     $failed_icons = array();
     $S = unc_serial_curl($icon_urls, 0, 50, '/home/includes/unc_serial_curl/google.crt');
     foreach ($S as $item_name => $s) {
         $icon_file = "$UMC_PATH_MC/server/bin/data/item_icons/$item_name.png";
-        if (strstr("access denied", $s['content'])) {
+        if (strstr($s['content'], "access denied")) {
             $failed_icons[] = array(
                 'item_name' => $item_name,
                 'url' => $s['response']['url'],
@@ -98,24 +107,29 @@ function umc_item_icons_get_wiki() {
 
 
     // STEP 1: get the whole website data
-    $url = 'https://minecraft.gamepedia.com/Java_Edition_data_values';
+    $url = 'https://minecraft.gamepedia.com/Java_Edition_data_values/Items';
     $url_data = unc_serial_curl($url, 0, 50, '/home/includes/unc_serial_curl/google.crt'); // ,0,50, $UMC_CONFIG['ssl_cert']
 
     $matches = false;
-    $regex = '/item-sprite" style="background-image:url\((?\'image_url\'.*)\);background-position:(?\'position\'.*)".*\n.*\n.*<code>(?\'item_name\'.*)<\/code>/mU';
+    $regex = '/item-sprite" style="background-image:url\((?\'image_url\'.*)\);background-position:(?\'xpos\'-.*)px (?\'ypos\'-.*)px".*\n.*\n.*<code>(?\'item_name\'.*)<\/code>/mU';
     preg_match_all($regex, $url_data[0]['content'], $matches, PREG_SET_ORDER, 0);
 
-    $item_sprite_css = '.item_sprite {display: inline-block; background-size: 256px; background-image: url(/admin/img/ItemCSS.png); background-repeat: no-repeat; width:16px; height:16px;}';
+    $item_sprite_css = '.item_sprite {display: inline-block; background-size: 512px; background-image: url(/admin/img/ItemCSS.png); background-repeat: no-repeat; width:32px; height:32px;}';
 
     $icon_positions = array();
+    $count = 0;
     foreach ($matches as $match) {
         $item_name = str_replace(" ",  "", strtolower($match['item_name']));
-        $position = $match['position'];
+        $x_pos = $match['xpos'] * 2; // we scale the background and the icons so that they match teh block icon size
+        $y_pos = $match['ypos'] * 2;
         if (isset($UMC_DATA[$item_name])) {
-            $icon_positions[$item_name] = $position;
-            $item_sprite_css .= "\n.item_$item_name {background-position:$position;}";
+            $icon_positions[$item_name] = "{$x_pos}px {$y_pos}px";
+            $item_sprite_css .= "\n.item_$item_name {background-position:{$x_pos}px {$y_pos}px;}";
+            $count++;
         }
     }
+    echo "found $count item matches!";
+
     ksort($icon_positions);
     umc_array2file($icon_positions, "ITEM_SPRITES", "/home/minecraft/server/bin/assets/item_sprites.inc.php");
 
