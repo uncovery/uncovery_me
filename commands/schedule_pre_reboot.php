@@ -22,10 +22,6 @@ umc_usericon_get();
 umc_log('system', 'daily_process', "running umc_github_wordpress_update");
 umc_github_wordpress_update();
 
-umc_log('system', 'daily_process', "running umc_item_fix_old");
-// rename old items in the databases to the new names (item_data.inc.php)
-umc_item_fix_old();
-
 umc_log('system', 'daily_process', "running umc_plg_enum");
 umc_plg_enum();
 
