@@ -200,10 +200,12 @@ function umc_goods_get_text($item_name_raw, $item_data = 0, $meta = '') {
     $nbt_raw = '';
     $meta_spacer = '';
     if ($meta != '') {
-        $tmp_var = umc_get_meta_txt($meta, 'short');
+        $tmp_var = umc_nbt_display($meta, 'short_text'); //umc_get_meta_txt($meta, 'short');
         $meta_spacer = ' ';
         // differentiate between meta and nbt
-        if (strpos($meta, "{") === 0) { // we have nbt
+        if (is_array($meta)) { // this should be the default
+            $meta_text = $tmp_var;
+        } else if (strpos($meta, "{") === 0) { // we have nbt
             $nbt_string = " " . $tmp_var;
             $nbt_raw = $meta;
         } else {

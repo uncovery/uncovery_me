@@ -36,13 +36,16 @@ function umc_check_inventory($item_name, $data, $meta) {
     $inv = $UMC_USER['inv'];
     $amount = 0;
 
-    if (strpos($meta, "{") === 0) {
+    if (is_array($meta)) { // this should be always the case
+        $comparator = 'nbt_array';
+    } else if (!is_array($meta) && strpos($meta, "{") === 0) {
         $comparator = 'nbt';
     } else if (!is_array($meta)) {
         $comparator = 'meta';
         $meta = unserialize($meta);
     }
 
+    // let's iterate the whole inventory to check if the have the same items
     foreach ($inv as $inv_item) {
         // we have to make sure we do not compare enchanted w. non-enchated items
         if ($inv_item[$comparator] && (count($meta) >= 1)) {

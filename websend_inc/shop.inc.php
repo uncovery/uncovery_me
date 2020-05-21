@@ -492,6 +492,7 @@ function umc_do_offer_internal($deposit) {
     $item_slot = $UMC_USER['current_item'];
     $inv = $UMC_USER['inv'];
 
+    // we make an offer from our desposit
     if ($deposit) {
         if (!isset($args[2])) {
             umc_error("{red}You did not specify a valid deposit ID. {white}Type {yellow}/shop{white} for help.");
@@ -515,14 +516,15 @@ function umc_do_offer_internal($deposit) {
 	$depot_id = $row['id'];
         $meta = $row['meta'];
 	$inv_amount = $row['amount'];
-    } else {
+    } else { // we make an offer from player inventory
 	if (!isset($inv[$item_slot])) {
 	    umc_error("{red}You need to hold the item you want to offer!");
 	}
 	$item_name = $inv[$item_slot]['item_name'];
 	$item_type = $inv[$item_slot]['data'];
-        if (strpos($inv[$item_slot]['nbt'], "{") === 0) { //we have nbt
-            $meta = $inv[$item_slot]['nbt'];
+        if (isset($inv[$item_slot]['nbt_array']) && count($inv[$item_slot]['nbt_array']) > 0) { //we have nbt
+            $nbt_array = $inv[$item_slot]['nbt_array'];
+            $meta  = $inv[$item_slot]['nbt'];
         } else if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
             $meta = serialize($inv[$item_slot]['meta']);
         } else {
@@ -531,7 +533,7 @@ function umc_do_offer_internal($deposit) {
 	if (!is_numeric($item_type)) {
 	    $item_type = 0;
 	}
-	$inv_amount = umc_check_inventory($item_name, $item_type, $meta);
+	$inv_amount = umc_check_inventory($item_name, $item_type, $nbt_array);
     }
 
     if ($inv_amount == 0) {
@@ -1030,11 +1032,11 @@ function umc_do_request() {
     $args = $UMC_USER['args'];
 
     // this returns a item_array already
-    
+
     if ($args == array()) {
         umc_error("You need to specify an item!");
     }
-    
+
     $item_check = umc_sanitize_input($args[2], 'item');
     if (!$item_check) {
         umc_error("{red}Unknown item ({yellow}$args[2]{red}). Try using {yellow}/search{red} to find names.");
