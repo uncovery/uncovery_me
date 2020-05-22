@@ -78,93 +78,6 @@ function umc_item_data_create() {
     XMPP_ERROR_trigger("test");
 }
 
-// this uses /mc_assets/minecraft-data to get al enchantment data from the wiki
-function umc_enchantment_data_create() {
-    global $UMC_SETTING, $UMC_PATH_MC;
-
-    $version = $UMC_SETTING['mc_version_minor'];
-    $path = "$UMC_PATH_MC/server/mc_assets/minecraft-data/data/pc/$version/";
-    $file_contents = file_get_contents($path . 'enchantments.json');
-    $data = json_decode($file_contents);
-
-    $short_names = array(
-        'aqua_affinity' => 'Aqua',
-        'bane_of_arthropods' => 'Bane',
-        'blast_protection' => 'Blast',
-        'unbreaking' => 'UnBr',
-        'channeling' => 'Chan',
-        'binding_curse' => 'Bind',
-        'vanishing_curse' => 'Vanish',
-        'depth_strider' => 'Depth',
-        'efficiency' => 'Eff',
-        'feather_falling' => 'Feat',
-        'fire_aspect' => 'FireA',
-        'fire_protection' => 'FProt',
-        'flame' => 'Flame',
-        'fortune' => 'Fort',
-        'frost_walker' => 'Frost',
-        'impaling' => 'Imp',
-        'infinity' => 'Inf',
-        'knockback' => 'Knock',
-        'looting' => 'Loot',
-        'loyalty' => 'Loyal',
-        'luck_of_the_sea' => 'Luck',
-        'lure' => 'Lure',
-        'mending' => 'Mend',
-        'multishot' => 'Mult',
-        'piercing' => 'Pierc',
-        'power' => 'Pow',
-        'projectile_protection' => 'PProt',
-        'protection' => 'Prot',
-        'punch' => 'Punch',
-        'quick_charge' => 'QChar',
-        'respiration' => 'Resp',
-        'riptide' => 'Rip',
-        'sharpness' => 'Sharp',
-        'silk_touch' => 'Silk',
-        'smite' => 'Smite',
-        'sweeping' => 'Sweep',
-        'thorns' => 'Thorn',
-        'unbreaking' => 'Unbr',
-    );
-
-    $array_data = array();
-    foreach ($data as $obj) {
-        $fullname = $obj->itemName;
-        $name_split = explode(".", $fullname);
-        $item_name = $name_split[1];
-
-        $item_array = array();
-        foreach ($obj->primaries as $item) {
-            $name_split = explode(".", $item);
-            $item_array[] = $name_split[1];
-        }
-        foreach ($obj->secondaries as $item) {
-            $name_split = explode(".", $item);
-            $item_array[] = $name_split[1];
-        }
-
-        $conflict_array = array();
-        foreach ($obj->excludes as $ench) {
-            $name_split = explode(".", $ench);
-            $conflict_array[] = $name_split[1];
-        }
-
-        $array_data[$item_name] = array(
-            'key' => $fullname,
-            'name' => $obj->displayName,
-            'short' => $short_names[$item_name],
-            'max' => $obj->maxLevel,
-            'items' => $item_array,
-            'conflicts' => $conflict_array,
-            'probability' => $obj->probability,
-        );
-    }
-
-    ksort($array_data);
-    umc_array2file($array_data, "UMC_DATA_ENCHANTMENTS", "/home/minecraft/server/bin/assets/item_enchantments.inc.php");
-}
-
 /**
  * this checks for broken items and fixes if possible.
  * this is for items where the name does not match to what ITEM_DATA says
@@ -203,7 +116,7 @@ function umc_broken_items_add_fix($item_name) {
 /**
  * fix old item names in tables
  */
-function umc_item_fix_old($search, $replace) {
+function umc_item_fix_old($search, $replace, $field = 'item_name', $substring_search = false) {
     $tables = array(
         'minecraft_iconomy.transactions',
         'minecraft_iconomy.stock',
@@ -211,14 +124,24 @@ function umc_item_fix_old($search, $replace) {
         'minecraft_iconomy.deposit',
     );
 
+    $results = 0;
+
     foreach ($tables as $table) {
         $search_sql = umc_mysql_real_escape_string($search);
         $replace_sql = umc_mysql_real_escape_string($replace);
-        $update_sql = "UPDATE $table SET `item_name` = REPLACE(`item_name`, $search_sql, $replace_sql) WHERE `item_name` LIKE $search_sql;";
-        XMPP_ERROR_trace("fix old SQL", $update_sql);
-        umc_mysql_execute_query($update_sql);
+        if ($substring_search) {
+            $where_search = umc_mysql_real_escape_string("%$search%");
+            $update_sql = "UPDATE $table SET `$field` = REPLACE(`$field`, $search_sql, $replace_sql) WHERE `$field` LIKE $where_search;";
+        } else {
+            $update_sql = "UPDATE $table SET `$field` = REPLACE(`$field`, $search_sql, $replace_sql) WHERE `$field` LIKE $search_sql;";
+        }
+
+        $count = umc_mysql_execute_query($update_sql);
+        XMPP_ERROR_trace("fix old SQL", $update_sql . ", $count results!");
+        $results += $count;
     }
-    XMPP_ERROR_trigger("tried to rename $search into $replace in item name tables!");
+    XMPP_ERROR_trigger("tried to rename $search into $replace in item name tables, $results actions!");
+    return $results;
 }
 
 
