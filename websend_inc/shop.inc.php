@@ -523,7 +523,6 @@ function umc_do_offer_internal($deposit) {
 	$item_name = $inv[$item_slot]['item_name'];
 	$item_type = $inv[$item_slot]['data'];
         if (isset($inv[$item_slot]['nbt_array']) && count($inv[$item_slot]['nbt_array']) > 0) { //we have nbt
-            $nbt_array = $inv[$item_slot]['nbt_array'];
             $meta  = $inv[$item_slot]['nbt'];
         } else if ($inv[$item_slot]['meta']) { // we do not want "false" to be serialized
             $meta = serialize($inv[$item_slot]['meta']);
@@ -533,7 +532,7 @@ function umc_do_offer_internal($deposit) {
 	if (!is_numeric($item_type)) {
 	    $item_type = 0;
 	}
-	$inv_amount = umc_check_inventory($item_name, $item_type, $nbt_array);
+	$inv_amount = umc_check_inventory($item_name, $item_type, $meta);
     }
 
     if ($inv_amount == 0) {

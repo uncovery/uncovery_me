@@ -36,9 +36,7 @@ function umc_check_inventory($item_name, $data, $meta) {
     $inv = $UMC_USER['inv'];
     $amount = 0;
 
-    if (is_array($meta)) { // this should be always the case
-        $comparator = 'nbt_array';
-    } else if (!is_array($meta) && strpos($meta, "{") === 0) {
+    if (!is_array($meta) && strpos($meta, "{") === 0) {
         $comparator = 'nbt';
     } else if (!is_array($meta)) {
         $comparator = 'meta'; // this should not happen anymore

@@ -594,6 +594,7 @@ function umc_do_deposit_internal($all = false) {
             $amount = $inv;
             $amount_str = $inv;
         }
+
         umc_echo("{yellow}[!]{gray} You have {yellow}$inv{gray} items in your inventory, depositing {yellow}$amount");
 
         // retrieve the data from the db
@@ -635,7 +636,16 @@ function umc_do_deposit_internal($all = false) {
 
             // provide feedback
             $log_text = "{green}[+]{gray} Depositing {yellow}$amount_str {$item['full']}{gray} for {gold}$recipient";
-            umc_echo($log_text);
+            // umc_echo($log_text);
+            $text_data = array(
+                array('text' => '[+]', 'format' => 'green'),
+                array('text' => 'Depositing', 'format' => 'gray'),
+                array('text' => $amount, 'format' => 'yellow'),
+                array('text' => $item['name'], 'format' => array('blue', 'show_item' => array('item_name' => $item['item_name'], 'damage' => $item['type'], 'nbt' => $item['nbt_raw']))),
+                array('text' => "for $recipient", 'format' => 'gold'),
+
+            );
+            umc_text_format($text_data, false, true);
 
             $sentFromSystem = umc_depositbox_system_UUID_check($uuid);
 
