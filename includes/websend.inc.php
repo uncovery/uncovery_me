@@ -656,7 +656,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                 case 'hover':
                     if ($format == 'show_item') {
                         $nbt = ''; // we add nbt only if we have one
-                        if ($variable['nbt']) {
+                        if (isset($variable['nbt'])) {
                             $nbt_safe = addslashes($variable['nbt']);
                             $nbt = ",tag:$nbt_safe";
                         }
