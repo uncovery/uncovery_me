@@ -579,46 +579,73 @@ function umc_process_donation() {
  * update the donator status user depending on their past donations.
  *
  * @param type $uuid
- * @return boolean
+ * @return string userlevel
  */
 function umc_donation_update_user($uuid) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $is_donator = umc_donation_remains($uuid);
+    XMPP_ERROR_trace("is user still donator?", $is_donator);
 
     $userlevel = umc_userlevel_get($uuid);
+    XMPP_ERROR_trace("current userlevel", $userlevel);
+
     if ($userlevel == 'Owner') {
-        return false;
+        return $userlevel;
     }
 
     $base_level_arr = umc_userlevel_get_base($userlevel);
     $base_level = $base_level_arr['level_name'];
+    XMPP_ERROR_trace("base userlevel", $base_level);
+
+    $assign = false;
+
     if ($is_donator) {
         if (strpos($userlevel, 'DonatorPlus')) { // all good
             $new_level = $base_level . "Donator";
-            umc_userlevel_assign_level($uuid, $new_level);
+            $assign = $new_level;
         } else if (strpos($userlevel, 'Donator')) { // all good
-            return;
+            XMPP_ERROR_trace("uselevel is correct!");
+            return $userlevel;
         } else {
             $new_level = $userlevel . "Donator";
-            umc_userlevel_assign_level($uuid, $new_level);
+            $assign = $new_level;
         }
     } else { // not donator
         if ($userlevel != $base_level) { // downgrade
-            umc_userlevel_assign_level($uuid, $base_level);
+            XMPP_ERROR_trace("userlevel marked for downgrade ($userlevel !> $base_level)");
+            $assign = $base_level;
+        } else {
+            XMPP_ERROR_trace("user is not donator ($userlevel == $base_level)");
         }
+    }
+    if ($assign) {
+        umc_userlevel_assign_level($uuid, $assign);
+        XMPP_ERROR_trace("assigned new userlevel", $base_level);
+        return $assign;
+    } else {
+        return $userlevel;
     }
 }
 
 /**
- * return an array of all current donators
- *
- * @return type
+ * return an array of all current donators, update them in the process
+ * @return array list of all donator UUIDs
  */
 function umc_donation_list_donators() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator';";
+    $sql_check = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator' AND type=1;";
+    $C = umc_mysql_fetch_all($sql_check);
+
+    // let's do a round where we update all users
+    foreach($C as $row) {
+        umc_donation_update_user($row['uuid']);
+    }
+
+    // then get a new list after updates have been done
+    $sql = "SELECT child as uuid FROM minecraft_srvr.permissions_inheritance WHERE parent LIKE '%Donator' AND type=1;";
     $D = umc_mysql_fetch_all($sql);
     $out_arr = array();
+    // let's do a round where we update all users
     foreach($D as $row) {
         $out_arr[] = $row['uuid'];
     }
