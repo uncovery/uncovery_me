@@ -607,6 +607,7 @@ function umc_lottery() {
     $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
     $give_type = 0;
     $give_amount = 1;
+    $item_nbt = '';
     if (in_array($type, $non_deposit)) {
         $item_name = false;
         $give_type = $type;
@@ -719,7 +720,7 @@ function umc_lottery() {
         );
         umc_text_format($data, '@a', false);
 
-        umc_log('votelottery', 'vote', "$user rolled $luck and got $full ($item_name $item_nbt)");
+        umc_log('votelottery', 'vote', "$user rolled $luck and got ($item_name $item_nbt)");
         $userlevel = umc_userlevel_get($uuid);
         if ($user_is_online && in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use '/withdraw @lottery' to get it!";
