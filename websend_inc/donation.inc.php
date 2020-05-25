@@ -620,6 +620,7 @@ function umc_donation_update_user($uuid) {
     }
     if ($assign) {
         umc_userlevel_assign_level($uuid, $assign);
+        umc_log("donation", "userlevel downgrade", "Donator level of $uuid has eexpired and downgraded from $userlevel to $assign");
         XMPP_ERROR_trace("assigned new userlevel", $base_level);
         return $assign;
     } else {
