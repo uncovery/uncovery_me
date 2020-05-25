@@ -85,7 +85,7 @@ $lottery = array(
         'txt' => 'a shiny, tiny, diamond',
         'detail' => array(
             'item_name' => 'diamond',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'trident' => array(
@@ -94,7 +94,7 @@ $lottery = array(
         'txt' => 'a trident!!',
         'detail' => array(
             'item_name' => 'trident',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'diamond_block' => array(
@@ -103,7 +103,7 @@ $lottery = array(
         'txt' => 'an ugly, heavy diamond block',
         'detail' => array(
             'item_name' => 'diamond_block',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'golden_apple' => array(
@@ -112,7 +112,7 @@ $lottery = array(
         'txt' => 'a shiny golden apple (Yum!)',
         'detail' => array(
             'item_name' => 'golden_apple',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'cake' => array(
@@ -121,7 +121,7 @@ $lottery = array(
         'txt' => 'an entire cake (Happy Cakeday!)',
         'detail' => array(
             'item_name' => 'cake',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'coal' => array(
@@ -130,7 +130,7 @@ $lottery = array(
         'txt' => 'a NOT shiny piece of coal',
         'detail' => array(
             'item_name' => 'coal',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'enchanted_pick' => array(
@@ -157,7 +157,7 @@ $lottery = array(
         'txt' => 'a big block of extra-fine dirt',
         'detail' => array(
             'item_name' => 'dirt',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'cookie' => array(
@@ -166,7 +166,7 @@ $lottery = array(
         'txt' => 'a hot cookie (OUCH!)',
         'detail' => array(
             'item_name' => 'cookie',
-            'nbt' => '',
+            'nbt' => false,
         ),
     ),
     'random_pet' => array(
@@ -605,21 +605,22 @@ function umc_lottery() {
 
     // based on item type, give reward to the player
     $non_deposit = array('additional_home', 'additional_deposit', 'vanity_title', 'random_unc');
-    $give_data = 0;
     $give_type = 0;
     $give_amount = 1;
-    $give_nbt = '';
     if (in_array($type, $non_deposit)) {
+        $item_name = false;
         $give_type = $type;
         switch ($type) {
             case 'additional_home':
                 $newname = 'lottery' . "_" . umc_random_code_gen(4);
                 umc_home_add($uuid, $newname, true);
                 $item_txt = "an addtional home!!";
+                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
                 break;
             case 'additional_deposit':
                 umc_depositbox_create($uuid);
                 $item_txt = "an addtional deposit box!!";
+                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
                 break;
             case 'vanity_title':
                 $current_title = umc_vanity_get_title();
@@ -629,26 +630,35 @@ function umc_lottery() {
                 $luck2 = mt_rand(7, 14);
                 umc_vanity_set($luck2, "I won the lottery!");
                 $item_txt = "a vanity title fo $luck2 days!!";
+                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
                 break;
             case 'random_unc':
                 $luck2 = mt_rand(1, 500);
                 umc_money(false, $user, $luck2);
                 $item_txt = "$luck2 Uncs";
+                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
                 break;
         }
     } else {
         // instantiate block variables
+
+        $item_color = 'green';
+        $magic_item_color = 'aqua';
+
         switch ($type) {
             case 'item':
                 $item_txt = $prize['txt'];
-                $give_type = $detail['item_name'];
-                $give_nbt = $detail['nbt'];
+                $item_name = $detail['item_name'];
+                if ($detail['nbt']) {
+                    $item_format_array = array('text' => "1 $item_txt", 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0, 'nbt' => $detail['nbt'])));
+                } else {
+                    $item_format_array = array('text' => "1 $item_txt", 'format' => array($item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0)));
+                }
                 break;
             case 'random_ench':
                 // pick which enchantment
                 $rand_ench = array_rand($UMC_DATA_ENCHANTMENTS);
                 $rand_ench_type = $UMC_DATA_ENCHANTMENTS[$rand_ench]['key'];
-
                 $ench_arr = $UMC_DATA_ENCHANTMENTS[$rand_ench];
                 //pick which item to enchant
                 $rand_item = array_rand($ench_arr['items']);
@@ -656,14 +666,11 @@ function umc_lottery() {
                 // pick level of enchantment
                 $lvl_luck = mt_rand(1, $ench_arr['max']);
                 //echo "$item $ench_txt $lvl_luck";
-                // '{RepairCost:7,Enchantments:[{lvl:1,id:"minecraft:silk_touch"},{lvl:5,id:"minecraft:efficiency"},{lvl:3,id:"minecraft:unbreaking"}]}'
-                $ench_nbt = "{Enchantments:[{lvl:$lvl_luck,id:\"$rand_ench_type\"}]}";
-                $item = umc_goods_get_text($rand_item_id, 0, $ench_nbt);
+                $item_nbt = "{RepairCost:1,Enchantments:[{lvl:$lvl_luck,id:\"$rand_ench_type\"}],Damage:0}";
+                // the ench_table has minecraft:whatever so we need to convert
+                $item = umc_goods_get_text($rand_item_id, 0, $item_nbt);
                 $item_name = $item['item_name'];
-                $full = $item['full'];
-                $item_txt = "a " . $full;
-                $give_type = $item_name;
-                $give_nbt = $ench_nbt;
+                $item_format_array = array('text' => "1 enchanted ". $item['name'], 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0, 'nbt' => $item_nbt)));
                 break;
             case 'random_pet': // same as blocks below but only 1 always
             case 'random_ore':
@@ -671,44 +678,48 @@ function umc_lottery() {
                 // umc_echo($type);
                 $block = $prize['blocks'];
                 $luck2 = mt_rand(0, count($prize['blocks']) - 1);
-                $given_block = $block[$luck2];
-                $give_nbt = "";
-                $give_type = $given_block;
-                $item = umc_goods_get_text($give_type, $give_data, $give_nbt);
-                $item_txt = "a " . $item['full'];
+                $item_name = $block[$luck2];
+                $item_format_array = array('text' => "1 $item_name", 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0)));
                 break;
-            case 'random_item':
+            /* case 'random_item':
                 $block = $UMC_DATA; // $prize['blocks'];
                 $luck3 = 1; // mt_rand(1, 64);
                 $stack = 0;
                 while ($stack == 0) {
-                    $give_type = array_rand($UMC_DATA);
+                    $item_name = array_rand($UMC_DATA);
                     $stack = $UMC_DATA[$give_type]['stack'];
                 }
                 $item = umc_goods_get_text($give_type);
                 $item_txt = "$luck3 " . $item['full'];
                 $give_amount = $luck3;
                 break;
+             */
             case 'random_potion':
                 $types = array('lingering_potion', 'potion', 'splash_potion');
                 $type_luck = mt_rand(0, count($types) - 1);
-                $give_type = $types[$type_luck];
                 global $UMC_POTIONS;
                 $potion_luck = mt_rand(0, count($UMC_POTIONS) - 1);
                 $potion_keys = array_keys($UMC_POTIONS);
                 $potion_code = $potion_keys[$potion_luck];
                 $item_txt = $give_type;
-                $give_nbt = "{Potion:\"minecraft:$potion_code\"}";
+                $item_nbt = "{Potion:\"minecraft:$potion_code\"}";
                 $give_amount = 1;
+                $item_name = $types[$type_luck];
+                $item_format_array = array('text' => "1 $item_name", 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0, 'nbt' => $item_nbt)));
         }
-        umc_deposit_give_item($uuid, $give_type, '', $give_nbt, $give_amount, 'lottery');
+        umc_deposit_give_item($uuid, $item_name, '', $item_nbt, $give_amount, 'lottery');
     }
 
-
     if ($user != 'uncovery') {// testing only
-        $item_nocolor = umc_ws_color_remove($item_txt);
-        umc_mod_broadcast("$user voted, rolled a $luck and got $item_nocolor!", 'asConsole');
-        umc_log('votelottery', 'vote', "$user rolled $luck and got $item_nocolor ($give_type:$give_data)");
+        // broadcast the item
+        $data = array( // down arrow in Unicode:
+            array('text' => '[Broadcast] ', 'format' => 'white'),
+            array('text' => "$user voted, rolled a $luck and got ", 'format' => 'red'),
+            $item_format_array,
+        );
+        umc_text_format($data, '@a', false);
+
+        umc_log('votelottery', 'vote', "$user rolled $luck and got $full ($item_name $item_nbt)");
         $userlevel = umc_userlevel_get($uuid);
         if ($user_is_online && in_array($userlevel, array('Settler', 'Guest'))) {
             $msg = "You received $item_txt from the lottery! Use '/withdraw @lottery' to get it!";
@@ -730,7 +741,8 @@ function umc_lottery() {
         umc_mysql_execute_query($sql);
     } else {
         $service_fixed = 0;
-        XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_txt! ($give_type $give_nbt)");
+
+        XMPP_ERROR_trigger("$user voted, rolled a $luck and got $item_name! ($item_name $item_nbt)");
     }
 
     if ($user_is_online) {
