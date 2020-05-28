@@ -29,7 +29,7 @@ function umc_nbt_json_prepare($json) {
 
 /**
  * streamline the array
- * 
+ *
  * @param type $nbt_array
  * @return type
  */
@@ -120,16 +120,16 @@ function umc_nbt_to_array($nbt) {
         $json = preg_replace($fix_nbt_regex, '$1"$2":', $nbt);
     }
     XMPP_ERROR_trace("nbt_fixed", $json);
-    
+
     // now we have valid json, decode it please
     $nbt_array = json_decode($json, true);
     if (!$nbt_array) {
         XMPP_ERROR_trace("NBT Array invalid, attempting fix: $json");
-        
+
         // second-level fix
         $json2 = preg_replace("/(\d*)[Lbdfs]([,\]}])/", '$1$2', $json);
         $nbt_array = json_decode($json2, true);
-        
+
         if (!$nbt_array) {
             XMPP_ERROR_trigger("NBT Array invalid: $json2");
         }
@@ -183,11 +183,16 @@ function umc_nbt_from_json($json) {
  *
  * @param type $nbt
  */
-function umc_nbt_display($nbt, $format) {
+function umc_nbt_display($nbt, $format = 'short_text') {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    $nbt_array = umc_nbt_to_array($nbt);
+    if (!is_array($nbt)) {
+        $nbt_array = umc_nbt_to_array($nbt);
+    } else {
+        $nbt_array = $nbt;
+    }
+
     $formats = array(
-        'long_text', 'short_text','in_game'
+        'long_text', 'short_text',
     );
     $text = '';
     if (in_array($format, $formats) && function_exists('umc_nbt_display_' . $format)) {
@@ -209,7 +214,7 @@ function umc_nbt_display_long_text($nbt_array) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $text = '';
     foreach ($nbt_array as $feature => $data) {
-        $feat = strtolower($feature);
+        $feat = trim(strtolower($feature));
         switch ($feat) {
             case 'entitytag':
                 // Spawn eggs: {EntityTag:{id:"minecraft:blaze"}}
@@ -356,7 +361,7 @@ function umc_nbt_display_short_text($nbt_array) {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
     $text = '';
     foreach ($nbt_array as $feature => $data) {
-        $feat = strtolower($feature);
+        $feat = trim(strtolower($feature));
         switch ($feat) {
             case 'entitytag':
                 // Spawn eggs: {EntityTag:{id:"minecraft:blaze"}}
@@ -462,7 +467,7 @@ function umc_nbt_display_short_text($nbt_array) {
                 // honey
                 $honeylevel = $data['honey_level'];
 		$text .= "(Honey $honeylevel)";
-               break;            
+               break;
             default:
                 XMPP_ERROR_trigger("Unknown NBT Type '$feat' (umc_nbt_display_short_text)");
         }
