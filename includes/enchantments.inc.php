@@ -81,23 +81,23 @@ function umc_enchantment_data_create() {
 
     $array_data = array();
     foreach ($data as $obj) {
-        $fullname = $obj->itemName;
-        $name_split = explode(".", $fullname);
+        $fullname = $obj->name;
+        $name_split = explode(":", $fullname);
         $item_name = $name_split[1];
 
         $item_array = array();
         foreach ($obj->primaries as $item) {
-            $name_split = explode(".", $item);
+            $name_split = explode(":", $item);
             $item_array[] = $name_split[1];
         }
         foreach ($obj->secondaries as $item) {
-            $name_split = explode(".", $item);
+            $name_split = explode(":", $item);
             $item_array[] = $name_split[1];
         }
 
         $conflict_array = array();
         foreach ($obj->excludes as $ench) {
-            $name_split = explode(".", $ench);
+            $name_split = explode(":", $ench);
             $conflict_array[] = $name_split[1];
         }
 
