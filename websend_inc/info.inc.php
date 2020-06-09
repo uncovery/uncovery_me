@@ -188,22 +188,25 @@ function umc_info_whereami() {
 
     // Yaw
     $yaw = $UMC_USER['coords']['yaw'];
-    // we need to convert this to work with 0-360 instead of +-180
+
+    // system yaw is ranging from -180 to +180
+    // we need to convert this to use 0-360 instead of +-180
     $yaw_360 = $yaw + 180;
 
     // -22.49969482421875 ?
 
     $yaw_arr = array(
-        0 => 'South',
-        45 => 'SouthWest',
-        90 => 'West',
-        135 => 'NorthWest',
-        180 => 'North',
-        225 => 'NorthEast',
-        270 => 'East',
-        315 => 'SouthEast',
-        360 => 'South',
+        0 => 'North',
+        45 => 'NorthEast',
+        90 => 'East',
+        135 => 'SouthEast',
+        180 => 'South',
+        225 => 'SouthWest',
+        270 => 'West',
+        315 => 'NorthWest',
+        360 => 'North',
     );
+
     // angle difference for 45 degrees:
     $var = 22.5;
     $compass = false;
