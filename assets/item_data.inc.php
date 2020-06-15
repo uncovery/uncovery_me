@@ -241,7 +241,7 @@ function umc_item_search_create() {
     $search_arr = array(); // umc_item_data_get_namelist();
     if (($handle = file_get_contents("/home/minecraft/server/bukkit/plugins/Essentials/items.json", "r")) !== FALSE) {
         // strip comments
-        $regex = "/(#[a-z0-9]*)/";
+        $regex = "/^#.*/";
         $fixed = preg_replace($regex, "", $handle);
         // decode to array
         $json = json_decode($fixed, true);
