@@ -13,7 +13,7 @@ function umc_item_icon_html($item_name) {
         $html = "<img src=\"$icon_url\">";
     } else if (file_exists("$UMC_PATH_MC/server/bin/data/item_icons/$item_name.png")) {
         $icon_url = $UMC_DOMAIN . "/websend/item_icons/$item_name.png";
-        $html = "<img src=\"$icon_url\">";
+        $html = "<img src=\"$icon_url\" width=\"30\" height=\"30\">";
     } else if (isset($ITEM_SPRITES[$item_name])) {
         $html = "<span class=\"item_sprite item_{$item_name}\"> </span>";
     } else {
@@ -30,7 +30,7 @@ function umc_item_icon_html($item_name) {
  * @global type $UMC_PATH_MC
  * @return type
  */
-function umc_block_icons_get_wiki() {
+function umc_block_icons_get_wiki($update = true) {
     global $UMC_DATA, $UMC_PATH_MC;
 
     // STEP 1: get the whole website data, only for blocks, those are individual icons
@@ -44,7 +44,8 @@ function umc_block_icons_get_wiki() {
     }
 
     $matches = false;
-    $regex = '/src="(?\'full_url\'.*.png\?version=.*)".*\n.*\n.*<code>(?\'item_name\'.*)<\/code>/mU';
+    // $regex = '/src="(?\'full_url\'.*.png\?version=.*)".*\n.*\n.*<code>(?\'item_name\'.*)<\/code>/mU';
+    $regex = '/src="(?\'full_url\'.*.png)\/revision\/.*".*\n.*\n.*<code>(?\'item_name\'.*)<\/code>/mU';
     preg_match_all($regex, $url_data[0]['content'], $matches, PREG_SET_ORDER, 0);
 
     // now get all valid item_name URLS and write them into an array
@@ -76,13 +77,19 @@ function umc_block_icons_get_wiki() {
                 'reason' => "Access denied to remote file!",
             );
         } else {
-            $written = file_put_contents($icon_file, $s['content']);
-            if (!$written) {
-                $failed_icons[] = array(
-                    'item_name' => $item_name,
-                    'url' => $s['response']['url'],
-                    'reason' => "Could not save file to $icon_file",
-                );
+            if (
+                ($update && (!file_exists($icon_file) || filesize($icon_file) == 0)
+                ||
+                !$update)
+                ) {
+                $written = file_put_contents($icon_file, $s['content']);
+                if (!$written) {
+                    $failed_icons[] = array(
+                        'item_name' => $item_name,
+                        'url' => $s['response']['url'],
+                        'reason' => "Could not save file to $icon_file",
+                    );
+                }
             }
         }
 
@@ -97,17 +104,9 @@ function umc_block_icons_get_wiki() {
 function umc_item_icons_get_wiki() {
     global $UMC_PATH_MC, $UMC_DATA;
 
-    // let's get the image first
-
-    $css_items_url = 'https://gamepedia.cursecdn.com/minecraft_gamepedia/f/f5/ItemCSS.png';
-    $image_data = unc_serial_curl($css_items_url, 0, 50, '/home/includes/unc_serial_curl/google.crt');
-    $icon_file = "$UMC_PATH_MC/server/bin/data/images/ItemCSS.png";
-
-    file_put_contents($icon_file, $image_data[0]['content']);
-
-
     // STEP 1: get the whole website data
-    $url = 'https://minecraft.gamepedia.com/Java_Edition_data_values/Items';
+    $page_url = 'https://minecraft.gamepedia.com';
+    $url = $page_url . '/Java_Edition_data_values/Items';
     $url_data = unc_serial_curl($url, 0, 50, '/home/includes/unc_serial_curl/google.crt'); // ,0,50, $UMC_CONFIG['ssl_cert']
 
     $matches = false;
@@ -118,7 +117,16 @@ function umc_item_icons_get_wiki() {
 
     $icon_positions = array();
     $count = 0;
+    $image_downloaded = false;
     foreach ($matches as $match) {
+        if (!$image_downloaded) {
+            // let's get the sprite image once
+            $sprite_data = unc_serial_curl($page_url . $match['image_url'], 0, 50, '/home/includes/unc_serial_curl/google.crt');
+            $target_icon_file = "$UMC_PATH_MC/server/bin/data/images/ItemCSS.png";
+            file_put_contents($target_icon_file, $sprite_data[0]['content']);
+            $image_downloaded = true;
+        }
+
         $item_name = str_replace(" ",  "", strtolower($match['item_name']));
         $x_pos = $match['xpos'] * 2; // we scale the background and the icons so that they match teh block icon size
         $y_pos = $match['ypos'] * 2;
@@ -159,4 +167,27 @@ function umc_items_get_unavailable() {
     }
     ksort($items);
     umc_array2file($items, "ITEM_UNAVAILABLE", "/home/minecraft/server/bin/assets/item_unavailable.inc.php");
+}
+/**
+ *
+ */
+
+// icons: https://gamepedia.cursecdn.com/minecraft_gamepedia/4/42/AchievementSprite.png
+
+function umc_wiki_achievements() {
+    // this returns a JSON array of the page
+    $url = "https://minecraft.gamepedia.com/api.php?action=query&titles=Achievement&export=true&exportnowrap=true";
+    $url_data = unc_serial_curl($url, 0, 50, '/home/includes/unc_serial_curl/google.crt');
+
+
+    $xml = simplexml_load_string($url_data[0]['content'], "SimpleXMLElement", LIBXML_NOCDATA);
+
+    // convert to array
+    $json = json_encode($xml->page->revision->text);
+    $array = json_decode($json,TRUE);
+
+    $data = $array[0];
+
+
+
 }
