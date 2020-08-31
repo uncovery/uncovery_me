@@ -95,6 +95,7 @@ function umc_ws_eventhandler($event) {
 
     // if ($UMC_USER['username'] == 'uncovery') {XMPP_ERROR_send_msg("done with events");}
     // non-plugin events
+    // these two should be moved to a plugin?
     switch ($event) {
         case 'PlayerQuitEvent':
             umc_log('system', 'logout', "$player logged out");
@@ -110,6 +111,7 @@ function umc_ws_eventhandler($event) {
             break;
         case 'PlayerPreLoginEvent':
             // nothing needed since the fact that websend is called makes it register the UUID already
+            // should be disabled in the websend config.
             break;
         default:
             // all the events not covered above
@@ -656,7 +658,7 @@ function umc_text_format($data, $target = false, $auto_space = false) {
                 case 'hover':
                     if ($format == 'show_item') {
                         $nbt = ''; // we add nbt only if we have one
-                        if (isset($variable['nbt'])) {
+                        if (isset($variable['nbt']) && strlen($variable['nbt']) > 0) {
                             $nbt_safe = addslashes($variable['nbt']);
                             $nbt = ",tag:$nbt_safe";
                         }
