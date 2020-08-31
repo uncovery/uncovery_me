@@ -34,7 +34,7 @@ function umc_item_data_create() {
     );
 
     $versions = array(
-        4 => array('target' => '1152', 'source' => '1.15.2'),
+        4 => array('target' => '1162', 'source' => '1.16.2'),
     );
 
     // versions iterations
