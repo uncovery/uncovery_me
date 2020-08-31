@@ -29,8 +29,8 @@ $UMC_DOMAIN = "https://uncovery.me";
 ini_set('display_errors', 1);
 
 $UMC_SETTING = array(
-    'mc_version' => '1.15',
-    'mc_version_minor' => '1.15.2',
+    'mc_version' => '1.16',
+    'mc_version_minor' => '1.16.2',
     'path' => array(
         'server' => $UMC_PATH_MC . '/server',
         'bin' => $UMC_PATH_MC . "/server/bin",
