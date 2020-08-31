@@ -32,10 +32,10 @@ function umc_shopmgr_main() {
         return "You have to be logged in to see this!";
     }
 
-    if (!isset($s_get['page'])) {
+    if (!isset($s_get['section'])) {
         $sel_page = 'deposit';
     } else {
-        $sel_page = $s_get['page'];
+        $sel_page = $s_get['section'];
     }
 
     $out = '';
@@ -64,7 +64,7 @@ function umc_shopmgr_main() {
         if ($page == $sel_page) {
             $out .= "<li class=\"active_world\">$page_name</li>";
         } else {
-            $out .= "<li><a href=\"?page=$page\">$page_name</a></li>";
+            $out .= "<li><a href=\"?section=$page\">$page_name</a></li>";
         }
     }
     $out .= "</ul><br>";
