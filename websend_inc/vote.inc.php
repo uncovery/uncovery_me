@@ -243,7 +243,7 @@ function umc_vote_web() {
     // we allow new proposals only in odd months
     $proposals_enabled = false;
     $proposals_disabled_reason = "Proposals are currently not possible. We allow proposals only every in odd months (Jan, March etc). Please stop by next month.";
-    $current_month = date('j');
+    $current_month = date('n');
     if ($current_month % 2 == 0) {
         $proposals_enabled = true;
     }
