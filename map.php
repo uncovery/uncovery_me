@@ -742,12 +742,13 @@ function umc_assemble_maps() {
     $destination = $UMC_SETTING['path']['server'] .  "/maps";
     // $mapper_folder = $UMC_SETTING['path']['server'] . '/togos_map';
     $mapper_folder = $UMC_SETTING['path']['server'] . '/blockmap';
-    $mapper_execution = '/BlockMap.jar render';
+    $mapper_execution = '/BlockMap.jar render -f';
 
     // iterate the worlds first and delete old files
-
+    echo "Deleting old pngs\n";
     $del_cmd1 = "find $destination -name '*.png' -type f -delete";
     exec($del_cmd1);
+    echo "Deleting old htmls\n";
     $del_cmd2 = "find $destination -name '*.html' -type f -delete";
     exec($del_cmd2);
     XMPP_ERROR_trace(__FUNCTION__, "Deleted old files with command $del_cmd1 & $del_cmd2");
@@ -757,7 +758,7 @@ function umc_assemble_maps() {
         echo "$world: \n";
         // make chunk files
         // clean up data files
-        $folder = $UMC_SETTING['path']['bukkit'] . "/$world/region";
+        $folder = $UMC_SETTING['path']['bukkit'] . "/$world";
 
         // check if the folder exists to make sure
         $target_folder = "$destination/$world/png";
@@ -777,10 +778,15 @@ function umc_assemble_maps() {
         // $custom_color = "--color-map {$UMC_SETTING['path']['server']}/bin/assets/block-colors.txt";
         $custom_color = '';
 
+        echo "executing $world map creation at coordinates $coordinates\n";
+
+        // /etc/alternatives/jre_14/bin/java -jar /home/minecraft/server/blockmap/BlockMap.jar -v render /home/minecraft/server/worlds_save/empire --create-big-image --min-X=-2048 --max-X=2048 --min-Z=-2048 --max-Z=2048 -o /home/minecraft/server/maps/empire/png  --create-tile-html
         $command = "/etc/alternatives/jre_14/bin/java -jar $mapper_folder$mapper_execution $folder --create-big-image $coordinates -o $destination/$world/png --create-tile-html $custom_color";
+
         exec($command);
         XMPP_ERROR_trace(__FUNCTION__, "$world region maps rendered command $command");
 
+        echo "Complressing $world map file to 60%\n";
         // compress map to new map
         $command1 = "convert $destination/$world/png/big.png -quality 60% $destination/{$world}.jpg";
         exec($command1);
@@ -799,6 +805,7 @@ function umc_assemble_maps() {
         // create lot maps
          *
          */
+        echo "disassembling $world map into tiles for lot manager\n";
         umc_disassemble_map($world);
         XMPP_ERROR_trace(__FUNCTION__, "$world Lot maps cut, done!");
         XMPP_ERROR_trigger("Map rendered");
@@ -845,6 +852,7 @@ function umc_disassemble_map($world = 'empire') {
     }
 
     if ($world == 'kingdom' || $world == 'draftlands') {
+        echo "Splitting $world into street lots\n";
         $map = $UMC_SETTING['world_img_dim'][$world];
         $source = "$UMC_PATH_MC/server/maps";
         foreach ($D as $row) {
@@ -870,11 +878,11 @@ function umc_disassemble_map($world = 'empire') {
             $command = "convert -crop '{$size_x}x{$size_z}+{$base_x}+{$base_z}' \"$source/$world.jpg\" \"$source/lots/$world/{$lot}_full.png\"";
             // $command . "\n";
             exec($command);
-            echo $command;
             XMPP_ERROR_trace(__FUNCTION__, "Cut lot $lot with command $command");
         }
         XMPP_ERROR_trace(__FUNCTION__, "Done cutting the $world map to pieces");
     } else {
+        echo "Splitting $world into lots\n";
         $lot_size = $dim['lot_size'];
         $world_lots = $dim['lot_number'];
         if (!isset($dim['lot_number'])) {
