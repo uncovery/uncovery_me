@@ -555,7 +555,7 @@ function umc_lottery_show_chances() {
 
 function umc_lottery() {
     XMPP_ERROR_trace(__FUNCTION__, func_get_args());
-    global $UMC_USER, $lottery, $UMC_DATA_ENCHANTMENTS, $lottery_urls, $UMC_DATA;
+    global $UMC_USER, $lottery, $UMC_DATA_ENCHANTMENTS, $lottery_urls;
 
     $user_input = trim($UMC_USER['args'][2]);
 
@@ -615,13 +615,13 @@ function umc_lottery() {
             case 'additional_home':
                 $newname = 'lottery' . "_" . umc_random_code_gen(4);
                 umc_home_add($uuid, $newname, true);
-                $item_txt = "an addtional home!!";
-                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
+                $item_name = "an addtional home";
+                $item_format_array =  array('text' => $item_name, 'format' => 'red');
                 break;
             case 'additional_deposit':
                 umc_depositbox_create($uuid);
-                $item_txt = "an addtional deposit box!!";
-                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
+                $item_name = "an addtional deposit box";
+                $item_format_array =  array('text' => $item_name, 'format' => 'red');
                 break;
             case 'vanity_title':
                 $current_title = umc_vanity_get_title();
@@ -630,14 +630,14 @@ function umc_lottery() {
                 }
                 $luck2 = mt_rand(7, 14);
                 umc_vanity_set($luck2, "I won the lottery!");
-                $item_txt = "a vanity title fo $luck2 days!!";
-                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
+                $item_name = "a vanity title fo $luck2 days!!";
+                $item_format_array =  array('text' => $item_name, 'format' => 'red');
                 break;
             case 'random_unc':
                 $luck2 = mt_rand(1, 500);
                 umc_money(false, $user, $luck2);
-                $item_txt = "$luck2 Uncs";
-                $item_format_array =  array('text' => $item_txt, 'format' => 'red');
+                $item_name = "$luck2 Uncs";
+                $item_format_array =  array('text' => $item_name, 'format' => 'red');
                 break;
         }
     } else {
@@ -648,12 +648,11 @@ function umc_lottery() {
 
         switch ($type) {
             case 'item':
-                $item_txt = $prize['txt'];
                 $item_name = $detail['item_name'];
                 if ($detail['nbt']) {
-                    $item_format_array = array('text' => "1 $item_txt", 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0, 'nbt' => $detail['nbt'])));
+                    $item_format_array = array('text' => "1 " . $prize['txt'], 'format' => array($magic_item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0, 'nbt' => $detail['nbt'])));
                 } else {
-                    $item_format_array = array('text' => "1 $item_txt", 'format' => array($item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0)));
+                    $item_format_array = array('text' => "1 " . $prize['txt'], 'format' => array($item_color, 'show_item' => array('item_name' => $item_name, 'damage' => 0)));
                 }
                 break;
             case 'random_ench':
@@ -702,7 +701,6 @@ function umc_lottery() {
                 $potion_luck = mt_rand(0, count($UMC_POTIONS) - 1);
                 $potion_keys = array_keys($UMC_POTIONS);
                 $potion_code = $potion_keys[$potion_luck];
-                $item_txt = $give_type;
                 $item_nbt = "{Potion:\"minecraft:$potion_code\"}";
                 $give_amount = 1;
                 $item_name = $types[$type_luck];
@@ -723,7 +721,7 @@ function umc_lottery() {
         umc_log('votelottery', 'vote', "$user rolled $luck and got ($item_name $item_nbt)");
         $userlevel = umc_userlevel_get($uuid);
         if ($user_is_online && in_array($userlevel, array('Settler', 'Guest'))) {
-            $msg = "You received $item_txt from the lottery! Use '/withdraw @lottery' to get it!";
+            $msg = "You received $item_name from the lottery! Use '/withdraw @lottery' to get it!";
             umc_mod_message($user, $msg);
         }
 
