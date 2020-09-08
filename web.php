@@ -71,7 +71,7 @@ function umc_display_guestinfo(){
             . "To know more about how to join us, please <a href=\"$UMC_DOMAIN/server-access/whitelist/\">continue here</a>.<br>"
             . "If you are a member already, don't be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
-            . '<iframe width="550" height="315" src="//www.youtube.com/embed/RjfZaDpGCLA" allowfullscreen></iframe><br><br>';
+            . '<iframe width="560" height="315" src="https://www.youtube.com/embed/OvSvt1Zpg78" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><br>';
     } else if ($userlevel == 'Guest') {
         $title = "Welcome, $username!";
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
@@ -474,7 +474,6 @@ function umc_web_table_format_column($name, $value) {
 
         $item = umc_goods_get_text($item_name, $id_parts[1]);
         $item_dmg = $id_parts[1];
-        $item_meta = $id_parts[2];
 
         if (($item_dmg == '') || (isset($UMC_DATA[$item_name]['damage']) && $UMC_DATA[$item_name]['damage'] > 0)) { // damage item have dmg id 0 for icon
             $item_dmg = 0;
@@ -551,12 +550,12 @@ function umc_jquery_tabs($data) {
     $out .= "</ul>\n";
 
     # Set up tab content <div>s
-    $i = 0;
+    $j = 0;
     foreach ($data as $tab => $tab_html) {
         //if (strpos($tab_html, "http://") === false) {
-            $out .= "<div id='tab$i'>\n$tab_html\n</div>";
+            $out .= "<div id='tab$j'>\n$tab_html\n</div>";
         //}
-        $i += 1;
+        $j += 1;
     }
     $out .= "</div>\n";
 
