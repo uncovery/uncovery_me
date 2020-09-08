@@ -274,7 +274,7 @@ function umc_lot_manager_get_lots($world, $edit_lot) {
 }
 
 /**
- * returns the minimum userlevel and money that is needed to get a lot in a certain world.
+ * returns the minimum user level and money that is needed to get a lot in a certain world.
  *
  * @param type $userlevel
  * @param type $world
@@ -1493,11 +1493,14 @@ function umc_lot_reset_process() {
 
     // get banned users UUID => username
     $banned_users = umc_banned_users();
+    XMPP_ERROR_trace('banned users', $banned_users);
     // var_dump($banned_users);
     // donators UUID => leftover days
     $donators = umc_donation_list_donators();
+    XMPP_ERROR_trace('donators', $donators);
 
     $dibs = umc_lot_manager_dibs_get_all();
+    XMPP_ERROR_trace('dibs', $dibs);
 
     // Update all userlevels in UUID table
     $upd_sql = 'UPDATE minecraft_srvr.UUID
@@ -1510,18 +1513,23 @@ function umc_lot_reset_process() {
     $now_datetime = umc_datetime();
     $now_datetime->modify('-31 day');
     $one_months_ago = $now_datetime->format('Y-m-d H:i:s');
+    $one_months_ago_ts = $now_datetime->getTimestamp();
+    XMPP_ERROR_trace('date one month ago', $one_months_ago);
     $now_datetime->modify('-31 day');
     // what date was 2 months ago?
     $two_months_ago = $now_datetime->format('Y-m-d H:i:s');
+    $two_months_ago_ts = $now_datetime->getTimestamp();
+    XMPP_ERROR_trace('date 2 months ago', $two_months_ago);
 
     $longterm = $UMC_SETTING['longterm'];
+
 
     $source_path = $UMC_SETTING['path']['worlds_mint'];
     $dest_path = $UMC_SETTING['path']['worlds_save'];
 
     // get all occupied lots and their owners
     // TODO: We should get first all expired users and reset their shop inventory, then do their lots.
-    $list_sql = "SELECT region_id as lot, user.UUID as uuid, UUID.username as username, world.name as world, userlevel, lastlogin
+    $list_sql = "SELECT region_id as lot, user.UUID as uuid, UUID.username as username, world.name as world, userlevel, lastlogin, UNIX_TIMESTAMP(lastlogin) as lastlogin_ts
             FROM minecraft_worldguard.region_players LEFT JOIN minecraft_worldguard.user ON user_id=user.id
             LEFT JOIN minecraft_worldguard.world ON world_id=world.id
             LEFT JOIN minecraft_srvr.UUID ON user.UUID=UUID.UUID
@@ -1537,6 +1545,7 @@ function umc_lot_reset_process() {
         $owner_uuid = $row['uuid'];
         $owner_lastlogin = $row['lastlogin'];
         $owner_level = $row['userlevel'];
+        $owner_lastlogin_ts = $row['lastlogin_ts'];
 
         $no_reset = array('uncovery', 'riedi77', 'psiber');
         if (in_array($owner_username, $no_reset)) {
@@ -1549,6 +1558,7 @@ function umc_lot_reset_process() {
         }
 
         $lot = $row['lot'];
+        XMPP_ERROR_trace("checking lot $lot of $owner_username ($owner_level), last login $owner_lastlogin");
         $world = $row['world'];
 
         $lot_dibs = false;
@@ -1565,6 +1575,7 @@ function umc_lot_reset_process() {
         $lot_mint_version = $UMC_SETTING['world_data'][$world]['mint_version'];
 
         if (isset($banned_users[$owner_uuid])) {
+            XMPP_ERROR_trace('lot user is banned');
             $A[$lot] = array(
                 'reason' => "$lot was reset because $owner_username / $owner_uuid was banned",
                 'source_world' => "$source_path/$world",
@@ -1577,6 +1588,7 @@ function umc_lot_reset_process() {
                 'del_skyblock_inv' => false,
             );
         } else if ($owner_username == '_abandoned_') {
+            XMPP_ERROR_trace('lot is abandoned');
             $A[$lot] = array(
                 'reason' => "$lot was reset because Owner was _abandoned_",
                 'source_world' => "$source_path/$world",
@@ -1590,7 +1602,10 @@ function umc_lot_reset_process() {
             );
         } else {
             $longterm_user = in_array($owner_level, $longterm);
-            if (($owner_lastlogin < $two_months_ago) && $longterm_user) {
+
+            XMPP_ERROR_trace("doing the time check $owner_lastlogin < $one_months_ago < $two_months_ago ($longterm_user)");
+            if (($owner_lastlogin_ts < $two_months_ago_ts) && $longterm_user) {
+                XMPP_ERROR_trace('lot was untouched for 2 months despite long-term user', $owner_lastlogin);
                 $A[$lot] = array(
                     'reason' => "$lot was reset because $owner_username / $owner_uuid is 2 months protected but was absent for 2 months (last login $owner_lastlogin)",
                     'source_world' => "$source_path/$world",
@@ -1602,7 +1617,8 @@ function umc_lot_reset_process() {
                     'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                     'del_skyblock_inv' => false,
                 );
-            } else if (($owner_lastlogin < $one_months_ago) && !$longterm_user) {
+            } else if (($owner_lastlogin_ts < $one_months_ago_ts) && !$longterm_user) {
+                XMPP_ERROR_trace('lot was untouched for 1 months for normal user', $owner_lastlogin);
                 $A[$lot] = array(
                     'reason' => "$lot was reset because $owner_username / $owner_uuid was absent for 1 months (last login $owner_lastlogin)",
                     'source_world' => "$source_path/$world",
@@ -1614,6 +1630,8 @@ function umc_lot_reset_process() {
                     'version_sql' => "UPDATE minecraft_srvr.lot_version SET choice=NULL, version='$lot_mint_version' WHERE lot='$lot' LIMIT 1;",
                     'del_skyblock_inv' => false,
                 );
+            } else {
+                XMPP_ERROR_trace('no action taken');
             }
         }
         // reset skyblock inventories
