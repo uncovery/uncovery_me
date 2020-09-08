@@ -455,36 +455,6 @@ function umc_user_directory() {
             $O['User'] .= "<p><strong>Bio:</strong> " . $row['meta_value'] . "</p>\n";
         }
 
-        /** //TODO: This has to be updated to show the forum posts of the new forum
-        //forum posts
-        $sql3 = "SELECT wpp.id AS id, wpp.post_title AS title, wpp.post_date AS date,
-		wpp.post_parent AS parent, wpp.post_type AS type, parent.post_title AS parent_title
-            FROM minecraft.wp_posts AS wpp
-	    LEFT JOIN minecraft.wp_users ON wpp.post_author=wp_users.id
-	    LEFT JOIN minecraft.wp_posts AS parent ON parent.id=wpp.post_parent
-	    WHERE wp_users.display_name='$username'
-		AND (wpp.post_type='reply' OR wpp.post_type='topic')
-		AND wpp.post_status='publish'
-	    ORDER BY wpp.post_date DESC";
-        $D3 = umc_mysql_fetch_all($sql3);
-        // echo $sql;
-        if (count($D3) > 0) {
-            $O['Forum'] = "<strong>Forum Posts:</strong> (". count($D3) . ")\n<ul>\n";
-            foreach ($D3 as $row) {
-                $date = $row['date'];
-                if ($row['type'] == 'reply') {
-                    $link = $row['parent'] . "#post-" . $row['id'];
-                    $title = $row['parent_title'];
-                } else {
-                    $link = $row['id'];
-                    $title = $row['title'];
-                }
-                $O['Forum'] .= "<li>$date on <a href=\"/index.php?p=$link\">$title</a></li>\n";
-            }
-            $O['Forum'] .= "</ul>\n";
-
-
-        } */
         $ret = umc_plugin_eventhandler('user_directory', array('uuid' => $uuid, 'username' => $username, 'first_join' => $online_time[$uuid]['firstlogin']['full']));
         foreach ($ret as $plugin_content) {
             foreach ($plugin_content as $section => $text) {
