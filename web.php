@@ -71,7 +71,7 @@ function umc_display_guestinfo(){
             . "To know more about how to join us, please <a href=\"$UMC_DOMAIN/server-access/whitelist/\">continue here</a>.<br>"
             . "If you are a member already, don't be a stranger and <a href=\"$UMC_DOMAIN/wp-login.php\">login</a>!<br><br>"
             . 'If you want to see what awaits you inside, watch our trailer!<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/embed/OvSvt1Zpg78" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><br>';
+            . '<iframe width="560" height="315" src="https://www.youtube.com/embed/Aju3VhlL2-I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><br>';
     } else if ($userlevel == 'Guest') {
         $title = "Welcome, $username!";
         $content = "Thanks for white-listing on our server.<br>We would love to see you building with us. "
